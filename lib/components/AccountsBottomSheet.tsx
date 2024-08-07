@@ -3,13 +3,12 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {textShortener} from "@/lib/helpers/string";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    Category,
-    selectCategory,
     selectSelectedCategory
 } from "@/lib/store/features/categories/categoriesSlice";
-import {Account, selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
+import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
 import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
 import {useCallback, useEffect, useMemo, useRef} from "react";
+import {Account} from "@/lib/types/Transaction";
 
 
 type Props = {

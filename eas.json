@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 10.2.2",
-    "appVersionSource": "remote"
+    "version": ">= 10.2.2"
   },
   "build": {
     "development": {
@@ -9,18 +8,11 @@
       "distribution": "internal",
       "channel": "development"
     },
-    "ios-simulator": {
-      "extends": "development",
-      "ios": {
-        "simulator": true
-      }
-    },
     "preview": {
       "distribution": "internal",
       "channel": "preview"
     },
     "production": {
-      "autoIncrement": true,
       "channel": "production"
     }
   },

@@ -3,7 +3,6 @@ import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
 import {useCallback, useEffect, useMemo, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    Category,
     selectCategories,
     selectCategory,
     selectSelectedCategory
@@ -14,6 +13,7 @@ import {
     selectSelectedAccountForm
 } from "@/lib/store/features/accounts/accountsSlice";
 import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
+import {Category} from "@/lib/types/Transaction";
 
 type Props = {
     children: React.ReactNode,

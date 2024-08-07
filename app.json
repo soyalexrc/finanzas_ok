@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Finanzas Ok",
-    "slug": "finanzas_ok",
+    "slug": "finanzas-ok",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.alexrc.finanzas-ok"
     },
     "android": {
       "adaptiveIcon": {
@@ -87,8 +88,12 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c0a44403-0e5b-487f-8c45-71d3dcbf66ad"
+        "projectId": "f3f3f3a8-d2ec-4088-ae83-cc81c8c47638"
       }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/f3f3f3a8-d2ec-4088-ae83-cc81c8c47638"
     }
   }
 }

@@ -1,7 +1,6 @@
 import {BottomSheetModal, BottomSheetTextInput} from "@gorhom/bottom-sheet";
 import { StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {Account, selectAccountForm} from "@/lib/store/features/accounts/accountsSlice";
 import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 

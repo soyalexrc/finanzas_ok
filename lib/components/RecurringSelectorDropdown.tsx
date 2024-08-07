@@ -1,6 +1,5 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {useState} from "react";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
