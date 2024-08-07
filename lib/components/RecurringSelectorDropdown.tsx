@@ -1,5 +1,5 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
@@ -44,8 +44,7 @@ const items = [
 export default function RecurringSelectorDropdown() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const dispatch = useAppDispatch();
-    const colors = useTheme().colors;
-
+    const scheme = useColorScheme();
 
     function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
         dispatch(onRecurrentSettingChange(keyItem));
@@ -55,7 +54,7 @@ export default function RecurringSelectorDropdown() {
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <TouchableOpacity>
-                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : colors.text}/>
+                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
                 </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>

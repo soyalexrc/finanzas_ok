@@ -1,17 +1,16 @@
 import ResumeDropDown from "@/lib/components/ResumeDropDown";
 import React, {useState} from "react";
-import {Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
+import {Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme} from "react-native";
 import HomeResumeItems from "@/lib/components/HomeResumeItems";
-import {BlurView} from "expo-blur";
+import {Button, useThemeName, View} from 'tamagui';
 import HeaderDropDownMenu from "@/lib/components/layout/AccountSelectDropdown";
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
 import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch} from "@/lib/store/hooks";
-import {useTheme} from "@react-navigation/native";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
-
+import {colorScheme} from "vite-plugin-entry-shaking-debugger/.storybook/theming";
 
 
 export default function HomeScreen() {
@@ -20,7 +19,10 @@ export default function HomeScreen() {
     const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets()
-    const colors = useTheme().colors;
+    // const colors = useTheme().colors;
+    const themeName = useThemeName();
+
+    console.log(themeName);
 
     function onPressNewTransaction() {
         dispatch(resetCurrentTransaction());
@@ -28,29 +30,30 @@ export default function HomeScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <CustomHeader style={{ paddingTop: insets.top }}>
-                <HeaderDropDownMenu />
-                <TouchableOpacity onPress={onPressNewTransaction} style={[{backgroundColor: colors.text}, styles.createButton]}>
-                    <Feather name="plus" size={20} color={colors.background} />
-                </TouchableOpacity>
+        <View flex={1} backgroundColor="$color2">
+            <CustomHeader style={{paddingTop: insets.top}}>
+                <HeaderDropDownMenu/>
+                <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
+                    <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                </Button>
+
+                {/*<TouchableOpacity onPress={onPressNewTransaction}*/}
+                {/*                  style={[{backgroundColor: 'white'}, styles.createButton]}>*/}
+                {/*    <Feather name="plus" size={20}/>*/}
+                {/*</TouchableOpacity>*/}
             </CustomHeader>
-            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, { backgroundColor: schemeColor === 'light' ? 'white' : 'black', paddingTop: isIos ? insets.top + 50 : 0 }]}>
-                <ResumeDropDown />
+            <ScrollView showsVerticalScrollIndicator={false} style={[{paddingTop: isIos ? insets.top + 50 : 0}]}>
+                <ResumeDropDown/>
 
                 {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
-                <Text>This is from update OTA</Text>
-                <HomeResumeItems />
-                <View style={{ height: 200 }} />
+                <HomeResumeItems/>
+                <View style={{height: 200}}/>
             </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
     createButton: {
         borderRadius: 100,
         padding: 3

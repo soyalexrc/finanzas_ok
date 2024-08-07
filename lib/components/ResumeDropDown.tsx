@@ -1,5 +1,6 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet} from "react-native";
+import { Text, View } from 'tamagui'
 import {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -19,7 +20,6 @@ import {useTheme} from "@react-navigation/native";
 export default function ResumeDropDown() {
     const db = useSQLiteContext();
     const colors = useTheme().colors;
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const dispatch = useAppDispatch();
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal)
@@ -43,21 +43,21 @@ export default function ResumeDropDown() {
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={[{color: colors.text}, styles.fs18, isMenuOpen && styles.opacityMedium]}>{ filterType.type === 'Balance' ? 'Current balance' : `${filterType.type} this ${filterType.date}` }</Text>
+                        <Text fontSize="$6">{ filterType.type === 'Balance' ? 'Current balance' : `${filterType.type} this ${filterType.date}` }</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={[{color: colors.text}, styles.fs32, isMenuOpen && styles.opacityMedium]}>S/ </Text>
+                            <Text fontSize="$9">S/ </Text>
                             {
                                 filterType.type === 'Balance' &&
                                 <>
-                                    <Text style={[{color: colors.text}, styles.fw64, styles.fwBold, isMenuOpen && styles.opacityMedium]}>{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
-                                    <Text style={[{color: colors.text}, styles.fs32, styles.fwBold, isMenuOpen && styles.opacityMedium]}>.{formatWithDecimals(currentBalance).decimals}</Text>
+                                    <Text fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
+                                    <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
                                 </>
                             }
                             {
                                 filterType.type !== 'Balance' &&
                                 <>
-                                    <Text style={[{color: colors.text}, styles.fw64, styles.fwBold, isMenuOpen && styles.opacityMedium]}>{formatByThousands(calculateTotal(transactionsInView).amount)}</Text>
-                                    <Text style={[{color: colors.text}, styles.fs32, styles.fwBold, isMenuOpen && styles.opacityMedium]}>.{calculateTotal(transactionsInView).decimals}</Text>
+                                    <Text fontSize="$12">{formatByThousands(calculateTotal(transactionsInView).amount)}</Text>
+                                    <Text fontSize="$9">.{calculateTotal(transactionsInView).decimals}</Text>
                                 </>
                             }
                         </View>

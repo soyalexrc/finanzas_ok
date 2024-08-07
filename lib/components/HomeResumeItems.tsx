@@ -1,8 +1,9 @@
-import {ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View} from "react-native";
+import {Alert, StyleSheet} from "react-native";
 import * as ContextMenu from 'zeego/context-menu'
 import {useRouter} from "expo-router";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {Button, Text, View} from 'tamagui';
 import {
     addTransactionInHomeList,
     removeTransactionFromHomeList,
@@ -10,9 +11,7 @@ import {
     selectTransactionsGroupedByDate,
     updateCurrentTransaction, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {FullTransaction, Transaction} from "@/lib/types/Transaction";
-import {format, formatDistanceToNow, isToday, isYesterday, isSameWeek, isSameMonth} from "date-fns";
-import {fromZonedTime} from 'date-fns-tz';
+import {FullTransaction} from "@/lib/types/Transaction";
 import {selectCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {selectAccountForm, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import {formatDateHomeItemGroups, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
@@ -79,9 +78,9 @@ export default function HomeResumeItems() {
         <>
             {transactions?.map(group => (
                 <View key={group.id}>
-                    <View style={styles.container}>
-                        <View style={{width: 30}}/>
-                        <View style={[styles.imageWithLabel, {marginVertical: 12}]}>
+                    <View paddingHorizontal={20} gap={20} flexDirection="row" justifyContent="space-between" alignItems="center">
+                        <View width={30}/>
+                        <View style={[styles.imageWithLabel, {marginTop: 12}]}>
                             <Text style={{color: 'gray', fontSize: 14}}>{formatDateHomeItemGroups(group.date)}</Text>
                             <Text style={{color: 'gray', fontSize: 14}}>S/ {formatByThousands(String(group.total))}</Text>
                         </View>
@@ -89,20 +88,25 @@ export default function HomeResumeItems() {
                     {group.items?.map((item) => (
                         <ContextMenu.Root key={item.id}>
                             <ContextMenu.Trigger>
-                                <Pressable style={[styles.container, {backgroundColor: colors.background}]}
-                                           onPress={() => handlePress(item)}>
-                                    <Text style={{fontSize: 30}}>{item.category.icon}</Text>
-                                    <View style={styles.imageWithLabel}>
-                                        <View style={{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
+                                <Button backgroundColor='$background0' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
+                                    <Text fontSize={30}>{item.category.icon}</Text>
+                                    <View
+                                        flex={1}
+                                        flexDirection='row'
+                                        alignItems='center'
+                                        justifyContent='space-between'
+                                        paddingVertical={10}
+                                    >
+                                        <View flexDirection='row' gap={10} alignItems='center'>
                                             {
                                                 item.recurrentDate !== 'none' &&
                                                 <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>
                                             }
-                                            <Text style={[styles.label, { color: colors.text }]}>{item.category.title}</Text>
+                                            <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text style={{ color: colors.text }}>S/ {formatByThousands(item.amount)}</Text>
+                                        <Text>S/ {formatByThousands(item.amount)}</Text>
                                     </View>
-                                </Pressable>
+                                </Button>
                             </ContextMenu.Trigger>
                             <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
                                                  avoidCollisions={true}>
@@ -145,13 +149,6 @@ export default function HomeResumeItems() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 20,
-        gap: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
     imageWithLabel: {
         flex: 1,
         flexDirection: 'row',

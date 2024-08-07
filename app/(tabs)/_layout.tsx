@@ -3,19 +3,17 @@ import React from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 
-import {Platform, View} from "react-native";
-import {BlurView} from "expo-blur";
-import {useColorScheme} from "@/lib/hooks/useColorScheme";
-import {Colors} from "@/lib/constants/Colors";
+import {Platform} from "react-native";
 import CustomBottomBar from "@/lib/components/ui/CustomBottomBar";
+import {useTheme} from "tamagui";
 
 export default function TabLayout() {
-    const colorScheme = useColorScheme();
+    const theme = useTheme()
     const isIos = Platform.OS === 'ios';
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+                tabBarActiveTintColor: theme.color10.val,
                 tabBarStyle: isIos ? { position: 'absolute' } : {},
                 tabBarItemStyle: {
                     height: 50,

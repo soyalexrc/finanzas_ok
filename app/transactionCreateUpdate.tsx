@@ -1,4 +1,5 @@
-import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Platform, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {View, Text, Button} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo} from "@expo/vector-icons";
@@ -35,6 +36,7 @@ export default function Screen() {
     const router = useRouter();
     const db = useSQLiteContext();
     const isIos = Platform.OS === 'ios';
+    const scheme = useColorScheme();
     const dispatch = useAppDispatch();
     const colors = useTheme().colors;
     const filterType = useAppSelector(selectHomeViewTypeFilter)
@@ -92,67 +94,57 @@ export default function Screen() {
     return (
         <>
             <BottomSheetModalProvider>
-                <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <View position="relative" flex={1} backgroundColor="$background">
                     {isModalOpen && <CustomBackdrop/>}
                     <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Text style={{fontSize: 18, color: 'gray'}}>Cancel</Text>
+                            <Text fontSize={18} color="$gray10Dark">Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
-                            <Text style={{
-                                fontSize: 18,
-                                color: colors.text
-                            }}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
-                            <Entypo name="select-arrows" size={18} color='gray'/>
+                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
+                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'} />
                         </TouchableOpacity>
                         <View style={styles.headerRightSide}>
                             <RecurringSelectorDropdown/>
                             {
                                 currentTransaction.id > 0 &&
                                 <TouchableOpacity>
-                                    <Entypo name="dots-three-horizontal" size={24} color={colors.text}/>
+                                    <Entypo name="dots-three-horizontal" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                                 </TouchableOpacity>
                             }
                         </View>
                     </View>
-                    <View style={styles.content}>
-                        <View style={styles.amount}>
-                            <View style={{flexDirection: 'row', alignItems: 'flex-start', gap: 10}}>
-                                <Text style={{color: 'gray', fontSize: 32, marginTop: 10}}>S/</Text>
-                                <Text
-                                    style={{fontSize: 64, color: colors.text}}>{formatByThousands(String(currentTransaction.amount))}</Text>
+                    <View flex={1}>
+                        <View flex={0.4} justifyContent="center" alignItems="center">
+                            <View flexDirection="row" alignItems="flex-start" gap="$2">
+                                <Text marginTop="$3" fontSize="$9" color="$gray10Dark">S/</Text>
+                                <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
                             </View>
                         </View>
-                        <View style={styles.keyboard}>
-                            <View style={{borderBottomWidth: 1, borderColor: 'gray'}}>
+                        <View flex={0.6}>
+                            <View borderBottomWidth={1} borderColor="$gray10Dark">
                                 <NotesBottomSheet styles={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                    <Text style={{fontSize: 16, color: colors.text}}>Notes</Text>
+                                    <Text fontSize={16}>Notes</Text>
                                 </NotesBottomSheet>
                             </View>
-                            <View style={{
-                                borderBottomWidth: 1,
-                                borderColor: 'gray',
-                                flexDirection: 'row',
-                                gap: 20,
-                                paddingHorizontal: 30
-                            }}>
+                            <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20} paddingHorizontal={20}>
                                 <AccountsBottomSheet styles={styles.accountsWrapper}>
-                                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
-                                        <Text style={{fontSize: 16}}>{selectedAccount.icon}</Text>
-                                        <Text style={{fontSize: 16, color: colors.text}}>{textShortener(selectedAccount.title)}</Text>
+                                    <View flexDirection="row" alignItems="center" gap={5}>
+                                        <Text fontSize={16}>{selectedAccount.icon}</Text>
+                                        <Text fontSize={16}>{textShortener(selectedAccount.title)}</Text>
                                     </View>
                                     <AntDesign name="arrowright" size={24} color="gray"/>
                                 </AccountsBottomSheet>
                                 <CategoriesBottomSheet styles={styles.categoriesWrapper}>
-                                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
-                                        <Text style={{fontSize: 16}}>{selectedCategory.icon}</Text>
-                                        <Text style={{fontSize: 16, color: colors.text}}>{textShortener(selectedCategory.title)}</Text>
+                                    <View flexDirection="row" alignItems="center" gap={5}>
+                                        <Text fontSize={16}>{selectedCategory.icon}</Text>
+                                        <Text fontSize={16}>{textShortener(selectedCategory.title)}</Text>
                                     </View>
                                 </CategoriesBottomSheet>
-                                <View style={{flex: 0.2, justifyContent: 'center'}}>
-                                    <TouchableOpacity style={[styles.saveButton, { backgroundColor: colors.text }]} onPress={handleCreateOrEditTransaction}>
-                                        <Text style={{color: colors.background, fontWeight: 'bold', fontSize: 16}}>Save</Text>
-                                    </TouchableOpacity>
+                                <View flex={0.2} justifyContent="center">
+                                    <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" width={75} height={35} justifyContent='center' alignItems='center'>
+                                        <Text fontSize={16}>Save</Text>
+                                    </Button>
                                 </View>
                             </View>
                             <TransactionKeyboard/>
@@ -198,17 +190,6 @@ const styles = StyleSheet.create({
     headerRightSide: {
         flexDirection: 'row',
         gap: 20
-    },
-    content: {
-        flex: 1,
-    },
-    amount: {
-        flex: 0.4,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    keyboard: {
-        flex: 0.6,
     },
     saveButton: {
         borderRadius: 100,

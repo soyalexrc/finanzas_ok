@@ -1,7 +1,8 @@
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, TouchableOpacity} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
 import {onChangeAmount, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {View, Text, Button} from 'tamagui';
 
 export default function TransactionKeyboard() {
     const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ export default function TransactionKeyboard() {
 
 
     return (
-        <View style={{flex: 1}}>
+        <View flex={1}>
             <FlatList
                 data={keypadData}
                 contentContainerStyle={{flex: 1, justifyContent: 'center', marginHorizontal: 30}}
@@ -41,20 +42,18 @@ export default function TransactionKeyboard() {
                 numColumns={3}
                 scrollEnabled={false}
                 renderItem={({item}) => (
-                    <View style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 5
-                    }}>
-                        <TouchableOpacity onPress={() => handleNumberPress(item)} style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            height: 70,
-                            width: 70
-                        }}>
-                            <Text style={{fontSize: 30, color: 'gray'}}>{item.value}</Text>
-                        </TouchableOpacity>
+                    <View flex={1} justifyContent="center" alignItems="center" margin={5}>
+                        <Button
+                            onPress={() => handleNumberPress(item)}
+                            justifyContent="center"
+                            alignItems="center"
+                            height={70}
+                            width={80}
+                            borderRadius="$12"
+                            backgroundColor="$background025"
+                        >
+                            <Text fontSize={30} color="$gray10Dark">{item.value}</Text>
+                        </Button>
                     </View>
                 )}
             />
