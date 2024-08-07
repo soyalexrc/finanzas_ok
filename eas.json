@@ -23,7 +23,7 @@
       "autoIncrement": true,
       "channel": "production"
     }
-  },n
+  },
   "submit": {
     "production": {}
   }
