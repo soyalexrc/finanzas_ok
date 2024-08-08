@@ -33,7 +33,7 @@ export const transactionsSlice = createSlice({
     initialState,
     reducers: {
         onChangeNotes: (state, action: PayloadAction<string>) => {
-            console.log(action.payload);
+            state.currentTransaction.notes = action.payload;
         },
         onChangeDate: (state, action: PayloadAction<string>) => {
             state.currentTransaction.date = action.payload

@@ -1,6 +1,6 @@
-import {BottomSheetModal, BottomSheetScrollView} from "@gorhom/bottom-sheet";
-import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
-import {useCallback, useEffect, useMemo, useRef} from "react";
+import {TouchableOpacity, StyleSheet} from "react-native";
+import {View, Text} from 'tamagui';
+import {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectCategories,
@@ -12,115 +12,85 @@ import {
     selectAccounts,
     selectSelectedAccountForm
 } from "@/lib/store/features/accounts/accountsSlice";
-import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
 import {Category} from "@/lib/types/Transaction";
+import {Sheet} from "tamagui";
 
 type Props = {
-    children: React.ReactNode,
-    styles: any
+    open: boolean
+    setOpen: (value: boolean) => void
 }
 
-export default function CategoriesBottomSheet({children, styles}: Props) {
+export default function CategoriesBottomSheet({open, setOpen}: Props) {
     const dispatch = useAppDispatch();
     const categories = useAppSelector(selectCategories);
     const accounts = useAppSelector(selectAccounts);
-    const isModalOpen = useAppSelector(selectLayoutModalState);
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
-    const snapPoints = useMemo(() => ['60%'], []);
-    const ref = useRef<BottomSheetModal>(null);
-
-    const handlePressOpenModal = useCallback(() => {
-        dispatch(updateLayoutModalState(true));
-        ref.current?.present();
-    }, []);
-
-    const handleSheetChanges = useCallback((index: number) => {
-        if (index < 0) {
-            dispatch(updateLayoutModalState(false));
-        }
-    }, []);
+    const [position, setPosition] = useState(0);
 
     function handlePressCategory(category: Category) {
         dispatch(selectCategory(category));
-        dispatch(updateLayoutModalState(false));
-        ref.current?.close();
+        setOpen(false);
     }
 
-    useEffect(() => {
-        if (!isModalOpen) {
-            ref.current?.close();
-        }
-    }, [isModalOpen]);
-
     return (
-        <>
-            <TouchableOpacity style={styles} onPress={handlePressOpenModal}>
-                {children}
-            </TouchableOpacity>
-            <BottomSheetModal
-                ref={ref}
-                index={0}
-                snapPoints={snapPoints}
-                onChange={handleSheetChanges}
-            >
-                <BottomSheetScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={{
-                        textAlign: 'center',
-                        marginVertical: 15,
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: 'gray'
-                    }}>EXPENSES</Text>
-                    <View style={{flexDirection: 'row', flexWrap: 'wrap', rowGap: 20, columnGap: 10}}>
-                        {categories.filter(c => c.type === 'expense')?.map(item => (
-                            <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id} style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
-                                <Text style={{fontSize: 40}}>{item.icon}</Text>
-                                <Text>{textShortener(item.title)}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <Text style={{
-                        textAlign: 'center',
-                        marginBottom: 15,
-                        marginTop: 50,
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: 'gray'
-                    }}>INCOMES</Text>
-                    <View style={{flexDirection: 'row', flexWrap: 'wrap', rowGap: 20, columnGap: 10}}>
-                        {categories.filter(c => c.type === 'income').map(item => (
-                            <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
-                                              style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
-                                <Text style={{fontSize: 40}}>{item.icon}</Text>
-                                <Text>{textShortener(item.title)}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+        <Sheet
+            forceRemoveScrollEnabled={open}
+            modal={false}
+            open={open}
+            dismissOnOverlayPress
+            onOpenChange={setOpen}
+            position={position}
+            onPositionChange={setPosition}
+            snapPoints={[60]}
+            snapPointsMode='percent'
+            dismissOnSnapToBottom
+            zIndex={100_000}
+            animation="medium"
+        >
+            <Sheet.Overlay
+                animation="lazy"
+                enterStyle={{ opacity: 0 }}
+                exitStyle={{ opacity: 0 }}
+            />
 
-                    <Text style={{
-                        textAlign: 'center',
-                        marginBottom: 15,
-                        marginTop: 50,
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: 'gray'
-                    }}>ACCOUNTS</Text>
-                    <View style={{flexDirection: 'row', flexWrap: 'wrap', rowGap: 20, columnGap: 10}}>
-                        {accounts.map(item => (
-                            <TouchableOpacity onPress={() => {
-                            }} key={item.id} style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>
-                                <Text style={{fontSize: 40}}>{item.icon}</Text>
-                                <Text>{textShortener(item.title, 15)}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <View style={{height: 100}}/>
+            <Sheet.Handle />
 
-                </BottomSheetScrollView>
-            </BottomSheetModal>
-        </>
+            <Sheet.ScrollView backgroundColor="$background" showsVerticalScrollIndicator={false}>
+                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">EXPENSES</Text>
+                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
+                    {categories.filter(c => c.type === 'expense')?.map(item => (
+                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id} style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
+                            <Text style={{fontSize: 40}}>{item.icon}</Text>
+                            <Text>{textShortener(item.title)}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <Text textAlign="center" marginTop={50} marginBottom={15} fontSize={16} fontWeight="bold" color="$gray10Dark">INCOMES</Text>
+                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
+                    {categories.filter(c => c.type === 'income').map(item => (
+                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
+                                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
+                            <Text style={{fontSize: 40}}>{item.icon}</Text>
+                            <Text>{textShortener(item.title)}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <Text textAlign="center" marginTop={50} marginBottom={15} fontSize={16} fontWeight="bold" color="$gray10Dark">ACCOUNTS</Text>
+                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
+                    {accounts.map(item => (
+                        <TouchableOpacity onPress={() => {
+                        }} key={item.id} style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>
+                            <Text style={{fontSize: 40}}>{item.icon}</Text>
+                            <Text>{textShortener(item.title, 15)}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <View style={{height: 100}}/>
+            </Sheet.ScrollView>
+        </Sheet>
     )
+
 }
 
 const localStyles = StyleSheet.create({

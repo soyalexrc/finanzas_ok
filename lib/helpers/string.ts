@@ -1,7 +1,7 @@
 import {TransactionsGroupedByDate} from "@/lib/types/Transaction";
 
 export function textShortener(txt: string, limit = 10): string {
-    return txt?.length > limit ? txt.substring(0, 9).concat('...') : txt;
+    return txt?.length > limit ? txt.substring(0, limit - 1).concat('...') : txt;
 }
 
 export function formatAmountToNumber(numberString: string): number {

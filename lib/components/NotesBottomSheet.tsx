@@ -1,87 +1,84 @@
-import {BottomSheetModal, BottomSheetTextInput} from "@gorhom/bottom-sheet";
-import { StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import { StyleSheet} from "react-native";
+import {Button, Input, Text, TextArea, View} from 'tamagui';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useState} from "react";
+import {Sheet} from "tamagui";
+import {onChangeNotes, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 
 type Props = {
-    children: React.ReactNode,
-    styles: any
+    open: boolean;
+    setOpen: (value: boolean) => void;
 }
 
-export default function NotesBottomSheet({children, styles}: Props) {
+export default function NotesBottomSheet({open, setOpen}: Props) {
     const [editMode, setEditMode] = useState<boolean>(false);
+    const [position, setPosition] = useState(0);
     const dispatch = useAppDispatch();
-    const isModalOpen = useAppSelector(selectLayoutModalState);
-    const snapPoints = useMemo(() => ['25%'], []);
-    const ref = useRef<BottomSheetModal>(null);
-
-    const handlePressOpenModal = useCallback(() => {
-        dispatch(updateLayoutModalState(true));
-        ref.current?.present();
-    }, []);
-
-    const handleSheetChanges = useCallback((index: number) => {
-        if (index < 0) {
-            dispatch(updateLayoutModalState(false));
-        }
-    }, []);
+    const currentTransaction = useAppSelector(selectCurrentTransaction)
+    const [text, setText] = useState<string>('');
 
     function handleButtonToggle() {
         if (editMode) {
-            ref.current?.snapToPosition('25%')
+            dispatch(onChangeNotes(text));
         }
         setEditMode(!editMode);
     }
 
     useEffect(() => {
-        if (!isModalOpen) {
-            ref.current?.close();
-            setEditMode(false);
-        }
-    }, [isModalOpen]);
+        setText(currentTransaction.notes);
+    }, []);
 
     return (
-        <>
-            <TouchableOpacity style={styles} onPress={handlePressOpenModal}>
-                {children}
-            </TouchableOpacity>
-            <BottomSheetModal
-                ref={ref}
-                index={0}
-                snapPoints={snapPoints}
-                keyboardBehavior="interactive"
-                onChange={handleSheetChanges}
-            >
+        <Sheet
+            forceRemoveScrollEnabled={open}
+            modal={false}
+            open={open}
+            dismissOnOverlayPress
+            onOpenChange={setOpen}
+            position={position}
+            onPositionChange={setPosition}
+            snapPoints={[35]}
+            moveOnKeyboardChange
+            snapPointsMode='percent'
+            dismissOnSnapToBottom
+            zIndex={100_000}
+            animation="medium"
+        >
+            <Sheet.Overlay
+                animation="lazy"
+                enterStyle={{ opacity: 0 }}
+                exitStyle={{ opacity: 0 }}
+            />
+
+            <Sheet.Handle />
+
+            <Sheet.Frame backgroundColor="$background">
+                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Notes</Text>
+
                 {
                     editMode &&
-                    <BottomSheetTextInput autoFocus multiline={true} numberOfLines={3} style={localStyles.input} />
+                    <TextArea
+                        autoFocus
+                        size='$4'
+                        value={text}
+                        marginHorizontal={10}
+                        marginBottom={15}
+                        marginTop={10}
+                        padding={15}
+                        onChangeText={setText}
+                    />
                 }
                 {
                     !editMode &&
-                    <View style={{ height: 100, margin: 10 }}>
-                        <Text style={{ fontSize: 16, lineHeight: 20, }}>sample</Text>
+                    <View height={100} margin={10} >
+                        <Text fontSize={16} lineHeight={20}>{text}</Text>
                     </View>
                 }
-                <TouchableOpacity onPress={handleButtonToggle} style={{ backgroundColor: 'black', padding: 12, marginHorizontal: 10, borderRadius: 12 }}>
+                <Button padding={12} marginHorizontal={10} onPress={handleButtonToggle}>
                     <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 16 }}>{editMode ? 'Save' : 'Edit'}</Text>
-                </TouchableOpacity>
-            </BottomSheetModal>
-        </>
-
+                </Button>
+            </Sheet.Frame>
+        </Sheet>
     )
-}
 
-const localStyles = StyleSheet.create({
-    input: {
-        marginTop: 8,
-        marginBottom: 10,
-        borderRadius: 10,
-        fontSize: 16,
-        lineHeight: 20,
-        padding: 15,
-        margin: 10,
-        height: 100,
-        backgroundColor: 'rgba(151, 151, 151, 0.1)',
-    },
-})
+}

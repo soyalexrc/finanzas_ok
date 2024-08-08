@@ -46,6 +46,10 @@ export default function Screen() {
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const isModalOpen = useAppSelector(selectLayoutModalState)
+
+    const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
+    const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
+    const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
     // callbacks
 
     function formatDate(date: string | Date | number) {
@@ -123,26 +127,26 @@ export default function Screen() {
                         </View>
                         <View flex={0.6}>
                             <View borderBottomWidth={1} borderColor="$gray10Dark">
-                                <NotesBottomSheet styles={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                    <Text fontSize={16}>Notes</Text>
-                                </NotesBottomSheet>
+                                <TouchableOpacity onPress={() => setOpenNotesSheet(true)} style={{paddingVertical: 10, paddingHorizontal: 20}}>
+                                    <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || 'Notes'}</Text>
+                                </TouchableOpacity>
                             </View>
                             <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20} paddingHorizontal={20}>
-                                <AccountsBottomSheet styles={styles.accountsWrapper}>
+                                <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
                                     <View flexDirection="row" alignItems="center" gap={5}>
                                         <Text fontSize={16}>{selectedAccount.icon}</Text>
                                         <Text fontSize={16}>{textShortener(selectedAccount.title)}</Text>
                                     </View>
                                     <AntDesign name="arrowright" size={24} color="gray"/>
-                                </AccountsBottomSheet>
-                                <CategoriesBottomSheet styles={styles.categoriesWrapper}>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setOpenCategoriesSheet(true)} style={styles.categoriesWrapper}>
                                     <View flexDirection="row" alignItems="center" gap={5}>
                                         <Text fontSize={16}>{selectedCategory.icon}</Text>
                                         <Text fontSize={16}>{textShortener(selectedCategory.title)}</Text>
                                     </View>
-                                </CategoriesBottomSheet>
+                                </TouchableOpacity>
                                 <View flex={0.2} justifyContent="center">
-                                    <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" width={75} height={35} justifyContent='center' alignItems='center'>
+                                    <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0} width={70} height={35} justifyContent='center' alignItems='center'>
                                         <Text fontSize={16}>Save</Text>
                                     </Button>
                                 </View>
@@ -168,6 +172,9 @@ export default function Screen() {
                     setShowCalendar(false)
                 }}
             />
+            <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet} />
+            <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet} />
+            <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet} />
         </>
     )
 }
