@@ -1,5 +1,5 @@
 import React from "react";
-import {Platform, StyleSheet, Text, TouchableOpacity, useColorScheme} from "react-native";
+import {Platform, StyleSheet, useColorScheme} from "react-native";
 import {Button, useThemeName, View, ScrollView} from 'tamagui';
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -28,7 +28,7 @@ export default function HomeScreen() {
     }
 
     return (
-        <View flex={1} backgroundColor="$color2">
+        <View flex={1} backgroundColor="$color1">
             <CustomHeader style={{paddingTop: insets.top}}>
                 <AccountSelectDropdown/>
                 <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">

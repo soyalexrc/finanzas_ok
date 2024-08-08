@@ -1,12 +1,16 @@
 import {useColorScheme, Platform} from 'react-native';
-import {View, Text, ScrollView, ToggleGroup, XStack, Button} from 'tamagui';
-import React from "react";
+import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, ZStack} from 'tamagui';
+import React, {useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import {formatByThousands} from "@/lib/helpers/string";
 import HeaderTransactionTypeDropdown from "@/lib/components/ui/HeaderTransactionTypeDropdown";
+import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import ReportsSheet from "@/lib/components/reports/FiltersSheet";
+import {Feather} from "@expo/vector-icons";
 
 const data = [
   {
@@ -95,33 +99,42 @@ export default function ReportScreen() {
   const schemeColor = useColorScheme()
   const insets = useSafeAreaInsets()
   const isIos = Platform.OS === 'ios';
-
+  const [openFiltersSheet, setOpenFiltersSheet] = useState<boolean>(false);
 
   function handlePress(item: any) {
     router.push('/(tabs)/(reports)/detailGroup')
   }
 
   return (
-      <View flex={1} backgroundColor="$color2">
+      <YStack flex={1} backgroundColor="$color1">
         <CustomHeader style={ { paddingTop: insets.top }}>
-          <HeaderDropDownMenu />
-          <HeaderTransactionTypeDropdown />
+          <AccountSelectDropdown />
+          <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+            <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+          </Button>
+          {/*<HeaderTransactionTypeDropdown />*/}
         </CustomHeader>
-        <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0 }>
+        <ScrollView
+            stickyHeaderIndices={[0]}
+            showsVerticalScrollIndicator={false}
+            paddingTop={isIos ? insets.top + 35 : 0 }
+        >
 
           {/*Resumen de monto segun filtro (semana, mes, ano)*/}
-          <View paddingHorizontal={10} marginBottom={20}>
+          <View padding={10} backgroundColor="$color1">
             <Text fontSize={36} >S/ 520.00</Text>
-            <View flexDirection="row" gap={15} marginTop={5}>
-              <Text fontSize={16} color="$gray10Dark">Spent this week</Text>
-              <View flexDirection="row" gap={5}>
-               <View borderRadius={100} padding={3} backgroundColor="$red3Light">
-                 <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737" />
-               </View>
-                <Text fontSize={16} color="$red9Dark">5,320%</Text>
+          </View>
+
+          <View paddingHorizontal={10} marginBottom={20} flexDirection="row" gap={15} marginTop={5}>
+            <Text fontSize={16} color="$gray10Dark">Spent this week</Text>
+            <View flexDirection="row" gap={5}>
+              <View borderRadius={100} padding={3} backgroundColor="$red3Light">
+                <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737" />
               </View>
+              <Text fontSize={16} color="$red9Dark">5,320%</Text>
             </View>
           </View>
+
 
           {/*Grafica*/}
           <View height={200} margin={10} backgroundColor="$gray12Dark"/>
@@ -134,7 +147,6 @@ export default function ReportScreen() {
                 orientation="horizontal"
                 id="simple-filter"
                 type="single"
-                disableDeactivation={true}
             >
               <ToggleGroup.Item value="15" aria-label="Filter by week">
                 <Text>Last 15 days</Text>
@@ -158,7 +170,6 @@ export default function ReportScreen() {
                       flexDirection='row'
                       alignItems='center'
                       justifyContent='space-between'
-                      paddingVertical={10}
                   >
                     <View flexDirection='row' gap={10} alignItems='center'>
                       {/*{*/}
@@ -178,6 +189,7 @@ export default function ReportScreen() {
           }
           <View height={200} />
         </ScrollView>
-      </View>
+        <ReportsSheet open={openFiltersSheet} setOpen={setOpenFiltersSheet} />
+      </YStack>
   );
 }

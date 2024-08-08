@@ -13,6 +13,16 @@ import tamaguiConfig from "@/lib/styles/tamagui.config";
 
 export default function Providers({children}: { children: React.ReactNode }) {
     const colorScheme = useColorScheme();
+    // TODO manejar i18n
+    // TODO export e impport data
+    // TODO erase data and restore full app data functionality
+    // TODO rate app link
+    // TODO notificaciones con timer
+    // TODO contactar developer mail functionality
+    // TODO Share app functionality
+    // TODO support developer payments functionality
+
+    // TODO hacer wrapper context para guardar el valor de thema seleccionado para usar abajo y no el colorscheme directamente... tambien manejar color de iconos basado en ese wrapper
     return (
         <Provider store={store}>
             <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>

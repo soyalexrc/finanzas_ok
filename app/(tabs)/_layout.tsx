@@ -14,7 +14,7 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: theme.color10.val,
-                tabBarStyle: isIos ? { position: 'absolute' } : {},
+                tabBarStyle: isIos ? { position: 'absolute', borderTopWidth: 0, paddingHorizontal: 30 } : {borderTopWidth: 0, elevation: 0, paddingHorizontal: 30},
                 tabBarItemStyle: {
                     height: 50,
                     marginTop: 2,
@@ -44,6 +44,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="settings"
                 options={{
+                    headerShown: false,
                     title: '',
                     tabBarIcon: ({color, focused}) => (
                         <Feather name="settings" size={28} color={color}/>

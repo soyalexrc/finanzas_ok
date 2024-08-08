@@ -21,6 +21,7 @@ export default function ReportsLayout() {
             <Stack.Screen
                 name="detailGroup"
                 options={{
+                    animation: 'slide_from_right',
                     header: () => <CustomHeader />
                 }}
             />

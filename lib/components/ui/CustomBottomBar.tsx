@@ -24,7 +24,7 @@ export default function CustomBottomBar() {
                             style={{ flex: 1 }}
                         />
                     :
-                        <View flex={1} backgroundColor="$background" />
+                        <View flex={1} backgroundColor="$color1" />
                 }
 
             </View>

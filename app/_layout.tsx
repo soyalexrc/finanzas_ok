@@ -68,8 +68,7 @@ const InitialLayout = () => {
   return (
       <Stack>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-        <Stack.Screen name="transactionCreateUpdate"
-                      options={{presentation: 'fullScreenModal', headerShown: false}}/>
+        <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
         <Stack.Screen name="+not-found"/>
       </Stack>
   )

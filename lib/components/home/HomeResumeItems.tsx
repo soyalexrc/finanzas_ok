@@ -95,7 +95,6 @@ export default function HomeResumeItems() {
                                         flexDirection='row'
                                         alignItems='center'
                                         justifyContent='space-between'
-                                        paddingVertical={10}
                                     >
                                         <View flexDirection='row' gap={10} alignItems='center'>
                                             {
