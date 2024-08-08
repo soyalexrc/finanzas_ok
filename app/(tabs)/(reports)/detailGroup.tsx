@@ -1,6 +1,5 @@
 import {ScrollView, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import ReportsResumeItems from "@/lib/components/ReportsResumeItems";
 import {useRouter} from "expo-router";
 
 const data = [
@@ -32,7 +31,7 @@ export default function Screen() {
     const router = useRouter();
     return (
         <ScrollView style={{ paddingTop: insets.top + 50, backgroundColor: 'white', flex: 1 }}>
-            <ReportsResumeItems onPress={(id) => router.push('/transactionCreateUpdate') } data={data} />
+            {/*<ReportsResumeItems onPress={(id) => router.push('/transactionCreateUpdate') } data={data} />*/}
         </ScrollView>
     )
 }

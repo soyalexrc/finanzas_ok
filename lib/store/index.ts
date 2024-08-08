@@ -3,7 +3,6 @@ import transactionsListReducer from './features/transactions/transactionsListsSl
 import networkReducer from './features/network/networkSlice'
 import accountsReducer from './features/accounts/accountsSlice'
 import categoriesReducer from './features/categories/categoriesSlice'
-import uiReducer from './features/ui/uiSlice'
 import transactionsReducer from './features/transactions/transactionsSlice'
 
 export const store = configureStore({
@@ -13,7 +12,6 @@ export const store = configureStore({
         network: networkReducer,
         accounts: accountsReducer,
         categories: categoriesReducer,
-        ui: uiReducer
     }
 })
 

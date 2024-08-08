@@ -1,8 +1,8 @@
 import ResumeDropDown from "@/lib/components/ResumeDropDown";
 import React, {useState} from "react";
-import {Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme} from "react-native";
+import {Platform, StyleSheet, Text, TouchableOpacity, useColorScheme} from "react-native";
 import HomeResumeItems from "@/lib/components/HomeResumeItems";
-import {Button, useThemeName, View} from 'tamagui';
+import {Button, useThemeName, View, ScrollView} from 'tamagui';
 import HeaderDropDownMenu from "@/lib/components/layout/AccountSelectDropdown";
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -36,13 +36,8 @@ export default function HomeScreen() {
                 <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
                     <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                 </Button>
-
-                {/*<TouchableOpacity onPress={onPressNewTransaction}*/}
-                {/*                  style={[{backgroundColor: 'white'}, styles.createButton]}>*/}
-                {/*    <Feather name="plus" size={20}/>*/}
-                {/*</TouchableOpacity>*/}
             </CustomHeader>
-            <ScrollView showsVerticalScrollIndicator={false} style={[{paddingTop: isIos ? insets.top + 50 : 0}]}>
+            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                 <ResumeDropDown/>
 
                 {/*    Lista de items por semana, mes y cada dia como separator con el total*/}

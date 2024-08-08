@@ -15,7 +15,6 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSelectedCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {formatByThousands, textShortener} from "@/lib/helpers/string";
 import CategoriesBottomSheet from "@/lib/components/CategoriesBottomSheet";
-import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
 import AccountsBottomSheet from "@/lib/components/AccountsBottomSheet";
 import {selectSelectedAccountForm} from "@/lib/store/features/accounts/accountsSlice";
 import NotesBottomSheet from "@/lib/components/NotesBottomSheet";
@@ -24,7 +23,6 @@ import {
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import TransactionKeyboard from "@/lib/components/TransactionKeyboard";
-import CustomBackdrop from "@/lib/components/CustomBackdrop";
 import {fromZonedTime} from "date-fns-tz";
 import {createTransaction, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
@@ -45,7 +43,6 @@ export default function Screen() {
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
-    const isModalOpen = useAppSelector(selectLayoutModalState)
 
     const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
     const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
@@ -99,7 +96,6 @@ export default function Screen() {
         <>
             <BottomSheetModalProvider>
                 <View position="relative" flex={1} backgroundColor="$background">
-                    {isModalOpen && <CustomBackdrop/>}
                     <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
                         <TouchableOpacity onPress={() => router.back()}>
                             <Text fontSize={18} color="$gray10Dark">Cancel</Text>

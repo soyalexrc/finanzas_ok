@@ -6,7 +6,6 @@ import {
     selectSelectedCategory
 } from "@/lib/store/features/categories/categoriesSlice";
 import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
-import {selectLayoutModalState, updateLayoutModalState} from "@/lib/store/features/ui/uiSlice";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Account} from "@/lib/types/Transaction";
 import {Sheet} from "tamagui";
@@ -19,13 +18,11 @@ type Props = {
 export default function AccountsBottomSheet({ open, setOpen }: Props) {
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
-    const isModalOpen = useAppSelector(selectLayoutModalState);
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const [position, setPosition] = useState(0);
 
     function handlePressAccount(account: Account) {
         dispatch(selectAccountForm(account));
-        dispatch(updateLayoutModalState(false));
     }
 
     return (
