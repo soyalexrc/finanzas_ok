@@ -1,5 +1,4 @@
-import { StyleSheet} from "react-native";
-import {Button, Input, Text, TextArea, View} from 'tamagui';
+import {Button, Text, TextArea, View} from 'tamagui';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {Sheet} from "tamagui";

@@ -1,4 +1,4 @@
-import {FlatList, TouchableOpacity} from "react-native";
+import {FlatList} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
 import {onChangeAmount, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";

@@ -1,10 +1,8 @@
 import {Platform, StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import {BlurView} from "expo-blur";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export default function CustomHeader({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) {
     const isIos = Platform.OS === 'ios';
-    const insets = useSafeAreaInsets();
 
     if (isIos) {
         return (

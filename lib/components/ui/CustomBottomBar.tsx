@@ -1,12 +1,10 @@
 import {Platform} from "react-native";
 import {BlurView} from "expo-blur";
 import React from "react";
-import {useTheme} from "@react-navigation/native";
 import {View} from 'tamagui';
 
 export default function CustomBottomBar() {
     const isIos = Platform.OS === 'ios';
-    const colors = useTheme().colors;
 
     return (
         <View flex={1}>

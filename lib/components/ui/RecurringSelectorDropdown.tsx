@@ -3,7 +3,6 @@ import {StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-na
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
-import {useTheme} from "@react-navigation/native";
 
 type Props = {
     groups: Item[];

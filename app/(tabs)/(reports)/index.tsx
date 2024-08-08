@@ -1,14 +1,12 @@
-import {StyleSheet, TouchableOpacity, useColorScheme, Platform} from 'react-native';
+import {useColorScheme, Platform} from 'react-native';
 import {View, Text, ScrollView, ToggleGroup, XStack, Button} from 'tamagui';
-import HeaderDropDownMenu from "@/lib/components/layout/AccountSelectDropdown";
-import React, {useState} from "react";
+import React from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import HeaderTransactionTypeDropdown from "@/lib/components/HeaderTransactionTypeDropdown";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {formatByThousands} from "@/lib/helpers/string";
+import HeaderTransactionTypeDropdown from "@/lib/components/ui/HeaderTransactionTypeDropdown";
 
 const data = [
   {

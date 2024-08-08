@@ -10,25 +10,25 @@ import {
 } from "@gorhom/bottom-sheet";
 import DatePicker from 'react-native-date-picker'
 import {format} from "date-fns";
-import RecurringSelectorDropdown from "@/lib/components/RecurringSelectorDropdown";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSelectedCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {formatByThousands, textShortener} from "@/lib/helpers/string";
-import CategoriesBottomSheet from "@/lib/components/CategoriesBottomSheet";
-import AccountsBottomSheet from "@/lib/components/AccountsBottomSheet";
 import {selectSelectedAccountForm} from "@/lib/store/features/accounts/accountsSlice";
-import NotesBottomSheet from "@/lib/components/NotesBottomSheet";
 import {
     onChangeDate,
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import TransactionKeyboard from "@/lib/components/TransactionKeyboard";
 import {fromZonedTime} from "date-fns-tz";
 import {createTransaction, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import sleep from "@/lib/helpers/sleep";
 import {useTheme} from "@react-navigation/native";
+import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
+import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboard";
+import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
+import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
+import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
 
 export default function Screen() {
     const router = useRouter();

@@ -15,7 +15,6 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {useTheme} from "@react-navigation/native";
 import {useColorScheme} from "react-native";
 
 export default function AccountSelectDropdown() {
