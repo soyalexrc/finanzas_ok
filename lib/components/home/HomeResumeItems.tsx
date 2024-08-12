@@ -22,7 +22,6 @@ import {
     stopRecurringInTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {useState} from "react";
 import {useTheme} from "@react-navigation/native";
 import {formatByThousands} from "@/lib/helpers/string";
 
@@ -30,7 +29,6 @@ export default function HomeResumeItems() {
     const db = useSQLiteContext();
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const colors = useTheme().colors;
     const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
@@ -88,8 +86,7 @@ export default function HomeResumeItems() {
                     {group.items?.map((item) => (
                         <ContextMenu.Root key={item.id}>
                             <ContextMenu.Trigger>
-                                <Button backgroundColor='$background0' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
-                                    <Text fontSize={30}>{item.category.icon}</Text>
+                                <Button icon={ <Text fontSize={30}>{item.category.icon}</Text>} backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
                                     <View
                                         flex={1}
                                         flexDirection='row'

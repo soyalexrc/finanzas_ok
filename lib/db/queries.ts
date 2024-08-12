@@ -1,10 +1,10 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import {
     Account,
-    Category,
+    Category, ChartPoints,
     FullTransaction,
     FullTransactionRaw,
-    Transaction,
+    Transaction, TransactionsGroupedByCategory,
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
 
@@ -18,6 +18,44 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
 export function getAllCategories(db: SQLiteDatabase): Category[] {
     return db.getAllSync(`SELECT *
                           FROM categories`);
+}
+
+export async function getTransactions(db: SQLiteDatabase): Promise<{amountsGroupedByDate: ChartPoints[], transactionsGroupedByCategory: TransactionsGroupedByCategory[]}> {
+    const amountsGroupedByDate = await db.getAllAsync(`
+        SELECT strftime('%Y-%m-%d', date) AS date,
+            ROUND(SUM(amount), 2) AS total
+        FROM transactions
+        GROUP BY date
+    `);
+
+    const transactionsGroupedByCategory = await db.getAllAsync(`
+        SELECT c.title, c.icon, c.id,
+               json_group_array(json_object(
+                       'id', t.id,
+                       'amount', t.amount,
+                       'recurrentDate', t.recurrentDate,
+                       'date', t.date,
+                       'notes', t.notes,
+                       'account_id', t.account_id,
+                       'category_id', t.category_id
+                                )) AS transactions
+        FROM transactions t
+                 LEFT JOIN categories c ON t.category_id = c.id
+        GROUP BY c.id
+    `);
+
+
+    return {
+        amountsGroupedByDate,
+        transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
+            category: {
+                title: group.title,
+                icon: group.icon,
+                id: group.id,
+            },
+            transactions: JSON.parse(group.transactions)
+        }))
+    }
 }
 
 export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, startDate: string, endDate: string, type: 'Spent' | 'Revenue' | 'Balance', accountId = 0): Promise<TransactionsGroupedByDate[]> {
@@ -36,42 +74,41 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
 
         if (accountId === 0) {
             groups = await db.getAllAsync(`
-            SELECT 
-                strftime('%Y-%m-%d', t.date) AS formatted_date,
-                ROUND(SUM(t.amount), 2) AS total,
-            c.type AS transaction_type,
-            t.account_id
-            FROM transactions t
-                     LEFT JOIN categories c ON t.category_id = c.id
-            WHERE date BETWEEN ? and ?
-                AND transaction_type = ?
-            GROUP BY formatted_date
-            ORDER BY date DESC;
-        `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
+                SELECT strftime('%Y-%m-%d', t.date) AS formatted_date,
+                       ROUND(SUM(t.amount), 2)      AS total,
+                       c.type                       AS transaction_type,
+                       t.account_id
+                FROM transactions t
+                         LEFT JOIN categories c ON t.category_id = c.id
+                WHERE date BETWEEN ?
+                  and ?
+                  AND transaction_type = ?
+                GROUP BY formatted_date
+                ORDER BY date DESC;
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
         } else {
             groups = await db.getAllAsync(`
-            SELECT 
-                strftime('%Y-%m-%d', t.date) AS formatted_date,
-                ROUND(SUM(t.amount), 2) AS total,
-            c.type AS transaction_type,
-            t.account_id
-            FROM transactions t
-                     LEFT JOIN categories c ON t.category_id = c.id
-            WHERE date BETWEEN ? and ?
-                AND transaction_type = ?
-                AND t.account_id = ?
-            GROUP BY formatted_date
-            ORDER BY date DESC;
-        `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
+                SELECT strftime('%Y-%m-%d', t.date) AS formatted_date,
+                       ROUND(SUM(t.amount), 2)      AS total,
+                       c.type                       AS transaction_type,
+                       t.account_id
+                FROM transactions t
+                         LEFT JOIN categories c ON t.category_id = c.id
+                WHERE date BETWEEN ?
+                  and ?
+                  AND transaction_type = ?
+                  AND t.account_id = ?
+                GROUP BY formatted_date
+                ORDER BY date DESC;
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
         }
 
 
-        const transactions: FullTransactionRaw[] =  await db.getAllAsync(`
-        SELECT
-            t.id,
-            t.amount,
-            t.recurrentDate,
-            strftime('%Y-%m-%d', t.date) AS date,
+        const transactions: FullTransactionRaw[] = await db.getAllAsync(`
+            SELECT t.id,
+                   t.amount,
+                   t.recurrentDate,
+                   strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
             c.title AS category_title,
             c.id AS category_id,
@@ -83,11 +120,13 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             a.balance AS account_balance,
             a.positive_state AS account_positive_state
             FROM transactions t
-                LEFT JOIN categories c ON t.category_id = c.id 
+                LEFT JOIN categories c
+            ON t.category_id = c.id
                 LEFT JOIN accounts a ON t.account_id = a.id
-            WHERE t.date BETWEEN ? and ?
-                AND c.type = ?
-                `, [startDate, endDate, type  === 'Revenue' ? 'income' : 'expense', accountId]);
+            WHERE t.date BETWEEN ?
+              and ?
+              AND c.type = ?
+        `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
 
         const formattedTransactions = transactions.map(t => ({
             id: t.id,
@@ -158,27 +197,35 @@ export async function createAccount(db: SQLiteDatabase, account: {
     }
 };
 
-export async function deleteTransaction(db: SQLiteDatabase, transactionId: number)  {
+export async function deleteTransaction(db: SQLiteDatabase, transactionId: number) {
     try {
-        return await db.runAsync('DELETE FROM transactions WHERE id = $transactionId', { $transactionId: transactionId })
+        return await db.runAsync('DELETE FROM transactions WHERE id = $transactionId', {$transactionId: transactionId})
     } catch (err) {
         console.error(err);
     }
 }
 
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
-    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id) VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id)`)
+    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id)
+                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id,
+                                                     $category_id)`)
     try {
-        const t = await statement.executeAsync({ $amount: Number(transaction.amount), $recurrentDate: transaction.recurrentDate, $date: transaction.date, $notes: transaction.notes, $account_id: transaction.account_id, $category_id: transaction.category_id });
+        const t = await statement.executeAsync({
+            $amount: Number(transaction.amount),
+            $recurrentDate: transaction.recurrentDate,
+            $date: transaction.date,
+            $notes: transaction.notes,
+            $account_id: transaction.account_id,
+            $category_id: transaction.category_id
+        });
         const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
         const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
         await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType === 'expense' ? balanceInAccount! - Number(transaction.amount) : balanceInAccount! + Number(transaction.amount)])
         const retrievedTransaction: any = await db.getFirstAsync(`
-            SELECT
-                t.id,
-                t.amount,
-                t.recurrentDate,
-                strftime('%Y-%m-%d', t.date) AS date,
+            SELECT t.id,
+                   t.amount,
+                   t.recurrentDate,
+                   strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
                 c.title AS category_title,
                 c.id AS category_id,
@@ -189,11 +236,12 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
                 a.id AS account_id,
                 a.balance AS account_balance,
                 a.positive_state AS account_positive_state
-            FROM transactions  t
-            LEFT JOIN categories c ON t.category_id = c.id
-            LEFT JOIN accounts a ON t.account_id = a.id
+            FROM transactions t
+                LEFT JOIN categories c
+            ON t.category_id = c.id
+                LEFT JOIN accounts a ON t.account_id = a.id
             WHERE t.id = $id
-            `, { $id: t.lastInsertRowId })
+        `, {$id: t.lastInsertRowId})
 
         return {
             id: retrievedTransaction.id,
@@ -226,19 +274,25 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
 
 export async function updateTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`
-        UPDATE transactions SET amount = ?, recurrentDate = ?, date = ?, notes = ?, account_id = ?, category_id = ? WHERE id = ?
+        UPDATE transactions
+        SET amount        = ?,
+            recurrentDate = ?,
+            date          = ?,
+            notes         = ?,
+            account_id    = ?,
+            category_id   = ?
+        WHERE id = ?
     `);
     try {
-        const t= await statement.executeAsync([Number(transaction.amount), transaction.recurrentDate, transaction.date, transaction.notes, transaction.account_id,  transaction.category_id, transaction.id]);
+        const t = await statement.executeAsync([Number(transaction.amount), transaction.recurrentDate, transaction.date, transaction.notes, transaction.account_id, transaction.category_id, transaction.id]);
         const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
         const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
         await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType === 'expense' ? balanceInAccount! - Number(transaction.amount) : balanceInAccount! + Number(transaction.amount)])
         const retrievedTransaction: any = await db.getFirstAsync(`
-            SELECT
-                t.id,
-                t.amount,
-                t.recurrentDate,
-                strftime('%Y-%m-%d', t.date) AS date,
+            SELECT t.id,
+                   t.amount,
+                   t.recurrentDate,
+                   strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
                 c.title AS category_title,
                 c.id AS category_id,
@@ -249,11 +303,12 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
                 a.id AS account_id,
                 a.balance AS account_balance,
                 a.positive_state AS account_positive_state
-            FROM transactions  t
-            LEFT JOIN categories c ON t.category_id = c.id
-            LEFT JOIN accounts a ON t.account_id = a.id
+            FROM transactions t
+                LEFT JOIN categories c
+            ON t.category_id = c.id
+                LEFT JOIN accounts a ON t.account_id = a.id
             WHERE t.id = $id
-            `, { $id: transaction.id })
+        `, {$id: transaction.id})
 
         return {
             id: retrievedTransaction.id,
@@ -283,16 +338,17 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
 
 export async function stopRecurringInTransaction(db: SQLiteDatabase, transactionId: number): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`
-        UPDATE transactions SET recurrentDate = ? WHERE id = ?
+        UPDATE transactions
+        SET recurrentDate = ?
+        WHERE id = ?
     `);
     try {
-        const t= await statement.executeAsync(['none', transactionId]);
+        const t = await statement.executeAsync(['none', transactionId]);
         const retrievedTransaction: any = await db.getFirstAsync(`
-            SELECT
-                t.id,
-                t.amount,
-                t.recurrentDate,
-                strftime('%Y-%m-%d', t.date) AS date,
+            SELECT t.id,
+                   t.amount,
+                   t.recurrentDate,
+                   strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
                 c.title AS category_title,
                 c.id AS category_id,
@@ -303,11 +359,12 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
                 a.id AS account_id,
                 a.balance AS account_balance,
                 a.positive_state AS account_positive_state
-            FROM transactions  t
-            LEFT JOIN categories c ON t.category_id = c.id
-            LEFT JOIN accounts a ON t.account_id = a.id
+            FROM transactions t
+                LEFT JOIN categories c
+            ON t.category_id = c.id
+                LEFT JOIN accounts a ON t.account_id = a.id
             WHERE t.id = $id
-            `, { $id: transactionId })
+        `, {$id: transactionId})
 
         return {
             id: retrievedTransaction.id,
@@ -338,10 +395,9 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
 export async function getCurrentBalance(db: SQLiteDatabase): Promise<number> {
     try {
         const data: { total: number }[] = await db.getAllAsync(`
-                SELECT 
-                 ROUND(SUM(balance), 2) AS total
-                 FROM accounts
-            `);
+            SELECT ROUND(SUM(balance), 2) AS total
+            FROM accounts
+        `);
         return data[0].total;
     } catch (err) {
         console.error(err);

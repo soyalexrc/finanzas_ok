@@ -4,6 +4,7 @@ import networkReducer from './features/network/networkSlice'
 import accountsReducer from './features/accounts/accountsSlice'
 import categoriesReducer from './features/categories/categoriesSlice'
 import transactionsReducer from './features/transactions/transactionsSlice'
+import reportReducer from './features/transactions/reportSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         network: networkReducer,
         accounts: accountsReducer,
         categories: categoriesReducer,
+        report: reportReducer
     }
 })
 

@@ -1,9 +1,13 @@
 import {Stack, useRouter} from "expo-router";
 import React from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Text} from 'tamagui';
+import {StyleSheet, TouchableOpacity} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {BlurView} from "expo-blur";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import {useAppSelector} from "@/lib/store/hooks";
+import {selectDetailGroup} from "@/lib/store/features/transactions/reportSlice";
+import {calculateTotalTransactions} from "@/lib/helpers/operations";
 
 export default function ReportsLayout() {
     return (
@@ -32,13 +36,15 @@ export default function ReportsLayout() {
 function CustomHeader() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const detailGroup = useAppSelector(selectDetailGroup);
+
     return (
         <BlurView intensity={100} tint='prominent' style={[styles.header, { paddingTop: insets.top }]}>
             <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
-                <Text style={{ fontSize: 18, color: 'gray' }}>Back</Text>
+                <Text fontSize={16} color="$gray10Dark">Back</Text>
             </TouchableOpacity>
-            <Text style={{ fontSize: 18 }}>Snacks - S/ 70.00</Text>
+            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  S/ {calculateTotalTransactions(detailGroup.transactions)}</Text>
         </BlurView>
     )
 }

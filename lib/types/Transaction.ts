@@ -70,3 +70,27 @@ export type Account = {
     positive_status: number;
     id: number;
 }
+
+export type ChartPoints = {
+    date: string;
+    total: number;
+}
+
+export type TransactionWithAmountNumber = {
+    id: number;
+    recurrentDate: string;
+    date: string;
+    amount: number;
+    notes: string;
+    account_id: number;
+    category_id: number;
+}
+
+export type TransactionsGroupedByCategory = {
+    category: {
+        id: number,
+        title: string;
+        icon: string;
+    },
+    transactions: TransactionWithAmountNumber[]
+}

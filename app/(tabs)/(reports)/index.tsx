@@ -1,6 +1,6 @@
 import {useColorScheme, Platform} from 'react-native';
-import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, ZStack} from 'tamagui';
-import React, {useState} from "react";
+import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack} from 'tamagui';
+import React, {useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -11,98 +11,46 @@ import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import ReportsSheet from "@/lib/components/reports/FiltersSheet";
 import {Feather} from "@expo/vector-icons";
-
-const data = [
-  {
-    id: "001",
-    category: {
-      id: 1,
-      title: "Groceries",
-      icon: "🥑"
-    },
-    recurrentDate: 'weekly',
-    qty: 2,
-    amount: "80.00"
-  },
-  {
-    id: "002",
-    category: {
-      id: 2,
-      title: "Dining",
-      icon: "🍽️"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "23.15"
-  },
-  {
-    id: "003",
-    category: {
-      id: 3,
-      title: "Transportation",
-      icon: "🚌"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "24.20"
-  },
-  {
-    id: "004",
-    category: {
-      id: 4,
-      title: "Utilities",
-      icon: "🚙"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "38.99"
-  },
-  {
-    id: "005",
-    category: {
-      id: 2,
-      title: "Dining",
-      icon: "🍽️"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "54.00"
-  },
-  {
-    id: "006",
-    category: {
-      id: 5,
-      title: "Shopping",
-      icon: "🛍️"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "28.50"
-  },
-  {
-    id: "019",
-    category: {
-      id: 6,
-      title: "Personal Care",
-      icon: "💄"
-    },
-    qty: 1,
-    recurrentDate: 'none',
-    amount: "15.00"
-  }
-  // ... and so on for at least 10 entries
-];
-
+import {getTransactions} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
+import {useDispatch, useSelector} from "react-redux";
+import {
+  selectChartPoints,
+  selectTransactionsGroupedByCategory, updateChartPoints, updateDetailGroup,
+  updateTransactionsGroupedByCategory
+} from "@/lib/store/features/transactions/reportSlice";
+import {ChartPoints, TransactionsGroupedByCategory, TransactionWithAmountNumber} from "@/lib/types/Transaction";
+import {calculateTotalTransactions} from "@/lib/helpers/operations";
 
 export default function ReportScreen() {
+  const db = useSQLiteContext();
+  const dispatch = useDispatch();
+  const chartPoints = useSelector(selectChartPoints);
+  const transactions = useSelector(selectTransactionsGroupedByCategory);
   const router = useRouter();
   const schemeColor = useColorScheme()
   const insets = useSafeAreaInsets()
   const isIos = Platform.OS === 'ios';
   const [openFiltersSheet, setOpenFiltersSheet] = useState<boolean>(false);
 
-  function handlePress(item: any) {
+  function handlePress(item: TransactionsGroupedByCategory) {
+    dispatch(updateDetailGroup(item));
     router.push('/(tabs)/(reports)/detailGroup')
+  }
+
+  useEffect(() => {
+    findTransactionsForReport()
+  }, []);
+
+
+  async function findTransactionsForReport() {
+    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+    dispatch(updateChartPoints(amountsGroupedByDate))
+  }
+
+  function calculateTotalFromChartPoints(points: ChartPoints[]) {
+    return points.reduce((acc, item) => acc + item.total, 0).toFixed(2)
   }
 
   return (
@@ -122,7 +70,7 @@ export default function ReportScreen() {
 
           {/*Resumen de monto segun filtro (semana, mes, ano)*/}
           <View padding={10} backgroundColor="$color1">
-            <Text fontSize={36} >S/ 520.00</Text>
+            <Text fontSize={36} >S/ {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
           </View>
 
           <View paddingHorizontal={10} marginBottom={20} flexDirection="row" gap={15} marginTop={5}>
@@ -162,9 +110,8 @@ export default function ReportScreen() {
 
           {/*Lista de items*/}
           {
-            data.map(item => (
-                <Button key={item.id} backgroundColor='$background0' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
-                  <Text fontSize={30}>{item.category.icon}</Text>
+            transactions.map((item, index) => (
+                <Button icon={<Text fontSize={30}>{item.category.icon}</Text>} key={item.category.title + index} backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
                   <View
                       flex={1}
                       flexDirection='row'
@@ -178,11 +125,11 @@ export default function ReportScreen() {
                       {/*}*/}
                       <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                       {
-                          item.qty &&
-                          <Text fontSize={14} color="$gray10Dark">x {item.qty}</Text>
+                          item.transactions.length > 0 &&
+                          <Text fontSize={14} color="$gray10Dark">x {item.transactions.length}</Text>
                       }
                     </View>
-                    <Text>S/ {formatByThousands(item.amount)}</Text>
+                    <Text>S/ {formatByThousands(calculateTotalTransactions(item.transactions))}</Text>
                   </View>
                 </Button>
             ))
