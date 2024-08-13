@@ -90,7 +90,7 @@ export default function ReportScreen() {
 
 
                 {/*Grafica*/}
-                <View height={200}>
+                <View height={210} p={10}>
                     <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]} >
 
                         {/* 👇 render function exposes various data, such as points. */}
