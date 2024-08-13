@@ -5,6 +5,7 @@ export type Transaction = {
     amount: string;
     notes: string;
     account_id: number;
+    user_id?: string;
     category_id: number;
 }
 
@@ -12,6 +13,7 @@ export type FullTransactionRaw = {
     id: number;
     recurrentDate: string;
     date: string;
+    user_id?: string;
     amount: string;
     notes: string;
     account_title: string;
@@ -31,6 +33,7 @@ export type FullTransaction = {
     date: string;
     amount: string;
     notes: string;
+    user_id?: string;
     category: Category,
     account: Account,
 }
@@ -82,6 +85,7 @@ export type TransactionWithAmountNumber = {
     date: string;
     amount: number;
     notes: string;
+    user_id?: string;
     account_id: number;
     category_id: number;
 }

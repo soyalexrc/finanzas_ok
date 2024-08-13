@@ -38,24 +38,14 @@ export default function Providers({children}: { children: React.ReactNode }) {
             <ClerkLoaded>
                 <Provider store={store}>
                     <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>
-                        <Suspense fallback={<Fallback/>}>
-                            <SQLiteProvider databaseName="lsm_expense_tracker.db" onInit={migrateDbIfNeeded}>
-                                <GestureHandlerRootView>
-                                    {children}
-                                </GestureHandlerRootView>
-                            </SQLiteProvider>
-                        </Suspense>
+                        <SQLiteProvider databaseName="finanzas_ok.db">
+                            <GestureHandlerRootView>
+                                {children}
+                            </GestureHandlerRootView>
+                        </SQLiteProvider>
                     </TamaguiProvider>
                 </Provider>
             </ClerkLoaded>
         </ClerkProvider>
-    )
-}
-
-function Fallback() {
-    return (
-        <View>
-            <Text>Loading...</Text>
-        </View>
     )
 }

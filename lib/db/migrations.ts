@@ -1,5 +1,7 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import initialCategories from '@/lib/utils/data/categories';
+import {loadString} from "@/lib/utils/storage";
+import {string} from "prop-types";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // Clear table
@@ -26,6 +28,9 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
                 )
             `)
 
+        // Get User in session
+        const userId = await loadString('userId')
+
         // Get the latest applied migration version
         const result: any = await db.getFirstAsync(`SELECT MAX(version) as max_version FROM migrations`)
         let latestAppliedMigration = result.max_version ?? 0
@@ -34,7 +39,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // Get the latest applied migration version
         for (const migration of migrations) {
             if (migration.version > latestAppliedMigration) {
-                await migration.migrate(db);
+                await migration.migrate(db, userId!);
                 const statement = await db.prepareAsync(
                     `INSERT INTO migrations (version, name, applied_at) VALUES ($version, $name, $applied_at)`
                 )
@@ -61,12 +66,14 @@ const migrations = [
     {
         version: 1,
         name: 'initial migration',
-        migrate: async (db: SQLiteDatabase) => {
+        migrate: async (db: SQLiteDatabase, userId: string) => {
             try {
                 await db.execAsync(`
                 CREATE TABLE IF NOT EXISTS accounts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
+                    is_backed_up Boolean DEFAULT FALSE,
+                    user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     balance INTEGER NOT NULL,
                     positive_state BOOLEAN DEFAULT TRUE
@@ -77,6 +84,8 @@ const migrations = [
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
+                    is_backed_up Boolean DEFAULT FALSE,
+                    user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     type TEXT NOT NULL
                 )
@@ -89,6 +98,8 @@ const migrations = [
                     recurrentDate TEXT,
                     amount INTEGER NOT NULL,
                     notes TEXT,
+                    is_backed_up Boolean DEFAULT FALSE,
+                    user_id TEXT NOT NULL,
                     category_id INTEGER NOT NULL,
                     account_id INTEGER NOT NULL,
                     FOREIGN KEY (category_id) REFERENCES categories(id),
@@ -99,15 +110,15 @@ const migrations = [
                 const categories = db.getAllSync(`SELECT * FROM categories`);
                 if (categories.length < 1) {
                     for (const category of initialCategories) {
-                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
-                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
+                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type, is_backed_up, user_id) VALUES ($title, $icon, $type, $is_backed_up, $user_id)`)
+                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $is_backed_up: false, $user_id: userId! })
                     }
                 }
 
                 const accounts = db.getAllSync(`SELECT * FROM accounts`);
                 if (accounts.length < 1) {
-                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_state)`)
-                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true })
+                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, is_backed_up, user_id) VALUES ($title, $icon, $balance, $positive_state, $is_backed_up, $user_id)`)
+                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $is_backed_up: false, $user_id: userId })
                 }
 
             } catch (err) {

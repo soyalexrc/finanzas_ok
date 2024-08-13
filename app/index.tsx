@@ -4,6 +4,7 @@ import {useAuth} from "@clerk/clerk-expo";
 import BottomLoginSheet from "@/lib/components/auth/BottomLoginSheet";
 import {useEffect, useRef, useState} from "react";
 import {FlatList, Platform, StatusBar, Dimensions, StyleSheet, Animated} from "react-native";
+import {loadString} from "@/lib/utils/storage";
 
 const images = [
     // {id: '1', image: require('@/assets/images/signin/image-1.jpg')},
@@ -31,7 +32,6 @@ export default function Screen() {
     if (isSignedIn) {
         return <Redirect href={'/(tabs)'}/>
     }
-
 
     return (
         <YStack flex={1} position="relative" backgroundColor="$color1">

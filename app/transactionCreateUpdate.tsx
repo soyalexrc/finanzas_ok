@@ -27,6 +27,7 @@ import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottom
 import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
 import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
+import {loadString} from "@/lib/utils/storage";
 
 export default function Screen() {
     const router = useRouter();
@@ -55,7 +56,7 @@ export default function Screen() {
     async function handleCreateOrEditTransaction() {
         //     Check if it is create id = -1 or update id > 0
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-
+        const userId = await loadString('userId');
         if (currentTransaction.id > 0) {
             const updatedTransaction = await updateTransaction(db, {
                 id: currentTransaction.id,
@@ -80,6 +81,7 @@ export default function Screen() {
                 id: -1,
                 account_id: selectedAccount.id,
                 category_id: selectedCategory.id,
+                user_id: userId!,
                 recurrentDate: currentTransaction.recurrentDate,
                 amount: currentTransaction.amount,
                 date: currentTransaction.date,

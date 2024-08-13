@@ -21,7 +21,7 @@ export function getAllCategories(db: SQLiteDatabase): Category[] {
 }
 
 export async function getTransactions(db: SQLiteDatabase): Promise<{amountsGroupedByDate: ChartPoints[], transactionsGroupedByCategory: TransactionsGroupedByCategory[]}> {
-    const amountsGroupedByDate = await db.getAllAsync(`
+    const amountsGroupedByDate: ChartPoints[] = await db.getAllAsync(`
         SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
         FROM transactions
@@ -32,6 +32,7 @@ export async function getTransactions(db: SQLiteDatabase): Promise<{amountsGroup
         SELECT c.title, c.icon, c.id,
                json_group_array(json_object(
                        'id', t.id,
+                        'user_id', t.user_id,
                        'amount', t.amount,
                        'recurrentDate', t.recurrentDate,
                        'date', t.date,
@@ -108,6 +109,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             SELECT t.id,
                    t.amount,
                    t.recurrentDate,
+                   t.user_id,
                    strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
             c.title AS category_title,
@@ -132,6 +134,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             id: t.id,
             date: t.date,
             notes: t.notes,
+            user_id: t.user_id,
             amount: String(t.amount),
             recurrentDate: t.recurrentDate,
             category: {
@@ -206,9 +209,8 @@ export async function deleteTransaction(db: SQLiteDatabase, transactionId: numbe
 }
 
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
-    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id)
-                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id,
-                                                     $category_id)`)
+    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, user_id, is_backed_up)
+                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $user_id, $is_backed_up)`);
     try {
         const t = await statement.executeAsync({
             $amount: Number(transaction.amount),
@@ -216,7 +218,9 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $date: transaction.date,
             $notes: transaction.notes,
             $account_id: transaction.account_id,
-            $category_id: transaction.category_id
+            $category_id: transaction.category_id,
+            $user_id: transaction.user_id!,
+            $is_backed_up: false
         });
         const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
         const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
@@ -225,6 +229,7 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             SELECT t.id,
                    t.amount,
                    t.recurrentDate,
+                   t.user_id,
                    strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
                 c.title AS category_title,
@@ -261,6 +266,7 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             amount: String(retrievedTransaction.amount),
             notes: retrievedTransaction.notes,
             date: retrievedTransaction.date,
+            user_id: retrievedTransaction.user_id,
             recurrentDate: retrievedTransaction.recurrentDate
         }
     } catch (err) {
@@ -292,6 +298,7 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
             SELECT t.id,
                    t.amount,
                    t.recurrentDate,
+                   t.user_id,
                    strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
                 c.title AS category_title,
@@ -327,6 +334,7 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
             },
             amount: String(retrievedTransaction.amount),
             notes: retrievedTransaction.notes,
+            user_id: retrievedTransaction.user_id,
             date: retrievedTransaction.date,
             recurrentDate: retrievedTransaction.recurrentDate
         }
@@ -347,6 +355,7 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
                    t.amount,
+                   t.user_id,
                    t.recurrentDate,
                    strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
@@ -383,6 +392,7 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
             },
             amount: String(retrievedTransaction.amount),
             notes: retrievedTransaction.notes,
+            user_id: retrievedTransaction.user_id,
             date: retrievedTransaction.date,
             recurrentDate: retrievedTransaction.recurrentDate
         }

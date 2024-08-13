@@ -1,16 +1,27 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Platform, StyleSheet, useColorScheme} from "react-native";
 import {Button, useThemeName, View, ScrollView} from 'tamagui';
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
-import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
-import {useAppDispatch} from "@/lib/store/hooks";
+import {
+    resetCurrentTransaction,
+    selectHomeViewTypeFilter,
+    updateTransactionsGroupedByDate
+} from "@/lib/store/features/transactions/transactionsSlice";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
 import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
 import {useAuth, useUser} from "@clerk/clerk-expo";
+import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
+import {useSQLiteContext} from "expo-sqlite";
+import {getCurrentWeek} from "@/lib/helpers/date";
+import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
+import {updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
+import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
+import {loadString} from "@/lib/utils/storage";
 
 
 export default function HomeScreen() {
@@ -22,7 +33,29 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets()
     const themeName = useThemeName();
 
-    console.log(themeName);
+    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
+    const filterType = useAppSelector(selectHomeViewTypeFilter)
+    const db = useSQLiteContext();
+
+    async function updateStore() {
+        try {
+            const {start, end} = getCurrentWeek();
+            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+            dispatch(updateAccountsList(getAllAccounts(db)))
+            dispatch(updateCategoriesList(getAllCategories(db)));
+
+            dispatch(updateTransactionsGroupedByDate(transactions));
+            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            dispatch(updateChartPoints(amountsGroupedByDate))
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => {
+        updateStore();
+    }, []);
 
     function onPressNewTransaction() {
         dispatch(resetCurrentTransaction());
