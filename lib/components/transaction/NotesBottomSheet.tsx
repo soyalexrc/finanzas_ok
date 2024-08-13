@@ -51,7 +51,7 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
 
             <Sheet.Handle />
 
-            <Sheet.Frame backgroundColor="$background">
+            <Sheet.Frame backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
                 <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Notes</Text>
 
                 {

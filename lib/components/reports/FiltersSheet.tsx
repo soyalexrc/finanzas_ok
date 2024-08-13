@@ -33,7 +33,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
 
             <Sheet.Handle />
 
-            <Sheet.ScrollView  showsVerticalScrollIndicator={false} backgroundColor="$background">
+            <Sheet.ScrollView borderTopLeftRadius={12} borderTopRightRadius={12} showsVerticalScrollIndicator={false} backgroundColor="$background">
                 <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Filters</Text>
                 {
                     Array.from({length: 20}).map((_, index) => (

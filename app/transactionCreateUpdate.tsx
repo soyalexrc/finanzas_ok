@@ -5,9 +5,6 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo} from "@expo/vector-icons";
 import {AntDesign} from '@expo/vector-icons';
 import {useState} from "react";
-import {
-    BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
 import DatePicker from 'react-native-date-picker'
 import {format} from "date-fns";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -47,6 +44,7 @@ export default function Screen() {
     const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
     const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
+
     // callbacks
 
     function formatDate(date: string | Date | number) {
@@ -54,7 +52,7 @@ export default function Screen() {
     }
 
     async function handleCreateOrEditTransaction() {
-    //     Check if it is create id = -1 or update id > 0
+        //     Check if it is create id = -1 or update id > 0
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
 
         if (currentTransaction.id > 0) {
@@ -94,64 +92,67 @@ export default function Screen() {
 
     return (
         <>
-            <BottomSheetModalProvider>
-                <View position="relative" flex={1} backgroundColor="$background">
-                    <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
-                        <TouchableOpacity onPress={() => router.back()}>
-                            <Text fontSize={18} color="$gray10Dark">Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
-                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
-                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'} />
-                        </TouchableOpacity>
-                        <View style={styles.headerRightSide}>
-                            <RecurringSelectorDropdown/>
-                            {
-                                currentTransaction.id > 0 &&
-                                <TouchableOpacity>
-                                    <Entypo name="dots-three-horizontal" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
-                                </TouchableOpacity>
-                            }
-                        </View>
-                    </View>
-                    <View flex={1}>
-                        <View flex={0.4} justifyContent="center" alignItems="center">
-                            <View flexDirection="row" alignItems="flex-start" gap="$2">
-                                <Text marginTop="$3" fontSize="$9" color="$gray10Dark">S/</Text>
-                                <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
-                            </View>
-                        </View>
-                        <View flex={0.6}>
-                            <View borderBottomWidth={1} borderColor="$gray10Dark">
-                                <TouchableOpacity onPress={() => setOpenNotesSheet(true)} style={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                    <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || 'Notes'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20} paddingHorizontal={20}>
-                                <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
-                                    <View flexDirection="row" alignItems="center" gap={5}>
-                                        <Text fontSize={16}>{selectedAccount.icon}</Text>
-                                        <Text fontSize={16}>{textShortener(selectedAccount.title)}</Text>
-                                    </View>
-                                    <AntDesign name="arrowright" size={24} color="gray"/>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setOpenCategoriesSheet(true)} style={styles.categoriesWrapper}>
-                                    <View flexDirection="row" alignItems="center" gap={5}>
-                                        <Text fontSize={16}>{selectedCategory.icon}</Text>
-                                        <Text fontSize={16}>{textShortener(selectedCategory.title)}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <View flex={0.2} justifyContent="center">
-                                    <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0} width={70} height={35} justifyContent='center' alignItems='center'>
-                                        <Text fontSize={16}>Save</Text>
-                                    </Button>
-                                </View>
-                            </View>
-                            <TransactionKeyboard/>
-                        </View>
+            <View position="relative" flex={1} backgroundColor="$background">
+                <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
+                    <TouchableOpacity onPress={() => router.back()}>
+                        <Text fontSize={18} color="$gray10Dark">Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
+                        <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
+                        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
+                    </TouchableOpacity>
+                    <View style={styles.headerRightSide}>
+                        <RecurringSelectorDropdown/>
+                        {
+                            currentTransaction.id > 0 &&
+                            <TouchableOpacity>
+                                <Entypo name="dots-three-horizontal" size={24}
+                                        color={scheme === 'light' ? 'black' : 'white'}/>
+                            </TouchableOpacity>
+                        }
                     </View>
                 </View>
-            </BottomSheetModalProvider>
+                <View flex={1}>
+                    <View flex={0.4} justifyContent="center" alignItems="center">
+                        <View flexDirection="row" alignItems="flex-start" gap="$2">
+                            <Text marginTop="$3" fontSize="$9" color="$gray10Dark">S/</Text>
+                            <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                        </View>
+                    </View>
+                    <View flex={0.6}>
+                        <View borderBottomWidth={1} borderColor="$gray10Dark">
+                            <TouchableOpacity onPress={() => setOpenNotesSheet(true)}
+                                              style={{paddingVertical: 10, paddingHorizontal: 20}}>
+                                <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || 'Notes'}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20}
+                              paddingHorizontal={20}>
+                            <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
+                                <View flexDirection="row" alignItems="center" gap={5}>
+                                    <Text fontSize={16}>{selectedAccount.icon}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedAccount.title)}</Text>
+                                </View>
+                                <AntDesign name="arrowright" size={24} color="gray"/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setOpenCategoriesSheet(true)}
+                                              style={styles.categoriesWrapper}>
+                                <View flexDirection="row" alignItems="center" gap={5}>
+                                    <Text fontSize={16}>{selectedCategory.icon}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedCategory.title)}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <View flex={0.2} justifyContent="center">
+                                <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
+                                        width={70} height={35} justifyContent='center' alignItems='center'>
+                                    <Text fontSize={16}>Save</Text>
+                                </Button>
+                            </View>
+                        </View>
+                        <TransactionKeyboard/>
+                    </View>
+                </View>
+            </View>
             {/*TODO add locales*/}
             <DatePicker
                 modal
@@ -168,9 +169,9 @@ export default function Screen() {
                     setShowCalendar(false)
                 }}
             />
-            <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet} />
-            <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet} />
-            <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet} />
+            <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet}/>
+            <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet}/>
+            <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet}/>
         </>
     )
 }

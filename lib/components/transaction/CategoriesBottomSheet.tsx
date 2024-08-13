@@ -56,7 +56,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
 
             <Sheet.Handle />
 
-            <Sheet.ScrollView backgroundColor="$background" showsVerticalScrollIndicator={false}>
+            <Sheet.ScrollView backgroundColor="$background" showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
                 <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">EXPENSES</Text>
                 <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
                     {categories.filter(c => c.type === 'expense')?.map(item => (

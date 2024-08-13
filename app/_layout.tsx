@@ -1,5 +1,5 @@
 import {useFonts} from 'expo-font';
-import {Stack} from 'expo-router';
+import {Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from 'react';
 import 'react-native-reanimated';
@@ -20,6 +20,7 @@ import {
   updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {getCurrentWeek} from "@/lib/helpers/date";
+import {useAuth} from "@clerk/clerk-expo";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,10 +30,18 @@ const InitialLayout = () => {
   const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
   const filterType = useAppSelector(selectHomeViewTypeFilter)
   const db = useSQLiteContext();
-  const [loaded] = useFonts({
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  const [loaded, error] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   })
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(
@@ -50,6 +59,18 @@ const InitialLayout = () => {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const inAuthGroup = segments[0] === '(tabs)';
+
+    if (isSignedIn && !inAuthGroup) {
+      router.replace('/(tabs)');
+    } else if (!isSignedIn) {
+      router.replace('/');
+    }
+  }, [isSignedIn]);
+
   async function updateStore() {
     try {
       dispatch(updateAccountsList(getAllAccounts(db)))
@@ -62,11 +83,13 @@ const InitialLayout = () => {
     }
   }
 
-  if (!loaded) {
+  if (!loaded && !isLoaded) {
     return null;
   }
+
   return (
       <Stack>
+        <Stack.Screen name="index" options={{headerShown: false}}/>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
         <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
         <Stack.Screen name="+not-found"/>
@@ -75,8 +98,6 @@ const InitialLayout = () => {
 }
 
 export default function RootLayout() {
-
-
   return (
       <Providers>
         <InitialLayout />
