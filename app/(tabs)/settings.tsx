@@ -2,16 +2,14 @@ import {View, Text, ScrollView, YGroup, ListItem, Separator, Square, GetThemeVal
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import React from "react";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Platform, useColorScheme} from "react-native";
+import {Platform} from "react-native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {AntDesign} from "@expo/vector-icons";
 
 export default function SettingsScreen() {
     const insets = useSafeAreaInsets();
-    const schemeColor = useColorScheme();
     const isIos = Platform.OS === 'ios';
 
     return (
@@ -180,7 +178,7 @@ export default function SettingsScreen() {
 
 function IconWrapper({ icon, bgColor }: {icon: React.ReactNode, bgColor:  GetThemeValueForKey<"backgroundColor">}) {
     return (
-        <Square backgroundColor={bgColor} borderRadius={4} p={2}>
+        <Square backgroundColor={bgColor} borderRadius={4} p={2} width={24}>
             {icon}
         </Square>
     )

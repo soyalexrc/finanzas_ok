@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import {View, Text} from 'tamagui';
-import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Image} from 'tamagui';
+import {Platform, StyleSheet, TouchableOpacity, useColorScheme} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useCallback, useEffect} from "react";
 import * as WebBrowser from 'expo-web-browser';
@@ -12,6 +12,7 @@ import * as Linking from 'expo-linking'
 const BottomLoginSheet = () => {
     useWarmUpBrowser();
     const isIos = Platform.OS === 'ios';
+    const colorScheme = useColorScheme();
     const { bottom } = useSafeAreaInsets();
 
     const { startOAuthFlow: startOAuthFlowWithGoogle } = useOAuth({ strategy: 'oauth_google' });
@@ -46,17 +47,23 @@ const BottomLoginSheet = () => {
     }, [])
 
     return (
-        <View backgroundColor="black" height={isIos ? 200 : 100} style={[styles.container, { paddingBottom: bottom }]}>
+        <View zIndex={20} backgroundColor="$color1" height={isIos ? 200 : 100} style={[styles.container, { paddingBottom: bottom }]}>
             {
                 isIos &&
                 <TouchableOpacity onPress={() => signInWithOAuth('apple')} style={[styles.btnLight, styles.btn]}>
-                    <Ionicons name="logo-apple" size={20} style={styles.btnIcon} />
-                    <Text style={styles.btnLightText}>Continue with Apple</Text>
+                    <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white" />
+                    <Text fontSize={20} color="white">Continue with Apple</Text>
                 </TouchableOpacity>
             }
-            <TouchableOpacity onPress={() => signInWithOAuth('google')} style={[styles.btnDark, styles.btn]}>
-                <Ionicons name="logo-google" size={20} style={styles.btnIcon} color={'#fff'} />
-                <Text style={styles.btnDarkText}>Continue with Google</Text>
+            <TouchableOpacity
+                onPress={() => signInWithOAuth('google')}
+                style={[
+                    styles.btnDark,
+                    styles.btn,
+                    colorScheme === 'light' && {  borderColor: 'gray', borderWidth: 1, borderStyle: 'solid'}
+                ]}>
+                <Image marginRight={8} source={require('@/assets/images/signin/google-icon.png')} width={20} height={20} />
+                <Text fontSize={20} color="black">Continue with Google</Text>
             </TouchableOpacity>
         </View>
     );
@@ -80,14 +87,15 @@ const styles = StyleSheet.create({
         gap: 14,
     },
     btnLight: {
-        backgroundColor: '#fff',
+        backgroundColor: '#000',
     },
     btnLightText: {
         color: '#000',
         fontSize: 20,
+
     },
     btnDark: {
-        backgroundColor: '#1a73e8',
+        backgroundColor: '#ffffff',
     },
     btnDarkText: {
         color: '#fff',

@@ -96,7 +96,7 @@ const InitialLayout = () => {
       <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{headerShown: false}}/>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-        <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
+        <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
         <Stack.Screen name="+not-found"/>
       </Stack>
   )
