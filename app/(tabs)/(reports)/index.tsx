@@ -1,6 +1,6 @@
-import {useColorScheme, Platform} from 'react-native';
+import {useColorScheme, Platform, RefreshControl} from 'react-native';
 import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme} from 'tamagui';
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useFocusEffect, useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -35,6 +35,7 @@ export default function ReportScreen() {
     const theme = useTheme();
     const insets = useSafeAreaInsets()
     const isIos = Platform.OS === 'ios';
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [openFiltersSheet, setOpenFiltersSheet] = useState<boolean>(false);
 
     function handlePress(item: TransactionsGroupedByCategory) {
@@ -42,16 +43,16 @@ export default function ReportScreen() {
         router.push('/(tabs)/(reports)/detailGroup')
     }
 
-    useEffect(() => {
-        findTransactionsForReport()
-    }, []);
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        setTimeout(async () => {
+            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            dispatch(updateChartPoints(amountsGroupedByDate))
+            setRefreshing(false)
+        }, 500)
+    }, [])
 
-
-    async function findTransactionsForReport() {
-        const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
-        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-        dispatch(updateChartPoints(amountsGroupedByDate))
-    }
 
     function calculateTotalFromChartPoints(points: ChartPoints[]) {
         return points.reduce((acc, item) => acc + item.total, 0).toFixed(2)
@@ -59,23 +60,22 @@ export default function ReportScreen() {
 
 
     return (
-        <YStack flex={1} backgroundColor="$color1">
-            <CustomHeader style={{paddingTop: insets.top}}>
-                <AccountSelectDropdown/>
-                <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
-                    <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                </Button>
-                {/*<HeaderTransactionTypeDropdown />*/}
-            </CustomHeader>
+        <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
             <ScrollView
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
                 stickyHeaderIndices={[0]}
                 showsVerticalScrollIndicator={false}
                 paddingTop={isIos ? insets.top + 35 : 0}
             >
 
                 {/*Resumen de monto segun filtro (semana, mes, ano)*/}
-                <View padding={10} backgroundColor="$color1">
+                <View padding={10} backgroundColor="$color1" flexDirection="row" alignItems="center" justifyContent="space-between">
                     <Text fontSize={36}>S/ {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
+                    <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+                        <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                    </Button>
                 </View>
 
                 <View paddingHorizontal={10} marginBottom={20} flexDirection="row" gap={15} marginTop={5}>
@@ -90,8 +90,8 @@ export default function ReportScreen() {
 
 
                 {/*Grafica*/}
-                <View height={200} padding={10}>
-                    <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]}>
+                <View height={200}>
+                    <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]} >
 
                         {/* 👇 render function exposes various data, such as points. */}
                         {({points}) => (

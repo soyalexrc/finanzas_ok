@@ -10,9 +10,11 @@ import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
 import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
+import {useAuth, useUser} from "@clerk/clerk-expo";
 
 
 export default function HomeScreen() {
+    const { signOut } = useAuth();
     const router = useRouter();
     const schemeColor = useColorScheme()
     const isIos = Platform.OS === 'ios';
@@ -37,7 +39,7 @@ export default function HomeScreen() {
             </CustomHeader>
             <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                 <ResumeDropDown/>
-
+                <Button onPress={() => signOut()}>Sign out</Button>
                 {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
                 <HomeResumeItems/>
                 <View style={{height: 200}}/>

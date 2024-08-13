@@ -1,5 +1,5 @@
 import {useFonts} from 'expo-font';
-import {Stack, useRouter, useSegments} from 'expo-router';
+import {Slot, Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from 'react';
 import 'react-native-reanimated';
@@ -7,7 +7,7 @@ import NetInfo from '@react-native-community/netinfo';
 import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
-import {getAllAccounts, getAllCategories, getTransactionsGroupedAndFiltered} from "@/lib/db";
+import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {
   selectAccountGlobally,
@@ -21,6 +21,7 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {getCurrentWeek} from "@/lib/helpers/date";
 import {useAuth} from "@clerk/clerk-expo";
+import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -73,22 +74,26 @@ const InitialLayout = () => {
 
   async function updateStore() {
     try {
+      const {start, end} = getCurrentWeek();
+      const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+      const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
       dispatch(updateAccountsList(getAllAccounts(db)))
       dispatch(updateCategoriesList(getAllCategories(db)));
-      const {start, end} = getCurrentWeek();
-      const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+
       dispatch(updateTransactionsGroupedByDate(transactions));
+      dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+      dispatch(updateChartPoints(amountsGroupedByDate))
     } catch (err) {
       console.log(err);
     }
   }
 
   if (!loaded && !isLoaded) {
-    return null;
+    return <Slot />;
   }
 
   return (
-      <Stack>
+      <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{headerShown: false}}/>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
         <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>

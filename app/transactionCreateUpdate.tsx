@@ -16,7 +16,7 @@ import {
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {fromZonedTime} from "date-fns-tz";
-import {createTransaction, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
+import {createTransaction, getTransactions, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import sleep from "@/lib/helpers/sleep";
@@ -26,6 +26,7 @@ import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboar
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
 import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
+import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
 
 export default function Screen() {
     const router = useRouter();
@@ -67,8 +68,11 @@ export default function Screen() {
             });
             if (updatedTransaction) {
                 const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
                 dispatch(updateTransactionsGroupedByDate(transactions));
-                await sleep(200);
+                dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                dispatch(updateChartPoints(amountsGroupedByDate))
+                await sleep(100);
                 router.back()
             }
         } else {
@@ -83,8 +87,11 @@ export default function Screen() {
             });
             if (newTransaction) {
                 const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
                 dispatch(updateTransactionsGroupedByDate(transactions));
-                await sleep(200);
+                dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                dispatch(updateChartPoints(amountsGroupedByDate))
+                await sleep(100);
                 router.back()
             }
         }

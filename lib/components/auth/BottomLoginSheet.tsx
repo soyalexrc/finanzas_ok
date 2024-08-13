@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import {View, Text} from 'tamagui';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useCallback, useEffect} from "react";
 import * as WebBrowser from 'expo-web-browser';
@@ -11,6 +11,7 @@ import * as Linking from 'expo-linking'
 
 const BottomLoginSheet = () => {
     useWarmUpBrowser();
+    const isIos = Platform.OS === 'ios';
     const { bottom } = useSafeAreaInsets();
 
     const { startOAuthFlow: startOAuthFlowWithGoogle } = useOAuth({ strategy: 'oauth_google' });
@@ -45,11 +46,14 @@ const BottomLoginSheet = () => {
     }, [])
 
     return (
-        <View backgroundColor="black" style={[styles.container, { paddingBottom: bottom }]}>
-            <TouchableOpacity onPress={() => signInWithOAuth('apple')} style={[styles.btnLight, styles.btn]}>
-                <Ionicons name="logo-apple" size={20} style={styles.btnIcon} />
-                <Text style={styles.btnLightText}>Continue with Apple</Text>
-            </TouchableOpacity>
+        <View backgroundColor="black" height={isIos ? 200 : 100} style={[styles.container, { paddingBottom: bottom }]}>
+            {
+                isIos &&
+                <TouchableOpacity onPress={() => signInWithOAuth('apple')} style={[styles.btnLight, styles.btn]}>
+                    <Ionicons name="logo-apple" size={20} style={styles.btnIcon} />
+                    <Text style={styles.btnLightText}>Continue with Apple</Text>
+                </TouchableOpacity>
+            }
             <TouchableOpacity onPress={() => signInWithOAuth('google')} style={[styles.btnDark, styles.btn]}>
                 <Ionicons name="logo-google" size={20} style={styles.btnIcon} color={'#fff'} />
                 <Text style={styles.btnDarkText}>Continue with Google</Text>
@@ -65,11 +69,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        paddingHorizontal: 10,
     },
     container: {
         position: 'absolute',
-        height: 200,
         bottom: 0,
         width: '100%',
         borderTopLeftRadius: 20,

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {Button, Sheet, Text, TextArea, View} from "tamagui";
 import {Platform} from "react-native";
 
@@ -19,7 +19,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={[75]}
+            snapPoints={[50]}
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
@@ -33,10 +33,10 @@ export default function ReportsSheet({open, setOpen}: Props) {
 
             <Sheet.Handle />
 
-            <Sheet.ScrollView borderTopLeftRadius={12} borderTopRightRadius={12} showsVerticalScrollIndicator={false} backgroundColor="$background">
+            <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$background">
                 <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Filters</Text>
                 {
-                    Array.from({length: 20}).map((_, index) => (
+                    Array.from({length: 4}).map((_, index) => (
                         <View key={index} padding={10} flexDirection="row" justifyContent="space-between" alignItems="center">
                             <Text>Filter {index + 1}</Text>
                             <Button onPress={() => {}}>
@@ -47,7 +47,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
                 }
                 <View height={isIos ? 100 : 0} />
 
-            </Sheet.ScrollView>
+            </Sheet.Frame>
         </Sheet>
     )
 }
