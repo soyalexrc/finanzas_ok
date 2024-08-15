@@ -37,7 +37,7 @@ export default function ReportScreen() {
 
     function handlePress(item: TransactionsGroupedByCategory) {
         dispatch(updateDetailGroup(item));
-        router.push('/(tabs)/(reports)/detailGroup')
+        router.push('/detailGroup')
     }
 
     const onRefresh = useCallback(async () => {

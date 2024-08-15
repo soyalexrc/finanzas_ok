@@ -29,9 +29,9 @@ export default function Screen() {
     const imageW = width * 0.8;
     const imageH = imageW * 1.64
 
-    if (isSignedIn) {
-        return <Redirect href={'/(tabs)'}/>
-    }
+    // if (isSignedIn) {
+    //     return <Redirect href={'/(tabs)'}/>
+    // }
 
     return (
         <YStack flex={1} position="relative" backgroundColor="$color1">
@@ -70,7 +70,7 @@ export default function Screen() {
                         {useNativeDriver: true}
                     )}
                     renderItem={({item}) => (
-                        <View width={width} height={height - 150} justifyContent="center" alignItems="center" shadowColor="#000" shadowOpacity={.5} shadowOffset={{ width: 0, height: 0 }} shadowRadius={20}>
+                        <View width={width} height={height - 150} justifyContent="center" alignItems="center">
                             <Image
                                 source={item.image}
                                 width={imageW}

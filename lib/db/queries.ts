@@ -209,8 +209,8 @@ export async function deleteTransaction(db: SQLiteDatabase, transactionId: numbe
 }
 
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
-    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, user_id, is_backed_up)
-                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $user_id, $is_backed_up)`);
+    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, user_id)
+                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $user_id)`);
     try {
         const t = await statement.executeAsync({
             $amount: Number(transaction.amount),
@@ -220,7 +220,6 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $account_id: transaction.account_id,
             $category_id: transaction.category_id,
             $user_id: transaction.user_id!,
-            $is_backed_up: false
         });
         const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
         const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);

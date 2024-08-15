@@ -73,7 +73,6 @@ const migrations = [
                 CREATE TABLE IF NOT EXISTS accounts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
-                    is_backed_up Boolean DEFAULT FALSE,
                     user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     balance INTEGER NOT NULL,
@@ -85,7 +84,6 @@ const migrations = [
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
-                    is_backed_up Boolean DEFAULT FALSE,
                     user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     type TEXT NOT NULL
@@ -99,7 +97,6 @@ const migrations = [
                     recurrentDate TEXT,
                     amount INTEGER NOT NULL,
                     notes TEXT,
-                    is_backed_up Boolean DEFAULT FALSE,
                     user_id TEXT NOT NULL,
                     category_id INTEGER NOT NULL,
                     account_id INTEGER NOT NULL,
@@ -112,15 +109,15 @@ const migrations = [
 
                 if (categories.length < 1) {
                     for (const category of initialCategories) {
-                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type, is_backed_up, user_id) VALUES ($title, $icon, $type, $is_backed_up, $user_id)`)
-                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $is_backed_up: true, $user_id: userId! })
+                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type, user_id) VALUES ($title, $icon, $type, $user_id)`)
+                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $user_id: userId! })
                     }
                 }
 
                 const accounts = db.getAllSync(`SELECT * FROM accounts`);
                 if (accounts.length < 1) {
-                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, is_backed_up, user_id) VALUES ($title, $icon, $balance, $positive_state, $is_backed_up, $user_id)`)
-                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $is_backed_up: true, $user_id: userId })
+                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, user_id) VALUES ($title, $icon, $balance, $positive_state, $user_id)`)
+                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $user_id: userId })
                 }
 
             } catch (err) {

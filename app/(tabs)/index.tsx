@@ -72,7 +72,7 @@ export default function HomeScreen() {
             </CustomHeader>
             <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                 <ResumeDropDown/>
-                <Button onPress={() => signOut()}>Sign out</Button>
+                {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
                 {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
                 <HomeResumeItems/>
                 <View style={{height: 200}}/>

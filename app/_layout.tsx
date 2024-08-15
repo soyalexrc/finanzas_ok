@@ -9,6 +9,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {saveString} from "@/lib/utils/storage";
+import sleep from "@/lib/helpers/sleep";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -54,7 +55,8 @@ const InitialLayout = () => {
     const inAuthGroup = segments[0] === '(tabs)';
     if (isSignedIn && !inAuthGroup) {
       await saveString('userId', user!.id);
-      // if users sign then patch db
+      // if users sign then validate if users already have a db version  with date and ask the user if it wants to restore the data
+      // await sleep(5000);
       router.replace('/(tabs)');
     } else if (!isSignedIn) {
       router.replace('/');
