@@ -41,3 +41,27 @@ export const formatDateHomeItemGroups = (date: string) => {
         return formatDistanceToNow(date, { addSuffix: true });
     }
 };
+
+export function formatDate(date: string | Date | number) {
+    return fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+}
+
+export function getDateRangeBetweenGapDaysAndToday(gap: number): {start: Date, end: Date} {
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() - gap);
+    return {
+        start: fromZonedTime(start, Intl.DateTimeFormat().resolvedOptions().timeZone),
+        end: today,
+    }
+}
+
+export function getDateRangeTenYearsAgo(): {start: Date, end: Date} {
+    const today = new Date();
+    const start = new Date(today);
+    start.setFullYear(today.getFullYear() - 10);
+    return {
+        start: fromZonedTime(start, Intl.DateTimeFormat().resolvedOptions().timeZone),
+        end: today,
+    }
+}

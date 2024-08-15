@@ -1,6 +1,6 @@
 import {useColorScheme, Platform, RefreshControl} from 'react-native';
 import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme, Image} from 'tamagui';
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -12,15 +12,18 @@ import {getTransactions} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    selectChartPoints,
-    selectTransactionsGroupedByCategory, updateChartPoints, updateDetailGroup,
+    selectAccountFilter, selectCategoryFilter,
+    selectChartPoints, selectDateRangeFilter,
+    selectTransactionsGroupedByCategory, updateChartPoints, updateDateRangeFilter, updateDetailGroup,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {ChartPoints, TransactionsGroupedByCategory} from "@/lib/types/Transaction";
-import {calculateTotalTransactions} from "@/lib/helpers/operations";
-import {CartesianChart, Line} from "victory-native";
+import {calculateTotalFromChartPoints, calculateTotalTransactions} from "@/lib/helpers/operations";
+import {Bar, CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
+import {getDateRangeBetweenGapDaysAndToday, getDateRangeTenYearsAgo} from "@/lib/helpers/date";
+import {useAppSelector} from "@/lib/store/hooks";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -34,38 +37,65 @@ export default function ReportScreen() {
     const isIos = Platform.OS === 'ios';
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [openFiltersSheet, setOpenFiltersSheet] = useState<boolean>(false);
+    const selectedCategory = useSelector(selectCategoryFilter);
+    const selectedAccount = useSelector(selectAccountFilter);
+    const selectedDateRange = useSelector(selectDateRangeFilter);
+    const [daysFrom, setDaysFrom] = useState<string>('15')
 
     function handlePress(item: TransactionsGroupedByCategory) {
         dispatch(updateDetailGroup(item));
         router.push('/detailGroup')
     }
 
-    const onRefresh = useCallback(async () => {
+    async function onRefresh() {
         setRefreshing(true);
         setTimeout(async () => {
-            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+            const {
+                amountsGroupedByDate,
+                transactionsGroupedByCategory
+            } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccount.id, selectedCategory.id);
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
             setRefreshing(false)
         }, 500)
-    }, [])
-
-
-    function calculateTotalFromChartPoints(points: ChartPoints[]) {
-        return points.reduce((acc, item) => acc + item.total, 0).toFixed(2)
     }
 
+    useEffect(() => {
+        handleGetReportByPresetDays()
+    }, [daysFrom]);
+
+    async function handleGetReportByPresetDays() {
+        if (daysFrom) {
+            const {start, end} = getDateRangeBetweenGapDaysAndToday(Number(daysFrom));
+            dispatch(updateDateRangeFilter({type: 'start', value: start.toISOString()}));
+            dispatch(updateDateRangeFilter({type: 'end', value: end.toISOString()}));
+            const {
+                amountsGroupedByDate,
+                transactionsGroupedByCategory
+            } = await getTransactions(db, start.toISOString(), end.toISOString(), selectedAccount.id, selectedCategory.id);
+            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            dispatch(updateChartPoints(amountsGroupedByDate))
+        } else {
+            const {start, end} = getDateRangeTenYearsAgo();
+            dispatch(updateDateRangeFilter({ type: 'start', value: start.toISOString()}));
+            dispatch(updateDateRangeFilter({ type: 'end', value: end.toISOString() }));
+
+            const {
+                amountsGroupedByDate,
+                transactionsGroupedByCategory
+            } = await getTransactions(db, start.toISOString(), end.toISOString(), selectedAccount.id, selectedCategory.id);
+            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            dispatch(updateChartPoints(amountsGroupedByDate))
+        }
+    }
 
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
-            <CustomHeader style={{ paddingTop: isIos ? insets.top : 0 }}>
+            <CustomHeader style={{paddingTop: isIos ? insets.top : 0}}>
                 <Text fontSize={36}>S/ {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
-                {
-                    transactions.length > 0 &&
-                    <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
-                        <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                    </Button>
-                }
+                <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+                    <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                </Button>
             </CustomHeader>
             {
                 transactions.length < 1 &&
@@ -76,7 +106,8 @@ export default function ReportScreen() {
                         height={200}
                     />
                     <Text fontSize={18}>There are no data.</Text>
-                    <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create transaction</Button>
+                    <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create
+                        transaction</Button>
                 </View>
             }
             {
@@ -84,7 +115,7 @@ export default function ReportScreen() {
                 <ScrollView
                     marginTop={insets.top}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
                     }
                     showsVerticalScrollIndicator={false}
                     stickyHeaderIndices={[0]}
@@ -93,7 +124,8 @@ export default function ReportScreen() {
                     {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
 
-                    <View paddingHorizontal={10} paddingTop={20} paddingBottom={10} flexDirection="row" backgroundColor="$color1" gap={15} >
+                    <View paddingHorizontal={10} paddingTop={20} paddingBottom={10} flexDirection="row"
+                          backgroundColor="$color1" gap={15}>
                         <Text fontSize={16} color="$gray10Dark">Spent this week</Text>
                         <View flexDirection="row" gap={5}>
                             <View borderRadius={100} padding={3} backgroundColor="$red3Light">
@@ -106,16 +138,34 @@ export default function ReportScreen() {
 
                     {/*Grafica*/}
                     <View height={210} p={10}>
-                        <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]} >
+                        {
+                            chartPoints.length > 2 &&
+                            <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]}
+                                            domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
 
-                            {/* 👇 render function exposes various data, such as points. */}
-                            {({points}) => (
-                                // 👇 and we'll use the Line component to render a line path.
-                                <>
-                                    <Line points={points.total} color={theme.color10?.val} strokeWidth={3} curveType="linear"/>
-                                </>
-                            )}
-                        </CartesianChart>
+                                {/* 👇 render function exposes various data, such as points. */}
+                                {({points, chartBounds}) => (
+                                    // 👇 and we'll use the Line component to render a line path.
+                                    // <Bar
+                                    //     points={points.total}
+                                    //     chartBounds={chartBounds}
+                                    //     color={theme.color10?.val}
+                                    //     roundedCorners={{ topLeft: 10, topRight: 10 }}
+                                    // />
+                                    <>
+                                        <Line points={points.total} color={theme.color10?.val} strokeWidth={3}
+                                              curveType="natural"/>
+                                    </>
+                                )}
+
+                            </CartesianChart>
+                        }
+                        {
+                            chartPoints.length < 3 &&
+                            <View flex={1} justifyContent="center" alignItems="center">
+                                <Text fontSize={16} color="$gray10Dark">There are no data to display the graph.</Text>
+                            </View>
+                        }
                     </View>
 
                     {/*Filtros de semana, mes, ano*/}
@@ -123,6 +173,8 @@ export default function ReportScreen() {
                         <ToggleGroup
                             marginTop={10}
                             marginBottom={20}
+                            value={daysFrom}
+                            onValueChange={setDaysFrom}
                             orientation="horizontal"
                             id="simple-filter"
                             type="single"
@@ -142,7 +194,8 @@ export default function ReportScreen() {
                     {/*Lista de items*/}
                     {
                         transactions.map((item, index) => (
-                            <Button icon={<Text fontSize={30}>{item.category.icon}</Text>} key={item.category.title + index}
+                            <Button icon={<Text fontSize={30}>{item.category.icon}</Text>}
+                                    key={item.category.title + index}
                                     backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)}
                                     paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between"
                                     alignItems="center">

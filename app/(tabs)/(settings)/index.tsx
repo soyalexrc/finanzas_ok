@@ -20,7 +20,7 @@ export default function Screen() {
                 <Text fontSize="$6">Settings</Text>
             </CustomHeader>
 
-            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 20}>
+            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 80 : 20}>
                 <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}  separator={<Separator />}>
                     <YGroup.Item>
                         <ListItem
@@ -159,7 +159,7 @@ export default function Screen() {
                    <Text color="$gray10Dark">by @desarrollowebconalex</Text>
                </XStack>
 
-                <View height={isIos ? 200 : 50} />
+                <View height={isIos ? 230 : 50} />
 
             </ScrollView>
         </View>

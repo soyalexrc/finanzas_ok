@@ -17,22 +17,27 @@ import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
 import {useSQLiteContext} from "expo-sqlite";
-import {getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentWeek, getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
 import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
 import {updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
-import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
-import {loadString} from "@/lib/utils/storage";
+import {
+    selectAccountFilter, selectCategoryFilter,
+    selectDateRangeFilter,
+    updateChartPoints,
+    updateTransactionsGroupedByCategory
+} from "@/lib/store/features/transactions/reportSlice";
 
 
 export default function HomeScreen() {
-    const { signOut } = useAuth();
+    // const { signOut } = useAuth();
     const router = useRouter();
     const schemeColor = useColorScheme()
     const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
-    const insets = useSafeAreaInsets()
-    const themeName = useThemeName();
-
+    const insets = useSafeAreaInsets();
+    const selectedDateRange = useAppSelector(selectDateRangeFilter);
+    const selectedAccountFilter = useAppSelector(selectAccountFilter);
+    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const db = useSQLiteContext();
@@ -40,7 +45,7 @@ export default function HomeScreen() {
     async function updateStore() {
         try {
             const {start, end} = getCurrentWeek();
-            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
             const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
             dispatch(updateAccountsList(getAllAccounts(db)))
             dispatch(updateCategoriesList(getAllCategories(db)));

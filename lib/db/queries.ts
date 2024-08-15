@@ -7,6 +7,7 @@ import {
     Transaction, TransactionsGroupedByCategory,
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
+import {a} from "ofetch/dist/shared/ofetch.8459ad38";
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
@@ -20,15 +21,21 @@ export function getAllCategories(db: SQLiteDatabase): Category[] {
                           FROM categories`);
 }
 
-export async function getTransactions(db: SQLiteDatabase): Promise<{amountsGroupedByDate: ChartPoints[], transactionsGroupedByCategory: TransactionsGroupedByCategory[]}> {
-    const amountsGroupedByDate: ChartPoints[] = await db.getAllAsync(`
+export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{amountsGroupedByDate: ChartPoints[], transactionsGroupedByCategory: TransactionsGroupedByCategory[]}> {
+    let amountsGroupedByDate: ChartPoints[] = [];
+    let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
+
+    if (accountId === 0 && categoryId === 0) {
+        amountsGroupedByDate = await db.getAllAsync(`
         SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
         FROM transactions
+        WHERE 
+            date BETWEEN ? and ?
         GROUP BY date
-    `);
+    `, [dateFrom, dateTo]);
 
-    const transactionsGroupedByCategory = await db.getAllAsync(`
+        transactionsGroupedByCategory = await db.getAllAsync(`
         SELECT c.title, c.icon, c.id,
                json_group_array(json_object(
                        'id', t.id,
@@ -42,8 +49,110 @@ export async function getTransactions(db: SQLiteDatabase): Promise<{amountsGroup
                                 )) AS transactions
         FROM transactions t
                  LEFT JOIN categories c ON t.category_id = c.id
+        WHERE
+            date BETWEEN ? and ?
         GROUP BY c.id
-    `);
+    `, [dateFrom, dateTo]);
+    } else if (accountId !== 0 && categoryId === 0) {
+        amountsGroupedByDate = await db.getAllAsync(`
+        SELECT strftime('%Y-%m-%d', date) AS date,
+            ROUND(SUM(amount), 2) AS total
+        FROM transactions
+        WHERE 
+            date BETWEEN ? and ?
+            AND account_id = ?
+        GROUP BY date
+    `, [dateFrom, dateTo, accountId]);
+
+        transactionsGroupedByCategory = await db.getAllAsync(`
+            SELECT c.title,
+                   c.icon,
+                   c.id,
+                   json_group_array(json_object(
+                           'id', t.id,
+                           'user_id', t.user_id,
+                           'amount', t.amount,
+                           'recurrentDate', t.recurrentDate,
+                           'date', t.date,
+                           'notes', t.notes,
+                           'account_id', t.account_id,
+                           'category_id', t.category_id
+                                    )) AS transactions
+            FROM transactions t
+                     LEFT JOIN categories c ON t.category_id = c.id
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND account_id = ?
+            GROUP BY c.id
+        `, [dateFrom, dateTo, accountId]);
+
+    } else if (categoryId !== 0 && accountId ===0) {
+        amountsGroupedByDate = await db.getAllAsync(`
+        SELECT strftime('%Y-%m-%d', date) AS date,
+            ROUND(SUM(amount), 2) AS total
+        FROM transactions
+        WHERE 
+            date BETWEEN ? and ?
+          AND category_id = ?
+        GROUP BY date
+    `, [dateFrom, dateTo, categoryId]);
+
+        transactionsGroupedByCategory = await db.getAllAsync(`
+        SELECT c.title, c.icon, c.id,
+               json_group_array(json_object(
+                       'id', t.id,
+                        'user_id', t.user_id,
+                       'amount', t.amount,
+                       'recurrentDate', t.recurrentDate,
+                       'date', t.date,
+                       'notes', t.notes,
+                       'account_id', t.account_id,
+                       'category_id', t.category_id
+                                )) AS transactions
+        FROM transactions t
+                 LEFT JOIN categories c ON t.category_id = c.id
+        WHERE
+            date BETWEEN ? and ?
+          AND category_id = ?
+    
+        GROUP BY c.id
+    `, [dateFrom, dateTo, categoryId]);
+    } else {
+        amountsGroupedByDate = await db.getAllAsync(`
+        SELECT strftime('%Y-%m-%d', date) AS date,
+            ROUND(SUM(amount), 2) AS total
+        FROM transactions
+        WHERE 
+            date BETWEEN ? and ?
+            AND account_id = ?
+            AND category_id = ?
+        GROUP BY date
+    `, [dateFrom, dateTo, accountId, categoryId]);
+
+        transactionsGroupedByCategory = await db.getAllAsync(`
+        SELECT c.title, c.icon, c.id,
+               json_group_array(json_object(
+                       'id', t.id,
+                        'user_id', t.user_id,
+                       'amount', t.amount,
+                       'recurrentDate', t.recurrentDate,
+                       'date', t.date,
+                       'notes', t.notes,
+                       'account_id', t.account_id,
+                       'category_id', t.category_id
+                                )) AS transactions
+        FROM transactions t
+                 LEFT JOIN categories c ON t.category_id = c.id
+        WHERE
+            date BETWEEN ? and ?
+            AND account_id = ?
+            AND category_id = ?
+        GROUP BY c.id
+    `, [dateFrom, dateTo, accountId, categoryId]);
+    }
+
+
 
 
     return {

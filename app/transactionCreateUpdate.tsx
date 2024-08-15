@@ -18,7 +18,7 @@ import {
 import {fromZonedTime} from "date-fns-tz";
 import {createTransaction, getTransactions, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import sleep from "@/lib/helpers/sleep";
 import {useTheme} from "@react-navigation/native";
 import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
@@ -26,7 +26,12 @@ import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboar
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
 import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
-import {updateChartPoints, updateTransactionsGroupedByCategory} from "@/lib/store/features/transactions/reportSlice";
+import {
+    selectAccountFilter, selectCategoryFilter,
+    selectDateRangeFilter,
+    updateChartPoints,
+    updateTransactionsGroupedByCategory
+} from "@/lib/store/features/transactions/reportSlice";
 import {loadString} from "@/lib/utils/storage";
 
 export default function Screen() {
@@ -35,11 +40,15 @@ export default function Screen() {
     const isIos = Platform.OS === 'ios';
     const scheme = useColorScheme();
     const dispatch = useAppDispatch();
-    const colors = useTheme().colors;
+    const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
+
+    const selectedAccountFilter = useAppSelector(selectAccountFilter);
+    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
+
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
@@ -48,10 +57,6 @@ export default function Screen() {
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
 
     // callbacks
-
-    function formatDate(date: string | Date | number) {
-        return fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
-    }
 
     async function handleCreateOrEditTransaction() {
         //     Check if it is create id = -1 or update id > 0
@@ -69,7 +74,7 @@ export default function Screen() {
             });
             if (updatedTransaction) {
                 const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
-                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                 dispatch(updateTransactionsGroupedByDate(transactions));
                 dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
                 dispatch(updateChartPoints(amountsGroupedByDate))
@@ -89,7 +94,7 @@ export default function Screen() {
             });
             if (newTransaction) {
                 const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
-                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db);
+                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                 dispatch(updateTransactionsGroupedByDate(transactions));
                 dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
                 dispatch(updateChartPoints(amountsGroupedByDate))
