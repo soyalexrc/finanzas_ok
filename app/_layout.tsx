@@ -9,7 +9,8 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {saveString} from "@/lib/utils/storage";
-import sleep from "@/lib/helpers/sleep";
+import {Appearance, StatusBar, useColorScheme} from "react-native";
+import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -17,18 +18,29 @@ SplashScreen.preventAutoHideAsync();
 const InitialLayout = () => {
   const dispatch = useAppDispatch();
   const { isLoaded, isSignedIn } = useAuth();
+  const appearance = useAppSelector(selectSettings).appearance;
   const {user, isLoaded: isUserLoaded} = useUser()
   const segments = useSegments();
   const router = useRouter();
+  const colorScheme = useColorScheme()
 
   const [loaded, error] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   })
 
+
   useEffect(() => {
     if (error) throw error;
   }, [error]);
+
+    useEffect(() => {
+      if (appearance !== 'system') {
+        Appearance.setColorScheme(appearance);
+      } else {
+        Appearance.setColorScheme(null)
+      }
+    }, [appearance]);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(
@@ -63,19 +75,20 @@ const InitialLayout = () => {
     }
   }
 
-
-
   if (!loaded && !isLoaded) {
     return <Slot />;
   }
 
   return (
-      <Stack initialRouteName="index">
-        <Stack.Screen name="index" options={{headerShown: false}}/>
-        <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-        <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
-        <Stack.Screen name="+not-found"/>
-      </Stack>
+      <>
+        <StatusBar barStyle={appearance === 'system' ? 'default' : appearance === 'light' ? 'dark-content' : 'light-content'} />
+        <Stack initialRouteName="index">
+          <Stack.Screen name="index" options={{headerShown: false}}/>
+          <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+          <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
+          <Stack.Screen name="+not-found"/>
+        </Stack>
+      </>
   )
 }
 
