@@ -58,7 +58,7 @@ export default function ReportScreen() {
 
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
-            <CustomHeader style={{ paddingTop: insets.top }}>
+            <CustomHeader style={{ paddingTop: isIos ? insets.top : 0 }}>
                 <Text fontSize={36}>S/ {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
                 {
                     transactions.length > 0 &&

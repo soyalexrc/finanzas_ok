@@ -1,9 +1,10 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import initialCategories from '@/lib/utils/data/categories';
 import {loadString} from "@/lib/utils/storage";
-import {string} from "prop-types";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
+    console.log('migrations ran');
+
     // Clear table
     // await db.runAsync('DELETE FROM accounts')
     // await db.runAsync('DELETE FROM migrations')
@@ -108,17 +109,18 @@ const migrations = [
             `);
 
                 const categories = db.getAllSync(`SELECT * FROM categories`);
+
                 if (categories.length < 1) {
                     for (const category of initialCategories) {
                         const statement = db.prepareSync(`INSERT INTO categories (title, icon, type, is_backed_up, user_id) VALUES ($title, $icon, $type, $is_backed_up, $user_id)`)
-                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $is_backed_up: false, $user_id: userId! })
+                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $is_backed_up: true, $user_id: userId! })
                     }
                 }
 
                 const accounts = db.getAllSync(`SELECT * FROM accounts`);
                 if (accounts.length < 1) {
                     const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, is_backed_up, user_id) VALUES ($title, $icon, $balance, $positive_state, $is_backed_up, $user_id)`)
-                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $is_backed_up: false, $user_id: userId })
+                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $is_backed_up: true, $user_id: userId })
                 }
 
             } catch (err) {

@@ -54,6 +54,7 @@ const InitialLayout = () => {
     const inAuthGroup = segments[0] === '(tabs)';
     if (isSignedIn && !inAuthGroup) {
       await saveString('userId', user!.id);
+      // if users sign then patch db
       router.replace('/(tabs)');
     } else if (!isSignedIn) {
       router.replace('/');

@@ -2,9 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import {View, Text, Image} from 'tamagui';
 import {Platform, StyleSheet, TouchableOpacity, useColorScheme} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {useCallback, useEffect} from "react";
+import {useCallback} from "react";
 import * as WebBrowser from 'expo-web-browser';
-import {OAuthStrategy} from "@clerk/types";
 import useWarmUpBrowser from "@/lib/hooks/useWarmUpBrowser";
 import {useOAuth} from "@clerk/clerk-expo";
 import * as Linking from 'expo-linking'
@@ -23,7 +22,7 @@ const BottomLoginSheet = () => {
     const signInWithOAuth = useCallback(async (type: 'google' | 'apple') => {
         try {
             if (type === 'google') {
-                const {createdSessionId, signIn, signUp, setActive} = await startOAuthFlowWithGoogle({
+                const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithGoogle({
                     redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
                 });
                 if (createdSessionId) {
@@ -32,7 +31,7 @@ const BottomLoginSheet = () => {
                     // Use signIn or signUp for next steps such as MFA
                 }
             } else {
-                const {createdSessionId, signIn, signUp, setActive} = await startOAuthFlowWithApple({
+                const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithApple({
                     redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
                 });
                 if (createdSessionId) {
@@ -52,7 +51,7 @@ const BottomLoginSheet = () => {
                 isIos &&
                 <TouchableOpacity onPress={() => signInWithOAuth('apple')} style={[styles.btnLight, styles.btn]}>
                     <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white" />
-                    <Text fontSize={20} color="white">Continue with Apple</Text>
+                    <Text fontSize={18} color="white">Continue with Apple</Text>
                 </TouchableOpacity>
             }
             <TouchableOpacity
@@ -63,7 +62,7 @@ const BottomLoginSheet = () => {
                     colorScheme === 'light' && {  borderColor: 'gray', borderWidth: 1, borderStyle: 'solid'}
                 ]}>
                 <Image marginRight={8} source={require('@/assets/images/signin/google-icon.png')} width={20} height={20} />
-                <Text fontSize={20} color="black">Continue with Google</Text>
+                <Text fontSize={18} color="black">Continue with Google</Text>
             </TouchableOpacity>
         </View>
     );
