@@ -76,6 +76,23 @@ export type Account = {
     id: number;
 }
 
+export type AccountCreate = {
+    title: string;
+    icon: string;
+    balance: number;
+    currency_symbol: string;
+    currency_code: string;
+    positive_status: number;
+}
+
+export type AccountEdit = {
+    title: string;
+    id: number;
+    icon: string;
+    balance: number;
+    positive_status: number;
+}
+
 export type ChartPoints = {
     date: string;
     total: number;

@@ -1,6 +1,7 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import initialCategories from '@/lib/utils/data/categories';
 import {loadString} from "@/lib/utils/storage";
+import {getLocales} from "expo-localization";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     console.log('migrations ran');
@@ -118,8 +119,9 @@ const migrations = [
 
                 const accounts = db.getAllSync(`SELECT * FROM accounts`);
                 if (accounts.length < 1) {
+                    const locales = getLocales();
                     const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, user_id, currency_code, currency_symbol) VALUES ($title, $icon, $balance, $positive_state, $user_id, $currency_code, $currency_symbol)`)
-                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $user_id: userId, $currency_code: 'USD', $currency_symbol: '$' })
+                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $user_id: userId, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
                 }
 
             } catch (err) {

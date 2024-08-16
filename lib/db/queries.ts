@@ -1,6 +1,6 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import {
-    Account,
+    Account, AccountCreate, AccountEdit,
     Category, ChartPoints,
     FullTransaction,
     FullTransactionRaw,
@@ -21,48 +21,56 @@ export function getAllCategories(db: SQLiteDatabase): Category[] {
                           FROM categories`);
 }
 
-export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{amountsGroupedByDate: ChartPoints[], transactionsGroupedByCategory: TransactionsGroupedByCategory[]}> {
+export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{
+    amountsGroupedByDate: ChartPoints[],
+    transactionsGroupedByCategory: TransactionsGroupedByCategory[]
+}> {
     let amountsGroupedByDate: ChartPoints[] = [];
     let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
 
     if (accountId === 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
-        SELECT strftime('%Y-%m-%d', date) AS date,
+            SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
-        FROM transactions
-        WHERE 
-            date BETWEEN ? and ?
-        GROUP BY date
-    `, [dateFrom, dateTo]);
+            FROM transactions
+            WHERE
+                date BETWEEN ?
+              and ?
+            GROUP BY date
+        `, [dateFrom, dateTo]);
 
         transactionsGroupedByCategory = await db.getAllAsync(`
-        SELECT c.title, c.icon, c.id,
-               json_group_array(json_object(
-                       'id', t.id,
-                        'user_id', t.user_id,
-                       'amount', t.amount,
-                       'recurrentDate', t.recurrentDate,
-                       'date', t.date,
-                       'notes', t.notes,
-                       'account_id', t.account_id,
-                       'category_id', t.category_id
-                                )) AS transactions
-        FROM transactions t
-                 LEFT JOIN categories c ON t.category_id = c.id
-        WHERE
-            date BETWEEN ? and ?
-        GROUP BY c.id
-    `, [dateFrom, dateTo]);
+            SELECT c.title,
+                   c.icon,
+                   c.id,
+                   json_group_array(json_object(
+                           'id', t.id,
+                           'user_id', t.user_id,
+                           'amount', t.amount,
+                           'recurrentDate', t.recurrentDate,
+                           'date', t.date,
+                           'notes', t.notes,
+                           'account_id', t.account_id,
+                           'category_id', t.category_id
+                                    )) AS transactions
+            FROM transactions t
+                     LEFT JOIN categories c ON t.category_id = c.id
+            WHERE
+                date BETWEEN ?
+              and ?
+            GROUP BY c.id
+        `, [dateFrom, dateTo]);
     } else if (accountId !== 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
-        SELECT strftime('%Y-%m-%d', date) AS date,
+            SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
-        FROM transactions
-        WHERE 
-            date BETWEEN ? and ?
-            AND account_id = ?
-        GROUP BY date
-    `, [dateFrom, dateTo, accountId]);
+            FROM transactions
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND account_id = ?
+            GROUP BY date
+        `, [dateFrom, dateTo, accountId]);
 
         transactionsGroupedByCategory = await db.getAllAsync(`
             SELECT c.title,
@@ -87,72 +95,78 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             GROUP BY c.id
         `, [dateFrom, dateTo, accountId]);
 
-    } else if (categoryId !== 0 && accountId ===0) {
+    } else if (categoryId !== 0 && accountId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
-        SELECT strftime('%Y-%m-%d', date) AS date,
+            SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
-        FROM transactions
-        WHERE 
-            date BETWEEN ? and ?
-          AND category_id = ?
-        GROUP BY date
-    `, [dateFrom, dateTo, categoryId]);
+            FROM transactions
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND category_id = ?
+            GROUP BY date
+        `, [dateFrom, dateTo, categoryId]);
 
         transactionsGroupedByCategory = await db.getAllAsync(`
-        SELECT c.title, c.icon, c.id,
-               json_group_array(json_object(
-                       'id', t.id,
-                        'user_id', t.user_id,
-                       'amount', t.amount,
-                       'recurrentDate', t.recurrentDate,
-                       'date', t.date,
-                       'notes', t.notes,
-                       'account_id', t.account_id,
-                       'category_id', t.category_id
-                                )) AS transactions
-        FROM transactions t
-                 LEFT JOIN categories c ON t.category_id = c.id
-        WHERE
-            date BETWEEN ? and ?
-          AND category_id = ?
-    
-        GROUP BY c.id
-    `, [dateFrom, dateTo, categoryId]);
+            SELECT c.title,
+                   c.icon,
+                   c.id,
+                   json_group_array(json_object(
+                           'id', t.id,
+                           'user_id', t.user_id,
+                           'amount', t.amount,
+                           'recurrentDate', t.recurrentDate,
+                           'date', t.date,
+                           'notes', t.notes,
+                           'account_id', t.account_id,
+                           'category_id', t.category_id
+                                    )) AS transactions
+            FROM transactions t
+                     LEFT JOIN categories c ON t.category_id = c.id
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND category_id = ?
+
+            GROUP BY c.id
+        `, [dateFrom, dateTo, categoryId]);
     } else {
         amountsGroupedByDate = await db.getAllAsync(`
-        SELECT strftime('%Y-%m-%d', date) AS date,
+            SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total
-        FROM transactions
-        WHERE 
-            date BETWEEN ? and ?
-            AND account_id = ?
-            AND category_id = ?
-        GROUP BY date
-    `, [dateFrom, dateTo, accountId, categoryId]);
+            FROM transactions
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND account_id = ?
+              AND category_id = ?
+            GROUP BY date
+        `, [dateFrom, dateTo, accountId, categoryId]);
 
         transactionsGroupedByCategory = await db.getAllAsync(`
-        SELECT c.title, c.icon, c.id,
-               json_group_array(json_object(
-                       'id', t.id,
-                        'user_id', t.user_id,
-                       'amount', t.amount,
-                       'recurrentDate', t.recurrentDate,
-                       'date', t.date,
-                       'notes', t.notes,
-                       'account_id', t.account_id,
-                       'category_id', t.category_id
-                                )) AS transactions
-        FROM transactions t
-                 LEFT JOIN categories c ON t.category_id = c.id
-        WHERE
-            date BETWEEN ? and ?
-            AND account_id = ?
-            AND category_id = ?
-        GROUP BY c.id
-    `, [dateFrom, dateTo, accountId, categoryId]);
+            SELECT c.title,
+                   c.icon,
+                   c.id,
+                   json_group_array(json_object(
+                           'id', t.id,
+                           'user_id', t.user_id,
+                           'amount', t.amount,
+                           'recurrentDate', t.recurrentDate,
+                           'date', t.date,
+                           'notes', t.notes,
+                           'account_id', t.account_id,
+                           'category_id', t.category_id
+                                    )) AS transactions
+            FROM transactions t
+                     LEFT JOIN categories c ON t.category_id = c.id
+            WHERE
+                date BETWEEN ?
+              and ?
+              AND account_id = ?
+              AND category_id = ?
+            GROUP BY c.id
+        `, [dateFrom, dateTo, accountId, categoryId]);
     }
-
-
 
 
     return {
@@ -273,12 +287,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
     }
 }
 
-export async function createAccount(db: SQLiteDatabase, account: {
-    title: string,
-    icon: string,
-    balance: number,
-    positiveState: boolean
-}): Promise<any> {
+export async function createAccount(db: SQLiteDatabase, account: AccountCreate, userId: string): Promise<any> {
     const accounts = await db.getAllAsync('SELECT * FROM accounts WHERE title = ?', [account.title]);
     if (accounts.length > 0) {
         return {
@@ -286,13 +295,16 @@ export async function createAccount(db: SQLiteDatabase, account: {
             desc: 'Ya existe una cuenta con ese nombre.',
         };
     } else {
-        const statement = await db.prepareAsync('INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_state)');
+        const statement = await db.prepareAsync('INSERT INTO accounts (title, icon, balance, positive_state, currency_code, currency_symbol, user_id) VALUES ($title, $icon, $balance, $positive_state, $currency_code, $currency_symbol, $user_id)');
         try {
             await statement.executeAsync({
                 $title: account.title,
                 $icon: account.icon,
                 $balance: account.balance,
-                $positive_state: account.positiveState
+                $positive_state: account.positive_status,
+                $currency_code: account.currency_code,
+                $currency_symbol: account.currency_symbol,
+                $user_id: userId
             });
             const accountCreated = await db.getAllAsync('SELECT * FROM accounts ORDER BY id DESC LIMIT 1');
             return {
@@ -309,6 +321,17 @@ export async function createAccount(db: SQLiteDatabase, account: {
     }
 };
 
+
+export async function updateAccount(db: SQLiteDatabase, account: AccountEdit): Promise<any> {
+    try {
+        await db.runAsync('UPDATE accounts SET title = ?, icon = ?, balance = ?, positive_state =? WHERE id = ?', [account.title, account.icon, account.balance, account.positive_status, account.id]);
+        const accountCreated = await db.getAllAsync('SELECT * FROM accounts ORDER BY id DESC LIMIT 1');
+        return accountCreated[0]
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 export async function deleteTransaction(db: SQLiteDatabase, transactionId: number) {
     try {
         return await db.runAsync('DELETE FROM transactions WHERE id = $transactionId', {$transactionId: transactionId})
@@ -319,7 +342,8 @@ export async function deleteTransaction(db: SQLiteDatabase, transactionId: numbe
 
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, user_id)
-                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $user_id)`);
+                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id,
+                                                     $user_id)`);
     try {
         const t = await statement.executeAsync({
             $amount: Number(transaction.amount),
@@ -389,12 +413,12 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
 export async function updateTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`
         UPDATE transactions
-        SET amount        = ?,
+        SET amount = ?,
             recurrentDate = ?,
-            date          = ?,
-            notes         = ?,
-            account_id    = ?,
-            category_id   = ?
+            date = ?,
+            notes = ?,
+            account_id = ?,
+            category_id = ?
         WHERE id = ?
     `);
     try {
@@ -524,6 +548,8 @@ export async function getCurrentBalance(db: SQLiteDatabase): Promise<number> {
 }
 
 export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId: number): number {
-    const result: {count: number} | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
+    const result: {
+        count: number
+    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
     return result?.count ?? 0;
 }

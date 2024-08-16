@@ -11,6 +11,7 @@ import {useAuth, useUser} from "@clerk/clerk-expo";
 import {loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
+import {getLocales} from "expo-localization";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -11,6 +11,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {getAmountOfTransactionsByAccountId} from "@/lib/db";
 import {Account} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
+import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -22,6 +23,7 @@ export default function Screen() {
 
     function onPressAccount(account: Account) {
         dispatch(updateAccountCreateUpdate(account));
+        dispatch(changeEmoji(account.icon))
         router.push('/createEditAccount')
     }
 
@@ -58,6 +60,7 @@ const styles = StyleSheet.create({
     item: {
         borderRadius: 0,
         paddingHorizontal: 20,
+        marginBottom: 10,
         gap: 20,
         flexDirection: "row",
         justifyContent: "space-between",
