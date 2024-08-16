@@ -23,6 +23,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {getTransactions} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
+import {FlashList} from "@shopify/flash-list";
 
 type Props = {
     open: boolean;
@@ -107,9 +108,10 @@ export default function ReportsSheet({open, setOpen}: Props) {
 
                 <YStack marginVertical={45} gap={20}>
                     <Text textAlign="center" fontSize={16} fontWeight="bold" color="$gray10Dark">Select Category</Text>
-                    <FlatList
+                    <FlashList
+                        estimatedItemSize={200}
                         data={categories}
-                        contentContainerStyle={{paddingHorizontal: 20, gap: 10}}
+                        contentContainerStyle={{paddingHorizontal: 20}}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
@@ -124,9 +126,10 @@ export default function ReportsSheet({open, setOpen}: Props) {
 
                 <YStack gap={20}>
                     <Text textAlign="center" fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
-                    <FlatList
+                    <FlashList
                         data={accounts}
-                        contentContainerStyle={{paddingHorizontal: 20, gap: 10}}
+                        estimatedItemSize={20}
+                        contentContainerStyle={{paddingHorizontal: 20}}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
