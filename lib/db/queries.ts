@@ -522,3 +522,8 @@ export async function getCurrentBalance(db: SQLiteDatabase): Promise<number> {
         return 0;
     }
 }
+
+export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId: number): number {
+    const result: {count: number} | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
+    return result?.count ?? 0;
+}

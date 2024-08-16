@@ -10,9 +10,6 @@ export default function Screen() {
 
     return (
         <View flex={1}>
-            <CustomHeader style={{paddingTop: isIos ? insets.top + 20 : insets.top}} centered={true}>
-                <Text fontSize="$6">Currency</Text>
-            </CustomHeader>
         </View>
     )
 }

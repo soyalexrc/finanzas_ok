@@ -8,7 +8,7 @@ import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
 import {useAuth, useUser} from "@clerk/clerk-expo";
-import {saveString} from "@/lib/utils/storage";
+import {loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 
@@ -43,6 +43,7 @@ const InitialLayout = () => {
     }, [appearance]);
 
   useEffect(() => {
+    validateAppearanceFromStorage();
     const unsubscribe = NetInfo.addEventListener(
         state => dispatch(changeNetworkState(state))
     )
@@ -77,6 +78,13 @@ const InitialLayout = () => {
 
   if (!loaded && !isLoaded) {
     return <Slot />;
+  }
+
+  async function validateAppearanceFromStorage() {
+    const valueFromStorage = await loadString('appearance');
+    if (valueFromStorage) {
+        dispatch(updateAppearance(valueFromStorage as 'system' | 'light' | 'dark'));
+    }
   }
 
   return (

@@ -26,7 +26,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
-                            onPress={() => router.push('/appereance')}
+                            onPress={() => router.push('/appearance')}
                             title="Appereance"
                             icon={<IconWrapper bgColor="black" icon={<MaterialIcons name='dark-mode' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -42,16 +42,16 @@ export default function Screen() {
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
                     </YGroup.Item>
-                    <YGroup.Item>
-                        <ListItem
-                            hoverTheme
-                            pressTheme
-                            title="Currency"
-                            onPress={() => router.push('/currency')}
-                            icon={<IconWrapper bgColor="$green9Light" icon={<MaterialIcons name='attach-money' size={20} color="white" />} />}
-                            iconAfter={<Entypo name="chevron-small-right" size={24} />}
-                        />
-                    </YGroup.Item>
+                    {/*<YGroup.Item>*/}
+                    {/*    <ListItem*/}
+                    {/*        hoverTheme*/}
+                    {/*        pressTheme*/}
+                    {/*        title="Currency"*/}
+                    {/*        onPress={() => router.push('/currency')}*/}
+                    {/*        icon={<IconWrapper bgColor="$green9Light" icon={<MaterialIcons name='attach-money' size={20} color="white" />} />}*/}
+                    {/*        iconAfter={<Entypo name="chevron-small-right" size={24} />}*/}
+                    {/*    />*/}
+                    {/*</YGroup.Item>*/}
                     <YGroup.Item>
                         <ListItem
                             hoverTheme

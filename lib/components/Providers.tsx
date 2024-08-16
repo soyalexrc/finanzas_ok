@@ -24,9 +24,6 @@ export default function Providers({children}: { children: React.ReactNode }) {
     // TODO contactar developer mail functionality
     // TODO Share app functionality
     // TODO support developer payments functionality
-
-    // TODO hacer wrapper context para guardar el valor de thema seleccionado para usar abajo y no el colorscheme directamente... tambien manejar color de iconos basado en ese wrapper
-
     if (!publishableKey) {
         throw new Error(
             'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
