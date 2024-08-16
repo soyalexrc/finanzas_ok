@@ -62,7 +62,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
 
     function onPressAccount(account: Account) {
         if (selectedAccount.id === account.id) {
-            dispatch(updateAccountFilter({id: 0, icon: '', title: '', balance: 0, positive_status: 0}))
+            dispatch(updateAccountFilter({id: 0, icon: '', title: '', balance: 0, positive_status: 0, currency_symbol:'', currency_code: ''}))
         } else {
             dispatch(updateAccountFilter(account))
         }

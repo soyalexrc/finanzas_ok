@@ -19,6 +19,8 @@ export type FullTransactionRaw = {
     account_title: string;
     account_id: number;
     account_icon: string;
+    account_currency_code: string;
+    account_currency_symbol: string;
     account_positive_status: number;
     account_balance: number;
     category_title: string;
@@ -40,7 +42,7 @@ export type FullTransaction = {
 
 export type TransactionsGroupedByDate = {
     id: number;
-    total: number;
+    totals: { amount: number; symbol: string }[];
     date: string;
     items: FullTransaction[]
 }

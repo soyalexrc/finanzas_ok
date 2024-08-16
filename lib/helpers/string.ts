@@ -20,14 +20,38 @@ export function formatTitleOption(key: string, type: string): string {
     return key + ' this ' + type
 }
 
-export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string } {
-    const total = data.reduce((acc, cur) => acc + cur.total, 0);
-    const decimalsString = String(total).split('.')[1] ?? '00';
-    const decimals = decimalsString.length > 2 ? decimalsString.substring(0, 2) : decimalsString
-    return {
-        decimals: decimals,
-        amount: String(total).split('.')[0],
-    }
+// export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string } {
+//     const total = data.reduce((acc, cur) => acc + cur.total, 0);
+//     const decimalsString = String(total).split('.')[1] ?? '00';
+//     const decimals = decimalsString.length > 2 ? decimalsString.substring(0, 2) : decimalsString
+//     return {
+//         decimals: decimals,
+//         amount: String(total).split('.')[0],
+//     }
+// }
+
+export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string, symbol: string }[] {
+    const totalsBySymbol = data.reduce((acc, cur) => {
+        cur.totals.forEach(total => {
+            if (!acc[total.symbol]) {
+                acc[total.symbol] = 0;
+            }
+            acc[total.symbol] += total.amount;
+        });
+        return acc;
+    }, {} as Record<string, number>);
+
+    const result =  Object.entries(totalsBySymbol).map(([symbol, total]) => {
+        const decimalsString = String(total).split('.')[1] ?? '00';
+        const decimals = decimalsString.length > 2 ? decimalsString.substring(0, 2) : decimalsString;
+        return {
+            amount: String(total).split('.')[0],
+            decimals: decimals,
+            symbol: symbol
+        };
+    });
+
+    return result.sort((a, b) => (a.symbol === '$' ? 1 : b.symbol === '$' ? -1 : 0));
 }
 
 export function formatWithDecimals(total: number): {amount: string, decimals: string} {

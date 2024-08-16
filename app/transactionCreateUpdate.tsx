@@ -4,13 +4,17 @@ import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo} from "@expo/vector-icons";
 import {AntDesign} from '@expo/vector-icons';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DatePicker from 'react-native-date-picker'
 import {format} from "date-fns";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSelectedCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {formatByThousands, textShortener} from "@/lib/helpers/string";
-import {selectSelectedAccountForm} from "@/lib/store/features/accounts/accountsSlice";
+import {
+    selectAccountForm,
+    selectAccounts,
+    selectSelectedAccountForm
+} from "@/lib/store/features/accounts/accountsSlice";
 import {
     onChangeDate,
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
@@ -40,6 +44,7 @@ export default function Screen() {
     const isIos = Platform.OS === 'ios';
     const scheme = useColorScheme();
     const dispatch = useAppDispatch();
+    const accounts = useAppSelector(selectAccounts);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const currentTransaction = useAppSelector(selectCurrentTransaction)
@@ -104,6 +109,7 @@ export default function Screen() {
         }
     }
 
+
     return (
         <>
             <View position="relative" flex={1} backgroundColor="$background">
@@ -129,7 +135,7 @@ export default function Screen() {
                 <View flex={1}>
                     <View flex={0.4} justifyContent="center" alignItems="center">
                         <View flexDirection="row" alignItems="flex-start" gap="$2">
-                            <Text marginTop="$3" fontSize="$9" color="$gray10Dark">S/</Text>
+                            <Text marginTop="$3" fontSize="$9" color="$gray10Dark">{selectedAccount.currency_symbol}</Text>
                             <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
                         </View>
                     </View>

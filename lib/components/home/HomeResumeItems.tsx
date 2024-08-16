@@ -3,7 +3,7 @@ import * as ContextMenu from 'zeego/context-menu'
 import {useRouter} from "expo-router";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {Button, Text, View} from 'tamagui';
+import {Button, Text, View, XStack} from 'tamagui';
 import {
     addTransactionInHomeList,
     removeTransactionFromHomeList,
@@ -80,7 +80,13 @@ export default function HomeResumeItems() {
                         <View width={30}/>
                         <View style={[styles.imageWithLabel, {marginTop: 12}]}>
                             <Text style={{color: 'gray', fontSize: 14}}>{formatDateHomeItemGroups(group.date)}</Text>
-                            <Text style={{color: 'gray', fontSize: 14}}>S/ {formatByThousands(String(group.total))}</Text>
+                            <XStack gap={16}>
+                                {
+                                    group.totals.map((total, index) => (
+                                        <Text key={total.amount + index} style={{color: 'gray', fontSize: 14}}>{total.symbol} {formatByThousands(String(total.amount))}</Text>
+                                    ))
+                                }
+                            </XStack>
                         </View>
                     </View>
                     {group.items?.map((item) => (
@@ -100,7 +106,7 @@ export default function HomeResumeItems() {
                                             }
                                             <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text>S/ {formatByThousands(item.amount)}</Text>
+                                        <Text>{item.account.currency_symbol} {formatByThousands(item.amount)}</Text>
                                     </View>
                                 </Button>
                             </ContextMenu.Trigger>
