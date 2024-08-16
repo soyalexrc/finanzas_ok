@@ -6,6 +6,7 @@ import categoriesReducer from './features/categories/categoriesSlice'
 import transactionsReducer from './features/transactions/transactionsSlice'
 import reportReducer from './features/transactions/reportSlice';
 import settingsReducer from './features/settings/settingsSlice';
+import uiReducer from './features/ui/uiSlice';
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
         categories: categoriesReducer,
         report: reportReducer,
         settings: settingsReducer,
+        ui: uiReducer
     }
 })
 

@@ -4,7 +4,7 @@ import {Button, Text, useTheme} from "tamagui";
 import {TouchableOpacity, useColorScheme} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {useAppDispatch} from "@/lib/store/hooks";
-import {updateAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
+import {resetAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
 
 export default function SettingsLayout() {
     const theme = useTheme();
@@ -13,13 +13,7 @@ export default function SettingsLayout() {
     const router = useRouter();
 
     function onPressCreateAccount() {
-        dispatch(updateAccountCreateUpdate({
-            id: 0,
-            icon: '📬',
-            title: '',
-            positive_status: 1,
-            balance: 0
-        }));
+        dispatch(resetAccountCreateUpdate());
         router.push('/createEditAccount')
     }
 
@@ -27,7 +21,12 @@ export default function SettingsLayout() {
         <Stack screenOptions={{headerBackTitle: 'Back'}}>
             <Stack.Screen
                 name="index"
-                options={{headerShown: false}}
+                options={{
+                    title: 'Settings',
+                    headerBlurEffect: 'prominent',
+                    headerTransparent: true,
+                    headerTintColor: theme.color12.val,
+                }}
             />
             <Stack.Screen name="appearance" options={{
                 headerBlurEffect: 'prominent',

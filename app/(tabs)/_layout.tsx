@@ -60,8 +60,8 @@ export default function TabLayout() {
                     <Tabs.Screen
                         name="(settings)"
                         options={{
-                            headerShown: false,
                             title: '',
+                            headerShown: false,
                             tabBarIcon: ({color, focused}) => (
                                 <Feather name="settings" size={28} color={color}/>
                             ),

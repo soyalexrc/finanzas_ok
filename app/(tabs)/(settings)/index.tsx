@@ -8,19 +8,21 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {AntDesign} from "@expo/vector-icons";
 import {useRouter} from "expo-router";
+import {useHeaderHeight} from "@react-navigation/elements";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
     const isIos = Platform.OS === 'ios';
     const router = useRouter();
+    const headerHeight = useHeaderHeight();
 
     return (
         <View backgroundColor="$color1" flex={1}>
-            <CustomHeader style={{paddingTop: isIos ? insets.top + 20 : insets.top}} centered={true}>
-                <Text fontSize="$6">Settings</Text>
-            </CustomHeader>
+            {/*<CustomHeader style={{paddingTop: isIos ? insets.top + 20 : insets.top}} centered={true}>*/}
+            {/*    <Text fontSize="$6">Settings</Text>*/}
+            {/*</CustomHeader>*/}
 
-            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 80 : 20}>
+            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? headerHeight + 20 : headerHeight}>
                 <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}  separator={<Separator />}>
                     <YGroup.Item>
                         <ListItem

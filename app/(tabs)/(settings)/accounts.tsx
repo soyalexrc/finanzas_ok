@@ -1,10 +1,8 @@
-import {Button, ScrollView, Text, View, YStack} from "tamagui";
-import React, {useEffect} from "react";
+import {ScrollView, Text, View, YStack} from "tamagui";
 import {Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    selectAccountCreateUpdate,
     selectAccounts,
     updateAccountCreateUpdate
 } from "@/lib/store/features/accounts/accountsSlice";
@@ -47,7 +45,7 @@ export default function Screen() {
                                 <Text fontSize={18} fontWeight="bold">{account.title}</Text>
                                 <Text color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} Transactions</Text>
                             </YStack>
-                            <Text fontSize={18}>S/ {formatByThousands(account.balance.toString())} PEN</Text>
+                            <Text fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>
                         </View>
                     </TouchableOpacity>
                 ))

@@ -6,6 +6,7 @@ import * as DropdownMenu from 'zeego/dropdown-menu'
 import {selectAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
 import {useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
+import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 
 export default function Screen() {
     const router = useRouter();
@@ -13,72 +14,90 @@ export default function Screen() {
     const schemeColor = useColorScheme();
     const accountCreateUpdate = useAppSelector(selectAccountCreateUpdate);
     const [accountTitle, setAccountTitle] = useState<string>('')
-    const [accountIcon, setAccountIcon] = useState<string>('')
     const [accountBalance, setAccountBalance] = useState<string>('0')
-    const [accountPositiveState, setAccountPositiveState] = useState<string>('')
-    // TODO add emoji sheet picker
-    // TODO add currency sheet picker
+    const [accountCurrency, setAccountCurrency] = useState<string>('PEN')
+    const [accountPositiveState, setAccountPositiveState] = useState<string>('');
+    const currentEmoji = useAppSelector(selectCurrentEmoji);
+
     // TODO add support for multi currency per account (for example, a savings account in USD, credit card in PEN) with name and icons (coins api), and manage exchange rates from api. Rememeber to make the exchange rate between the coin of the account and the coin of the transaction (this is the global currency selected)
 
     useEffect(() => {
         setAccountTitle(accountCreateUpdate.title)
-        setAccountIcon(accountCreateUpdate.icon)
         setAccountBalance(accountCreateUpdate.balance.toString())
         setAccountPositiveState(accountCreateUpdate.positive_status ? 'Positive' : 'Negative');
     }, []);
 
+
     return (
-        <View flex={1} backgroundColor="$color1" p={20}>
-            <XStack justifyContent='space-between' alignItems='center' mb={30}>
-                <TouchableOpacity style={{ padding: 10, borderRadius: 12 }} onPress={() => router.back()}>
-                    <Text>Cancel</Text>
-                </TouchableOpacity>
-                <Text fontSize={20}>Account</Text>
-                <Button>Done</Button>
-            </XStack>
-
-            <YStack mb={70}>
-                <Text fontSize={16} mb={4}>Name</Text>
-                <View flex={1} gap={6} position='relative'>
-                    <TouchableOpacity style={{ position: 'absolute', top: -5, zIndex: 11, left: 5, padding: 10, borderRightWidth: 1, borderStyle: 'solid', borderColor: theme.color1.val}}>
-                        <Text fontSize={25}>{accountIcon ?? '✅'}</Text>
+        <>
+            <View flex={1} backgroundColor="$color1" p={20}>
+                <XStack justifyContent='space-between' alignItems='center' mb={30}>
+                    <TouchableOpacity style={{ padding: 10, borderRadius: 12 }} onPress={() => router.back()}>
+                        <Text>Cancel</Text>
                     </TouchableOpacity>
-                    <Input  size="$4" value={accountTitle} onChangeText={setAccountTitle} paddingLeft={60} placeholder="New Account"  />
-                </View>
-            </YStack>
+                    <Text fontSize={20}>Account</Text>
+                    <Button>Done</Button>
+                </XStack>
 
-            <YStack mb={70}>
-                <Text fontSize={16} mb={4}>Balance</Text>
-                <View flex={1} gap={6} position='relative'>
-                    <TouchableOpacity style={{ position: 'absolute', top: 5, zIndex: 11, left: 5, padding: 10, borderRightWidth: 1, borderStyle: 'solid', borderColor: theme.color1.val}}>
-                        <Text>PEN</Text>
-                    </TouchableOpacity>
-                    <Input keyboardType="numeric" value={accountBalance} onChangeText={setAccountBalance} size="$4" paddingLeft={60} placeholder="New Account"  />
-                </View>
-            </YStack>
-
-            <YStack mb={70}>
-                <Text fontSize={16} mb={4}>State</Text>
-                <DropdownMenu.Root key="positive_status">
-                    <DropdownMenu.Trigger>
-                        <TouchableOpacity style={{ backgroundColor: theme.color2.val, height: 50, paddingHorizontal: 20, borderRadius: 8, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderStyle: 'solid', borderColor: theme.color5.val, justifyContent: 'space-between' }}>
-                            <Text>{accountPositiveState ?? 'Select Balance State'}</Text>
-                            <Entypo name="select-arrows" size={18} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                <YStack mb={70}>
+                    <Text fontSize={16} mb={4}>Name</Text>
+                    <View flex={1} gap={6} position='relative'>
+                        <TouchableOpacity onPress={() => router.push('/emojiSelection')} style={{ position: 'absolute', top: -5, zIndex: 11, left: 5, padding: 10, borderRightWidth: 1, borderStyle: 'solid', borderColor: theme.color1.val}}>
+                            <Text fontSize={25}>{currentEmoji ?? '✅'}</Text>
                         </TouchableOpacity>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0} collisionPadding={0}
-                                         avoidCollisions={true}>
-                        <DropdownMenu.Item key="positive" onSelect={() => setAccountPositiveState('Positive')}>
-                            <DropdownMenu.ItemTitle>Positive</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                        <DropdownMenu.Item key="negative" onSelect={() => setAccountPositiveState('Negative')}>
-                            <DropdownMenu.ItemTitle>Negative</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                </DropdownMenu.Root>
+                        <Input  size="$4" value={accountTitle} onChangeText={setAccountTitle} paddingLeft={60} placeholder="New Account"  />
+                    </View>
+                </YStack>
 
-                <Text mt={10} color="$gray10Dark">Negative adds a minus sign at the beginning of the balance</Text>
-            </YStack>
-        </View>
+                <YStack mb={70}>
+                    <Text fontSize={16} mb={4}>Balance</Text>
+                    <View flex={1} gap={6} position='relative'>
+                        <DropdownMenu.Root key="currency" style={{ position: 'absolute', top: 5, zIndex: 11, left: 5, padding: 10, borderRightWidth: 1, borderStyle: 'solid', borderColor: theme.color1.val}}>
+                            <DropdownMenu.Trigger>
+                                <TouchableOpacity >
+                                    <Text>{accountCurrency}</Text>
+                                </TouchableOpacity>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0} collisionPadding={0}
+                                                  avoidCollisions={true}>
+                                <DropdownMenu.Item key="positive" onSelect={() => setAccountCurrency('PEN')}>
+                                    <DropdownMenu.ItemTitle>PEN</DropdownMenu.ItemTitle>
+                                </DropdownMenu.Item>
+                                <DropdownMenu.Item key="negative" onSelect={() => setAccountCurrency('USD')}>
+                                    <DropdownMenu.ItemTitle>USD</DropdownMenu.ItemTitle>
+                                </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+
+                        <Input keyboardType="numeric" value={accountBalance} onChangeText={setAccountBalance} size="$4" paddingLeft={60} placeholder="Balance"  />
+                    </View>
+                </YStack>
+
+                <YStack mb={70}>
+                    <Text fontSize={16} mb={4}>State</Text>
+                    <DropdownMenu.Root key="positive_status">
+                        <DropdownMenu.Trigger>
+                            <TouchableOpacity style={{ backgroundColor: theme.color2.val, height: 50, paddingHorizontal: 20, borderRadius: 8, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderStyle: 'solid', borderColor: theme.color5.val, justifyContent: 'space-between' }}>
+                                <Text>{accountPositiveState ?? 'Select Balance State'}</Text>
+                                <Entypo name="select-arrows" size={18} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                            </TouchableOpacity>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0} collisionPadding={0}
+                                              avoidCollisions={true}>
+                            <DropdownMenu.Item key="positive" onSelect={() => setAccountPositiveState('Positive')}>
+                                <DropdownMenu.ItemTitle>Positive</DropdownMenu.ItemTitle>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item key="negative" onSelect={() => setAccountPositiveState('Negative')}>
+                                <DropdownMenu.ItemTitle>Negative</DropdownMenu.ItemTitle>
+                            </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                    </DropdownMenu.Root>
+
+                    <Text mt={10} color="$gray10Dark">Negative adds a minus sign at the beginning of the balance</Text>
+                </YStack>
+
+            </View>
+            {/*<EmojiSelectionSheet open={openEmojisSheet} setOpen={setOpenEmojisSheet} onSelectEmoji={onEmojiSelected} />*/}
+        </>
     )
 }

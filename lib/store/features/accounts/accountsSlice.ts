@@ -15,6 +15,8 @@ const initialState: AccountsState = {
         id: 1,
         icon: '💵',
         title: 'Cash',
+        currency_code: '',
+        currency_symbol: '',
         positive_status: 1,
         balance: 0
     },
@@ -23,13 +25,17 @@ const initialState: AccountsState = {
         icon: '',
         title: 'All accounts',
         positive_status: 1,
+        currency_code: '',
+        currency_symbol: '',
         balance: 0
     },
     selectedCreateUpdate: {
         id: 0,
-        icon: '📬',
+        icon: '',
         title: '',
         positive_status: 1,
+        currency_code: '',
+        currency_symbol: '',
         balance: 0
     }
 }
@@ -52,11 +58,29 @@ export const accountsSlice = createSlice({
         },
         updateAccountCreateUpdate: (state, action: PayloadAction<Account>) => {
             state.selectedCreateUpdate = action.payload;
+        },
+        resetAccountCreateUpdate: (state) => {
+            state.selectedCreateUpdate = {
+                id: 0,
+                icon: '',
+                title: '',
+                positive_status: 1,
+                currency_code: '',
+                currency_symbol: '',
+                balance: 0
+            }
         }
     }
 });
 
-export const { updateAccountsList, selectAccountGlobally, updateAccountCreateUpdate, addAccount, selectAccountForm } = accountsSlice.actions;
+export const {
+    updateAccountsList,
+    resetAccountCreateUpdate,
+    selectAccountGlobally,
+    updateAccountCreateUpdate,
+    addAccount,
+    selectAccountForm
+} = accountsSlice.actions;
 
 export const selectAccounts = (state: RootState) => state.accounts.list
 export const selectSelectedAccountForm = (state: RootState) => state.accounts.selectedForm

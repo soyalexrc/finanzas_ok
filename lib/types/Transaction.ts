@@ -70,6 +70,8 @@ export type Account = {
     title: string;
     icon: string;
     balance: number;
+    currency_symbol: string;
+    currency_code: string;
     positive_status: number;
     id: number;
 }
