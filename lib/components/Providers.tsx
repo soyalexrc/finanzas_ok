@@ -24,6 +24,8 @@ export default function Providers({children}: { children: React.ReactNode }) {
     // TODO contactar developer mail functionality
     // TODO Share app functionality
     // TODO support developer payments functionality
+    // TODO support logout from settings
+
     if (!publishableKey) {
         throw new Error(
             'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
