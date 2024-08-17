@@ -32,7 +32,13 @@ const initialState: ReportState = {
             title: '',
             icon: ''
         },
-        transactions: []
+        transactions: [],
+        account: {
+            title: '',
+            currency_symbol: '',
+            currency_code: '',
+            id: 0
+        }
     },
     filters: {
         category: {
@@ -50,6 +56,8 @@ const initialState: ReportState = {
             icon: '',
             title: '',
             balance: 0,
+            currency_symbol: '',
+            currency_code: '',
             positive_status: 0
         }
     }

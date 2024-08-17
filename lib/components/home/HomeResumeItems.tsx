@@ -3,7 +3,7 @@ import * as ContextMenu from 'zeego/context-menu'
 import {useRouter} from "expo-router";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {Button, Text, View, XStack} from 'tamagui';
+import {Button, Text, useTheme, View, XStack} from 'tamagui';
 import {
     addTransactionInHomeList,
     removeTransactionFromHomeList,
@@ -22,13 +22,13 @@ import {
     stopRecurringInTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {useTheme} from "@react-navigation/native";
 import {formatByThousands} from "@/lib/helpers/string";
 
 export default function HomeResumeItems() {
     const db = useSQLiteContext();
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const theme = useTheme();
     const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
@@ -106,7 +106,7 @@ export default function HomeResumeItems() {
                                             }
                                             <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text>{item.account.currency_symbol} {formatByThousands(item.amount)}</Text>
+                                        <Text style={[item.category.type === 'income' && { color: theme. green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(item.amount)}</Text>
                                     </View>
                                 </Button>
                             </ContextMenu.Trigger>

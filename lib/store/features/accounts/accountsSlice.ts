@@ -12,9 +12,9 @@ export interface AccountsState {
 const initialState: AccountsState = {
     list: [],
     selectedForm: {
-        id: 1,
-        icon: '💵',
-        title: 'Cash',
+        id: 0,
+        icon: '',
+        title: '',
         currency_code: '',
         currency_symbol: '',
         positive_status: 1,

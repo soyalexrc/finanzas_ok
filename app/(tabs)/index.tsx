@@ -14,7 +14,6 @@ import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
 import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
-import {useAuth, useUser} from "@clerk/clerk-expo";
 import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentWeek, getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
@@ -22,7 +21,7 @@ import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupe
 import {updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import {
     selectAccountFilter, selectCategoryFilter,
-    selectDateRangeFilter,
+    selectDateRangeFilter, updateAccountFilter, updateCategoryFilter,
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
@@ -44,10 +43,12 @@ export default function HomeScreen() {
 
     async function updateStore() {
         try {
+            const accounts = getAllAccounts(db)
             const {start, end} = getCurrentWeek();
+            dispatch(updateAccountFilter(accounts[0]));
             const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
             const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
-            dispatch(updateAccountsList(getAllAccounts(db)))
+            dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(getAllCategories(db)));
 
             dispatch(updateTransactionsGroupedByDate(transactions));

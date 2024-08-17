@@ -117,5 +117,11 @@ export type TransactionsGroupedByCategory = {
         title: string;
         icon: string;
     },
+    account: {
+        id: number,
+        title: string;
+        currency_code: string;
+        currency_symbol: string
+    }
     transactions: TransactionWithAmountNumber[]
 }

@@ -1,6 +1,6 @@
 import {useColorScheme, Platform, RefreshControl} from 'react-native';
 import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme, Image} from 'tamagui';
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -17,13 +17,12 @@ import {
     selectTransactionsGroupedByCategory, updateChartPoints, updateDateRangeFilter, updateDetailGroup,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
-import {ChartPoints, TransactionsGroupedByCategory} from "@/lib/types/Transaction";
+import {TransactionsGroupedByCategory} from "@/lib/types/Transaction";
 import {calculateTotalFromChartPoints, calculateTotalTransactions} from "@/lib/helpers/operations";
-import {Bar, CartesianChart, Line} from "victory-native";
+import {CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
 import {getDateRangeBetweenGapDaysAndToday, getDateRangeTenYearsAgo} from "@/lib/helpers/date";
-import {useAppSelector} from "@/lib/store/hooks";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -40,7 +39,7 @@ export default function ReportScreen() {
     const selectedCategory = useSelector(selectCategoryFilter);
     const selectedAccount = useSelector(selectAccountFilter);
     const selectedDateRange = useSelector(selectDateRangeFilter);
-    const [daysFrom, setDaysFrom] = useState<string>('15')
+    const [daysFrom, setDaysFrom] = useState<string>('0')
 
     function handlePress(item: TransactionsGroupedByCategory) {
         dispatch(updateDetailGroup(item));
@@ -61,7 +60,9 @@ export default function ReportScreen() {
     }
 
     useEffect(() => {
-        handleGetReportByPresetDays()
+        if (daysFrom !== '0') {
+            handleGetReportByPresetDays()
+        }
     }, [daysFrom]);
 
     async function handleGetReportByPresetDays() {
@@ -92,7 +93,7 @@ export default function ReportScreen() {
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
             <CustomHeader style={{paddingTop: isIos ? insets.top : 0}}>
-                <Text fontSize={36}>S/ {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
+                <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
                 <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
                     <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                 </Button>
@@ -124,7 +125,7 @@ export default function ReportScreen() {
                     {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
 
-                    <View paddingHorizontal={10} paddingTop={20} paddingBottom={10} flexDirection="row"
+                    <View paddingHorizontal={10} paddingVertical={5} flexDirection="row"
                           backgroundColor="$color1" gap={15}>
                         <Text fontSize={16} color="$gray10Dark">Spent this week</Text>
                         <View flexDirection="row" gap={5}>
@@ -137,7 +138,7 @@ export default function ReportScreen() {
 
 
                     {/*Grafica*/}
-                    <View height={210} p={10}>
+                    <View height={250} p={10}>
                         {
                             chartPoints.length > 2 &&
                             <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]}
@@ -216,7 +217,7 @@ export default function ReportScreen() {
                                             <Text fontSize={14} color="$gray10Dark">x {item.transactions.length}</Text>
                                         }
                                     </View>
-                                    <Text>S/ {formatByThousands(calculateTotalTransactions(item.transactions))}</Text>
+                                    <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions))}</Text>
                                 </View>
                             </Button>
                         ))
@@ -224,7 +225,7 @@ export default function ReportScreen() {
                     <View height={200}/>
                 </ScrollView>
             }
-            <ReportsSheet open={openFiltersSheet} setOpen={setOpenFiltersSheet}/>
+            <ReportsSheet open={openFiltersSheet} setOpen={setOpenFiltersSheet} updatePresetDays={() => setDaysFrom('0')} />
         </YStack>
     );
 }

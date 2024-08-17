@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {Button, Sheet, Text, TextArea, View, XStack, YStack} from "tamagui";
-import {FlatList, Platform, StyleSheet, TouchableOpacity} from "react-native";
+import {Button, Sheet, Text, TextArea, useTheme, View, XStack, YStack} from "tamagui";
+import {FlatList, Platform, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
 import {textShortener} from "@/lib/helpers/string";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -24,48 +24,43 @@ import {getTransactions} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
 import {FlashList} from "@shopify/flash-list";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 type Props = {
     open: boolean;
     setOpen: (value: boolean) => void;
+    updatePresetDays: () => void;
 }
 
-export default function ReportsSheet({open, setOpen}: Props) {
+export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
     const db = useSQLiteContext();
     const [position, setPosition] = useState(0);
     const dispatch = useAppDispatch()
     const accounts = useAppSelector(selectAccounts);
     const categories = useAppSelector(selectCategories);
+    const theme = useTheme();
     const selectedCategory = useAppSelector(selectCategoryFilter);
     const selectedAccount = useAppSelector(selectAccountFilter);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const [showDateFromCalendar, setShowDateFromCalendar] = useState<boolean>(false);
     const [showDateToCalendar, setShowDateToCalendar] = useState<boolean>(false);
+
+    const [localCategory, setLocalCategory] = useState<Category>(selectedCategory);
+    const [localAccount, setLocalAccount] = useState<Account>(selectedAccount);
     const insets = useSafeAreaInsets();
 
-    const isIos = Platform.OS === 'ios';
-
     async function applyFilters() {
-        const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccount.id, selectedCategory.id);
+        dispatch(updateCategoryFilter(localCategory))
+        dispatch(updateAccountFilter(localAccount))
+        const {
+            amountsGroupedByDate,
+            transactionsGroupedByCategory
+        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, localAccount.id, localCategory.id);
         dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
         dispatch(updateChartPoints(amountsGroupedByDate))
+
+        updatePresetDays();
         setOpen(false);
-    }
-
-    function onPressCategory(category: Category) {
-        if (selectedCategory.id === category.id) {
-            dispatch(updateCategoryFilter({id: 0, icon: '', title: '', type: ''}))
-        } else {
-            dispatch(updateCategoryFilter(category))
-        }
-    }
-
-    function onPressAccount(account: Account) {
-        if (selectedAccount.id === account.id) {
-            dispatch(updateAccountFilter({id: 0, icon: '', title: '', balance: 0, positive_status: 0, currency_symbol:'', currency_code: ''}))
-        } else {
-            dispatch(updateAccountFilter(account))
-        }
     }
 
     return (
@@ -90,24 +85,44 @@ export default function ReportsSheet({open, setOpen}: Props) {
             />
 
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1">
-               <YStack gap={20}>
-                   <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Select
-                       Date Range</Text>
+                <YStack gap={20}>
+                    <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Select
+                        Date Range</Text>
 
-                   <XStack gap={20} paddingHorizontal={20}>
-                       <YStack flex={1}>
-                           <Text textAlign="center" mb={5}>Date from</Text>
-                           <Button onPress={() => setShowDateFromCalendar(true)}>{selectedDateRange.start ? format(selectedDateRange.start, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
-                       </YStack>
-                       <YStack flex={1}>
-                           <Text textAlign="center" mb={5}>Date to</Text>
-                           <Button disabled={selectedDateRange.start === ''} onPress={() => setShowDateToCalendar(true)}>{selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
-                       </YStack>
-                   </XStack>
-               </YStack>
+                    <XStack gap={20} paddingHorizontal={20}>
+                        <YStack flex={1}>
+                            <Text textAlign="center" mb={5}>Date from</Text>
+                            <Button variant="outlined"
+                                    onPress={() => setShowDateFromCalendar(true)}>{selectedDateRange.start ? format(selectedDateRange.start, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
+                        </YStack>
+                        <YStack flex={1}>
+                            <Text textAlign="center" mb={5}>Date to</Text>
+                            <Button variant="outlined" disabled={selectedDateRange.start === ''}
+                                    onPress={() => setShowDateToCalendar(true)}>{selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
+                        </YStack>
+                    </XStack>
+                </YStack>
 
-                <YStack marginVertical={45} gap={20}>
-                    <Text textAlign="center" fontSize={16} fontWeight="bold" color="$gray10Dark">Select Category</Text>
+                <YStack marginVertical={45}>
+                    <XStack justifyContent="space-between">
+                        <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Category</Text>
+                        <TouchableOpacity style={{
+                            borderStyle: 'solid',
+                            borderWidth: 1,
+                            borderColor: theme.red10Dark.val,
+                            borderRadius: 20,
+                            paddingVertical: 4,
+                            paddingHorizontal: 8,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginRight: 30
+                        }} onPress={() => dispatch(updateCategoryFilter({id: 0, title: '', icon: '', type: ''}))}>
+                            <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
+                            <Text fontSize={12} color={theme.red10Dark.val}>Clear </Text>
+                        </TouchableOpacity>
+                    </XStack>
+                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
+                          color="$gray10Dark">{localCategory.icon} {localCategory.title}</Text>
                     <FlashList
                         estimatedItemSize={200}
                         data={categories}
@@ -116,7 +131,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity key={item.id} style={[styles.item, selectedCategory.id === item.id && styles.selectedItem]} onPress={() => onPressCategory(item)}>
+                            <TouchableOpacity key={item.id} style={styles.item} onPress={() => setLocalCategory(item)}>
                                 <Text style={{fontSize: 50}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
@@ -124,8 +139,10 @@ export default function ReportsSheet({open, setOpen}: Props) {
                     />
                 </YStack>
 
-                <YStack gap={20}>
-                    <Text textAlign="center" fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
+                <YStack>
+                    <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
+                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
+                          color="$gray10Dark">{localAccount.icon} {localAccount.title}</Text>
                     <FlashList
                         data={accounts}
                         estimatedItemSize={20}
@@ -134,7 +151,7 @@ export default function ReportsSheet({open, setOpen}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity key={item.id} style={[styles.item, selectedAccount.id === item.id && styles.selectedItem]} onPress={() => onPressAccount(item)}>
+                            <TouchableOpacity key={item.id} style={styles.item} onPress={() => setLocalAccount(item)}>
                                 <Text style={{fontSize: 50}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
@@ -142,20 +159,20 @@ export default function ReportsSheet({open, setOpen}: Props) {
                     />
                 </YStack>
 
-               <View bottom={0} left={0} width="100%" mb={insets.bottom} position='absolute'  >
-                   <Button mx={10} onPress={applyFilters}>Apply filters</Button>
-               </View>
+                <View bottom={0} left={0} width="100%" mb={insets.bottom} position='absolute'>
+                    <Button mx={10} onPress={applyFilters}>Apply filters</Button>
+                </View>
 
                 <DatePicker
                     modal
                     mode="date"
                     open={showDateFromCalendar}
-                    date={new Date()}
+                    date={selectedDateRange.start ? formatDate(selectedDateRange.start) : new Date()}
                     maximumDate={new Date()}
                     onConfirm={(date) => {
                         const timeZonedDate = formatDate(date)
                         setShowDateFromCalendar(false)
-                        dispatch(updateDateRangeFilter({ type: 'start', value: timeZonedDate.toISOString() }))
+                        dispatch(updateDateRangeFilter({type: 'start', value: timeZonedDate.toISOString()}))
                     }}
                     onCancel={() => {
                         setShowDateFromCalendar(false)
@@ -166,13 +183,13 @@ export default function ReportsSheet({open, setOpen}: Props) {
                     modal
                     mode="date"
                     open={showDateToCalendar}
-                    date={new Date()}
+                    date={selectedDateRange.end ? formatDate(selectedDateRange.end) : new Date()}
                     minimumDate={new Date(selectedDateRange.start)}
                     maximumDate={new Date()}
                     onConfirm={(date) => {
                         const timeZonedDate = formatDate(date)
                         setShowDateToCalendar(false)
-                        dispatch(updateDateRangeFilter({ type: 'end', value: timeZonedDate.toISOString() }))
+                        dispatch(updateDateRangeFilter({type: 'end', value: timeZonedDate.toISOString()}))
                     }}
                     onCancel={() => {
                         setShowDateToCalendar(false)
@@ -188,11 +205,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 10,
         borderRadius: 10,
-        alignItems: 'center'
-    },
-    selectedItem: {
-        borderWidth: 2,
-        borderColor: 'lightgray',
-        borderStyle: 'solid'
+        alignItems: 'center',
     }
 })

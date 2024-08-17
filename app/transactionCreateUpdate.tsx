@@ -13,25 +13,22 @@ import {formatByThousands, textShortener} from "@/lib/helpers/string";
 import {
     selectAccountForm,
     selectAccounts,
-    selectSelectedAccountForm
+    selectSelectedAccountForm, selectSelectedAccountGlobal
 } from "@/lib/store/features/accounts/accountsSlice";
 import {
     onChangeDate,
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {fromZonedTime} from "date-fns-tz";
 import {createTransaction, getTransactions, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import sleep from "@/lib/helpers/sleep";
-import {useTheme} from "@react-navigation/native";
 import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
 import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboard";
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
 import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
 import {
-    selectAccountFilter, selectCategoryFilter,
     selectDateRangeFilter,
     updateChartPoints,
     updateTransactionsGroupedByCategory
@@ -50,9 +47,9 @@ export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
-
-    const selectedAccountFilter = useAppSelector(selectAccountFilter);
-    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
+    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
+    const selectedAccountFilter = useAppSelector(selectSelectedAccountForm);
+    const selectedCategoryFilter = useAppSelector(selectSelectedCategory);
 
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
@@ -78,7 +75,7 @@ export default function Screen() {
                 notes: currentTransaction.notes
             });
             if (updatedTransaction) {
-                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
                 const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                 dispatch(updateTransactionsGroupedByDate(transactions));
                 dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
@@ -98,7 +95,7 @@ export default function Screen() {
                 notes: currentTransaction.notes
             });
             if (newTransaction) {
-                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
                 const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                 dispatch(updateTransactionsGroupedByDate(transactions));
                 dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
@@ -109,6 +106,15 @@ export default function Screen() {
         }
     }
 
+    useEffect(() => {
+        if (selectedAccount.id === 0) {
+            if (globalAccount.id > 0) {
+                dispatch(selectAccountForm(globalAccount));
+            } else {
+                dispatch(selectAccountForm(accounts[0]));
+            }
+        }
+    }, [] );
 
     return (
         <>

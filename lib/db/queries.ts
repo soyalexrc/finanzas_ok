@@ -43,6 +43,10 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   a.id                AS account_id,
+                   a.title             AS account_id,
+                   a.currency_symbol   AS currency_symbol,
+                   a.currency_code     AS currency_code,
                    json_group_array(json_object(
                            'id', t.id,
                            'user_id', t.user_id,
@@ -55,6 +59,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                                     )) AS transactions
             FROM transactions t
                      LEFT JOIN categories c ON t.category_id = c.id
+                     LEFT JOIN accounts a ON t.account_id = a.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -76,6 +81,10 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   a.id                AS account_id,
+                   a.title             AS account_id,
+                   a.currency_symbol   AS currency_symbol,
+                   a.currency_code     AS currency_code,
                    json_group_array(json_object(
                            'id', t.id,
                            'user_id', t.user_id,
@@ -88,6 +97,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                                     )) AS transactions
             FROM transactions t
                      LEFT JOIN categories c ON t.category_id = c.id
+                     LEFT JOIN accounts a ON t.account_id = a.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -111,6 +121,10 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   a.id                AS account_id,
+                   a.title             AS account_id,
+                   a.currency_symbol   AS currency_symbol,
+                   a.currency_code     AS currency_code,
                    json_group_array(json_object(
                            'id', t.id,
                            'user_id', t.user_id,
@@ -123,6 +137,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                                     )) AS transactions
             FROM transactions t
                      LEFT JOIN categories c ON t.category_id = c.id
+                     LEFT JOIN accounts a ON t.account_id = a.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -147,6 +162,10 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   a.id                AS account_id,
+                   a.title             AS account_id,
+                   a.currency_symbol   AS currency_symbol,
+                   a.currency_code     AS currency_code,
                    json_group_array(json_object(
                            'id', t.id,
                            'user_id', t.user_id,
@@ -159,6 +178,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                                     )) AS transactions
             FROM transactions t
                      LEFT JOIN categories c ON t.category_id = c.id
+                     LEFT JOIN accounts a ON t.account_id = a.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -176,6 +196,12 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                 title: group.title,
                 icon: group.icon,
                 id: group.id,
+            },
+            account: {
+                id: group.account_id,
+                title: group.account_title,
+                currency_code: group.currency_code,
+                currency_symbol: group.currency_symbol,
             },
             transactions: JSON.parse(group.transactions)
         }))
@@ -204,10 +230,10 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
                        ROUND(SUM(t.amount), 2)      AS total,
                        c.type                       AS transaction_type,
                        t.account_id,
-                       a.currency_symbol AS currency_symbol
+                       a.currency_symbol            AS currency_symbol
                 FROM transactions t
                          LEFT JOIN categories c ON t.category_id = c.id
-                LEFT JOIN accounts a ON t.account_id = a.id
+                         LEFT JOIN accounts a ON t.account_id = a.id
                 WHERE date BETWEEN ?
                   and ?
                   AND transaction_type = ?
@@ -217,11 +243,11 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
 
 
             transactions = await db.getAllAsync(`
-            SELECT t.id,
-                   t.amount,
-                   t.recurrentDate,
-                   t.user_id,
-                   strftime('%Y-%m-%d', t.date) AS date,
+                SELECT t.id,
+                       t.amount,
+                       t.recurrentDate,
+                       t.user_id,
+                       strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
             c.title AS category_title,
             c.id AS category_id,
@@ -234,14 +260,14 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             a.id AS account_id,
             a.balance AS account_balance,
             a.positive_state AS account_positive_state
-            FROM transactions t
-                LEFT JOIN categories c
-            ON t.category_id = c.id
-                LEFT JOIN accounts a ON t.account_id = a.id
-            WHERE t.date BETWEEN ?
-              and ?
-              AND c.type = ?
-        `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
+                FROM transactions t
+                    LEFT JOIN categories c
+                ON t.category_id = c.id
+                    LEFT JOIN accounts a ON t.account_id = a.id
+                WHERE t.date BETWEEN ?
+                  and ?
+                  AND c.type = ?
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
 
         } else {
             groups = await db.getAllAsync(`
@@ -249,7 +275,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
                        ROUND(SUM(t.amount), 2)      AS total,
                        c.type                       AS transaction_type,
                        t.account_id,
-                       a.currency_symbol AS currency_symbol
+                       a.currency_symbol            AS currency_symbol
                 FROM transactions t
                          LEFT JOIN categories c ON t.category_id = c.id
                          LEFT JOIN accounts a ON t.account_id = a.id
@@ -262,11 +288,11 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
 
             transactions = await db.getAllAsync(`
-            SELECT t.id,
-                   t.amount,
-                   t.recurrentDate,
-                   t.user_id,
-                   strftime('%Y-%m-%d', t.date) AS date,
+                SELECT t.id,
+                       t.amount,
+                       t.recurrentDate,
+                       t.user_id,
+                       strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
             c.title AS category_title,
             c.id AS category_id,
@@ -279,15 +305,15 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             a.id AS account_id,
             a.balance AS account_balance,
             a.positive_state AS account_positive_state
-            FROM transactions t
-                LEFT JOIN categories c
-            ON t.category_id = c.id
-                LEFT JOIN accounts a ON t.account_id = a.id
-            WHERE t.date BETWEEN ?
-              and ?
-              AND c.type = ?
-              AND t.account_id = ?
-        `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
+                FROM transactions t
+                    LEFT JOIN categories c
+                ON t.category_id = c.id
+                    LEFT JOIN accounts a ON t.account_id = a.id
+                WHERE t.date BETWEEN ?
+                  and ?
+                  AND c.type = ?
+                  AND t.account_id = ?
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense', accountId]);
 
         }
 
@@ -317,7 +343,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
 
         const groupedData = groups.reduce((acc: any[], curr: any) => {
             const dateGroup = acc.find(group => group.formatted_date === curr.formatted_date);
-            const totalObj = { amount: curr.total, symbol: curr.currency_symbol };
+            const totalObj = {amount: curr.total, symbol: curr.currency_symbol};
 
             if (dateGroup) {
                 dateGroup.totals.push(totalObj);
@@ -469,12 +495,12 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
 export async function updateTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`
         UPDATE transactions
-        SET amount = ?,
+        SET amount        = ?,
             recurrentDate = ?,
-            date = ?,
-            notes = ?,
-            account_id = ?,
-            category_id = ?
+            date          = ?,
+            notes         = ?,
+            account_id    = ?,
+            category_id   = ?
         WHERE id = ?
     `);
     try {

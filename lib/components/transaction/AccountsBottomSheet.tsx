@@ -18,11 +18,11 @@ type Props = {
 export default function AccountsBottomSheet({ open, setOpen }: Props) {
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
-    const selectedCategory = useAppSelector(selectSelectedCategory);
     const [position, setPosition] = useState(0);
 
     function handlePressAccount(account: Account) {
         dispatch(selectAccountForm(account));
+        setOpen(false);
     }
 
     return (
