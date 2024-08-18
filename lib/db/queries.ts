@@ -666,3 +666,8 @@ export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId
     } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
     return result?.count ?? 0;
 }
+
+export async function deleteAccount(db: SQLiteDatabase, accountId: number) {
+    await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
+    await db.runAsync('DELETE FROM accounts WHERE id = ?', [accountId]);
+}
