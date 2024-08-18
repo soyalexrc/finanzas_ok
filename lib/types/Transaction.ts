@@ -87,6 +87,12 @@ export type AccountCreate = {
     positive_state: number;
 }
 
+export type CategoryCreate = {
+    title: string;
+    icon: string;
+    type: string;
+}
+
 export type AccountEdit = {
     title: string;
     id: number;

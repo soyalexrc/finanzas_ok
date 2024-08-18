@@ -29,6 +29,7 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -112,7 +113,7 @@ export default function Screen() {
                                     alignItems='center'
                                     justifyContent='space-between'
                                     borderBottomWidth={1}
-                                    pb={5}
+                                    py={10}
                                     borderColor='$color2'
                                 >
                                     <YStack gap={4}>
@@ -139,6 +140,7 @@ export default function Screen() {
                     </ContextMenu.Root>
                 ))
             }
+            <View height={200} />
         </ScrollView>
     )
 }
@@ -147,7 +149,6 @@ const styles = StyleSheet.create({
     item: {
         borderRadius: 0,
         paddingHorizontal: 20,
-        paddingBottom: 10,
         gap: 20,
         flexDirection: "row",
         justifyContent: "space-between",

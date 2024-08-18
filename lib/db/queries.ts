@@ -1,7 +1,7 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import {
     Account, AccountCreate, AccountEdit,
-    Category, ChartPoints,
+    Category, CategoryCreate, ChartPoints,
     FullTransaction,
     FullTransactionRaw,
     Transaction, TransactionsGroupedByCategory,
@@ -13,12 +13,12 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
     // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
     return db.getAllSync(`SELECT *
-                          FROM accounts`);
+                          FROM accounts ORDER BY title`);
 }
 
 export function getAllCategories(db: SQLiteDatabase): Category[] {
     return db.getAllSync(`SELECT *
-                          FROM categories`);
+                          FROM categories ORDER BY title`);
 }
 
 export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{
@@ -423,6 +423,47 @@ export async function createAccount(db: SQLiteDatabase, account: AccountCreate, 
     }
 };
 
+export async function createCategory(db: SQLiteDatabase, category: CategoryCreate, userId: string): Promise<any> {
+    const categories = await db.getAllAsync('SELECT * FROM categories WHERE title = ?', [category.title]);
+    if (categories.length > 0) {
+        return {
+            error: true,
+            desc: 'Ya existe una categoria con ese nombre.',
+        };
+    } else {
+        const statement = await db.prepareAsync('INSERT INTO categories (title, icon, type, user_id) VALUES ($title, $icon, $type, $user_id)');
+        try {
+            await statement.executeAsync({
+                $title: category.title,
+                $icon: category.icon,
+                $type: category.type,
+                $user_id: userId
+            });
+            const categoryCreated = await db.getAllAsync('SELECT * FROM categories ORDER BY id DESC LIMIT 1');
+            return {
+                error: false,
+                desc: '',
+                data: categoryCreated[0]
+            }
+        } catch (err) {
+
+        } finally {
+            await statement.finalizeAsync();
+        }
+
+    }
+};
+
+
+export async function updateCategory(db: SQLiteDatabase, category: Category): Promise<any> {
+    try {
+        await db.runAsync('UPDATE categories SET title = ?, icon = ?, type = ? WHERE id = ?', [category.title, category.icon, category.type, category.id]);
+        const accountCreated = await db.getAllAsync('SELECT * FROM categories ORDER BY id DESC LIMIT 1');
+        return accountCreated[0]
+    } catch (err) {
+        console.error(err);
+    }
+};
 
 export async function updateAccount(db: SQLiteDatabase, account: AccountEdit): Promise<any> {
     try {
@@ -670,4 +711,9 @@ export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId
 export async function deleteAccount(db: SQLiteDatabase, accountId: number) {
     await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
     await db.runAsync('DELETE FROM accounts WHERE id = ?', [accountId]);
+}
+
+export async function deleteCategory(db: SQLiteDatabase, categoryId: number) {
+    await db.runAsync('DELETE FROM transactions WHERE category_id = ? ', [categoryId]);
+    await db.runAsync('DELETE FROM categories WHERE id = ?', [categoryId]);
 }
