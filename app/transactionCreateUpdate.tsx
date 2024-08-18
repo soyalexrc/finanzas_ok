@@ -29,6 +29,7 @@ import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottom
 import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
 import {
+    selectAccountFilter, selectCategoryFilter,
     selectDateRangeFilter,
     updateChartPoints,
     updateTransactionsGroupedByCategory
@@ -48,8 +49,8 @@ export default function Screen() {
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
-    const selectedAccountFilter = useAppSelector(selectSelectedAccountForm);
-    const selectedCategoryFilter = useAppSelector(selectSelectedCategory);
+    const selectedAccountFilter = useAppSelector(selectAccountFilter);
+    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
 
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
@@ -61,11 +62,11 @@ export default function Screen() {
     // callbacks
 
     async function handleCreateOrEditTransaction() {
-        //     Check if it is create id = -1 or update id > 0
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         const userId = await loadString('userId');
+        let transaction: any;
         if (currentTransaction.id > 0) {
-            const updatedTransaction = await updateTransaction(db, {
+            transaction = await updateTransaction(db, {
                 id: currentTransaction.id,
                 account_id: selectedAccount.id,
                 category_id: selectedCategory.id,
@@ -74,17 +75,8 @@ export default function Screen() {
                 date: currentTransaction.date,
                 notes: currentTransaction.notes
             });
-            if (updatedTransaction) {
-                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                dispatch(updateTransactionsGroupedByDate(transactions));
-                dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                dispatch(updateChartPoints(amountsGroupedByDate))
-                await sleep(100);
-                router.back()
-            }
         } else {
-            const newTransaction = await createTransaction(db, {
+            transaction =  await createTransaction(db, {
                 id: -1,
                 account_id: selectedAccount.id,
                 category_id: selectedCategory.id,
@@ -94,16 +86,19 @@ export default function Screen() {
                 date: currentTransaction.date,
                 notes: currentTransaction.notes
             });
-            if (newTransaction) {
-                const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                dispatch(updateTransactionsGroupedByDate(transactions));
-                dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                dispatch(updateChartPoints(amountsGroupedByDate))
-                await sleep(100);
-                router.back()
-            }
         }
+
+        const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+        const {
+            amountsGroupedByDate,
+            transactionsGroupedByCategory
+        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+        dispatch(updateTransactionsGroupedByDate(transactions));
+        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+        dispatch(updateChartPoints(amountsGroupedByDate))
+
+        await sleep(100);
+        router.back()
     }
 
     useEffect(() => {
@@ -114,7 +109,7 @@ export default function Screen() {
                 dispatch(selectAccountForm(accounts[0]));
             }
         }
-    }, [] );
+    }, []);
 
     return (
         <>
@@ -141,7 +136,8 @@ export default function Screen() {
                 <View flex={1}>
                     <View flex={0.4} justifyContent="center" alignItems="center">
                         <View flexDirection="row" alignItems="flex-start" gap="$2">
-                            <Text marginTop="$3" fontSize="$9" color="$gray10Dark">{selectedAccount.currency_symbol}</Text>
+                            <Text marginTop="$3" fontSize="$9"
+                                  color="$gray10Dark">{selectedAccount.currency_symbol}</Text>
                             <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
                         </View>
                     </View>
@@ -188,6 +184,7 @@ export default function Screen() {
                 maximumDate={new Date()}
                 onConfirm={(date) => {
                     const timeZonedDate = formatDate(date)
+                    timeZonedDate.setHours(5);
                     setShowCalendar(false)
                     dispatch(onChangeDate(timeZonedDate.toISOString()))
                 }}

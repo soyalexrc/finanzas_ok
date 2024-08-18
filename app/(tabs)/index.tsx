@@ -45,8 +45,7 @@ export default function HomeScreen() {
         try {
             const accounts = getAllAccounts(db)
             const {start, end} = getCurrentWeek();
-            dispatch(updateAccountFilter(accounts[0]));
-            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
             const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(getAllCategories(db)));
@@ -54,6 +53,7 @@ export default function HomeScreen() {
             dispatch(updateTransactionsGroupedByDate(transactions));
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
+            dispatch(updateAccountFilter(accounts[0]));
         } catch (err) {
             console.log(err);
         }

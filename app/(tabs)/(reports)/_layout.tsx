@@ -44,7 +44,7 @@ function CustomHeader() {
                 <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
                 <Text fontSize={16} color="$gray10Dark">Back</Text>
             </TouchableOpacity>
-            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  S/ {calculateTotalTransactions(detailGroup.transactions)}</Text>
+            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions)}</Text>
         </BlurView>
     )
 }

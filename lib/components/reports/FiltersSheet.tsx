@@ -63,6 +63,13 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         setOpen(false);
     }
 
+    function clearCategory() {
+        dispatch(updateCategoryFilter({id: 0, title: '', icon: '', type: ''}));
+        setLocalCategory({id: 0, title: '', icon: '', type: ''});
+    }
+
+    console.log(accounts);
+
     return (
         <Sheet
             forceRemoveScrollEnabled={open}
@@ -116,7 +123,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                             flexDirection: 'row',
                             alignItems: 'center',
                             marginRight: 30
-                        }} onPress={() => dispatch(updateCategoryFilter({id: 0, title: '', icon: '', type: ''}))}>
+                        }} onPress={clearCategory}>
                             <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
                             <Text fontSize={12} color={theme.red10Dark.val}>Clear </Text>
                         </TouchableOpacity>
@@ -131,7 +138,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity key={item.id} style={styles.item} onPress={() => setLocalCategory(item)}>
+                            <TouchableOpacity style={styles.item} onPress={() => setLocalCategory(item)}>
                                 <Text style={{fontSize: 50}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
@@ -139,19 +146,19 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     />
                 </YStack>
 
+
                 <YStack>
                     <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
                           color="$gray10Dark">{localAccount.icon} {localAccount.title}</Text>
-                    <FlashList
+                    <FlatList
                         data={accounts}
-                        estimatedItemSize={20}
                         contentContainerStyle={{paddingHorizontal: 20}}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity key={item.id} style={styles.item} onPress={() => setLocalAccount(item)}>
+                            <TouchableOpacity style={styles.item} onPress={() => setLocalAccount(item)}>
                                 <Text style={{fontSize: 50}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
@@ -171,6 +178,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     maximumDate={new Date()}
                     onConfirm={(date) => {
                         const timeZonedDate = formatDate(date)
+                        timeZonedDate.setHours(0);
                         setShowDateFromCalendar(false)
                         dispatch(updateDateRangeFilter({type: 'start', value: timeZonedDate.toISOString()}))
                     }}
@@ -188,6 +196,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     maximumDate={new Date()}
                     onConfirm={(date) => {
                         const timeZonedDate = formatDate(date)
+                        timeZonedDate.setHours(19);
                         setShowDateToCalendar(false)
                         dispatch(updateDateRangeFilter({type: 'end', value: timeZonedDate.toISOString()}))
                     }}

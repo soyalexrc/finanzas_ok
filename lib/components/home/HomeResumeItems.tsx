@@ -17,21 +17,33 @@ import {selectAccountForm, selectSelectedAccountGlobal} from "@/lib/store/featur
 import {formatDateHomeItemGroups, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {
     createTransaction,
-    deleteTransaction,
+    deleteTransaction, getTransactions,
     getTransactionsGroupedAndFiltered,
     stopRecurringInTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {formatByThousands} from "@/lib/helpers/string";
+import {
+    selectAccountFilter,
+    selectCategoryFilter,
+    selectDateRangeFilter,
+    updateChartPoints,
+    updateTransactionsGroupedByCategory
+} from "@/lib/store/features/transactions/reportSlice";
+import {useSelector} from "react-redux";
 
 export default function HomeResumeItems() {
     const db = useSQLiteContext();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const theme = useTheme();
+    const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
+    const selectedCategoryFilter = useSelector(selectCategoryFilter);
+    const selectedAccountFilter = useSelector(selectAccountFilter);
+    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
 
     function handlePress(t: FullTransaction) {
         dispatch(updateCurrentTransaction({
@@ -45,21 +57,33 @@ export default function HomeResumeItems() {
     }
 
     function handleDeleteItem(id: number, groupId: number) {
+        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         Alert.alert('Delete entry?', 'This action cannot be undone.', [
             {style: 'default', text: 'Cancel', isPreferred: true},
             {
                 style: 'destructive', text: 'Delete', isPreferred: true, onPress: async () => {
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
+                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    dispatch(updateTransactionsGroupedByDate(transactions));
+                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                    dispatch(updateChartPoints(amountsGroupedByDate))
                 }
             },
         ])
     }
 
     async function duplicateTransaction(transaction: FullTransaction) {
+        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         const newTransaction = await createTransaction(db, { ...transaction, category_id: transaction.category.id, account_id: transaction.account.id })
         if (newTransaction) {
             dispatch(addTransactionInHomeList(newTransaction as FullTransaction))
+            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+            dispatch(updateTransactionsGroupedByDate(transactions));
+            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            dispatch(updateChartPoints(amountsGroupedByDate))
         }
     }
 

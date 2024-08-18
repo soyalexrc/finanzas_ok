@@ -109,6 +109,7 @@ export type TransactionWithAmountNumber = {
     user_id?: string;
     account_id: number;
     category_id: number;
+    account_symbol: string;
 }
 
 export type TransactionsGroupedByCategory = {

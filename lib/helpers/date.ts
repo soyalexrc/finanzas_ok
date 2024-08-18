@@ -48,20 +48,22 @@ export function formatDate(date: string | Date | number) {
 
 export function getDateRangeBetweenGapDaysAndToday(gap: number): {start: Date, end: Date} {
     const today = new Date();
+    today.setHours(19);
     const start = new Date(today);
+    start.setHours(0)
     start.setDate(today.getDate() - gap);
     return {
-        start: fromZonedTime(start, Intl.DateTimeFormat().resolvedOptions().timeZone),
-        end: today,
+        start: formatDate(start),
+        end: formatDate(today),
     }
 }
 
-export function getDateRangeTenYearsAgo(): {start: Date, end: Date} {
+export function getDateRangeAlongTimeAgo(): {start: Date, end: Date} {
     const today = new Date();
     const start = new Date(today);
-    start.setFullYear(today.getFullYear() - 10);
+    start.setFullYear(today.getFullYear() - 1);
     return {
-        start: fromZonedTime(start, Intl.DateTimeFormat().resolvedOptions().timeZone),
-        end: today,
+        start: formatDate(start),
+        end: formatDate(today),
     }
 }

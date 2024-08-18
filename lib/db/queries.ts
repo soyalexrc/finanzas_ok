@@ -25,6 +25,9 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     amountsGroupedByDate: ChartPoints[],
     transactionsGroupedByCategory: TransactionsGroupedByCategory[]
 }> {
+    console.log({
+        dateFrom, accountId, dateTo, categoryId
+    })
     let amountsGroupedByDate: ChartPoints[] = [];
     let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
 
@@ -188,8 +191,12 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         `, [dateFrom, dateTo, accountId, categoryId]);
     }
 
+    // const debugTr = transactionsGroupedByCategory.find((group: any) => group.id === 21)
 
-    return {
+    // console.log(JSON.parse(debugTr?.transactions as any)?.map((t, index) => ({  i: index, t: t.amount })));
+
+
+    const result = {
         amountsGroupedByDate,
         transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
             category: {
@@ -203,9 +210,22 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                 currency_code: group.currency_code,
                 currency_symbol: group.currency_symbol,
             },
-            transactions: JSON.parse(group.transactions)
+            transactions: JSON.parse(group.transactions)?.map((t: any) => ({
+                ...t,
+                account_symbol: group.currency_symbol
+            }))
         }))
     }
+
+    // const debugAll = await db.getAllAsync('SELECT amount FROM transactions as t WHERE t.category_id = 21')
+    //
+    // console.log(debugAll)
+    // const debug = result.transactionsGroupedByCategory.filter(g => g.category.id === 21)
+    //
+    // console.log(debug[0].transactions.map((t: any) => ({ amount: t.amount })));
+
+
+    return result;
 }
 
 type Group = {
@@ -436,6 +456,7 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $category_id: transaction.category_id,
             $user_id: transaction.user_id!,
         });
+
         const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
         const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
         await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType === 'expense' ? balanceInAccount! - Number(transaction.amount) : balanceInAccount! + Number(transaction.amount)])
@@ -487,6 +508,7 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
         console.error(err);
         return {}
     } finally {
+        console.log('finally')
         await statement.finalizeAsync();
     }
 }

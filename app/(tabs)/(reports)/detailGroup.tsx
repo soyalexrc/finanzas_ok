@@ -8,12 +8,16 @@ import {Button} from "tamagui";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {formatByThousands} from "@/lib/helpers/string";
 import {updateCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
-import {TransactionsGroupedByCategory, TransactionWithAmountNumber} from "@/lib/types/Transaction";
+import {TransactionWithAmountNumber} from "@/lib/types/Transaction";
+import {selectCategories, selectCategory} from "@/lib/store/features/categories/categoriesSlice";
+import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const accounts = useAppSelector(selectAccounts);
+    const categories = useAppSelector(selectCategories);
     const detailGroup = useAppSelector(selectDetailGroup)
 
     function handlePress(item: TransactionWithAmountNumber) {
@@ -26,6 +30,10 @@ export default function Screen() {
             account_id: item.account_id,
             date: item.date
         }))
+        const category = categories.find((c) => c.id === item.category_id);
+        const account = accounts.find((a) => a.id === item.account_id);
+        dispatch(selectCategory(category!));
+        dispatch(selectAccountForm(account!));
         router.push('/transactionCreateUpdate')
     }
 
@@ -50,7 +58,7 @@ export default function Screen() {
                                         }
                                         <Text fontSize={18} fontWeight={500}>{detailGroup.category.title}</Text>
                                     </View>
-                                    <Text>S/ {formatByThousands(item.amount.toString())}</Text>
+                                    <Text>{item.account_symbol} {formatByThousands(item.amount.toString())}</Text>
                                 </View>
                             </Button>
                         </ContextMenu.Trigger>

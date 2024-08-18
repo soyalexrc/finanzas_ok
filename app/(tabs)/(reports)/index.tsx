@@ -22,7 +22,8 @@ import {calculateTotalFromChartPoints, calculateTotalTransactions} from "@/lib/h
 import {CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
-import {getDateRangeBetweenGapDaysAndToday, getDateRangeTenYearsAgo} from "@/lib/helpers/date";
+import {getDateRangeBetweenGapDaysAndToday, getDateRangeAlongTimeAgo} from "@/lib/helpers/date";
+import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -39,7 +40,7 @@ export default function ReportScreen() {
     const selectedCategory = useSelector(selectCategoryFilter);
     const selectedAccount = useSelector(selectAccountFilter);
     const selectedDateRange = useSelector(selectDateRangeFilter);
-    const [daysFrom, setDaysFrom] = useState<string>('0')
+    const [daysFrom, setDaysFrom] = useState<string>('15')
 
     function handlePress(item: TransactionsGroupedByCategory) {
         dispatch(updateDetailGroup(item));
@@ -61,7 +62,7 @@ export default function ReportScreen() {
 
     useEffect(() => {
         if (daysFrom !== '0') {
-            handleGetReportByPresetDays()
+            handleGetReportByPresetDays();
         }
     }, [daysFrom]);
 
@@ -77,7 +78,7 @@ export default function ReportScreen() {
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
         } else {
-            const {start, end} = getDateRangeTenYearsAgo();
+            const {start, end} = getDateRangeAlongTimeAgo();
             dispatch(updateDateRangeFilter({ type: 'start', value: start.toISOString()}));
             dispatch(updateDateRangeFilter({ type: 'end', value: end.toISOString() }));
 
@@ -125,16 +126,19 @@ export default function ReportScreen() {
                     {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
 
-                    <View paddingHorizontal={10} paddingVertical={5} flexDirection="row"
-                          backgroundColor="$color1" gap={15}>
-                        <Text fontSize={16} color="$gray10Dark">Spent this week</Text>
-                        <View flexDirection="row" gap={5}>
-                            <View borderRadius={100} padding={3} backgroundColor="$red3Light">
-                                <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737"/>
-                            </View>
-                            <Text fontSize={16} color="$red9Dark">5,320%</Text>
-                        </View>
-                    </View>
+                    <YStack paddingHorizontal={10} paddingVertical={5}  backgroundColor="$color1">
+                        <Text fontSize={12} textAlign="center" color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
+                        {/*<View  flexDirection="row"*/}
+                        {/*     gap={15}>*/}
+                        {/*    <Text fontSize={16} color="$gray10Dark">Spent this week</Text>*/}
+                        {/*    <View flexDirection="row" gap={5}>*/}
+                        {/*        <View borderRadius={100} padding={3} backgroundColor="$red3Light">*/}
+                        {/*            <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737"/>*/}
+                        {/*        </View>*/}
+                        {/*        <Text fontSize={16} color="$red9Dark">5,320%</Text>*/}
+                        {/*    </View>*/}
+                        {/*</View>*/}
+                    </YStack>
 
 
                     {/*Grafica*/}

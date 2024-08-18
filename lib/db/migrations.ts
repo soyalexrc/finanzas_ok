@@ -9,6 +9,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // Clear table
     // await db.runAsync('DELETE FROM accounts')
     // await db.runAsync('DELETE FROM migrations')
+    // await db.runAsync('DELETE FROM transactions')
+    // await db.runAsync('DELETE FROM categories')
 
     // DROP table
     // await db.runAsync('DROP TABLE migrations')

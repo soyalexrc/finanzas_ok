@@ -12,6 +12,7 @@ import {loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 import {getLocales} from "expo-localization";
+import {View} from "tamagui";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -88,9 +89,11 @@ const InitialLayout = () => {
     }
   }
 
+  console.log(colorScheme)
+
   return (
       <>
-        <StatusBar barStyle={appearance === 'system' ? 'default' : appearance === 'light' ? 'dark-content' : 'light-content'} />
+        <StatusBar barStyle={appearance === 'system' ? (colorScheme === 'dark' ? 'light-content' : 'dark-content') : appearance === 'light' ? 'dark-content' : 'light-content'} />
         <Stack initialRouteName="index">
           <Stack.Screen name="index" options={{headerShown: false}}/>
           <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
