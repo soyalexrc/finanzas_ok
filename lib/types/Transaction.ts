@@ -21,7 +21,7 @@ export type FullTransactionRaw = {
     account_icon: string;
     account_currency_code: string;
     account_currency_symbol: string;
-    account_positive_status: number;
+    account_positive_state: number;
     account_balance: number;
     category_title: string;
     category_id: number;
@@ -74,7 +74,7 @@ export type Account = {
     balance: number;
     currency_symbol: string;
     currency_code: string;
-    positive_status: number;
+    positive_state: number;
     id: number;
 }
 
@@ -84,7 +84,7 @@ export type AccountCreate = {
     balance: number;
     currency_symbol: string;
     currency_code: string;
-    positive_status: number;
+    positive_state: number;
 }
 
 export type AccountEdit = {
@@ -92,7 +92,7 @@ export type AccountEdit = {
     id: number;
     icon: string;
     balance: number;
-    positive_status: number;
+    positive_state: number;
 }
 
 export type ChartPoints = {

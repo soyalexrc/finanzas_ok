@@ -35,7 +35,7 @@ export default function Screen() {
     useEffect(() => {
         setAccountTitle(accountCreateUpdate.title)
         setAccountBalance(accountCreateUpdate.balance.toString())
-        setAccountPositiveState(accountCreateUpdate.positive_status ? 'Positive' : 'Negative');
+        setAccountPositiveState(accountCreateUpdate.positive_state ? 'Positive' : 'Negative');
     }, []);
 
     async function manageCreateAccount() {
@@ -50,7 +50,7 @@ export default function Screen() {
                     title: accountTitle,
                     balance: parseInt(accountBalance),
                     icon: currentEmoji,
-                    positive_status: accountPositiveState === 'Positive' ? 1 : 0,
+                    positive_state: accountPositiveState === 'Positive' ? 1 : 0,
                 });
             dispatch(updateAccountsList(getAllAccounts(db)))
             router.back();
@@ -61,7 +61,7 @@ export default function Screen() {
                     title: accountTitle,
                     balance: parseInt(accountBalance),
                     icon: currentEmoji,
-                    positive_status: accountPositiveState === 'Positive' ? 1 : 0,
+                    positive_state: accountPositiveState === 'Positive' ? 1 : 0,
                     currency_code: accountCurrency.code,
                     currency_symbol: accountCurrency.symbol
                 },
@@ -176,7 +176,7 @@ export default function Screen() {
 
                 <YStack mb={70}>
                     <Text fontSize={16} mb={4}>State</Text>
-                    <DropdownMenu.Root key="positive_status">
+                    <DropdownMenu.Root key="positive_state">
                         <DropdownMenu.Trigger>
                             <TouchableOpacity style={{
                                 backgroundColor: theme.color2.val,

@@ -13,7 +13,7 @@ import {formatByThousands, textShortener} from "@/lib/helpers/string";
 import {
     selectAccountForm,
     selectAccounts,
-    selectSelectedAccountForm, selectSelectedAccountGlobal
+    selectSelectedAccountForm, selectSelectedAccountGlobal, updateAccountInList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {
     onChangeDate,
@@ -87,6 +87,10 @@ export default function Screen() {
                 notes: currentTransaction.notes
             });
         }
+
+        // update category in redux
+        dispatch(updateAccountInList(transaction.account));
+        console.log(transaction.account);
 
         const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
         const {

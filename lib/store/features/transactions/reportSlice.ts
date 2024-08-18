@@ -58,7 +58,7 @@ const initialState: ReportState = {
             balance: 0,
             currency_symbol: '',
             currency_code: '',
-            positive_status: 0
+            positive_state: 0
         }
     }
 }

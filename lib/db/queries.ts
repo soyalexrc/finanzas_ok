@@ -357,7 +357,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
                 balance: t.account_balance,
                 currency_code: t.account_currency_code,
                 currency_symbol: t.account_currency_symbol,
-                positive_status: t.account_positive_status,
+                positive_state: t.account_positive_state,
             }
         }));
 
@@ -403,7 +403,7 @@ export async function createAccount(db: SQLiteDatabase, account: AccountCreate, 
                 $title: account.title,
                 $icon: account.icon,
                 $balance: account.balance,
-                $positive_state: account.positive_status,
+                $positive_state: account.positive_state,
                 $currency_code: account.currency_code,
                 $currency_symbol: account.currency_symbol,
                 $user_id: userId
@@ -426,7 +426,7 @@ export async function createAccount(db: SQLiteDatabase, account: AccountCreate, 
 
 export async function updateAccount(db: SQLiteDatabase, account: AccountEdit): Promise<any> {
     try {
-        await db.runAsync('UPDATE accounts SET title = ?, icon = ?, balance = ?, positive_state =? WHERE id = ?', [account.title, account.icon, account.balance, account.positive_status, account.id]);
+        await db.runAsync('UPDATE accounts SET title = ?, icon = ?, balance = ?, positive_state =? WHERE id = ?', [account.title, account.icon, account.balance, account.positive_state, account.id]);
         const accountCreated = await db.getAllAsync('SELECT * FROM accounts ORDER BY id DESC LIMIT 1');
         return accountCreated[0]
     } catch (err) {
@@ -457,9 +457,18 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $user_id: transaction.user_id!,
         });
 
-        const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
-        const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
-        await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType === 'expense' ? balanceInAccount! - Number(transaction.amount) : balanceInAccount! + Number(transaction.amount)])
+        const categoryType: {type: string} | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
+        const balanceInAccount: {balance: number} | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
+        await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType?.type === 'expense' ? balanceInAccount!.balance - Number(transaction.amount) : balanceInAccount!.balance + Number(transaction.amount), transaction.account_id])
+
+        if (categoryType?.type === 'expense' && balanceInAccount!.balance - Number(transaction.amount) < 0) {
+            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [0, transaction.account_id])
+        }
+
+        if (categoryType?.type === 'income' && balanceInAccount!.balance + Number(transaction.amount) > 0) {
+            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [1, transaction.account_id])
+        }
+
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
                    t.amount,
@@ -490,7 +499,7 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
                 title: retrievedTransaction.account_title,
                 icon: retrievedTransaction.account_icon,
                 balance: retrievedTransaction.account_balance,
-                positive_status: retrievedTransaction.account_positive_status
+                positive_state: retrievedTransaction.account_positive_state
             },
             category: {
                 id: retrievedTransaction.category_id,
@@ -560,7 +569,7 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
                 title: retrievedTransaction.account_title,
                 icon: retrievedTransaction.account_icon,
                 balance: retrievedTransaction.account_balance,
-                positive_status: retrievedTransaction.account_positive_status
+                positive_state: retrievedTransaction.account_positive_status
             },
             category: {
                 id: retrievedTransaction.category_id,
@@ -618,7 +627,7 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
                 title: retrievedTransaction.account_title,
                 icon: retrievedTransaction.account_icon,
                 balance: retrievedTransaction.account_balance,
-                positive_status: retrievedTransaction.account_positive_status
+                positive_state: retrievedTransaction.account_positive_status
             },
             category: {
                 id: retrievedTransaction.category_id,

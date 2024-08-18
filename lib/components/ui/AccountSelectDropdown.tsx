@@ -33,7 +33,7 @@ export default function AccountSelectDropdown() {
                 id: 0,
                 balance: 0,
                 icon: '',
-                positive_status: 1
+                positive_state: 1
             }));
             const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, 0);
             dispatch(updateTransactionsGroupedByDate(transactions));

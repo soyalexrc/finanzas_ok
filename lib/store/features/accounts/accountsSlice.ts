@@ -17,14 +17,14 @@ const initialState: AccountsState = {
         title: '',
         currency_code: '',
         currency_symbol: '',
-        positive_status: 1,
+        positive_state: 1,
         balance: 0
     },
     selected: {
         id: 0,
         icon: '',
         title: 'All accounts',
-        positive_status: 1,
+        positive_state: 1,
         currency_code: '',
         currency_symbol: '',
         balance: 0
@@ -33,7 +33,7 @@ const initialState: AccountsState = {
         id: 0,
         icon: '',
         title: '',
-        positive_status: 1,
+        positive_state: 1,
         currency_code: '',
         currency_symbol: '',
         balance: 0
@@ -46,6 +46,9 @@ export const accountsSlice = createSlice({
     reducers: {
         updateAccountsList: (state, action: PayloadAction<Account[]>) => {
             state.list = action.payload;
+        },
+        updateAccountInList: (state, action: PayloadAction<Account>) => {
+            state.list = state.list.map(account => account.id === action.payload.id ? action.payload : account);
         },
         selectAccountForm: (state, action: PayloadAction<Account>) => {
             state.selectedForm = action.payload;
@@ -64,7 +67,7 @@ export const accountsSlice = createSlice({
                 id: 0,
                 icon: '',
                 title: '',
-                positive_status: 1,
+                positive_state: 1,
                 currency_code: '',
                 currency_symbol: '',
                 balance: 0
@@ -79,7 +82,8 @@ export const {
     selectAccountGlobally,
     updateAccountCreateUpdate,
     addAccount,
-    selectAccountForm
+    selectAccountForm,
+    updateAccountInList
 } = accountsSlice.actions;
 
 export const selectAccounts = (state: RootState) => state.accounts.list
