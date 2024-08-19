@@ -12,10 +12,10 @@ export interface CategoriesState {
 const initialState: CategoriesState = {
     list: [],
     selected: {
-        icon: '🥑',
-        title: 'Groceries',
-        id: 1,
-        type: 'expense'
+        icon: '',
+        title: '',
+        id: 0,
+        type: ''
     },
     selectedCreateUpdate: {
         type: 'expense',

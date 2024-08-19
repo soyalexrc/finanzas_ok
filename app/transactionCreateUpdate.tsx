@@ -90,7 +90,6 @@ export default function Screen() {
 
         // update category in redux
         dispatch(updateAccountInList(transaction.account));
-        console.log(transaction.account);
 
         const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
         const {

@@ -558,7 +558,6 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
         console.error(err);
         return {}
     } finally {
-        console.log('finally')
         await statement.finalizeAsync();
     }
 }

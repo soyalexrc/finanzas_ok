@@ -68,7 +68,6 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         setLocalCategory({id: 0, title: '', icon: '', type: ''});
     }
 
-    console.log(accounts);
 
     return (
         <Sheet

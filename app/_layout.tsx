@@ -24,7 +24,7 @@ const InitialLayout = () => {
   const {user, isLoaded: isUserLoaded} = useUser()
   const segments = useSegments();
   const router = useRouter();
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
 
   const [loaded, error] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
@@ -62,8 +62,6 @@ const InitialLayout = () => {
 
   useEffect(() => {
     if (!isLoaded) return;
-    validateSignInStatus();
-
   }, [isSignedIn]);
 
   async function validateSignInStatus() {
@@ -89,13 +87,11 @@ const InitialLayout = () => {
     }
   }
 
-  console.log(colorScheme)
 
   return (
       <>
         <StatusBar barStyle={appearance === 'system' ? (colorScheme === 'dark' ? 'light-content' : 'dark-content') : appearance === 'light' ? 'dark-content' : 'light-content'} />
-        <Stack initialRouteName="index">
-          <Stack.Screen name="index" options={{headerShown: false}}/>
+        <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
           <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="emojiSelection" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>

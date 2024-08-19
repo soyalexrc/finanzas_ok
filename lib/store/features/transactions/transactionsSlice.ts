@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
+import {formatDate} from "@/lib/helpers/date";
 
 export interface TransactionsState {
     currentTransaction: Transaction;
@@ -10,12 +11,19 @@ export interface TransactionsState {
     currentBalance: number;
 }
 
+function setInitialDate() {
+    const date = formatDate(new Date());
+    console.log('date', date);
+    date.setHours(5);
+    return date.toISOString();
+}
+
 const initialState: TransactionsState = {
     currentTransaction: {
         account_id: -1,
         amount: "0",
         category_id: -1,
-        date: new Date().toISOString(),
+        date: setInitialDate(),
         notes: '',
         recurrentDate: 'none',
         id: -1
