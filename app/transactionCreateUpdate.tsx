@@ -63,7 +63,6 @@ export default function Screen() {
 
     async function handleCreateOrEditTransaction() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        const userId = await loadString('userId');
         let transaction: any;
         if (currentTransaction.id > 0) {
             transaction = await updateTransaction(db, {
@@ -80,7 +79,6 @@ export default function Screen() {
                 id: -1,
                 account_id: selectedAccount.id,
                 category_id: selectedCategory.id,
-                user_id: userId!,
                 recurrentDate: currentTransaction.recurrentDate,
                 amount: currentTransaction.amount,
                 date: currentTransaction.date,

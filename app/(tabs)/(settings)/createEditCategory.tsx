@@ -23,7 +23,6 @@ import {
     updateCategory
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {useUser} from "@clerk/clerk-expo";
 import {
     addCategory,
     selectCategoryCreateUpdate, selectSelectedCategory,
@@ -42,7 +41,6 @@ import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 
 export default function Screen() {
     const db = useSQLiteContext();
-    const {user} = useUser();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const theme = useTheme();
@@ -88,8 +86,7 @@ export default function Screen() {
                     title: categoryTitle,
                     icon: currentEmoji,
                     type: categoryType.toLowerCase(),
-                },
-                user!.id);
+                });
 
             if (newCategory.error) {
                 Alert.alert('No se pudo registrar la categoria', newCategory.desc)

@@ -7,24 +7,65 @@ import NetInfo from '@react-native-community/netinfo';
 import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
-import {useAuth, useUser} from "@clerk/clerk-expo";
 import {loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 import {getLocales} from "expo-localization";
 import {View} from "tamagui";
+import {
+  selectAccountFilter,
+  selectCategoryFilter,
+  selectDateRangeFilter, updateAccountFilter, updateChartPoints, updateTransactionsGroupedByCategory
+} from "@/lib/store/features/transactions/reportSlice";
+import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
+import {
+  selectHomeViewTypeFilter,
+  updateTransactionsGroupedByDate
+} from "@/lib/store/features/transactions/transactionsSlice";
+import {useSQLiteContext} from "expo-sqlite";
+import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
+import {getCurrentWeek} from "@/lib/helpers/date";
+import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
   const dispatch = useAppDispatch();
-  const { isLoaded, isSignedIn } = useAuth();
   const appearance = useAppSelector(selectSettings).appearance;
-  const {user, isLoaded: isUserLoaded} = useUser()
   const segments = useSegments();
   const router = useRouter();
   const colorScheme = useColorScheme();
+
+  const selectedDateRange = useAppSelector(selectDateRangeFilter);
+  const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
+  const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
+  const filterType = useAppSelector(selectHomeViewTypeFilter)
+  const db = useSQLiteContext();
+
+  async function updateStore() {
+    try {
+      const accounts = getAllAccounts(db);
+      const categories = getAllCategories(db);
+      const {start, end} = getCurrentWeek();
+      const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
+      const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+      dispatch(updateAccountsList(accounts))
+      dispatch(updateCategoriesList(categories));
+      dispatch(selectCategory(categories[0]));
+
+      dispatch(updateTransactionsGroupedByDate(transactions));
+      dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+      dispatch(updateChartPoints(amountsGroupedByDate))
+      dispatch(updateAccountFilter(accounts[0]));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    updateStore();
+  }, []);
 
   const [loaded, error] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
@@ -60,23 +101,10 @@ const InitialLayout = () => {
     }
   }, [loaded]);
 
-  useEffect(() => {
-    if (!isLoaded) return;
-  }, [isSignedIn]);
 
-  async function validateSignInStatus() {
-    const inAuthGroup = segments[0] === '(tabs)';
-    if (isSignedIn && !inAuthGroup) {
-      await saveString('userId', user!.id);
-      // if users sign then validate if users already have a db version  with date and ask the user if it wants to restore the data
-      // await sleep(5000);
-      router.replace('/(tabs)');
-    } else if (!isSignedIn) {
-      router.replace('/');
-    }
-  }
 
-  if (!loaded && !isLoaded) {
+
+  if (!loaded) {
     return <Slot />;
   }
 

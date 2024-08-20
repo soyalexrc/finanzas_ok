@@ -64,6 +64,18 @@ export default function SettingsLayout() {
                 )
             }}/>
 
+            <Stack.Screen name="data" options={{
+                headerBlurEffect: 'prominent',
+                headerTransparent: true,
+                title: 'Data',
+                headerTintColor: theme.color12.val,
+                headerRight: () => (
+                    <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>
+                        <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                    </Button>
+                )
+            }}/>
+
             <Stack.Screen
                 name="createEditAccount"
                 options={{presentation: 'modal', gestureEnabled: false, headerShown: false}}

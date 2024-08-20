@@ -10,12 +10,10 @@ import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 import {getLocales} from "expo-localization";
 import {createAccount, getAllAccounts, updateAccount} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {useUser} from "@clerk/clerk-expo";
 
 export default function Screen() {
     const locales = getLocales();
     const db = useSQLiteContext();
-    const {user} = useUser();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const theme = useTheme();
@@ -64,8 +62,7 @@ export default function Screen() {
                     positive_state: accountPositiveState === 'Positive' ? 1 : 0,
                     currency_code: accountCurrency.code,
                     currency_symbol: accountCurrency.symbol
-                },
-                user!.id);
+                });
 
             if (newAccount.error) {
                 Alert.alert('No se pudo registrar la cuenta', newAccount.desc)

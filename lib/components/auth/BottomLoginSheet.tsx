@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useCallback} from "react";
 import * as WebBrowser from 'expo-web-browser';
 import useWarmUpBrowser from "@/lib/hooks/useWarmUpBrowser";
-import {useOAuth} from "@clerk/clerk-expo";
 import * as Linking from 'expo-linking'
 
 const BottomLoginSheet = () => {
@@ -14,35 +13,35 @@ const BottomLoginSheet = () => {
     const colorScheme = useColorScheme();
     const { bottom } = useSafeAreaInsets();
 
-    const { startOAuthFlow: startOAuthFlowWithGoogle } = useOAuth({ strategy: 'oauth_google' });
-    const { startOAuthFlow: startOAuthFlowWithApple } = useOAuth({ strategy: 'oauth_apple' });
+    // const { startOAuthFlow: startOAuthFlowWithGoogle } = useOAuth({ strategy: 'oauth_google' });
+    // const { startOAuthFlow: startOAuthFlowWithApple } = useOAuth({ strategy: 'oauth_apple' });
 
     WebBrowser.maybeCompleteAuthSession();
 
     const signInWithOAuth = useCallback(async (type: 'google' | 'apple') => {
-        try {
-            if (type === 'google') {
-                const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithGoogle({
-                    redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
-                });
-                if (createdSessionId) {
-                    await setActive!({ session: createdSessionId })
-                } else {
-                    // Use signIn or signUp for next steps such as MFA
-                }
-            } else {
-                const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithApple({
-                    redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
-                });
-                if (createdSessionId) {
-                    await setActive!({ session: createdSessionId })
-                } else {
-                    // Use signIn or signUp for next steps such as MFA
-                }
-            }
-        } catch (error) {
-            console.error('OAuth error', error)
-        }
+        // try {
+        //     if (type === 'google') {
+        //         const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithGoogle({
+        //             redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
+        //         });
+        //         if (createdSessionId) {
+        //             await setActive!({ session: createdSessionId })
+        //         } else {
+        //             // Use signIn or signUp for next steps such as MFA
+        //         }
+        //     } else {
+        //         const {createdSessionId, signIn, signUp, setActive, authSessionResult} = await startOAuthFlowWithApple({
+        //             redirectUrl: Linking.createURL('/(tabs)', { scheme: 'myapp' })
+        //         });
+        //         if (createdSessionId) {
+        //             await setActive!({ session: createdSessionId })
+        //         } else {
+        //             // Use signIn or signUp for next steps such as MFA
+        //         }
+        //     }
+        // } catch (error) {
+        //     console.error('OAuth error', error)
+        // }
     }, [])
 
     return (

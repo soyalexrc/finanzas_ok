@@ -1,6 +1,5 @@
 import {Image, Text, View, YStack, ZStack} from "tamagui";
 import {Redirect} from "expo-router";
-import {useAuth} from "@clerk/clerk-expo";
 import BottomLoginSheet from "@/lib/components/auth/BottomLoginSheet";
 import {useEffect, useRef, useState} from "react";
 import {FlatList, Platform, StatusBar, Dimensions, StyleSheet, Animated} from "react-native";
@@ -21,7 +20,6 @@ const images = [
 const { height, width } = Dimensions.get('screen');
 
 export default function Screen() {
-    const {isSignedIn} = useAuth()
     const isIos = Platform.OS === 'ios';
 
     const scrollX = useRef(new Animated.Value(0)).current;

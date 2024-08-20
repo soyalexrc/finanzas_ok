@@ -91,6 +91,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            disabled
                             title="Data management"
                             onPress={() => router.push('/data')}
                             icon={<IconWrapper bgColor="$purple10Light" icon={<MaterialIcons name='file-download' size={20} color="white" />} />}

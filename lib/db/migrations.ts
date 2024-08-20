@@ -1,6 +1,5 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import initialCategories from '@/lib/utils/data/categories';
-import {loadString} from "@/lib/utils/storage";
 import {getLocales} from "expo-localization";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
@@ -32,9 +31,6 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
                 )
             `)
 
-        // Get User in session
-        const userId = await loadString('userId')
-
         // Get the latest applied migration version
         const result: any = await db.getFirstAsync(`SELECT MAX(version) as max_version FROM migrations`)
         let latestAppliedMigration = result.max_version ?? 0
@@ -43,7 +39,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // Get the latest applied migration version
         for (const migration of migrations) {
             if (migration.version > latestAppliedMigration) {
-                await migration.migrate(db, userId!);
+                await migration.migrate(db);
                 const statement = await db.prepareAsync(
                     `INSERT INTO migrations (version, name, applied_at) VALUES ($version, $name, $applied_at)`
                 )
@@ -70,13 +66,12 @@ const migrations = [
     {
         version: 1,
         name: 'initial migration',
-        migrate: async (db: SQLiteDatabase, userId: string) => {
+        migrate: async (db: SQLiteDatabase) => {
             try {
                 await db.execAsync(`
                 CREATE TABLE IF NOT EXISTS accounts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
-                    user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     currency_code string TEXT NOT NULL,
                     currency_symbol string TEXT NOT NULL,
@@ -89,7 +84,6 @@ const migrations = [
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
-                    user_id TEXT NOT NULL,
                     icon TEXT NOT NULL,
                     type TEXT NOT NULL
                 )
@@ -102,7 +96,6 @@ const migrations = [
                     recurrentDate TEXT,
                     amount INTEGER NOT NULL,
                     notes TEXT,
-                    user_id TEXT NOT NULL,
                     category_id INTEGER NOT NULL,
                     account_id INTEGER NOT NULL,
                     FOREIGN KEY (category_id) REFERENCES categories(id),
@@ -114,16 +107,16 @@ const migrations = [
 
                 if (categories.length < 1) {
                     for (const category of initialCategories) {
-                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type, user_id) VALUES ($title, $icon, $type, $user_id)`)
-                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type, $user_id: userId! })
+                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
+                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
                     }
                 }
 
                 const accounts = db.getAllSync(`SELECT * FROM accounts`);
                 if (accounts.length < 1) {
                     const locales = getLocales();
-                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, user_id, currency_code, currency_symbol) VALUES ($title, $icon, $balance, $positive_state, $user_id, $currency_code, $currency_symbol)`)
-                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $user_id: userId, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
+                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, currency_code, currency_symbol) VALUES ($title, $icon, $balance, $positive_state, $currency_code, $currency_symbol)`)
+                    statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
                 }
 
             } catch (err) {
