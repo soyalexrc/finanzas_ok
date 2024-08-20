@@ -1,20 +1,37 @@
 import {View, Text, ScrollView, YGroup, ListItem, Separator, Square, GetThemeValueForKey, XStack} from 'tamagui';
-import CustomHeader from "@/lib/components/ui/CustomHeader";
 import React from "react";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Platform} from "react-native";
+import {Alert, Linking, Platform} from "react-native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {AntDesign} from "@expo/vector-icons";
 import {useRouter} from "expo-router";
 import {useHeaderHeight} from "@react-navigation/elements";
+import * as MailComposer from 'expo-mail-composer';
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
     const isIos = Platform.OS === 'ios';
     const router = useRouter();
     const headerHeight = useHeaderHeight();
+
+    async function sentEmail() {
+        try {
+            const isAvailable = await MailComposer.isAvailableAsync();
+            if (!isAvailable) {
+                Alert.alert('Error', 'Email is not available on this device');
+                return;
+            } else {
+                await MailComposer.composeAsync({
+                    subject: 'FinanzasOK - Contact Developer',
+                    body: 'Hi Alex, I would like to ask you about...'
+                });
+            }
+        } catch (error) {
+            console.error('Error sending email', error)
+        }
+    }
 
     return (
         <View backgroundColor="$color1" flex={1}>
@@ -38,6 +55,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            disabled
                             title="Notifications"
                             onPress={() => router.push('/notifications')}
                             icon={<IconWrapper bgColor="$red9Light" icon={<MaterialIcons name='notifications' size={20} color="white" />} />}
@@ -59,6 +77,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             title="Language"
+                            disabled
                             onPress={() => router.push('/language')}
                             icon={<IconWrapper bgColor="$blue9Light" icon={<MaterialIcons name='language' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -105,6 +124,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            onPress={sentEmail}
                             title="Contact Developer"
                             icon={<IconWrapper bgColor="$blue8Light" icon={<MaterialIcons name='email' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -114,6 +134,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            disabled
                             title="Rate app on App Store"
                             icon={<IconWrapper bgColor="$orange9Light" icon={<MaterialIcons name='star' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -123,6 +144,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            disabled
                             title="Share with Friends"
                             icon={<IconWrapper bgColor="$blue10Light" icon={<FontAwesome6 name='share' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -132,8 +154,11 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            onPress={() => {
+                                Linking.openURL('https://www.instagram.com/soyalexrc/')
+                            }}
                             title="Follow @finanzasokapp"
-                            icon={<IconWrapper bgColor="$blue8Light" icon={<AntDesign name='twitter' size={20} color="white" />} />}
+                            icon={<IconWrapper bgColor="$pink11Light" icon={<AntDesign name='instagram' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
                     </YGroup.Item>
@@ -141,6 +166,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
+                            disabled
                             title="Support Developer"
                             icon={<IconWrapper bgColor="$red10Light" icon={<Entypo name='heart' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
