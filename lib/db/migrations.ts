@@ -1,5 +1,5 @@
 import {SQLiteDatabase} from "expo-sqlite";
-import initialCategories from '@/lib/utils/data/categories';
+import { englishCategories, spanishCategories } from '@/lib/utils/data/categories';
 import {getLocales} from "expo-localization";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
@@ -95,9 +95,11 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // console.log('triggers', r);
 
         const categories = db.getAllSync(`SELECT * FROM categories`);
+        const languageCode = getLocales()[0].languageCode ?? 'en';
 
         if (categories.length < 1) {
-            for (const category of initialCategories) {
+            const categoriesToInsert = languageCode === 'es' ? spanishCategories : englishCategories;
+            for (const category of categoriesToInsert) {
                 const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
                 statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
             }
@@ -107,7 +109,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         if (accounts.length < 1) {
             const locales = getLocales();
             const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, currency_code, currency_symbol) VALUES ($title, $icon, $balance, $positive_state, $currency_code, $currency_symbol)`)
-            statement.executeSync({ $title: 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
+            statement.executeSync({ $title: languageCode === 'es' ? 'Efectivo' : 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
         }
 
 
@@ -194,7 +196,7 @@ const migrations = [
                 const categories = db.getAllSync(`SELECT * FROM categories`);
 
                 if (categories.length < 1) {
-                    for (const category of initialCategories) {
+                    for (const category of englishCategories) {
                         const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
                         statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
                     }

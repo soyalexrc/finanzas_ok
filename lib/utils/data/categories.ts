@@ -1,4 +1,151 @@
-export default [
+export const spanishCategories =  [
+    {
+        id: 1,
+        type: 'expense',
+        title: 'Comestibles',
+        icon: '🥑',
+    },
+    {
+        id: 2,
+        type: 'expense',
+        title: 'Snacks',
+        icon: '🍪',
+    },
+    {
+        id: 3,
+        type: 'expense',
+        title: 'Comidas Fuera',
+        icon: '🍽️',
+    },
+    {
+        id: 4,
+        type: 'expense',
+        title: 'Café',
+        icon: '☕',
+    },
+    {
+        id: 5,
+        type: 'expense',
+        title: 'Bebidas',
+        icon: '🍹',
+    },
+    {
+        id: 6,
+        type: 'expense',
+        title: 'Belleza',
+        icon: '💄',
+    },
+    {
+        id: 7,
+        type: 'expense',
+        title: 'Ropa',
+        icon: '👕',
+    },
+    {
+        id: 8,
+        type: 'expense',
+        title: 'Accesorios',
+        icon: '💍',
+    },
+    {
+        id: 9,
+        type: 'expense',
+        title: 'Regalos',
+        icon: '🎁',
+    },
+    {
+        id: 10,
+        type: 'expense',
+        title: 'Entretenimiento',
+        icon: '🍿',
+    },
+    {
+        id: 11,
+        type: 'expense',
+        title: 'Casa',
+        icon: '🏠',
+    },
+    {
+        id: 12,
+        type: 'expense',
+        title: 'Tecnología',
+        icon: '📱',
+    },
+    {
+        id: 13,
+        type: 'expense',
+        title: 'Suscripciones',
+        icon: '📅',
+    },
+    {
+        id: 14,
+        type: 'expense',
+        title: 'Coche',
+        icon: '🚗',
+    },
+    {
+        id: 15,
+        type: 'expense',
+        title: 'Taxi',
+        icon: '🚕',
+    },
+    {
+        id: 16,
+        type: 'expense',
+        title: 'Caridad',
+        icon: '🎗️',
+    },
+    {
+        id: 17,
+        type: 'expense',
+        title: 'Educación',
+        icon: '📚',
+    },
+    {
+        id: 18,
+        type: 'expense',
+        title: 'Salud',
+        icon: '💊',
+    },
+    {
+        id: 19,
+        type: 'expense',
+        title: 'Viajes',
+        icon: '🏝️',
+    },
+    {
+        id: 20,
+        type: 'expense',
+        title: 'Mascotas',
+        icon: '🐶',
+    },
+    {
+        id: 21,
+        type: 'expense',
+        title: 'Misceláneos',
+        icon: '🤷‍♂️',
+    },
+    {
+        id: 22,
+        type: 'income',
+        title: 'Sueldo',
+        icon: '👔',
+    },
+    {
+        id: 23,
+        type: 'income',
+        title: 'Negocio',
+        icon: '💼',
+    },
+    {
+        id: 24,
+        type: 'income',
+        title: 'Otros',
+        icon: '💸',
+    },
+];
+
+export const englishCategories = [
     {
         id: 1,
         type: 'expense',
