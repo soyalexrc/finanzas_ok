@@ -52,8 +52,6 @@ export default function Screen() {
         router.push('/createEditAccount')
     }
 
-    console.log(accounts);
-
     async function onPressDeleteAccount(accountId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];

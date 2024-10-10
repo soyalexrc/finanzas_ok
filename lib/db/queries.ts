@@ -25,9 +25,6 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     amountsGroupedByDate: ChartPoints[],
     transactionsGroupedByCategory: TransactionsGroupedByCategory[]
 }> {
-    console.log({
-        dateFrom, accountId, dateTo, categoryId
-    })
     let amountsGroupedByDate: ChartPoints[] = [];
     let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
 
@@ -579,12 +576,7 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
         const balanceWithNewTransaction = categoryType?.type === 'expense' ? balanceWithoutOldTransaction - Number(transaction.amount) : balanceWithoutOldTransaction + Number(transaction.amount);
 
 
-        console.log({
-            balanceInAccount,
-            operation,
-            balanceWithoutOldTransaction,
-            balanceWithNewTransaction
-        })
+
         // Removemos el anterior valor de la transaccion en el balance
         // await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType?.type === 'expense' ? balanceInAccount!.balance + oldTransaction?.amount! : balanceInAccount!.balance - oldTransaction?.amount!, transaction.account_id])
 

@@ -13,7 +13,6 @@ export interface TransactionsState {
 
 function setInitialDate() {
     const date = formatDate(new Date());
-    console.log('date', date);
     date.setHours(5);
     return date.toISOString();
 }

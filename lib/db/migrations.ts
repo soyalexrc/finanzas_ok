@@ -8,6 +8,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // Clear table
 
     // await db.runAsync(`DROP TRIGGER delete_account_balance`)
+    // await db.runAsync(`DROP TRIGGER insert_account_balance`)
     // await db.runAsync('DELETE FROM accounts')
     // await db.runAsync('DELETE FROM migrations')
     // await db.runAsync('DELETE FROM transactions')
@@ -70,6 +71,15 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
                         WHEN (SELECT type FROM categories WHERE id = NEW.category_id) = 'income' THEN NEW.amount
                         ELSE -NEW.amount
                     END
+                    
+                    WHERE id = NEW.account_id;
+                    
+                    UPDATE accounts
+                    SET positive_state = CASE
+                        WHEN balance > 0 THEN 1
+                        ELSE 0
+                    END
+                    
                     WHERE id = NEW.account_id;
                 END;    
                 
@@ -82,6 +92,14 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
                         WHEN (SELECT type FROM categories WHERE id = OLD.category_id) = 'expense' THEN OLD.amount
                         ELSE -OLD.amount
                     END
+                    WHERE id = OLD.account_id;
+                    
+                    UPDATE accounts
+                    SET positive_state = CASE
+                        WHEN balance > 0 THEN 1
+                        ELSE 0
+                    END
+                    
                     WHERE id = OLD.account_id;
                 END;
             `)

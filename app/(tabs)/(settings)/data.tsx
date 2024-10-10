@@ -44,8 +44,6 @@ export default function Screen() {
                 copyToCacheDirectory: true
             })
 
-            console.log(result);
-
             if (result.assets && result.assets[0].uri) {
                 // db.closeSync();
                 await FileSystem.copyAsync({
@@ -76,7 +74,6 @@ export default function Screen() {
                 openDatabaseSync('finanzas_ok.db');
                 // await migrateDbIfNeeded(db);
 
-                console.log(getAllAccounts(db));
 
 
                 //     close open db
@@ -88,7 +85,6 @@ export default function Screen() {
 
     }
 
-    console.log(getAllAccounts(db))
 
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}

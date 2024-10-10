@@ -28,6 +28,15 @@ export default function Screen() {
     const [accountPositiveState, setAccountPositiveState] = useState<string>('');
     const currentEmoji = useAppSelector(selectCurrentEmoji);
 
+    function handleChangeAccountState(state: 'Positive' | 'Negative') {
+        setAccountPositiveState(state);
+        if (state === 'Positive') {
+            setAccountBalance(accountBalance.replace('-', ''));
+        } else {
+            setAccountBalance('-' + accountBalance)
+        }
+    }
+
     // TODO add support for multi currency per account (for example, a savings account in USD, credit card in PEN) with name and icons (coins api), and manage exchange rates from api. Rememeber to make the exchange rate between the coin of the account and the coin of the transaction (this is the global currency selected)
 
     useEffect(() => {
@@ -195,10 +204,10 @@ export default function Screen() {
                         <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0}
                                               collisionPadding={0}
                                               avoidCollisions={true}>
-                            <DropdownMenu.Item key="positive" onSelect={() => setAccountPositiveState('Positive')}>
+                            <DropdownMenu.Item key="positive" onSelect={() => handleChangeAccountState('Positive')}>
                                 <DropdownMenu.ItemTitle>Positive</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
-                            <DropdownMenu.Item key="negative" onSelect={() => setAccountPositiveState('Negative')}>
+                            <DropdownMenu.Item key="negative" onSelect={() => handleChangeAccountState('Negative')}>
                                 <DropdownMenu.ItemTitle>Negative</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                         </DropdownMenu.Content>
