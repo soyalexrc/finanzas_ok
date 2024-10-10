@@ -13,11 +13,15 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {FullTransaction} from "@/lib/types/Transaction";
 import {selectCategory} from "@/lib/store/features/categories/categoriesSlice";
-import {selectAccountForm, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
+import {
+    selectAccountForm,
+    selectSelectedAccountGlobal,
+    updateAccountsList
+} from "@/lib/store/features/accounts/accountsSlice";
 import {formatDateHomeItemGroups, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {
     createTransaction,
-    deleteTransaction, getTransactions,
+    deleteTransaction, getAllAccounts, getTransactions,
     getTransactionsGroupedAndFiltered,
     stopRecurringInTransaction
 } from "@/lib/db";
@@ -66,6 +70,8 @@ export default function HomeResumeItems() {
                     await deleteTransaction(db, id)
                     const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
                     const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    const accounts = getAllAccounts(db);
+                    dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
                     dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
                     dispatch(updateChartPoints(amountsGroupedByDate))

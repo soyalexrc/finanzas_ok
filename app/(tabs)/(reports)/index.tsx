@@ -91,6 +91,8 @@ export default function ReportScreen() {
         }
     }
 
+    console.log(transactions)
+
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
             <CustomHeader style={{paddingTop: isIos ? insets.top : 0}}>

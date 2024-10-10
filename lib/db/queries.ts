@@ -487,17 +487,17 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $category_id: transaction.category_id,
         });
 
-        const categoryType: {type: string} | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
-        const balanceInAccount: {balance: number} | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
-        await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType?.type === 'expense' ? balanceInAccount!.balance - Number(transaction.amount) : balanceInAccount!.balance + Number(transaction.amount), transaction.account_id])
+        // const categoryType: {type: string} | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
+        // const balanceInAccount: {balance: number} | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
+        // await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType?.type === 'expense' ? balanceInAccount!.balance - Number(transaction.amount) : balanceInAccount!.balance + Number(transaction.amount), transaction.account_id])
 
-        if (categoryType?.type === 'expense' && balanceInAccount!.balance - Number(transaction.amount) < 0) {
-            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [0, transaction.account_id])
-        }
-
-        if (categoryType?.type === 'income' && balanceInAccount!.balance + Number(transaction.amount) > 0) {
-            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [1, transaction.account_id])
-        }
+        // if (categoryType?.type === 'expense' && balanceInAccount!.balance - Number(transaction.amount) < 0) {
+        //     await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [0, transaction.account_id])
+        // }
+        //
+        // if (categoryType?.type === 'income' && balanceInAccount!.balance + Number(transaction.amount) > 0) {
+        //     await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [1, transaction.account_id])
+        // }
 
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
@@ -562,10 +562,42 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
         WHERE id = ?
     `);
     try {
+        const oldTransaction: { amount: number, category_id: string } | null = await db.getFirstAsync('SELECT amount, category_id FROM transactions WHERE id = ?', [transaction.id]);
+        const oldCategoryType: { type: string } | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [oldTransaction?.category_id!]);
         const t = await statement.executeAsync([Number(transaction.amount), transaction.recurrentDate, transaction.date, transaction.notes, transaction.account_id, transaction.category_id, transaction.id]);
-        const categoryType: string | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
-        const balanceInAccount: number | null = await db.getFirstAsync('SELECT balance FROM accounts WHERE id = ?', [transaction.account_id]);
-        await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType === 'expense' ? balanceInAccount! - Number(transaction.amount) : balanceInAccount! + Number(transaction.amount)])
+        const balanceInAccount: {balance: number, positive_state: number} | null= await db.getFirstAsync('SELECT balance, positive_state FROM accounts WHERE id = ?', [transaction.account_id]);
+
+        const categoryType: { type: string } | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
+
+        // Calculate the operation based on category types
+        const operation = oldCategoryType?.type === 'expense' ? balanceInAccount?.positive_state! > 0 ? 'reduce' : 'sum' : balanceInAccount?.positive_state! > 0 ? 'reduce' : 'sum';
+
+        // Calculate the balance without the old transaction
+        const balanceWithoutOldTransaction = operation === 'sum' ? balanceInAccount?.balance! + oldTransaction?.amount! : balanceInAccount?.balance! - oldTransaction?.amount!;
+
+        // Calculate the balance with the new transaction
+        const balanceWithNewTransaction = categoryType?.type === 'expense' ? balanceWithoutOldTransaction - Number(transaction.amount) : balanceWithoutOldTransaction + Number(transaction.amount);
+
+
+        console.log({
+            balanceInAccount,
+            operation,
+            balanceWithoutOldTransaction,
+            balanceWithNewTransaction
+        })
+        // Removemos el anterior valor de la transaccion en el balance
+        // await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [categoryType?.type === 'expense' ? balanceInAccount!.balance + oldTransaction?.amount! : balanceInAccount!.balance - oldTransaction?.amount!, transaction.account_id])
+
+
+        // const newBalanceBasedOnOldAmountAndNewAmount: number = 10;
+
+
+        // Actualizamos el nuevo valor de la transaccion en el balance
+        if (oldTransaction?.amount !== Number(transaction.amount) || oldCategoryType?.type !== categoryType?.type) {
+            await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [balanceWithNewTransaction, transaction.account_id]);
+            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [balanceWithNewTransaction < 0 ? 0 : 1, transaction.account_id])
+        }
+
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
                    t.amount,

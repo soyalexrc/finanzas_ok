@@ -117,7 +117,7 @@ const InitialLayout = () => {
 
 
   return (
-      <>
+      <View flex={1} backgroundColor="$color1">
         <StatusBar barStyle={appearance === 'system' ? (colorScheme === 'dark' ? 'light-content' : 'dark-content') : appearance === 'light' ? 'dark-content' : 'light-content'} />
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
@@ -125,7 +125,7 @@ const InitialLayout = () => {
           <Stack.Screen name="emojiSelection" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="+not-found"/>
         </Stack>
-      </>
+      </View>
   )
 }
 

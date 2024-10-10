@@ -13,13 +13,19 @@ import {formatByThousands, textShortener} from "@/lib/helpers/string";
 import {
     selectAccountForm,
     selectAccounts,
-    selectSelectedAccountForm, selectSelectedAccountGlobal, updateAccountInList
+    selectSelectedAccountForm, selectSelectedAccountGlobal, updateAccountInList, updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {
     onChangeDate,
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {createTransaction, getTransactions, getTransactionsGroupedAndFiltered, updateTransaction} from "@/lib/db";
+import {
+    createTransaction,
+    getAllAccounts,
+    getTransactions,
+    getTransactionsGroupedAndFiltered,
+    updateTransaction
+} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import sleep from "@/lib/helpers/sleep";
@@ -88,6 +94,8 @@ export default function Screen() {
 
         // update category in redux
         dispatch(updateAccountInList(transaction.account));
+        const accounts = getAllAccounts(db);
+        dispatch(updateAccountsList(accounts))
 
         const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
         const {
