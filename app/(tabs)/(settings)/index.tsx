@@ -77,7 +77,6 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             title="Language"
-                            disabled
                             onPress={() => router.push('/language')}
                             icon={<IconWrapper bgColor="$blue9Light" icon={<MaterialIcons name='language' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}

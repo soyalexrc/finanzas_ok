@@ -6,13 +6,15 @@ import {RootState} from "@/lib/store";
 // Define a type for the slice state
 interface SettingsState {
     appearance: 'system' | 'light' | 'dark';
-    hidden_feature_flag: boolean
+    hidden_feature_flag: boolean;
+    selectedLanguage: string;
 }
 
 // Define the initial state using that type
 const initialState: SettingsState = {
     appearance: 'system',
-    hidden_feature_flag: false
+    hidden_feature_flag: false,
+    selectedLanguage: 'es'
 }
 
 export const settingsSlice = createSlice({
@@ -25,12 +27,16 @@ export const settingsSlice = createSlice({
         },
         updateHiddenFeatureFlag: (state, action: PayloadAction<boolean>) => {
             state.hidden_feature_flag = action.payload;
+        },
+        updateSelectedLanguage: (state, action: PayloadAction<string>) => {
+            state.selectedLanguage = action.payload;
         }
     },
 })
 
 export const {
     updateAppearance,
+    updateSelectedLanguage,
     updateHiddenFeatureFlag
 } = settingsSlice.actions
 

@@ -46,6 +46,12 @@ export default function SettingsLayout() {
                 headerTintColor: theme.color12.val
             }}/>
 
+            <Stack.Screen name="language" options={{
+                headerBlurEffect: 'prominent',
+                headerTransparent: true,
+                headerTintColor: theme.color12.val
+            }}/>
+
             <Stack.Screen name="accounts" options={{
                 headerBlurEffect: 'prominent',
                 title: 'Accounts',

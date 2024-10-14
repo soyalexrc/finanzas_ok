@@ -9,11 +9,14 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
-import {selectSettings, updateAppearance, updateHiddenFeatureFlag} from "@/lib/store/features/settings/settingsSlice";
-import {getLocales} from "expo-localization";
+import {
+  selectSettings,
+  updateAppearance,
+  updateHiddenFeatureFlag,
+  updateSelectedLanguage
+} from "@/lib/store/features/settings/settingsSlice";
 import {View} from "tamagui";
 import {
-  selectAccountFilter,
   selectCategoryFilter,
   selectDateRangeFilter, updateAccountFilter, updateChartPoints, updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
@@ -26,7 +29,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
 import {getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
-
+import '@/lib/language';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -111,8 +114,10 @@ const InitialLayout = () => {
   async function validateSettingsFromStorage() {
     const appearance = await loadString('appearance');
     const hidden_feature_flag = await load('hidden_feature_flag');
+    const selected_language = await loadString('selected_language');
 
     if (hidden_feature_flag) dispatch(updateHiddenFeatureFlag(hidden_feature_flag as boolean));
+    if (selected_language) dispatch(updateSelectedLanguage(selected_language));
     if (appearance) dispatch(updateAppearance(appearance as 'system' | 'light' | 'dark'));
   }
 
