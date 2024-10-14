@@ -82,6 +82,8 @@ export default function Screen() {
                             icon={<IconWrapper bgColor="$blue9Light" icon={<MaterialIcons name='language' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
+                    </YGroup.Item>
+                    <YGroup.Item>
                         <ListItem
                             hoverTheme
                             pressTheme

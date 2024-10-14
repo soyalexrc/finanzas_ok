@@ -44,6 +44,7 @@ import {loadString} from "@/lib/utils/storage";
 import TransactionsSettingsDropdown from "@/lib/components/ui/TransactionsSettingsDropdown";
 import {currency} from "expo-localization";
 import * as DropdownMenu from "zeego/dropdown-menu";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function Screen() {
     const router = useRouter();
@@ -67,8 +68,9 @@ export default function Screen() {
     const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
     const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
+    const {hidden_feature_flag} = useAppSelector(selectSettings)
 
-    const [tab, setTab] = useState<'total' | 'visible'>('total');
+    const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
 
     // callbacks
 

@@ -68,6 +68,11 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         setLocalCategory({id: 0, title: '', icon: '', type: ''});
     }
 
+    function clearAccount() {
+        // dispatch(updateAccountFilter({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1}));
+        // setLocalAccount({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1});
+    }
+
 
     return (
         <Sheet
@@ -147,7 +152,23 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
 
                 <YStack>
-                    <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
+                    <XStack justifyContent="space-between">
+                        <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
+                        <TouchableOpacity style={{
+                            borderStyle: 'solid',
+                            borderWidth: 1,
+                            borderColor: theme.red10Dark.val,
+                            borderRadius: 20,
+                            paddingVertical: 4,
+                            paddingHorizontal: 8,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginRight: 30
+                        }} onPress={clearAccount}>
+                            <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
+                            <Text fontSize={12} color={theme.red10Dark.val}>Clear </Text>
+                        </TouchableOpacity>
+                    </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
                           color="$gray10Dark">{localAccount.icon} {localAccount.title}</Text>
                     <FlatList
