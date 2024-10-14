@@ -82,6 +82,14 @@ export default function Screen() {
                             icon={<IconWrapper bgColor="$blue9Light" icon={<MaterialIcons name='language' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
+                        <ListItem
+                            hoverTheme
+                            pressTheme
+                            title="Other"
+                            onPress={() => router.push('/other')}
+                            icon={<IconWrapper bgColor="$yellow10Light" icon={<MaterialIcons name='settings' size={20} color="white" />} />}
+                            iconAfter={<Entypo name="chevron-small-right" size={24} />}
+                        />
                     </YGroup.Item>
                 </YGroup>
 

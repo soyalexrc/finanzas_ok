@@ -50,6 +50,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                    json_group_array(json_object(
                            'id', t.id,
                            'amount', t.amount,
+                           'hidden_amount', t.hidden_amount,
+                           'is_hidden_transaction', t.is_hidden_transaction,
                            'recurrentDate', t.recurrentDate,
                            'date', t.date,
                            'notes', t.notes,
@@ -87,6 +89,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                    json_group_array(json_object(
                            'id', t.id,
                            'amount', t.amount,
+                           'hidden_amount', t.hidden_amount,
+                           'is_hidden_transaction', t.is_hidden_transaction,
                            'recurrentDate', t.recurrentDate,
                            'date', t.date,
                            'notes', t.notes,
@@ -128,6 +132,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                            'amount', t.amount,
                            'recurrentDate', t.recurrentDate,
                            'date', t.date,
+                           'hidden_amount', t.hidden_amount,
+                           'is_hidden_transaction', t.is_hidden_transaction,
                            'notes', t.notes,
                            'account_id', t.account_id,
                            'category_id', t.category_id
@@ -168,6 +174,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                            'amount', t.amount,
                            'recurrentDate', t.recurrentDate,
                            'date', t.date,
+                           'hidden_amount', t.hidden_amount,
+                           'is_hidden_transaction', t.is_hidden_transaction,
                            'notes', t.notes,
                            'account_id', t.account_id,
                            'category_id', t.category_id
@@ -241,6 +249,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             groups = await db.getAllAsync(`
                 SELECT strftime('%Y-%m-%d', t.date) AS formatted_date,
                        ROUND(SUM(t.amount), 2)      AS total,
+                       ROUND(SUM(t.hidden_amount), 2)      AS total_hidden,
                        c.type                       AS transaction_type,
                        t.account_id,
                        a.currency_symbol            AS currency_symbol
@@ -258,6 +267,8 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             transactions = await db.getAllAsync(`
                 SELECT t.id,
                        t.amount,
+                       t.hidden_amount,
+                       t.is_hidden_transaction,
                        t.recurrentDate,
                        strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
@@ -283,11 +294,12 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
 
         } else {
             groups = await db.getAllAsync(`
-                SELECT strftime('%Y-%m-%d', t.date) AS formatted_date,
-                       ROUND(SUM(t.amount), 2)      AS total,
-                       c.type                       AS transaction_type,
+                SELECT strftime('%Y-%m-%d', t.date)   AS formatted_date,
+                       ROUND(SUM(t.amount), 2)        AS total,
+                       ROUND(SUM(t.hidden_amount), 2) AS total_hidden,
+                       c.type                         AS transaction_type,
                        t.account_id,
-                       a.currency_symbol            AS currency_symbol
+                       a.currency_symbol              AS currency_symbol
                 FROM transactions t
                          LEFT JOIN categories c ON t.category_id = c.id
                          LEFT JOIN accounts a ON t.account_id = a.id
@@ -302,6 +314,8 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             transactions = await db.getAllAsync(`
                 SELECT t.id,
                        t.amount,
+                       t.is_hidden_transaction,
+                       t.hidden_amount,
                        t.recurrentDate,
                        strftime('%Y-%m-%d', t.date) AS date,
             t.notes,
@@ -333,6 +347,8 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
             date: t.date,
             notes: t.notes,
             amount: String(t.amount),
+            hidden_amount: String(t.hidden_amount),
+            is_hidden_transaction: t.is_hidden_transaction,
             recurrentDate: t.recurrentDate,
             category: {
                 id: t.category_id,
@@ -353,7 +369,7 @@ export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, star
 
         const groupedData = groups.reduce((acc: any[], curr: any) => {
             const dateGroup = acc.find(group => group.formatted_date === curr.formatted_date);
-            const totalObj = {amount: curr.total, symbol: curr.currency_symbol};
+            const totalObj = {amount: curr.total, symbol: curr.currency_symbol, hidden_amount: curr.total_hidden};
 
             if (dateGroup) {
                 dateGroup.totals.push(totalObj);
@@ -472,8 +488,8 @@ export async function deleteTransaction(db: SQLiteDatabase, transactionId: numbe
 }
 
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
-    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id)
-                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id)`);
+    const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, is_hidden_transaction, hidden_amount)
+                                             VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $is_hidden_transaction, $hidden_amount)`);
     try {
         const t = await statement.executeAsync({
             $amount: Number(transaction.amount),
@@ -482,6 +498,8 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $notes: transaction.notes,
             $account_id: transaction.account_id,
             $category_id: transaction.category_id,
+            $is_hidden_transaction: transaction.is_hidden_transaction,
+            $hidden_amount: transaction.hidden_amount,
         });
 
         // const categoryType: {type: string} | null = await db.getFirstAsync('SELECT type FROM categories WHERE id = ?', [transaction.category_id]);
@@ -499,6 +517,8 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
                    t.amount,
+                   t.is_hidden_transaction,
+                   t.hidden_amount,
                    t.recurrentDate,
                    strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
@@ -536,7 +556,9 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             amount: String(retrievedTransaction.amount),
             notes: retrievedTransaction.notes,
             date: retrievedTransaction.date,
-            recurrentDate: retrievedTransaction.recurrentDate
+            recurrentDate: retrievedTransaction.recurrentDate,
+            hidden_amount: retrievedTransaction.hidden_amount,
+            is_hidden_transaction: retrievedTransaction.is_hidden_transaction
         }
     } catch (err) {
         console.error(err);
@@ -585,10 +607,10 @@ export async function updateTransaction(db: SQLiteDatabase, transaction: Transac
 
 
         // Actualizamos el nuevo valor de la transaccion en el balance
-        if (oldTransaction?.amount !== Number(transaction.amount) || oldCategoryType?.type !== categoryType?.type) {
-            await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [balanceWithNewTransaction, transaction.account_id]);
-            await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [balanceWithNewTransaction < 0 ? 0 : 1, transaction.account_id])
-        }
+        // if (oldTransaction?.amount !== Number(transaction.amount) || oldCategoryType?.type !== categoryType?.type) {
+        //     await db.runAsync('UPDATE accounts SET balance = ? WHERE id = ?', [balanceWithNewTransaction, transaction.account_id]);
+        //     await db.runAsync('UPDATE accounts SET positive_state = ? WHERE id = ?', [balanceWithNewTransaction < 0 ? 0 : 1, transaction.account_id])
+        // }
 
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
@@ -649,6 +671,8 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
         const retrievedTransaction: any = await db.getFirstAsync(`
             SELECT t.id,
                    t.amount,
+                   t.hidden_amount,
+                   t.is_hidden_transaction,
                    t.recurrentDate,
                    strftime('%Y-%m-%d', t.date) AS date,
                 t.notes,
@@ -684,6 +708,8 @@ export async function stopRecurringInTransaction(db: SQLiteDatabase, transaction
                 type: retrievedTransaction.category_type
             },
             amount: String(retrievedTransaction.amount),
+            hidden_amount: String(retrievedTransaction.amount),
+            is_hidden_transaction: retrievedTransaction.is_hidden_transaction,
             notes: retrievedTransaction.notes,
             date: retrievedTransaction.date,
             recurrentDate: retrievedTransaction.recurrentDate

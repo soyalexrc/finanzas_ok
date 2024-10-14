@@ -15,12 +15,14 @@ import {calculateTotal, formatByThousands, formatTitleOption, formatWithDecimals
 import {groups} from "@/lib/utils/data/transaction";
 import {selectAccounts, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import {TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function ResumeDropDown() {
     const db = useSQLiteContext();
     const  theme = useTheme();
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
+    const {hidden_feature_flag} = useAppSelector(selectSettings);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal)
     const transactionsInView = useAppSelector(selectTransactionsGroupedByDate);
@@ -57,7 +59,7 @@ export default function ResumeDropDown() {
                             filterType.type !== 'Balance' &&
                             <>
                                 {
-                                    transactionsInView.length > 0 && calculateTotal(transactionsInView).map((total, index) => (
+                                    transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                                         <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
                                             <Text style={[index !== 0 && { color: theme.gray10Dark.val }]} fontSize={index === 0 ? '$9' : '$4'}>{total.symbol}</Text>
                                             <Text style={[index !== 0 && { color: theme.gray10Dark.val }]}  mt={index !== 0 ? -6 : -12} fontSize={index === 0 ? '$12' : '$8'}>{formatByThousands(total.amount)}</Text>

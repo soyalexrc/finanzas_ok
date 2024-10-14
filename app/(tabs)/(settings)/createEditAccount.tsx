@@ -1,5 +1,5 @@
 import {Button, Input, Separator, Text, useTheme, View, XStack, YStack} from "tamagui";
-import {Alert, TouchableOpacity, useColorScheme} from "react-native";
+import {Alert, Platform, TouchableOpacity, useColorScheme} from "react-native";
 import {useRouter} from "expo-router";
 import {Entypo} from "@expo/vector-icons";
 import * as DropdownMenu from 'zeego/dropdown-menu'
@@ -10,6 +10,7 @@ import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 import {getLocales} from "expo-localization";
 import {createAccount, getAllAccounts, updateAccount} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export default function Screen() {
     const locales = getLocales();
@@ -17,6 +18,7 @@ export default function Screen() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const schemeColor = useColorScheme();
     const accountCreateUpdate = useAppSelector(selectAccountCreateUpdate);
     const [accountTitle, setAccountTitle] = useState<string>('')
@@ -87,7 +89,7 @@ export default function Screen() {
 
     return (
         <>
-            <View flex={1} backgroundColor="$color1" p={20}>
+            <View flex={1} backgroundColor="$color1" px={20} pb={20} pt={Platform.OS === 'android' ? insets.top : 20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
                     <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.back()}>
                         <Text>Cancel</Text>

@@ -53,7 +53,7 @@ export default function HomeResumeItems() {
         dispatch(updateCurrentTransaction({
             ...t,
             account_id: t.account.id,
-            category_id: t.category.id
+            category_id: t.category.id,
         }));
         dispatch(selectCategory(t.category));
         dispatch(selectAccountForm(t.account));

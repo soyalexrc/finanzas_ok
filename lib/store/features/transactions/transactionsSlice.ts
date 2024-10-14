@@ -24,6 +24,8 @@ const initialState: TransactionsState = {
         category_id: -1,
         date: setInitialDate(),
         notes: '',
+        hidden_amount: "0",
+        is_hidden_transaction: 0,
         recurrentDate: 'none',
         id: -1
     },
@@ -48,6 +50,12 @@ export const transactionsSlice = createSlice({
         onChangeAmount: (state, action: PayloadAction<string>) => {
             state.currentTransaction.amount = action.payload;
         },
+        onChangeHiddenAmount: (state, action: PayloadAction<string>) => {
+            state.currentTransaction.hidden_amount = action.payload;
+        },
+        updateHiddenFlag: (state, action: PayloadAction<number>) => {
+            state.currentTransaction.is_hidden_transaction = action.payload;
+        },
         onRecurrentSettingChange: (state, action: PayloadAction<string>) => {
             state.currentTransaction.recurrentDate = action.payload;
         },
@@ -64,6 +72,8 @@ export const transactionsSlice = createSlice({
             state.currentTransaction = {
                 account_id: -1,
                 amount: "0",
+                hidden_amount: "0",
+                is_hidden_transaction: 0,
                 category_id: -1,
                 date: new Date().toISOString(),
                 notes: '',
@@ -111,7 +121,9 @@ export const {
     resetCurrentTransaction,
     removeTransactionFromHomeList,
     updateCurrentBalance,
-    addTransactionInHomeList
+    updateHiddenFlag,
+    addTransactionInHomeList,
+    onChangeHiddenAmount
 } = transactionsSlice.actions;
 
 export const selectCurrentTransaction = (state: RootState) => state.transactions.currentTransaction

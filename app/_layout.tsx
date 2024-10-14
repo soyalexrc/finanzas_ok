@@ -7,9 +7,9 @@ import NetInfo from '@react-native-community/netinfo';
 import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
-import {loadString, saveString} from "@/lib/utils/storage";
+import {load, loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
-import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
+import {selectSettings, updateAppearance, updateHiddenFeatureFlag} from "@/lib/store/features/settings/settingsSlice";
 import {getLocales} from "expo-localization";
 import {View} from "tamagui";
 import {
@@ -45,6 +45,7 @@ const InitialLayout = () => {
 
   async function updateStore() {
     try {
+      await validateSettingsFromStorage();
       const accounts = getAllAccounts(db);
       const categories = getAllCategories(db);
       const {start, end} = getCurrentWeek();
@@ -86,7 +87,6 @@ const InitialLayout = () => {
     }, [appearance]);
 
   useEffect(() => {
-    validateAppearanceFromStorage();
     const unsubscribe = NetInfo.addEventListener(
         state => dispatch(changeNetworkState(state))
     )
@@ -108,11 +108,12 @@ const InitialLayout = () => {
     return <Slot />;
   }
 
-  async function validateAppearanceFromStorage() {
-    const valueFromStorage = await loadString('appearance');
-    if (valueFromStorage) {
-        dispatch(updateAppearance(valueFromStorage as 'system' | 'light' | 'dark'));
-    }
+  async function validateSettingsFromStorage() {
+    const appearance = await loadString('appearance');
+    const hidden_feature_flag = await load('hidden_feature_flag');
+
+    if (hidden_feature_flag) dispatch(updateHiddenFeatureFlag(hidden_feature_flag as boolean));
+    if (appearance) dispatch(updateAppearance(appearance as 'system' | 'light' | 'dark'));
   }
 
 

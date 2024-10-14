@@ -1,6 +1,8 @@
 export type Transaction = {
     id: number;
     recurrentDate: string;
+    is_hidden_transaction: number;
+    hidden_amount: string;
     date: string;
     amount: string;
     notes: string;
@@ -13,6 +15,8 @@ export type FullTransactionRaw = {
     recurrentDate: string;
     date: string;
     amount: string;
+    hidden_amount: string;
+    is_hidden_transaction: number;
     notes: string;
     account_title: string;
     account_id: number;
@@ -30,6 +34,8 @@ export type FullTransactionRaw = {
 export type FullTransaction = {
     id: number;
     recurrentDate: string;
+    hidden_amount: string;
+    is_hidden_transaction: number;
     date: string;
     amount: string;
     notes: string;
@@ -39,7 +45,7 @@ export type FullTransaction = {
 
 export type TransactionsGroupedByDate = {
     id: number;
-    totals: { amount: number; symbol: string }[];
+    totals: { amount: number; symbol: string, hidden_amount: number, is_hidden_transaction: number }[];
     date: string;
     items: FullTransaction[]
 }
@@ -108,6 +114,8 @@ export type TransactionWithAmountNumber = {
     recurrentDate: string;
     date: string;
     amount: number;
+    hidden_amount?: number;
+    is_hidden_transaction?: number;
     notes: string;
     account_id: number;
     category_id: number;

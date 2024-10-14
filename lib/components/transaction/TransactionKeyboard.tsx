@@ -1,22 +1,30 @@
 import {FlatList} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
-import {onChangeAmount, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
+import {
+    onChangeAmount, onChangeDate,
+    onChangeHiddenAmount,
+    selectCurrentTransaction
+} from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {View, Text, Button} from 'tamagui';
 
-export default function TransactionKeyboard() {
+export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' }) {
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction)
 
     const handleNumberPress = (item: { id: string, value: string, isBackSpace?: boolean }) => {
         if (item.isBackSpace) {
-            let newAmount = currentTransaction.amount.slice(0, -1);
+            let newAmount = tab === 'total' ? currentTransaction.amount.slice(0, -1) : currentTransaction.hidden_amount.slice(0, -1);
             if (newAmount === '') {
                 newAmount = '0';
             }
-            dispatch(onChangeAmount(newAmount))
+            if (tab === 'total') {
+                dispatch(onChangeAmount(newAmount))
+            } else {
+                dispatch(onChangeHiddenAmount(newAmount))
+            }
         } else {
-            let updatedAmount = currentTransaction.amount === '0' ? '' : currentTransaction.amount
+            let updatedAmount = tab === 'total' ? currentTransaction.amount === '0' ? '' : currentTransaction.amount : currentTransaction.hidden_amount === '0' ? '' : currentTransaction.hidden_amount
             if (item.value === '.') {
                 // Ensure only one decimal point
                 if (!updatedAmount.includes('.')) {
@@ -28,7 +36,11 @@ export default function TransactionKeyboard() {
             const decimalIndex = updatedAmount.indexOf('.');
             if (decimalIndex !== -1 && updatedAmount.length - decimalIndex > 3) return;
 
-            dispatch(onChangeAmount(updatedAmount));
+            if (tab === 'total') {
+                dispatch(onChangeAmount(updatedAmount));
+            } else {
+                dispatch(onChangeHiddenAmount(updatedAmount));
+            }
         }
     };
 

@@ -30,13 +30,13 @@ export function formatTitleOption(key: string, type: string): string {
 //     }
 // }
 
-export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string, symbol: string }[] {
+export function calculateTotal(data: TransactionsGroupedByDate[], hiddenFeatureFlag: boolean): { amount: string, decimals: string, symbol: string }[] {
     const totalsBySymbol = data.reduce((acc, cur) => {
         cur.totals.forEach(total => {
             if (!acc[total.symbol]) {
                 acc[total.symbol] = 0;
             }
-            acc[total.symbol] += total.amount;
+            acc[total.symbol] += hiddenFeatureFlag ? total.hidden_amount : total.amount;
         });
         return acc;
     }, {} as Record<string, number>);

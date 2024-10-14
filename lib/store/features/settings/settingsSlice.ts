@@ -6,11 +6,13 @@ import {RootState} from "@/lib/store";
 // Define a type for the slice state
 interface SettingsState {
     appearance: 'system' | 'light' | 'dark';
+    hidden_feature_flag: boolean
 }
 
 // Define the initial state using that type
 const initialState: SettingsState = {
     appearance: 'system',
+    hidden_feature_flag: false
 }
 
 export const settingsSlice = createSlice({
@@ -20,12 +22,16 @@ export const settingsSlice = createSlice({
     reducers: {
         updateAppearance: (state, action: PayloadAction<'system' | 'light' | 'dark'>) => {
             state.appearance = action.payload;
+        },
+        updateHiddenFeatureFlag: (state, action: PayloadAction<boolean>) => {
+            state.hidden_feature_flag = action.payload;
         }
     },
 })
 
 export const {
-    updateAppearance
+    updateAppearance,
+    updateHiddenFeatureFlag
 } = settingsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
