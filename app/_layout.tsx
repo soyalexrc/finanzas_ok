@@ -30,6 +30,7 @@ import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupe
 import {getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import '@/lib/language';
+import i18next from "i18next";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -115,10 +116,17 @@ const InitialLayout = () => {
     const appearance = await loadString('appearance');
     const hidden_feature_flag = await load('hidden_feature_flag');
     const selected_language = await loadString('selected_language');
+    const isOnBoardingShown = await load('is_onboarding_shown');
 
     if (hidden_feature_flag) dispatch(updateHiddenFeatureFlag(hidden_feature_flag as boolean));
-    if (selected_language) dispatch(updateSelectedLanguage(selected_language));
+    if (selected_language) {
+      dispatch(updateSelectedLanguage(selected_language))
+      await i18next.changeLanguage(selected_language)
+    }
     if (appearance) dispatch(updateAppearance(appearance as 'system' | 'light' | 'dark'));
+    if (!isOnBoardingShown) {
+      router.replace('/onboarding')
+    }
   }
 
 
@@ -128,6 +136,7 @@ const InitialLayout = () => {
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
           <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
+          <Stack.Screen name="onboarding" options={{presentation: 'modal', gestureEnabled: false, headerShown: false }}/>
           <Stack.Screen name="emojiSelection" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="+not-found"/>
         </Stack>
