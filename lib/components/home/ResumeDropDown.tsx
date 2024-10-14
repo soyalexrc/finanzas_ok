@@ -16,6 +16,7 @@ import {groups} from "@/lib/utils/data/transaction";
 import {selectAccounts, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import {TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import {useTranslation} from "react-i18next";
 
 export default function ResumeDropDown() {
     const db = useSQLiteContext();
@@ -27,6 +28,7 @@ export default function ResumeDropDown() {
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal)
     const transactionsInView = useAppSelector(selectTransactionsGroupedByDate);
     const currentBalance = useAppSelector(selectCurrentBalance);
+    const {t} = useTranslation();
 
     async function handleSelectOption(type: 'Spent' | 'Revenue' | 'Balance', date: 'week' | 'month' | 'none') {
         dispatch(updateHomeViewTypeFilter({type, date}))
@@ -46,7 +48,16 @@ export default function ResumeDropDown() {
                 <DropdownMenu.Trigger>
                     <View style={{alignItems: 'center'}}>
                         <Text
-                            fontSize="$6">{filterType.type === 'Balance' ? 'Current balance' : `${filterType.type} this ${filterType.date}`}</Text>
+                            fontSize="$6">{
+                            filterType.type === 'Balance'
+                                ? t('HOME_RESUME_DROPDOWN.BALANCE')
+                                : filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
+                                : filterType.type === 'Spent' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')
+                                : filterType.type === 'Revenue' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')
+                                : filterType.type === 'Revenue' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')
+                                : ''
+                            }
+                        </Text>
                         {
                             filterType.type === 'Balance' &&
                             <>
@@ -81,22 +92,58 @@ export default function ResumeDropDown() {
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0}
                                       collisionPadding={0} avoidCollisions={true}>
-                    {
-                        groups.map(group => (
-                            <DropdownMenu.Group key={group.key}>
-                                {
-                                    group.items.map(item => (
-                                        <DropdownMenu.CheckboxItem key={item.key}
-                                                                   value={(filterType.type === group.key && filterType.date === item.type) ? 'on' : 'off'}
-                                                                   onValueChange={() => handleSelectOption(group.key, item.type)}>
-                                            <DropdownMenu.ItemTitle>{formatTitleOption(group.key, item.type)}</DropdownMenu.ItemTitle>
-                                            <DropdownMenu.ItemIndicator/>
-                                        </DropdownMenu.CheckboxItem>
-                                    ))
-                                }
-                            </DropdownMenu.Group>
-                        ))
-                    }
+                    <DropdownMenu.Group key="Spent">
+                        <DropdownMenu.CheckboxItem key="spent-week"
+                                                   value={(filterType.type === 'Spent' && filterType.date === "week") ? 'on' : 'off'}
+                                                   onValueChange={() => handleSelectOption('Spent', 'week')}>
+                            <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')}</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemIndicator/>
+                        </DropdownMenu.CheckboxItem>
+                        <DropdownMenu.CheckboxItem key="spent-month"
+                                                   value={(filterType.type === 'Spent' && filterType.date === "month") ? 'on' : 'off'}
+                                                   onValueChange={() => handleSelectOption('Spent', 'month')}>
+                            <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')}</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemIndicator/>
+                        </DropdownMenu.CheckboxItem>
+                    </DropdownMenu.Group>
+                    <DropdownMenu.Group key="Revenue">
+                        <DropdownMenu.CheckboxItem key="revenue-week"
+                                                   value={(filterType.type === 'Revenue' && filterType.date === "week") ? 'on' : 'off'}
+                                                   onValueChange={() => handleSelectOption('Revenue', 'week')}>
+                            <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')}</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemIndicator/>
+                        </DropdownMenu.CheckboxItem>
+                        <DropdownMenu.CheckboxItem key="revenue-month"
+                                                   value={(filterType.type === 'Revenue' && filterType.date === "month") ? 'on' : 'off'}
+                                                   onValueChange={() => handleSelectOption('Revenue', 'month')}>
+                            <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')}</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemIndicator/>
+                        </DropdownMenu.CheckboxItem>
+                    </DropdownMenu.Group>
+                    <DropdownMenu.Group key="Balance">
+                        <DropdownMenu.CheckboxItem key="current"
+                                                   value={(filterType.type === 'Balance' && filterType.date === "none") ? 'on' : 'off'}
+                                                   onValueChange={() => handleSelectOption('Balance', 'none')}>
+                            <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.BALANCE')}</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemIndicator/>
+                        </DropdownMenu.CheckboxItem>
+                    </DropdownMenu.Group>
+                    {/*{*/}
+                    {/*    groups.map(group => (*/}
+                    {/*        <DropdownMenu.Group key={group.key}>*/}
+                    {/*            {*/}
+                    {/*                group.items.map(item => (*/}
+                    {/*                    <DropdownMenu.CheckboxItem key={item.key}*/}
+                    {/*                                               value={(filterType.type === group.key && filterType.date === item.type) ? 'on' : 'off'}*/}
+                    {/*                                               onValueChange={() => handleSelectOption(group.key, item.type)}>*/}
+                    {/*                        <DropdownMenu.ItemTitle>{formatTitleOption(group.key, item.type)}</DropdownMenu.ItemTitle>*/}
+                    {/*                        <DropdownMenu.ItemIndicator/>*/}
+                    {/*                    </DropdownMenu.CheckboxItem>*/}
+                    {/*                ))*/}
+                    {/*            }*/}
+                    {/*        </DropdownMenu.Group>*/}
+                    {/*    ))*/}
+                    {/*}*/}
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         </View>

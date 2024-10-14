@@ -45,6 +45,7 @@ import TransactionsSettingsDropdown from "@/lib/components/ui/TransactionsSettin
 import {currency} from "expo-localization";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const router = useRouter();
@@ -61,6 +62,8 @@ export default function Screen() {
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const selectedAccountFilter = useAppSelector(selectAccountFilter);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
+    const {selectedLanguage} = useAppSelector(selectSettings)
+    const {t} = useTranslation()
 
     const insets = useSafeAreaInsets();
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
@@ -138,7 +141,7 @@ export default function Screen() {
             <View position="relative" flex={1} backgroundColor="$background">
                 <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
                     <TouchableOpacity onPress={() => router.back()}>
-                        <Text fontSize={18} color="$gray10Dark">Cancel</Text>
+                        <Text fontSize={18} color="$gray10Dark">{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
                         <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
@@ -172,13 +175,13 @@ export default function Screen() {
                                 <DropdownMenu.CheckboxItem key="total"
                                                            value={tab === 'total' ? 'on' : 'off'}
                                                            onValueChange={() => setTab('total')}>
-                                    <DropdownMenu.ItemTitle>See total</DropdownMenu.ItemTitle>
+                                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</DropdownMenu.ItemTitle>
                                     <DropdownMenu.ItemIndicator/>
                                 </DropdownMenu.CheckboxItem>
                                 <DropdownMenu.CheckboxItem key="visible"
                                                            value={tab === 'visible' ? 'on' : 'off'}
                                                            onValueChange={() => setTab('visible')}>
-                                    <DropdownMenu.ItemTitle>See Visible value </DropdownMenu.ItemTitle>
+                                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_VISIBLE')}</DropdownMenu.ItemTitle>
                                     <DropdownMenu.ItemIndicator/>
                                 </DropdownMenu.CheckboxItem>
                             </DropdownMenu.Content>
@@ -210,7 +213,7 @@ export default function Screen() {
                         <View borderBottomWidth={1} borderColor="$gray10Dark">
                             <TouchableOpacity onPress={() => setOpenNotesSheet(true)}
                                               style={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || 'Notes'}</Text>
+                                <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
                             </TouchableOpacity>
                         </View>
                         <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20}
@@ -232,7 +235,7 @@ export default function Screen() {
                             <View flex={0.2} justifyContent="center">
                                 <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
                                         width={70} height={35} justifyContent='center' alignItems='center'>
-                                    <Text fontSize={16}>Save</Text>
+                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
                                 </Button>
                             </View>
                         </View>
@@ -244,6 +247,10 @@ export default function Screen() {
             <DatePicker
                 modal
                 mode="date"
+                locale={selectedLanguage}
+                title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
+                cancelText={t('COMMON.CANCEL')}
+                confirmText={t('COMMON.CONFIRM')}
                 open={showCalendar}
                 date={new Date(currentTransaction.date)}
                 maximumDate={new Date()}

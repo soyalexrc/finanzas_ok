@@ -8,31 +8,14 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {saveString} from "@/lib/utils/storage";
-
-const data: { id: number, title: string, value: 'system' | 'light' | 'dark' }[] = [
-    {
-        id: 1,
-        title: 'System',
-        value: 'system'
-    },
-    {
-        id: 2,
-        title: 'Dark',
-        value: 'dark'
-    },
-    {
-        id: 3,
-        title: 'Light',
-        value: 'light'
-    }
-]
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const dispatch = useAppDispatch();
     const appearance = useAppSelector(selectSettings).appearance
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
-
+    const {t} = useTranslation()
 
     async function onPressAppearanceValue(value: 'system' | 'light' | 'dark') {
         dispatch(updateAppearance(value));
@@ -43,21 +26,36 @@ export default function Screen() {
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
                     paddingTop={isIos ? headerHeight + 20 : headerHeight}>
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
-                {
-                    data.map(item => (
-                        <YGroup.Item key={item.id}>
-                            <ListItem
-                                hoverTheme
-                                pressTheme
-                                title={item.title}
-                                onPress={() => onPressAppearanceValue(item.value)}
-                                iconAfter={<AntDesign name='check' size={20}
-                                                      color={appearance === item.value ? 'black' : 'transparent'}/>}
-                            />
-                        </YGroup.Item>
-
-                    ))
-                }
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.APPEARANCE.OPTIONS.SYSTEM')}
+                        onPress={() => onPressAppearanceValue('system')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={appearance === 'system' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.APPEARANCE.OPTIONS.DARK')}
+                        onPress={() => onPressAppearanceValue('dark')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={appearance === 'dark' ? 'white' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.APPEARANCE.OPTIONS.LIGHT')}
+                        onPress={() => onPressAppearanceValue('light')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={appearance === 'light' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
             </YGroup>
 
         </ScrollView>

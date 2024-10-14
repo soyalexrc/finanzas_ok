@@ -12,6 +12,7 @@ import {TransactionWithAmountNumber} from "@/lib/types/Transaction";
 import {selectCategories, selectCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();

@@ -6,12 +6,14 @@ import {Feather} from "@expo/vector-icons";
 import {useAppDispatch} from "@/lib/store/hooks";
 import {resetAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
 import {resetCategoryCreateUpdate} from "@/lib/store/features/categories/categoriesSlice";
+import {useTranslation} from "react-i18next";
 
 export default function SettingsLayout() {
     const theme = useTheme();
     const schemeColor = useColorScheme();
     const dispatch = useAppDispatch();
     const router = useRouter();
+    const {t} = useTranslation()
 
     function onPressCreateAccount() {
         dispatch(resetAccountCreateUpdate());
@@ -24,37 +26,40 @@ export default function SettingsLayout() {
     }
 
     return (
-        <Stack screenOptions={{headerBackTitle: 'Back'}}>
+        <Stack screenOptions={{headerBackTitle: t('COMMON.BACK')}}>
             <Stack.Screen
                 name="index"
                 options={{
-                    title: 'Settings',
+                    title: t('SETTINGS.TITLE'),
                     headerBlurEffect: 'prominent',
                     headerTransparent: true,
                     headerTintColor: theme.color12.val,
                 }}
             />
             <Stack.Screen name="appearance" options={{
+                title: t('SETTINGS.APPEARANCE.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: true,
                 headerTintColor: theme.color12.val
             }}/>
 
             <Stack.Screen name="other" options={{
+                title: t('SETTINGS.OTHER.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: true,
                 headerTintColor: theme.color12.val
             }}/>
 
             <Stack.Screen name="language" options={{
+                title: t('SETTINGS.LANGUAGE.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: true,
                 headerTintColor: theme.color12.val
             }}/>
 
             <Stack.Screen name="accounts" options={{
+                title: t('SETTINGS.ACCOUNTS.TITLE'),
                 headerBlurEffect: 'prominent',
-                title: 'Accounts',
                 headerTransparent: true,
                 headerTintColor: theme.color12.val,
                 headerRight: () => (
@@ -67,7 +72,7 @@ export default function SettingsLayout() {
             <Stack.Screen name="categories" options={{
                 headerBlurEffect: 'prominent',
                 headerTransparent: true,
-                title: 'Categories',
+                title: t('SETTINGS.CATEGORIES.TITLE'),
                 headerTintColor: theme.color12.val,
                 headerRight: () => (
                     <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>
@@ -79,7 +84,7 @@ export default function SettingsLayout() {
             <Stack.Screen name="data" options={{
                 headerBlurEffect: 'prominent',
                 headerTransparent: true,
-                title: 'Data',
+                title: t('SETTINGS.DATA_MANAGEMENT.TITLE'),
                 headerTintColor: theme.color12.val,
                 headerRight: () => (
                     <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>

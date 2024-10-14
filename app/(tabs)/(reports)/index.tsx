@@ -26,6 +26,7 @@ import {getDateRangeBetweenGapDaysAndToday, getDateRangeAlongTimeAgo} from "@/li
 import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 import {useAppSelector} from "@/lib/store/hooks";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import {useTranslation} from "react-i18next";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -43,6 +44,7 @@ export default function ReportScreen() {
     const selectedAccount = useSelector(selectAccountFilter);
     const selectedDateRange = useSelector(selectDateRangeFilter);
     const {hidden_feature_flag} = useAppSelector(selectSettings)
+    const {t} = useTranslation()
 
     const [daysFrom, setDaysFrom] = useState<string>('15')
 
@@ -188,13 +190,13 @@ export default function ReportScreen() {
                             type="single"
                         >
                             <ToggleGroup.Item value="15" aria-label="Filter by week">
-                                <Text>Last 15 days</Text>
+                                <Text>{t('REPORTS.LAST')} 15 {t('REPORTS.DAYS')}</Text>
                             </ToggleGroup.Item>
                             <ToggleGroup.Item value="45" aria-label="Filter by month">
-                                <Text>Last 45 days</Text>
+                                <Text>{t('REPORTS.LAST')} 45 {t('REPORTS.DAYS')}</Text>
                             </ToggleGroup.Item>
                             <ToggleGroup.Item value="60" aria-label="Filter by year">
-                                <Text>Last 60 days</Text>
+                                <Text>{t('REPORTS.LAST')} 60 {t('REPORTS.DAYS')}</Text>
                             </ToggleGroup.Item>
                         </ToggleGroup>
                     </XStack>

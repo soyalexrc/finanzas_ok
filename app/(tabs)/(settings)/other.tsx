@@ -5,6 +5,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateAppearance, updateHiddenFeatureFlag} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {save, saveString} from "@/lib/utils/storage";
+import {useTranslation} from "react-i18next";
 
 
 export default function Screen() {
@@ -12,6 +13,7 @@ export default function Screen() {
     const {hidden_feature_flag} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
+    const {t} = useTranslation();
 
     async function handleChangeSetting(setting: string, value: boolean) {
         const saved = await save('hidden_feature_flag', value);
@@ -31,7 +33,7 @@ export default function Screen() {
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
                 <YGroup.Item>
                     <ListItem
-                        title="Operate based on hidden amounts"
+                        title={t('SETTINGS.OTHER.OPTIONS.HIDDEN_FLAG')}
                         iconAfter={
                             <Switch size="$2" defaultChecked={hidden_feature_flag} onCheckedChange={(value) => handleChangeSetting('hidden_feature_flag', value)}>
                                 <Switch.Thumb animation="quicker" />

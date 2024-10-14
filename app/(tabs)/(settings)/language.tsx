@@ -33,7 +33,7 @@ export default function Screen() {
                     <ListItem
                         hoverTheme
                         pressTheme
-                        title="English"
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.ENGLISH')}
                         onPress={() => onPressAppearanceValue('en')}
                         iconAfter={<AntDesign name='check' size={20}
                                               color={selectedLanguage === 'en' ? 'black' : 'transparent'}/>}
@@ -43,14 +43,13 @@ export default function Screen() {
                     <ListItem
                         hoverTheme
                         pressTheme
-                        title="Spanish"
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.SPANISH')}
                         onPress={() => onPressAppearanceValue('es')}
                         iconAfter={<AntDesign name='check' size={20}
                                               color={selectedLanguage === 'es' ? 'black' : 'transparent'}/>}
                     />
                 </YGroup.Item>
             </YGroup>
-            <Text>{t('CANCEL')}</Text>
         </ScrollView>
 
     )

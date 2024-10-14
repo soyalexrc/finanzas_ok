@@ -17,7 +17,7 @@ export function formatByThousands(value: string) {
 }
 
 export function formatTitleOption(key: string, type: string): string {
-    return key + ' this ' + type
+    return key === 'Balance' ? key :  key + ' this ' + type
 }
 
 // export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string } {

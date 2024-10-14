@@ -9,12 +9,14 @@ import {AntDesign} from "@expo/vector-icons";
 import {useRouter} from "expo-router";
 import {useHeaderHeight} from "@react-navigation/elements";
 import * as MailComposer from 'expo-mail-composer';
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
     const isIos = Platform.OS === 'ios';
     const router = useRouter();
     const headerHeight = useHeaderHeight();
+    const {t} = useTranslation()
 
     async function sentEmail() {
         try {
@@ -46,7 +48,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             onPress={() => router.push('/appearance')}
-                            title="Appereance"
+                            title={t('SETTINGS.APPEARANCE.TITLE')}
                             icon={<IconWrapper bgColor="black" icon={<MaterialIcons name='dark-mode' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -56,7 +58,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             disabled
-                            title="Notifications"
+                            title={t('SETTINGS.NOTIFICATIONS.TITLE')}
                             onPress={() => router.push('/notifications')}
                             icon={<IconWrapper bgColor="$red9Light" icon={<MaterialIcons name='notifications' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -76,7 +78,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
-                            title="Language"
+                            title={t('SETTINGS.LANGUAGE.TITLE')}
                             onPress={() => router.push('/language')}
                             icon={<IconWrapper bgColor="$blue9Light" icon={<MaterialIcons name='language' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -86,7 +88,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
-                            title="Other"
+                            title={t('SETTINGS.OTHER.TITLE')}
                             onPress={() => router.push('/other')}
                             icon={<IconWrapper bgColor="$yellow10Light" icon={<MaterialIcons name='settings' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -99,7 +101,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
-                            title="Accounts"
+                            title={t('SETTINGS.ACCOUNTS.TITLE')}
                             onPress={() => router.push('/accounts')}
                             icon={<IconWrapper bgColor="$blue11Light" icon={<MaterialIcons name='account-balance-wallet' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -109,7 +111,7 @@ export default function Screen() {
                         <ListItem
                             hoverTheme
                             pressTheme
-                            title="Categories"
+                            title={t('SETTINGS.CATEGORIES.TITLE')}
                             onPress={() => router.push('/categories')}
                             icon={<IconWrapper bgColor="$orange10Light" icon={<MaterialIcons name='format-list-bulleted' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -120,7 +122,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             disabled
-                            title="Data management"
+                            title={t('SETTINGS.DATA_MANAGEMENT.TITLE')}
                             onPress={() => router.push('/data')}
                             icon={<IconWrapper bgColor="$purple10Light" icon={<MaterialIcons name='file-download' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
@@ -134,7 +136,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             onPress={sentEmail}
-                            title="Contact Developer"
+                            title={t('SETTINGS.CONTACT_DEV.TITLE')}
                             icon={<IconWrapper bgColor="$blue8Light" icon={<MaterialIcons name='email' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -144,7 +146,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             disabled
-                            title="Rate app on App Store"
+                            title={t('SETTINGS.RATE_ON_STORE.TITLE')}
                             icon={<IconWrapper bgColor="$orange9Light" icon={<MaterialIcons name='star' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -154,7 +156,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             disabled
-                            title="Share with Friends"
+                            title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                             icon={<IconWrapper bgColor="$blue10Light" icon={<FontAwesome6 name='share' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -166,7 +168,7 @@ export default function Screen() {
                             onPress={() => {
                                 Linking.openURL('https://www.instagram.com/soyalexrc/')
                             }}
-                            title="Follow @finanzasokapp"
+                            title={t('SETTINGS.FOLLOW_ON_IG.TITLE')}
                             icon={<IconWrapper bgColor="$pink11Light" icon={<AntDesign name='instagram' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -176,7 +178,7 @@ export default function Screen() {
                             hoverTheme
                             pressTheme
                             disabled
-                            title="Support Developer"
+                            title={t('SETTINGS.SUPPORT_DEV.TITLE')}
                             icon={<IconWrapper bgColor="$red10Light" icon={<Entypo name='heart' size={20} color="white" />} />}
                             iconAfter={<Entypo name="chevron-small-right" size={24} />}
                         />
@@ -186,15 +188,15 @@ export default function Screen() {
                 <XStack justifyContent="center" gap={5} alignSelf="center">
                     <Text color="$gray10Dark">Version x.x.x (xxx)</Text>
                     <Text color="$gray10Dark">•</Text>
-                    <Text>Terms</Text>
+                    <Text>{t('COMMON.TERMS')}</Text>
                     <Text color="$gray10Dark">•</Text>
-                    <Text>Privacy</Text>
+                    <Text>{t('COMMON.PRIVACY')}</Text>
                 </XStack>
 
                <XStack justifyContent="center" alignItems="center" gap={4} marginTop={10}>
-                   <Text color="$gray10Dark">Made with </Text>
+                   <Text color="$gray10Dark">{t('COMMON.MADE_WITH')} </Text>
                    <Entypo name='heart' size={16} color="red" />
-                   <Text color="$gray10Dark">by @desarrollowebconalex</Text>
+                   <Text color="$gray10Dark">{t('COMMON.BY')} @desarrollowebconalex</Text>
                </XStack>
 
                 <View height={isIos ? 230 : 50} />

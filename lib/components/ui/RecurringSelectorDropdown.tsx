@@ -3,6 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-na
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
+import {useTranslation} from "react-i18next";
 
 type Props = {
     groups: Item[];
@@ -44,6 +45,7 @@ export default function RecurringSelectorDropdown() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const dispatch = useAppDispatch();
     const scheme = useColorScheme();
+    const {t} = useTranslation()
 
     function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
         dispatch(onRecurrentSettingChange(keyItem));
@@ -57,16 +59,30 @@ export default function RecurringSelectorDropdown() {
                 </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>
-                {
-                    items.map(item => (
-                        <DropdownMenu.CheckboxItem key={item.key}
-                                                   value={currentTransaction.recurrentDate === item.key ? 'on' : 'off'}
-                                                   onValueChange={(value) => onSelect(value, item.key)}>
-                            <DropdownMenu.ItemTitle>{item.title}</DropdownMenu.ItemTitle>
-                            <DropdownMenu.ItemIndicator/>
-                        </DropdownMenu.CheckboxItem>
-                    ))
-                }
+                <DropdownMenu.CheckboxItem key='none'
+                                           value={currentTransaction.recurrentDate === 'none' ? 'on' : 'off'}
+                                           onValueChange={(value) => onSelect(value, 'none')}>
+                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.RECURRENT_OPTIONS.NONE')}</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIndicator/>
+                </DropdownMenu.CheckboxItem>
+                <DropdownMenu.CheckboxItem key='weekly'
+                                           value={currentTransaction.recurrentDate === 'weekly' ? 'on' : 'off'}
+                                           onValueChange={(value) => onSelect(value, 'weekly')}>
+                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.RECURRENT_OPTIONS.WEEKLY')}</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIndicator/>
+                </DropdownMenu.CheckboxItem>
+                <DropdownMenu.CheckboxItem key='monthly'
+                                           value={currentTransaction.recurrentDate === 'monthly' ? 'on' : 'off'}
+                                           onValueChange={(value) => onSelect(value, 'monthly')}>
+                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.RECURRENT_OPTIONS.MONTHLY')}</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIndicator/>
+                </DropdownMenu.CheckboxItem>
+                <DropdownMenu.CheckboxItem key='yearly'
+                                           value={currentTransaction.recurrentDate === 'yearly' ? 'on' : 'off'}
+                                           onValueChange={(value) => onSelect(value, 'yearly')}>
+                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.RECURRENT_OPTIONS.YEARLY')}</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIndicator/>
+                </DropdownMenu.CheckboxItem>
             </DropdownMenu.Content>
         </DropdownMenu.Root>
 

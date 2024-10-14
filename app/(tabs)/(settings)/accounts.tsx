@@ -30,6 +30,7 @@ import {
 } from "@/lib/store/features/transactions/reportSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -45,6 +46,7 @@ export default function Screen() {
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
+    const {t} = useTranslation()
 
     function onPressAccount(account: Account) {
         dispatch(updateAccountCreateUpdate(account));
@@ -119,7 +121,7 @@ export default function Screen() {
                                     <YStack gap={4}>
                                         <Text fontSize={18} fontWeight="bold">{account.title}</Text>
                                         <Text
-                                            color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} Transactions</Text>
+                                            color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
                                     </YStack>
                                     <Text
                                         fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>

@@ -1,5 +1,120 @@
 {
   "translation": {
-    "CANCEL": "Cancelar"
+    "COMMON": {
+      "CANCEL": "Cancelar",
+      "BACK": "Atras",
+      "CONFIRM": "Confirmar",
+      "DELETE": "Eliminar",
+      "STOP_RECURRING": "Detener recurrenica",
+      "DUPLICATE": "Duplicar",
+      "SELECT_CATEGORY_TYPE": "Seleccionar tipo de categoria",
+      "DONE": "Hecho",
+      "ACCOUNT": "Cuenta",
+      "CATEGORY": "Categoria",
+      "ALL_ACCOUNTS": "Todas las cuentas",
+      "TRANSACTIONS": "Transacciones",
+      "NAME": "Nombre",
+      "TYPE": "Tipo",
+      "EXPENSE": "Gasto",
+      "INCOME": "Ingreso",
+      "TERMS": "Terminos",
+      "PRIVACY": "Privacidad",
+      "MADE_WITH": "Hecho con",
+      "BY": "por"
+    },
+    "HOME_RESUME_DROPDOWN": {
+      "SPENT_THIS_WEEK": "Gastado esta semana",
+      "SPENT_THIS_MONTH": "Gastado este mes",
+      "REVENUE_THIS_WEEK": "Ingresos esta semana",
+      "REVENUE_THIS_MONTH": "Ingresos este mes",
+      "BALANCE": "Balance"
+    },
+    "REPORTS": {
+      "LAST": "Ult.",
+      "DAYS": "dias"
+    },
+    "REPORTS_SHEET": {
+      "SELECT_DATE_RANGE": "Seleccionar fecha",
+      "DATE_FROM": "Desde",
+      "DATE_TO": "Hasta",
+      "SELECT_CATEGORY": "Seleccionar Categoria",
+      "CLEAR": "Limpiar",
+      "SELECT_ACCOUNT": "Seleccionar Cuenta",
+      "APPLY_FILTERS": "Aplicar filtros"
+    },
+    "CREATE_TRANSACTION": {
+      "NOTE": "Nota",
+      "SAVE": "Guard.",
+      "EDIT": "Editar",
+      "RECURRENT_OPTIONS": {
+        "NONE": "Ninguno",
+        "WEEKLY": "Semanal",
+        "MONTHLY": "Mensual",
+        "YEARLY": "Anual"
+      },
+      "HIDDEN_FEATURE": {
+        "SEE_TOTAL": "Ver total (real)",
+        "SEE_VISIBLE": "Ver valor visible deseado"
+      }
+    },
+    "SETTINGS": {
+      "TITLE": "Configuracion",
+      "APPEARANCE": {
+        "TITLE": "Apariencia",
+        "OPTIONS": {
+          "SYSTEM": "Sistema",
+          "DARK": "Oscuro",
+          "LIGHT": "Claro"
+        }
+      },
+      "LANGUAGE": {
+        "TITLE": "Idiomas",
+        "OPTIONS": {
+          "SPANISH": "Español",
+          "ENGLISH": "Ingles"
+        }
+      },
+      "OTHER": {
+        "TITLE": "Otros",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "Habilitar 'montos ocultos'"
+        }
+      },
+      "ACCOUNTS": {
+        "TITLE": "Cuentas",
+        "PLACE_HOLDER": "Nueva Cuenta",
+        "BALANCE": "Balance",
+        "BALANCE_TIP": "No podras cambiar el valor de la moneda de esta cuenta luego de crearla.",
+        "STATE": "Estado",
+        "NEGATIVE": "Negativo",
+        "POSITIVE": "Positivo",
+        "STATE_TIP": "Valor negativo agregar un signo de negativo al inicio del balance."
+      },
+      "CATEGORIES": {
+        "TITLE": "Categorias",
+        "PLACE_HOLDER": "Nueva Categoria"
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notificaciones"
+      },
+      "DATA_MANAGEMENT": {
+        "TITLE": "Manejo de data"
+      },
+      "CONTACT_DEV": {
+        "TITLE": "Contactar desarrollador"
+      },
+      "RATE_ON_STORE": {
+        "TITLE": "Calificar el app en la tienda"
+      },
+      "SHARE_WITH_FRIENDS": {
+        "TITLE": "Compartir con amigos"
+      },
+      "FOLLOW_ON_IG": {
+        "TITLE": "Seguir @finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "Apoyar al desarrollador"
+      }
+    }
   }
 }

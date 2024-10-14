@@ -1,5 +1,120 @@
 {
   "translation": {
-    "CANCEL": "Cancel"
+    "COMMON": {
+      "CANCEL": "Cancel",
+      "BACK": "Back",
+      "CONFIRM": "Confirm",
+      "DELETE": "Delete",
+      "STOP_RECURRING": "Stop Recurring",
+      "DUPLICATE": "Duplicate",
+      "DONE": "Done",
+      "ALL_ACCOUNTS": "All accounts",
+      "ACCOUNT": "Account",
+      "CATEGORY": "Category",
+      "TRANSACTIONS": "Transactions",
+      "NAME": "Name",
+      "TYPE": "Type",
+      "EXPENSE": "Expense",
+      "SELECT_CATEGORY_TYPE": "Select category type",
+      "INCOME": "Income",
+      "TERMS": "Terms",
+      "PRIVACY": "Privacy",
+      "MADE_WITH": "Made with",
+      "BY": "by"
+    },
+    "HOME_RESUME_DROPDOWN": {
+      "SPENT_THIS_WEEK": "Spent this week",
+      "SPENT_THIS_MONTH": "Spent this month",
+      "REVENUE_THIS_WEEK": "Revenue this week",
+      "REVENUE_THIS_MONTH": "Revenue this month",
+      "BALANCE": "Balance"
+    },
+    "REPORTS": {
+      "LAST": "Last",
+      "DAYS": "days"
+    },
+    "REPORTS_SHEET": {
+      "SELECT_DATE_RANGE": "Select Date",
+      "DATE_FROM": "Date from",
+      "DATE_TO": "Date to",
+      "SELECT_CATEGORY": "Select Category",
+      "CLEAR": "Clear",
+      "SELECT_ACCOUNT": "Select Account",
+      "APPLY_FILTERS": "Apply filters"
+    },
+    "CREATE_TRANSACTION": {
+      "NOTE": "Note",
+      "SAVE": "Save",
+      "EDIT": "Edit",
+      "RECURRENT_OPTIONS": {
+        "NONE": "None",
+        "WEEKLY": "Weekly",
+        "MONTHLY": "Monthly",
+        "YEARLY": "Yearly"
+      },
+      "HIDDEN_FEATURE": {
+        "SEE_TOTAL": "See total (real)",
+        "SEE_VISIBLE": "See visible desired value"
+      }
+    },
+    "SETTINGS": {
+      "TITLE": "Settings",
+      "APPEARANCE": {
+        "TITLE": "Appearance",
+        "OPTIONS": {
+          "SYSTEM": "System",
+          "DARK": "Dark",
+          "LIGHT": "LIGHT"
+        }
+      },
+      "LANGUAGE": {
+        "TITLE": "Language",
+        "OPTIONS": {
+          "SPANISH": "Spanish",
+          "ENGLISH": "English"
+        }
+      },
+      "OTHER": {
+        "TITLE": "Other",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "Enable 'hidden amounts'"
+        }
+      },
+      "ACCOUNTS": {
+        "TITLE": "Accounts",
+        "PLACE_HOLDER": "New Account",
+        "BALANCE": "Balance",
+        "BALANCE_TIP": "You can not change the currency for this account in the future.",
+        "STATE": "State",
+        "NEGATIVE": "Negative",
+        "POSITIVE": "Positive",
+        "STATE_TIP": "Negative value adds a minus at the beginning of the balance."
+      },
+      "CATEGORIES": {
+        "TITLE": "Categories",
+        "PLACE_HOLDER": "New Category"
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notifications"
+      },
+      "DATA_MANAGEMENT": {
+        "TITLE": "Data management"
+      },
+      "CONTACT_DEV": {
+        "TITLE": "Contact Developer"
+      },
+      "RATE_ON_STORE": {
+        "TITLE": "Rate app on Store"
+      },
+      "SHARE_WITH_FRIENDS": {
+        "TITLE": "Share with friends"
+      },
+      "FOLLOW_ON_IG": {
+        "TITLE": "Follow @finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "Support Developer"
+      }
+    }
   }
 }

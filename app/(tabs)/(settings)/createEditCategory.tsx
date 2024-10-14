@@ -38,6 +38,7 @@ import {
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -49,7 +50,7 @@ export default function Screen() {
     const [categoryTitle, setCategoryTitle] = useState<string>('')
     const [categoryType, setCategoryType] = useState<'Expense' | 'Income'>('Expense');
     const currentEmoji = useAppSelector(selectCurrentEmoji);
-
+    const {t} = useTranslation()
     const filterType = useAppSelector(selectHomeViewTypeFilter);
     const selectedAccountFilter = useAppSelector(selectAccountFilter);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
@@ -115,14 +116,14 @@ export default function Screen() {
             <View flex={1} backgroundColor="$color1" p={20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
                     <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.back()}>
-                        <Text>Cancel</Text>
+                        <Text>{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
-                    <Text fontSize={20}>Category</Text>
-                    <Button onPress={manageCreateAccount}>Done</Button>
+                    <Text fontSize={20}>{t('COMMON.CATEGORY')}</Text>
+                    <Button onPress={manageCreateAccount}>{t('COMMON.DONE')}</Button>
                 </XStack>
 
                 <YStack mb={70}>
-                    <Text fontSize={16} mb={4}>Name</Text>
+                    <Text fontSize={16} mb={4}>{t('COMMON.NAME')}</Text>
                     <View flex={1} gap={6} position='relative'>
                         <TouchableOpacity onPress={() => router.push('/emojiSelection')} style={{
                             position: 'absolute',
@@ -137,13 +138,13 @@ export default function Screen() {
                             <Text fontSize={25}>{currentEmoji ?? '✅'}</Text>
                         </TouchableOpacity>
                         <Input size="$4" value={categoryTitle} onChangeText={setCategoryTitle} paddingLeft={60}
-                               placeholder="New Category"/>
+                               placeholder={t('SETTINGS.CATEGORIES.PLACE_HOLDER')}/>
                     </View>
                 </YStack>
 
 
                 <YStack mb={70}>
-                    <Text fontSize={16} mb={4}>Type</Text>
+                    <Text fontSize={16} mb={4}>{t('COMMON.TYPE')}</Text>
                     <DropdownMenu.Root key="type">
                         <DropdownMenu.Trigger>
                             <TouchableOpacity style={{
@@ -158,7 +159,7 @@ export default function Screen() {
                                 borderColor: theme.color5.val,
                                 justifyContent: 'space-between'
                             }}>
-                                <Text>{categoryType ?? 'Select Category Type'}</Text>
+                                <Text>{categoryType === 'Expense' ? t('COMMON.EXPENSE') : categoryType === 'Income' ? t('COMMON.INCOME') : t('COMMON.SELECT_CATEGORY_TYPE')}</Text>
                                 <Entypo name="select-arrows" size={18}
                                         color={schemeColor === 'light' ? 'black' : 'white'}/>
                             </TouchableOpacity>
@@ -166,11 +167,11 @@ export default function Screen() {
                         <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0}
                                               collisionPadding={0}
                                               avoidCollisions={true}>
-                            <DropdownMenu.Item key="exoense" onSelect={() => setCategoryType('Expense')}>
-                                <DropdownMenu.ItemTitle>Expense</DropdownMenu.ItemTitle>
+                            <DropdownMenu.Item key="expense" onSelect={() => setCategoryType('Expense')}>
+                                <DropdownMenu.ItemTitle>{t('COMMON.EXPENSE')}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item key="income" onSelect={() => setCategoryType('Income')}>
-                                <DropdownMenu.ItemTitle>Income</DropdownMenu.ItemTitle>
+                                <DropdownMenu.ItemTitle>{t('COMMON.INCOME')}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                         </DropdownMenu.Content>
                     </DropdownMenu.Root>

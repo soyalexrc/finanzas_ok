@@ -25,6 +25,8 @@ import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
 import {FlashList} from "@shopify/flash-list";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import {useTranslation} from "react-i18next";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 type Props = {
     open: boolean;
@@ -44,6 +46,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const [showDateFromCalendar, setShowDateFromCalendar] = useState<boolean>(false);
     const [showDateToCalendar, setShowDateToCalendar] = useState<boolean>(false);
+    const {t} = useTranslation()
+    const {selectedLanguage} = useAppSelector(selectSettings)
 
     const [localCategory, setLocalCategory] = useState<Category>(selectedCategory);
     const [localAccount, setLocalAccount] = useState<Account>(selectedAccount);
@@ -97,17 +101,17 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1">
                 <YStack gap={20}>
-                    <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Select
-                        Date Range</Text>
+                    <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold"
+                          color="$gray10Dark">{t('REPORTS_SHEET.SELECT_DATE_RANGE')}s</Text>
 
                     <XStack gap={20} paddingHorizontal={20}>
                         <YStack flex={1}>
-                            <Text textAlign="center" mb={5}>Date from</Text>
+                            <Text textAlign="center" mb={5}>{t('REPORTS_SHEET.DATE_FROM')}</Text>
                             <Button variant="outlined"
                                     onPress={() => setShowDateFromCalendar(true)}>{selectedDateRange.start ? format(selectedDateRange.start, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
                         </YStack>
                         <YStack flex={1}>
-                            <Text textAlign="center" mb={5}>Date to</Text>
+                            <Text textAlign="center" mb={5}>{t('REPORTS_SHEET.DATE_TO')}</Text>
                             <Button variant="outlined" disabled={selectedDateRange.start === ''}
                                     onPress={() => setShowDateToCalendar(true)}>{selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy') : 'DD/MM/YYYY'}</Button>
                         </YStack>
@@ -116,7 +120,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
                 <YStack marginVertical={45}>
                     <XStack justifyContent="space-between">
-                        <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Category</Text>
+                        <Text mx={30} fontSize={16} fontWeight="bold"
+                              color="$gray10Dark">{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
                         <TouchableOpacity style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
@@ -129,7 +134,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                             marginRight: 30
                         }} onPress={clearCategory}>
                             <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
-                            <Text fontSize={12} color={theme.red10Dark.val}>Clear </Text>
+                            <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
                         </TouchableOpacity>
                     </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
@@ -153,7 +158,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
                 <YStack>
                     <XStack justifyContent="space-between">
-                        <Text mx={30} fontSize={16} fontWeight="bold" color="$gray10Dark">Select Account</Text>
+                        <Text mx={30} fontSize={16} fontWeight="bold"
+                              color="$gray10Dark">{t('REPORTS_SHEET.SELECT_ACCOUNT')}</Text>
                         <TouchableOpacity style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
@@ -166,7 +172,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                             marginRight: 30
                         }} onPress={clearAccount}>
                             <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
-                            <Text fontSize={12} color={theme.red10Dark.val}>Clear </Text>
+                            <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
                         </TouchableOpacity>
                     </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
@@ -187,12 +193,16 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                 </YStack>
 
                 <View bottom={0} left={0} width="100%" mb={insets.bottom} position='absolute'>
-                    <Button mx={10} onPress={applyFilters}>Apply filters</Button>
+                    <Button mx={10} onPress={applyFilters}>{t('REPORTS_SHEET.APPLY_FILTERS')}</Button>
                 </View>
 
                 <DatePicker
                     modal
                     mode="date"
+                    locale={selectedLanguage}
+                    title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
+                    cancelText={t('COMMON.CANCEL')}
+                    confirmText={t('COMMON.CONFIRM')}
                     open={showDateFromCalendar}
                     date={selectedDateRange.start ? formatDate(selectedDateRange.start) : new Date()}
                     maximumDate={new Date()}
@@ -210,6 +220,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                 <DatePicker
                     modal
                     mode="date"
+                    locale={selectedLanguage}
+                    title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
+                    cancelText={t('COMMON.CANCEL')}
+                    confirmText={t('COMMON.CONFIRM')}
                     open={showDateToCalendar}
                     date={selectedDateRange.end ? formatDate(selectedDateRange.end) : new Date()}
                     minimumDate={new Date(selectedDateRange.start)}

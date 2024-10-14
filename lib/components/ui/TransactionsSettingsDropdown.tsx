@@ -26,6 +26,7 @@ import {
 import {useSQLiteContext} from "expo-sqlite";
 import {useSelector} from "react-redux";
 import {useRouter} from "expo-router";
+import {useTranslation} from "react-i18next";
 
 
 export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () => void}) {
@@ -35,6 +36,7 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
     const scheme = useColorScheme();
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const router = useRouter();
+    const {t} = useTranslation()
 
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const selectedCategoryFilter = useSelector(selectCategoryFilter);
@@ -54,9 +56,9 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
     function handleDeleteItem(id: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         Alert.alert('Delete entry?', 'This action cannot be undone.', [
-            {style: 'default', text: 'Cancel', isPreferred: true},
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
-                style: 'destructive', text: 'Delete', isPreferred: true, onPress: async () => {
+                style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     await deleteTransaction(db, id)
                     const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
                     const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
@@ -89,7 +91,7 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
                 {/*</DropdownMenu.CheckboxItem>*/}
                     <ContextMenu.Item key='delete' destructive
                                       onSelect={() => handleDeleteItem(currentTransaction.id)}>
-                        <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                        <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
                         <ContextMenu.ItemIcon
                             ios={{
                                 name: 'trash'

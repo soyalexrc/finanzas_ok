@@ -11,6 +11,7 @@ import {getLocales} from "expo-localization";
 import {createAccount, getAllAccounts, updateAccount} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const locales = getLocales();
@@ -20,6 +21,8 @@ export default function Screen() {
     const theme = useTheme();
     const insets = useSafeAreaInsets();
     const schemeColor = useColorScheme();
+    const {t} = useTranslation()
+
     const accountCreateUpdate = useAppSelector(selectAccountCreateUpdate);
     const [accountTitle, setAccountTitle] = useState<string>('')
     const [accountBalance, setAccountBalance] = useState<string>('0')
@@ -44,7 +47,7 @@ export default function Screen() {
     useEffect(() => {
         setAccountTitle(accountCreateUpdate.title)
         setAccountBalance(accountCreateUpdate.balance.toString())
-        setAccountPositiveState(accountCreateUpdate.positive_state ? 'Positive' : 'Negative');
+        setAccountPositiveState(accountCreateUpdate.positive_state ? t('SETTINGS.ACCOUNTS.POSITIVE') : t('SETTINGS.ACCOUNTS.NEGATIVE'));
     }, []);
 
     async function manageCreateAccount() {
@@ -92,14 +95,14 @@ export default function Screen() {
             <View flex={1} backgroundColor="$color1" px={20} pb={20} pt={Platform.OS === 'android' ? insets.top : 20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
                     <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.back()}>
-                        <Text>Cancel</Text>
+                        <Text>{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
-                    <Text fontSize={20}>Account</Text>
-                    <Button onPress={manageCreateAccount}>Done</Button>
+                    <Text fontSize={20}>{t('COMMON.ACCOUNT')}</Text>
+                    <Button onPress={manageCreateAccount}>{t('COMMON.DONE')}</Button>
                 </XStack>
 
                 <YStack mb={70}>
-                    <Text fontSize={16} mb={4}>Name</Text>
+                    <Text fontSize={16} mb={4}>{t('COMMON.NAME')}</Text>
                     <View flex={1} gap={6} position='relative'>
                         <TouchableOpacity onPress={() => router.push('/emojiSelection')} style={{
                             position: 'absolute',
@@ -114,12 +117,12 @@ export default function Screen() {
                             <Text fontSize={25}>{currentEmoji ?? '✅'}</Text>
                         </TouchableOpacity>
                         <Input size="$4" value={accountTitle} onChangeText={setAccountTitle} paddingLeft={60}
-                               placeholder="New Account"/>
+                               placeholder={t('SETTINGS.ACCOUNTS.PLACE_HOLDER')}/>
                     </View>
                 </YStack>
 
                 <YStack>
-                    <Text fontSize={16} mb={4}>Balance</Text>
+                    <Text fontSize={16} mb={4}>{t('SETTINGS.ACCOUNTS.BALANCE')}</Text>
                     <View flex={1} gap={6} position='relative'>
                         {
                             accountCreateUpdate.id > 0 &&
@@ -180,10 +183,10 @@ export default function Screen() {
                                paddingLeft={60} placeholder="Balance"/>
                     </View>
                 </YStack>
-                <Text mt={50} mb={20} color="$gray10Dark">You can not change the currency for this account in the future.</Text>
+                <Text mt={50} mb={20} color="$gray10Dark">{t('SETTINGS.ACCOUNTS.BALANCE_TIP')}</Text>
 
                 <YStack mb={70}>
-                    <Text fontSize={16} mb={4}>State</Text>
+                    <Text fontSize={16} mb={4}>{t('SETTINGS.ACCOUNTS.STATE')}</Text>
                     <DropdownMenu.Root key="positive_state">
                         <DropdownMenu.Trigger>
                             <TouchableOpacity style={{
@@ -207,15 +210,15 @@ export default function Screen() {
                                               collisionPadding={0}
                                               avoidCollisions={true}>
                             <DropdownMenu.Item key="positive" onSelect={() => handleChangeAccountState('Positive')}>
-                                <DropdownMenu.ItemTitle>Positive</DropdownMenu.ItemTitle>
+                                <DropdownMenu.ItemTitle>{t('SETTINGS.ACCOUNTS.POSITIVE')}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item key="negative" onSelect={() => handleChangeAccountState('Negative')}>
-                                <DropdownMenu.ItemTitle>Negative</DropdownMenu.ItemTitle>
+                                <DropdownMenu.ItemTitle>{t('SETTINGS.ACCOUNTS.NEGATIVE')}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                         </DropdownMenu.Content>
                     </DropdownMenu.Root>
 
-                    <Text mt={10} color="$gray10Dark">Negative adds a minus sign at the beginning of the balance</Text>
+                    <Text mt={10} color="$gray10Dark">{t('SETTINGS.ACCOUNTS.STATE_TIP')}</Text>
                 </YStack>
 
             </View>
