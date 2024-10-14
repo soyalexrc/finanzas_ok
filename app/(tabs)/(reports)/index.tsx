@@ -24,6 +24,8 @@ import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
 import {getDateRangeBetweenGapDaysAndToday, getDateRangeAlongTimeAgo} from "@/lib/helpers/date";
 import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
+import {useAppSelector} from "@/lib/store/hooks";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -40,6 +42,8 @@ export default function ReportScreen() {
     const selectedCategory = useSelector(selectCategoryFilter);
     const selectedAccount = useSelector(selectAccountFilter);
     const selectedDateRange = useSelector(selectDateRangeFilter);
+    const {hidden_feature_flag} = useAppSelector(selectSettings)
+
     const [daysFrom, setDaysFrom] = useState<string>('15')
 
     function handlePress(item: TransactionsGroupedByCategory) {
@@ -91,11 +95,10 @@ export default function ReportScreen() {
         }
     }
 
-
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
             <CustomHeader style={{paddingTop: isIos ? insets.top : 0}}>
-                <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints))}</Text>
+                <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
                 <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
                     <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                 </Button>
@@ -141,12 +144,11 @@ export default function ReportScreen() {
                         {/*</View>*/}
                     </YStack>
 
-
                     {/*Grafica*/}
                     <View height={250} p={10}>
                         {
                             chartPoints.length > 2 &&
-                            <CartesianChart data={chartPoints} xKey="date" yKeys={["total"]}
+                            <CartesianChart data={chartPoints} xKey="date" yKeys={hidden_feature_flag ? ["total_hidden"] : ["total"]}
                                             domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
 
                                 {/* 👇 render function exposes various data, such as points. */}
@@ -159,8 +161,8 @@ export default function ReportScreen() {
                                     //     roundedCorners={{ topLeft: 10, topRight: 10 }}
                                     // />
                                     <>
-                                        <Line points={points.total} color={theme.color10?.val} strokeWidth={3}
-                                              curveType="natural"/>
+                                        <Line points={hidden_feature_flag ? points.total_hidden : points.total} color={theme.color10?.val} strokeWidth={3}
+                                              curveType="cardinal50"/>
                                     </>
                                 )}
 
@@ -222,7 +224,7 @@ export default function ReportScreen() {
                                             <Text fontSize={14} color="$gray10Dark">x {item.transactions.length}</Text>
                                         }
                                     </View>
-                                    <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions))}</Text>
+                                    <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
                                 </View>
                             </Button>
                         ))

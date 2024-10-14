@@ -11,6 +11,7 @@ import {updateCurrentTransaction} from "@/lib/store/features/transactions/transa
 import {TransactionWithAmountNumber} from "@/lib/types/Transaction";
 import {selectCategories, selectCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
@@ -19,12 +20,15 @@ export default function Screen() {
     const accounts = useAppSelector(selectAccounts);
     const categories = useAppSelector(selectCategories);
     const detailGroup = useAppSelector(selectDetailGroup)
+    const {hidden_feature_flag} = useAppSelector(selectSettings)
 
     function handlePress(item: TransactionWithAmountNumber) {
         dispatch(updateCurrentTransaction({
             amount: item.amount.toString(),
             notes: item.notes,
             id: item.id,
+            hidden_amount: item.hidden_amount.toString(),
+            is_hidden_transaction: item.is_hidden_transaction,
             category_id: item.category_id,
             recurrentDate: item.recurrentDate,
             account_id: item.account_id,
@@ -58,7 +62,7 @@ export default function Screen() {
                                         }
                                         <Text fontSize={18} fontWeight={500}>{detailGroup.category.title}</Text>
                                     </View>
-                                    <Text>{item.account_symbol} {formatByThousands(item.amount.toString())}</Text>
+                                    <Text>{item.account_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount.toString() : item.amount.toString())}</Text>
                                 </View>
                             </Button>
                         </ContextMenu.Trigger>

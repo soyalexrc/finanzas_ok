@@ -107,6 +107,7 @@ export type AccountEdit = {
 export type ChartPoints = {
     date: string;
     total: number;
+    total_hidden: number;
 }
 
 export type TransactionWithAmountNumber = {
@@ -114,8 +115,8 @@ export type TransactionWithAmountNumber = {
     recurrentDate: string;
     date: string;
     amount: number;
-    hidden_amount?: number;
-    is_hidden_transaction?: number;
+    hidden_amount: number;
+    is_hidden_transaction: number;
     notes: string;
     account_id: number;
     category_id: number;

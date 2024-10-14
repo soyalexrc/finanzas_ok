@@ -31,7 +31,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     if (accountId === 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
-            ROUND(SUM(amount), 2) AS total
+            ROUND(SUM(amount), 2) AS total,
+            ROUND(SUM(hidden_amount), 2) AS total_hidden
             FROM transactions
             WHERE
                 date BETWEEN ?
@@ -69,7 +70,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     } else if (accountId !== 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
-            ROUND(SUM(amount), 2) AS total
+            ROUND(SUM(amount), 2) AS total,
+            ROUND(SUM(hidden_amount), 2) AS total_hidden
             FROM transactions
             WHERE
                 date BETWEEN ?
@@ -110,7 +112,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     } else if (categoryId !== 0 && accountId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
-            ROUND(SUM(amount), 2) AS total
+            ROUND(SUM(amount), 2) AS total,
+            ROUND(SUM(hidden_amount), 2) AS total_hidden
             FROM transactions
             WHERE
                 date BETWEEN ?
@@ -151,7 +154,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     } else {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
-            ROUND(SUM(amount), 2) AS total
+            ROUND(SUM(amount), 2) AS total,
+            ROUND(SUM(hidden_amount), 2) AS total_hidden
             FROM transactions
             WHERE
                 date BETWEEN ?

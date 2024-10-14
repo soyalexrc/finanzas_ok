@@ -9,7 +9,7 @@ import DatePicker from 'react-native-date-picker'
 import {format} from "date-fns";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSelectedCategory} from "@/lib/store/features/categories/categoriesSlice";
-import {formatByThousands, textShortener} from "@/lib/helpers/string";
+import {formatByThousands, formatTitleOption, textShortener} from "@/lib/helpers/string";
 import {
     selectAccountForm,
     selectAccounts,
@@ -43,6 +43,7 @@ import {
 import {loadString} from "@/lib/utils/storage";
 import TransactionsSettingsDropdown from "@/lib/components/ui/TransactionsSettingsDropdown";
 import {currency} from "expo-localization";
+import * as DropdownMenu from "zeego/dropdown-menu";
 
 export default function Screen() {
     const router = useRouter();
@@ -143,43 +144,66 @@ export default function Screen() {
                     </TouchableOpacity>
                     <View style={styles.headerRightSide}>
                         <RecurringSelectorDropdown/>
-                        <TransactionsSettingsDropdown resetTab={() => setTab('total')}/>
+                        {
+                            currentTransaction.id > 0 &&
+                            <TransactionsSettingsDropdown resetTab={() => setTab('total')}/>
+                        }
                     </View>
                 </View>
                 <View flex={1}>
                     <View flex={0.4} justifyContent="center" alignItems="center">
-                        <View flexDirection="row" alignItems="flex-start" gap="$2">
-                            <Text marginTop="$3" fontSize="$9"
-                                  color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
-                            {
-                                tab === 'total' && <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
-                            }
-                            {
-                                tab === 'visible' &&  <Text fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
-                            }
-                        </View>
+                        <DropdownMenu.Root>
+                            <DropdownMenu.Trigger action="longPress">
+                                <View flexDirection="row" alignItems="flex-start" gap="$2">
+                                    <Text marginTop="$3" fontSize="$9"
+                                          color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
+                                    {
+                                        tab === 'total' && <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                                    }
+                                    {
+                                        tab === 'visible' &&  <Text fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
+                                    }
+                                </View>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0}
+                                                  collisionPadding={0} avoidCollisions={true}>
+                                <DropdownMenu.CheckboxItem key="total"
+                                                           value={tab === 'total' ? 'on' : 'off'}
+                                                           onValueChange={() => setTab('total')}>
+                                    <DropdownMenu.ItemTitle>See total</DropdownMenu.ItemTitle>
+                                    <DropdownMenu.ItemIndicator/>
+                                </DropdownMenu.CheckboxItem>
+                                <DropdownMenu.CheckboxItem key="visible"
+                                                           value={tab === 'visible' ? 'on' : 'off'}
+                                                           onValueChange={() => setTab('visible')}>
+                                    <DropdownMenu.ItemTitle>See Visible value </DropdownMenu.ItemTitle>
+                                    <DropdownMenu.ItemIndicator/>
+                                </DropdownMenu.CheckboxItem>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+
                     </View>
-                    {
-                        currentTransaction.is_hidden_transaction > 0 &&
-                        <XStack justifyContent="center">
-                            <ToggleGroup
-                                orientation="horizontal"
-                                type="single" // since this demo switches between loosen types
-                                value={tab}
-                                size="$1"
-                                onValueChange={(value: 'total' | 'visible') => setTab(value)}
-                                disableDeactivation={true}
-                            >
-                                <ToggleGroup.Item key='total' value="total" aria-label="Symbols" paddingHorizontal={10}>
-                                    <Text fontSize={14}>Total</Text>
-                                </ToggleGroup.Item>
-                                <ToggleGroup.Item key='visible' value="visible" aria-label="Symbols"
-                                                  paddingHorizontal={10}>
-                                    <Text fontSize={14}>Visible</Text>
-                                </ToggleGroup.Item>
-                            </ToggleGroup>
-                        </XStack>
-                    }
+                    {/*{*/}
+                    {/*    currentTransaction.is_hidden_transaction > 0 &&*/}
+                    {/*    <XStack justifyContent="center">*/}
+                    {/*        <ToggleGroup*/}
+                    {/*            orientation="horizontal"*/}
+                    {/*            type="single" // since this demo switches between loosen types*/}
+                    {/*            value={tab}*/}
+                    {/*            size="$1"*/}
+                    {/*            onValueChange={(value: 'total' | 'visible') => setTab(value)}*/}
+                    {/*            disableDeactivation={true}*/}
+                    {/*        >*/}
+                    {/*            <ToggleGroup.Item key='total' value="total" aria-label="Symbols" paddingHorizontal={10}>*/}
+                    {/*                <Text fontSize={14}>Total</Text>*/}
+                    {/*            </ToggleGroup.Item>*/}
+                    {/*            <ToggleGroup.Item key='visible' value="visible" aria-label="Symbols"*/}
+                    {/*                              paddingHorizontal={10}>*/}
+                    {/*                <Text fontSize={14}>Visible</Text>*/}
+                    {/*            </ToggleGroup.Item>*/}
+                    {/*        </ToggleGroup>*/}
+                    {/*    </XStack>*/}
+                    {/*}*/}
                     <View flex={0.6}>
                         <View borderBottomWidth={1} borderColor="$gray10Dark">
                             <TouchableOpacity onPress={() => setOpenNotesSheet(true)}

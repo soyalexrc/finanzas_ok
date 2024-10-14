@@ -35,12 +35,14 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {useSelector} from "react-redux";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function HomeResumeItems() {
     const db = useSQLiteContext();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const theme = useTheme();
+    const {hidden_feature_flag} = useAppSelector(selectSettings);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
@@ -113,7 +115,7 @@ export default function HomeResumeItems() {
                             <XStack gap={16}>
                                 {
                                     group.totals.map((total, index) => (
-                                        <Text key={total.amount + index} style={{color: 'gray', fontSize: 14}}>{total.symbol} {formatByThousands(String(total.amount))}</Text>
+                                        <Text key={total.amount + index} style={{color: 'gray', fontSize: 14}}>{total.symbol} {formatByThousands(String(hidden_feature_flag ? total.hidden_amount : total.amount))}</Text>
                                     ))
                                 }
                             </XStack>
@@ -136,7 +138,7 @@ export default function HomeResumeItems() {
                                             }
                                             <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text style={[item.category.type === 'income' && { color: theme. green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(item.amount)}</Text>
+                                        <Text style={[item.category.type === 'income' && { color: theme. green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
                                     </View>
                                 </Button>
                             </ContextMenu.Trigger>

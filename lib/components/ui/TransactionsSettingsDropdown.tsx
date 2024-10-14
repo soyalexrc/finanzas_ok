@@ -81,14 +81,12 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
                 </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>
-                <DropdownMenu.CheckboxItem key="hidden_feature"
-                                           value={currentTransaction.is_hidden_transaction > 0 ? 'on' : 'off'}
-                                           onValueChange={(value) => onSelect(value, 'hidden_feature')}>
-                    <DropdownMenu.ItemTitle>Is hidden transaction</DropdownMenu.ItemTitle>
-                    <DropdownMenu.ItemIndicator/>
-                </DropdownMenu.CheckboxItem>
-                {
-                    currentTransaction.id > 0 &&
+                {/*<DropdownMenu.CheckboxItem key="hidden_feature"*/}
+                {/*                           value={currentTransaction.is_hidden_transaction > 0 ? 'on' : 'off'}*/}
+                {/*                           onValueChange={(value) => onSelect(value, 'hidden_feature')}>*/}
+                {/*    <DropdownMenu.ItemTitle>Is hidden transaction</DropdownMenu.ItemTitle>*/}
+                {/*    <DropdownMenu.ItemIndicator/>*/}
+                {/*</DropdownMenu.CheckboxItem>*/}
                     <ContextMenu.Item key='delete' destructive
                                       onSelect={() => handleDeleteItem(currentTransaction.id)}>
                         <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
@@ -98,7 +96,6 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
                             }}
                         />
                     </ContextMenu.Item>
-                }
             </DropdownMenu.Content>
         </DropdownMenu.Root>
 

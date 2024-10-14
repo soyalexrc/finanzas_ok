@@ -8,6 +8,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useAppSelector} from "@/lib/store/hooks";
 import {selectDetailGroup} from "@/lib/store/features/transactions/reportSlice";
 import {calculateTotalTransactions} from "@/lib/helpers/operations";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 export default function ReportsLayout() {
     return (
@@ -37,6 +38,7 @@ function CustomHeader() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const detailGroup = useAppSelector(selectDetailGroup);
+    const {hidden_feature_flag} = useAppSelector(selectSettings)
 
     return (
         <BlurView intensity={100} tint='prominent' style={[styles.header, { paddingTop: insets.top }]}>
@@ -44,7 +46,7 @@ function CustomHeader() {
                 <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
                 <Text fontSize={16} color="$gray10Dark">Back</Text>
             </TouchableOpacity>
-            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions)}</Text>
+            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions, hidden_feature_flag)}</Text>
         </BlurView>
     )
 }
