@@ -50,6 +50,7 @@ export default function HomeResumeItems() {
     const selectedCategoryFilter = useSelector(selectCategoryFilter);
     const selectedAccountFilter = useSelector(selectAccountFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
+    const {selectedLanguage} = useAppSelector(selectSettings);
 
     function handlePress(t: FullTransaction) {
         dispatch(updateCurrentTransaction({
@@ -111,7 +112,7 @@ export default function HomeResumeItems() {
                     <View paddingHorizontal={20} gap={20} flexDirection="row" justifyContent="space-between" alignItems="center">
                         <View width={30}/>
                         <View style={[styles.imageWithLabel, {marginTop: 12}]}>
-                            <Text style={{color: 'gray', fontSize: 14}}>{formatDateHomeItemGroups(group.date)}</Text>
+                            <Text style={{color: 'gray', fontSize: 14}}>{formatDateHomeItemGroups(group.date, selectedLanguage)}</Text>
                             <XStack gap={16}>
                                 {
                                     group.totals.map((total, index) => (

@@ -20,7 +20,10 @@
       "TERMS": "Terminos",
       "PRIVACY": "Privacidad",
       "MADE_WITH": "Hecho con",
-      "BY": "por"
+      "BY": "por",
+      "NO_DATA": "No hay data.",
+      "CREATE_TRANSACTION": "Crear transaccion",
+      "NO_DATA_CHART": "No hay data para mostrar la grafica."
     },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Gastado esta semana",

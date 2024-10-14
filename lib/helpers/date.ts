@@ -9,6 +9,7 @@ import {
     startOfMonth,
     startOfWeek
 } from "date-fns";
+import {es, enUS} from 'date-fns/locale'
 import {fromZonedTime} from "date-fns-tz";
 
 export function getCurrentWeek(): {start: Date, end: Date} {
@@ -27,18 +28,18 @@ export function getCurrentMonth(): {start: Date, end: Date} {
     }
 }
 
-export const formatDateHomeItemGroups = (date: string) => {
+export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
     const now = new Date();
     const localDate = fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
     if (isToday(localDate)) {
-        return 'Today';
+        return locale === 'es' ? 'Hoy' : 'Today';
     } else if (isYesterday(localDate)) {
-        return 'Yesterday';
+        return locale === 'es' ? 'Ayer' : 'Yesterday';
     } else if (isSameWeek(localDate, now)) {
         return format(localDate, 'EEEE'); // e.g., Monday, Tuesday
     } else {
         // For dates beyond a week, use formatDistanceToNow
-        return formatDistanceToNow(date, { addSuffix: true });
+        return formatDistanceToNow(date, { addSuffix: true, locale: locale === 'es' ? es : enUS });
     }
 };
 

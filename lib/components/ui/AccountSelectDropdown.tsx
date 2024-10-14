@@ -16,6 +16,7 @@ import {
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {useColorScheme} from "react-native";
+import {useTranslation} from "react-i18next";
 
 export default function AccountSelectDropdown() {
     const db = useSQLiteContext();
@@ -24,6 +25,7 @@ export default function AccountSelectDropdown() {
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const dispatch = useAppDispatch();
+    const {t} = useTranslation()
 
     async function onSelectAccount(account?: Account) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
@@ -46,22 +48,22 @@ export default function AccountSelectDropdown() {
         }
     }
 
-    function formatAccountTitle(account: Account, iconFirst = false) {
-        return iconFirst ?  account.icon + '  ' + account.title :  account.title + '  ' + account.icon
+    function formatAccountTitle(account: Account, iconFirst = false, allAccountsText: string) {
+        return iconFirst ?  account.icon + '  ' + (account.title === 'All accounts' ? allAccountsText : account.title) :  account.title + '  ' + account.icon
     }
 
     return (
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                    <Text fontSize={16}>{formatAccountTitle(selectedAccount, true)}</Text>
+                    <Text fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>
                     <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'} />
                 </View>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>
                 <DropdownMenu.Group>
                     <DropdownMenu.CheckboxItem onValueChange={() => onSelectAccount()} key='0' value={selectedAccount.id === 0 ? 'on' : 'off'}>
-                        <DropdownMenu.ItemTitle>All accounts</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle>{t('COMMON.ALL_ACCOUNTS')}</DropdownMenu.ItemTitle>
                         <DropdownMenu.ItemIndicator />
                     </DropdownMenu.CheckboxItem>
                 </DropdownMenu.Group>
@@ -69,7 +71,7 @@ export default function AccountSelectDropdown() {
                     {
                         accounts?.map((account) => (
                             <DropdownMenu.CheckboxItem onValueChange={() => onSelectAccount(account)} key={String(account.id)} value={selectedAccount.id === account.id ? 'on' : 'off'}>
-                                <DropdownMenu.ItemTitle>{formatAccountTitle(account)}</DropdownMenu.ItemTitle>
+                                <DropdownMenu.ItemTitle>{formatAccountTitle(account, false, t('COMMON.ALL_ACCOUNTS'))}</DropdownMenu.ItemTitle>
                                 <DropdownMenu.ItemIndicator />
                             </DropdownMenu.CheckboxItem>
                         ))

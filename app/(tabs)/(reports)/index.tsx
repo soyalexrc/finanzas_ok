@@ -113,7 +113,7 @@ export default function ReportScreen() {
                         width={200}
                         height={200}
                     />
-                    <Text fontSize={18}>There are no data.</Text>
+                    <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>
                     <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create
                         transaction</Button>
                 </View>
@@ -173,7 +173,7 @@ export default function ReportScreen() {
                         {
                             chartPoints.length < 3 &&
                             <View flex={1} justifyContent="center" alignItems="center">
-                                <Text fontSize={16} color="$gray10Dark">There are no data to display the graph.</Text>
+                                <Text fontSize={16} color="$gray10Dark">{t('COMMON.NO_DATA_CHART')}</Text>
                             </View>
                         }
                     </View>
