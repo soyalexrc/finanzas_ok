@@ -13,7 +13,7 @@ export function formatByThousands(value: string) {
     const rawValue = value.split('.')[0];
     const valueWithCommas = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Regex for comma separators
 
-    return valueWithCommas + (decimals && '.' + decimals);
+    return valueWithCommas + (decimals && '.' + decimals.substring(0, 2));
 }
 
 export function formatTitleOption(key: string, type: string): string {

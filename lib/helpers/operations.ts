@@ -5,6 +5,5 @@ export function calculateTotalTransactions(transactions: TransactionWithAmountNu
 }
 
 export function calculateTotalFromChartPoints(points: ChartPoints[], hiddenFeatureFlag: boolean) {
-    console.log(points)
     return points.reduce((acc, item) => acc + (hiddenFeatureFlag ? item.total_hidden : item.total), 0).toFixed(2)
 }

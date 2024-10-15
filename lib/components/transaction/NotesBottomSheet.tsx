@@ -3,6 +3,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {Sheet} from "tamagui";
 import {onChangeNotes, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
+import {useTranslation} from "react-i18next";
 
 type Props = {
     open: boolean;
@@ -15,12 +16,13 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const [text, setText] = useState<string>('');
-
+    const {t} = useTranslation()
     function handleButtonToggle() {
-        if (editMode) {
+        // if (editMode) {
             dispatch(onChangeNotes(text));
-        }
-        setEditMode(!editMode);
+            setOpen(false);
+        // }
+        // setEditMode(!editMode);
     }
 
     useEffect(() => {
@@ -54,8 +56,8 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
             <Sheet.Frame backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
                 <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Notes</Text>
 
-                {
-                    editMode &&
+                {/*{*/}
+                {/*    editMode &&*/}
                     <TextArea
                         autoFocus
                         size='$4'
@@ -66,15 +68,15 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
                         padding={15}
                         onChangeText={setText}
                     />
-                }
-                {
-                    !editMode &&
-                    <View height={100} margin={10} >
-                        <Text fontSize={16} lineHeight={20}>{text}</Text>
-                    </View>
-                }
+                {/*}*/}
+                {/*{*/}
+                {/*    !editMode &&*/}
+                {/*    <View height={100} margin={10} >*/}
+                {/*        <Text fontSize={16} lineHeight={20}>{text}</Text>*/}
+                {/*    </View>*/}
+                {/*}*/}
                 <Button padding={12} marginHorizontal={10} onPress={handleButtonToggle}>
-                    <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 16 }}>{editMode ? 'Save' : 'Edit'}</Text>
+                    <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 16 }}>{t('CREATE_TRANSACTION.SAVE')}</Text>
                 </Button>
             </Sheet.Frame>
         </Sheet>
