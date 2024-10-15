@@ -1,6 +1,6 @@
-import {useColorScheme, Platform, RefreshControl} from 'react-native';
+import {useColorScheme, Platform, RefreshControl, Animated} from 'react-native';
 import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme, Image} from 'tamagui';
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -48,6 +48,18 @@ export default function ReportScreen() {
 
     const [daysFrom, setDaysFrom] = useState<string>('15')
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300, // Adjust the duration as needed
+            useNativeDriver: true,
+        }).start();
+
+    }, []);
+
+
     function handlePress(item: TransactionsGroupedByCategory) {
         dispatch(updateDetailGroup(item));
         router.push('/detailGroup')
@@ -85,8 +97,8 @@ export default function ReportScreen() {
             dispatch(updateChartPoints(amountsGroupedByDate))
         } else {
             const {start, end} = getDateRangeAlongTimeAgo();
-            dispatch(updateDateRangeFilter({ type: 'start', value: start.toISOString()}));
-            dispatch(updateDateRangeFilter({ type: 'end', value: end.toISOString() }));
+            dispatch(updateDateRangeFilter({type: 'start', value: start.toISOString()}));
+            dispatch(updateDateRangeFilter({type: 'end', value: end.toISOString()}));
 
             const {
                 amountsGroupedByDate,
@@ -99,142 +111,157 @@ export default function ReportScreen() {
 
     return (
         <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
-            <CustomHeader style={{paddingTop: isIos ? insets.top : 0}}>
-                <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
-                <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
-                    <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                </Button>
-            </CustomHeader>
-            {
-                transactions.length < 1 &&
-                <View flex={1} justifyContent="center" alignItems="center">
-                    <Image
-                        source={require('@/assets/images/transactions/empty-list.png')}
-                        width={200}
-                        height={200}
-                    />
-                    <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>
-                    <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create
-                        transaction</Button>
-                </View>
-            }
-            {
-                transactions.length > 0 &&
-                <ScrollView
-                    marginTop={insets.top}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-                    }
-                    showsVerticalScrollIndicator={false}
-                    stickyHeaderIndices={[0]}
-                >
-
-                    {/*Resumen de monto segun filtro (semana, mes, ano)*/}
-
-
-                    <YStack paddingHorizontal={10} paddingVertical={5}  backgroundColor="$color1">
-                        <Text fontSize={12} textAlign="center" color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
-                        {/*<View  flexDirection="row"*/}
-                        {/*     gap={15}>*/}
-                        {/*    <Text fontSize={16} color="$gray10Dark">Spent this week</Text>*/}
-                        {/*    <View flexDirection="row" gap={5}>*/}
-                        {/*        <View borderRadius={100} padding={3} backgroundColor="$red3Light">*/}
-                        {/*            <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737"/>*/}
-                        {/*        </View>*/}
-                        {/*        <Text fontSize={16} color="$red9Dark">5,320%</Text>*/}
-                        {/*    </View>*/}
-                        {/*</View>*/}
-                    </YStack>
-
-                    {/*Grafica*/}
-                    <View height={250} p={10}>
-                        {
-                            chartPoints.length > 2 &&
-                            <CartesianChart data={chartPoints} xKey="date" yKeys={hidden_feature_flag ? ["total_hidden"] : ["total"]}
-                                            domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
-
-                                {/* 👇 render function exposes various data, such as points. */}
-                                {({points, chartBounds}) => (
-                                    // 👇 and we'll use the Line component to render a line path.
-                                    // <Bar
-                                    //     points={points.total}
-                                    //     chartBounds={chartBounds}
-                                    //     color={theme.color10?.val}
-                                    //     roundedCorners={{ topLeft: 10, topRight: 10 }}
-                                    // />
-                                    <>
-                                        <Line points={hidden_feature_flag ? points.total_hidden : points.total} color={theme.color10?.val} strokeWidth={3}
-                                              curveType="cardinal50"/>
-                                    </>
-                                )}
-
-                            </CartesianChart>
-                        }
-                        {
-                            chartPoints.length < 3 &&
-                            <View flex={1} justifyContent="center" alignItems="center">
-                                <Text fontSize={16} color="$gray10Dark">{t('COMMON.NO_DATA_CHART')}</Text>
-                            </View>
-                        }
+            <Animated.View
+                style={{
+                    opacity: fadeAnim,
+                }}
+            >
+                <CustomHeader>
+                    <Text
+                        fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
+                    <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+                        <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                    </Button>
+                </CustomHeader>
+                {
+                    transactions.length < 1 &&
+                    <View flex={1} justifyContent="center" alignItems="center">
+                        <Image
+                            source={require('@/assets/images/transactions/empty-list.png')}
+                            width={200}
+                            height={200}
+                        />
+                        <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>
+                        <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create
+                            transaction</Button>
                     </View>
+                }
+                {
+                    transactions.length > 0 &&
+                    <ScrollView
+                        marginTop={insets.top}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                        }
+                        showsVerticalScrollIndicator={false}
+                        stickyHeaderIndices={[0]}
+                    >
 
-                    {/*Filtros de semana, mes, ano*/}
-                    <XStack justifyContent="center">
-                        <ToggleGroup
-                            marginTop={10}
-                            marginBottom={20}
-                            value={daysFrom}
-                            onValueChange={setDaysFrom}
-                            orientation="horizontal"
-                            id="simple-filter"
-                            type="single"
-                        >
-                            <ToggleGroup.Item value="15" aria-label="Filter by week">
-                                <Text>{t('REPORTS.LAST')} 15 {t('REPORTS.DAYS')}</Text>
-                            </ToggleGroup.Item>
-                            <ToggleGroup.Item value="45" aria-label="Filter by month">
-                                <Text>{t('REPORTS.LAST')} 45 {t('REPORTS.DAYS')}</Text>
-                            </ToggleGroup.Item>
-                            <ToggleGroup.Item value="60" aria-label="Filter by year">
-                                <Text>{t('REPORTS.LAST')} 60 {t('REPORTS.DAYS')}</Text>
-                            </ToggleGroup.Item>
-                        </ToggleGroup>
-                    </XStack>
+                        {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
-                    {/*Lista de items*/}
-                    {
-                        transactions.map((item, index) => (
-                            <Button icon={<Text fontSize={30}>{item.category.icon}</Text>}
-                                    key={item.category.title + index}
-                                    backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)}
-                                    paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between"
-                                    alignItems="center">
-                                <View
-                                    flex={1}
-                                    flexDirection='row'
-                                    alignItems='center'
-                                    justifyContent='space-between'
-                                >
-                                    <View flexDirection='row' gap={10} alignItems='center'>
-                                        {/*{*/}
-                                        {/*    item.recurrentDate !== 'none' &&*/}
-                                        {/*    <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>*/}
-                                        {/*}*/}
-                                        <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
-                                        {
-                                            item.transactions.length > 0 &&
-                                            <Text fontSize={14} color="$gray10Dark">x {item.transactions.length}</Text>
-                                        }
-                                    </View>
-                                    <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
+
+                        <YStack paddingHorizontal={10} paddingVertical={5} backgroundColor="$color1">
+                            <Text fontSize={12} textAlign="center"
+                                  color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
+                            {/*<View  flexDirection="row"*/}
+                            {/*     gap={15}>*/}
+                            {/*    <Text fontSize={16} color="$gray10Dark">Spent this week</Text>*/}
+                            {/*    <View flexDirection="row" gap={5}>*/}
+                            {/*        <View borderRadius={100} padding={3} backgroundColor="$red3Light">*/}
+                            {/*            <MaterialCommunityIcons name="arrow-up" size={16} color="#fa3737"/>*/}
+                            {/*        </View>*/}
+                            {/*        <Text fontSize={16} color="$red9Dark">5,320%</Text>*/}
+                            {/*    </View>*/}
+                            {/*</View>*/}
+                        </YStack>
+
+                        {/*Grafica*/}
+                        <View height={250} p={10}>
+                            {
+                                chartPoints.length > 2 &&
+                                <CartesianChart data={chartPoints} xKey="date"
+                                                yKeys={hidden_feature_flag ? ["total_hidden"] : ["total"]}
+                                                domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
+
+                                    {/* 👇 render function exposes various data, such as points. */}
+                                    {({points, chartBounds}) => (
+                                        // 👇 and we'll use the Line component to render a line path.
+                                        // <Bar
+                                        //     points={points.total}
+                                        //     chartBounds={chartBounds}
+                                        //     color={theme.color10?.val}
+                                        //     roundedCorners={{ topLeft: 10, topRight: 10 }}
+                                        // />
+                                        <>
+                                            <Line points={hidden_feature_flag ? points.total_hidden : points.total}
+                                                  color={theme.color10?.val} strokeWidth={3}
+                                                  curveType="cardinal50"/>
+                                        </>
+                                    )}
+
+                                </CartesianChart>
+                            }
+                            {
+                                chartPoints.length < 3 &&
+                                <View flex={1} justifyContent="center" alignItems="center">
+                                    <Text fontSize={16} color="$gray10Dark">{t('COMMON.NO_DATA_CHART')}</Text>
                                 </View>
-                            </Button>
-                        ))
-                    }
-                    <View height={200}/>
-                </ScrollView>
-            }
-            <ReportsSheet open={openFiltersSheet} setOpen={setOpenFiltersSheet} updatePresetDays={() => setDaysFrom('0')} />
+                            }
+                        </View>
+
+                        {/*Filtros de semana, mes, ano*/}
+                        <XStack justifyContent="center">
+                            <ToggleGroup
+                                marginTop={10}
+                                marginBottom={20}
+                                value={daysFrom}
+                                onValueChange={setDaysFrom}
+                                orientation="horizontal"
+                                id="simple-filter"
+                                type="single"
+                            >
+                                <ToggleGroup.Item value="15" aria-label="Filter by week">
+                                    <Text>{t('REPORTS.LAST')} 15 {t('REPORTS.DAYS')}</Text>
+                                </ToggleGroup.Item>
+                                <ToggleGroup.Item value="45" aria-label="Filter by month">
+                                    <Text>{t('REPORTS.LAST')} 45 {t('REPORTS.DAYS')}</Text>
+                                </ToggleGroup.Item>
+                                <ToggleGroup.Item value="60" aria-label="Filter by year">
+                                    <Text>{t('REPORTS.LAST')} 60 {t('REPORTS.DAYS')}</Text>
+                                </ToggleGroup.Item>
+                            </ToggleGroup>
+                        </XStack>
+
+                        {/*Lista de items*/}
+                        {
+                            transactions.map((item, index) => (
+                                <Button icon={<Text fontSize={30}>{item.category.icon}</Text>}
+                                        key={item.category.title + index}
+                                        backgroundColor='$background075' borderRadius={0}
+                                        onPress={() => handlePress(item)}
+                                        paddingHorizontal={20} gap={6} flexDirection="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                    <View
+                                        flex={1}
+                                        flexDirection='row'
+                                        alignItems='center'
+                                        justifyContent='space-between'
+                                    >
+                                        <View flexDirection='row' gap={10} alignItems='center'>
+                                            {/*{*/}
+                                            {/*    item.recurrentDate !== 'none' &&*/}
+                                            {/*    <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>*/}
+                                            {/*}*/}
+                                            <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
+                                            {
+                                                item.transactions.length > 0 &&
+                                                <Text fontSize={14}
+                                                      color="$gray10Dark">x {item.transactions.length}</Text>
+                                            }
+                                        </View>
+                                        <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
+                                    </View>
+                                </Button>
+                            ))
+                        }
+                        <View height={200}/>
+                    </ScrollView>
+                }
+                <ReportsSheet open={openFiltersSheet} setOpen={setOpenFiltersSheet}
+                              updatePresetDays={() => setDaysFrom('0')}/>
+
+            </Animated.View>
         </YStack>
     );
 }

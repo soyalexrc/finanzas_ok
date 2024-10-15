@@ -8,13 +8,15 @@ interface SettingsState {
     appearance: 'system' | 'light' | 'dark';
     hidden_feature_flag: boolean;
     selectedLanguage: string;
+    isOnboardingShown: boolean;
 }
 
 // Define the initial state using that type
 const initialState: SettingsState = {
     appearance: 'system',
     hidden_feature_flag: false,
-    selectedLanguage: 'es'
+    selectedLanguage: 'es',
+    isOnboardingShown: false,
 }
 
 export const settingsSlice = createSlice({
@@ -30,6 +32,9 @@ export const settingsSlice = createSlice({
         },
         updateSelectedLanguage: (state, action: PayloadAction<string>) => {
             state.selectedLanguage = action.payload;
+        },
+        updateOnboardingState: (state, action: PayloadAction<boolean>) => {
+            state.isOnboardingShown = action.payload;
         }
     },
 })
@@ -37,7 +42,8 @@ export const settingsSlice = createSlice({
 export const {
     updateAppearance,
     updateSelectedLanguage,
-    updateHiddenFeatureFlag
+    updateHiddenFeatureFlag,
+    updateOnboardingState,
 } = settingsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

@@ -10,6 +10,7 @@ import Animated, {
     interpolate,
     useAnimatedStyle,
 } from 'react-native-reanimated';
+import {useTheme} from "tamagui";
 
 type Props = {
     item: { text: string; image: ImageURISource };
@@ -19,6 +20,7 @@ type Props = {
 
 const ListItem = ({ item, index, x }: Props) => {
     const { width: SCREEN_WIDTH } = useWindowDimensions();
+    const theme = useTheme();
     const rnImageStyle = useAnimatedStyle(() => {
         const translateY = interpolate(
             x.value,
@@ -42,8 +44,7 @@ const ListItem = ({ item, index, x }: Props) => {
         );
         return {
             opacity,
-            width: SCREEN_WIDTH * 0.7,
-            height: SCREEN_WIDTH * 0.7,
+            width: SCREEN_WIDTH,
             transform: [{ translateY}],
         };
     }, [index, x]);
@@ -71,6 +72,7 @@ const ListItem = ({ item, index, x }: Props) => {
         );
         return {
             opacity,
+            width: SCREEN_WIDTH,
             transform: [{ translateY}],
         };
     }, [index, x]);
@@ -78,10 +80,10 @@ const ListItem = ({ item, index, x }: Props) => {
         <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
             <Animated.Image
                 source={item.image}
-                style={rnImageStyle}
-                resizeMode="contain"
+                style={[rnImageStyle, { height: '80%' }]}
+                resizeMode="cover"
             />
-            <Animated.Text style={[styles.textItem, rnTextStyle]}>
+            <Animated.Text style={[styles.textItem, rnTextStyle, {color: theme.color11.val}]}>
                 {item.text}
             </Animated.Text>
         </View>
@@ -94,10 +96,12 @@ const styles = StyleSheet.create({
     itemContainer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
     },
     textItem: {
         fontWeight: '600',
+        marginBottom: 30,
+        paddingHorizontal: 10,
         lineHeight: 41,
         fontSize: 34,
     },

@@ -13,6 +13,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import {load, save} from "@/lib/utils/storage";
 import {useRouter} from "expo-router";
+import {useAppDispatch} from "@/lib/store/hooks";
+import {updateOnboardingState} from "@/lib/store/features/settings/settingsSlice";
+import {useTheme} from "tamagui";
+import {useTranslation} from "react-i18next";
 
 type Props = {
     currentIndex: Animated.SharedValue<number>;
@@ -23,6 +27,9 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const Button = ({ currentIndex, length, flatListRef }: Props) => {
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const {t} = useTranslation()
+    const theme = useTheme();
     const rnBtnStyle = useAnimatedStyle(() => {
         return {
             width:
@@ -62,6 +69,7 @@ const Button = ({ currentIndex, length, flatListRef }: Props) => {
             const result = await save('is_onboarding_shown', true)
             if (result) {
                 router.replace('/(tabs)');
+                dispatch(updateOnboardingState(true))
             }
             return;
         } else {
@@ -71,9 +79,9 @@ const Button = ({ currentIndex, length, flatListRef }: Props) => {
         }
     }, []);
     return (
-        <AnimatedPressable style={[styles.container, rnBtnStyle]} onPress={onPress}>
-            <Animated.Text style={[styles.textStyle, rnTextStyle]}>
-                Get Started
+        <AnimatedPressable style={[styles.container, rnBtnStyle, { backgroundColor: theme.color10.val }]} onPress={onPress}>
+            <Animated.Text style={[styles.textStyle, rnTextStyle, { color: theme.color12.val }]}>
+                {t('COMMON.GET_STARTED')}
             </Animated.Text>
             <Animated.Image
                 source={require('../../../../assets/icons/arrow-right.png')}
@@ -91,13 +99,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 16,
         borderRadius: 100,
-        backgroundColor: '#304FFE',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
     },
     textStyle: {
-        color: 'white',
         position: 'absolute',
         fontWeight: '600',
         fontSize: 16,

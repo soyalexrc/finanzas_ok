@@ -6,6 +6,7 @@ import Animated, {
     interpolateColor,
     useAnimatedStyle,
 } from 'react-native-reanimated';
+import {useTheme} from "tamagui";
 
 type Props = {
     length: number;
@@ -14,7 +15,7 @@ type Props = {
 
 const PaginationElement = ({ length, x }: Props) => {
     const { width: SCREEN_WIDTH } = useWindowDimensions();
-
+    const theme = useTheme();
     const PaginationComponent = useCallback(({ index }: { index: number }) => {
         const itemRnStyle = useAnimatedStyle(() => {
             const width = interpolate(
@@ -35,7 +36,7 @@ const PaginationElement = ({ length, x }: Props) => {
                     index * SCREEN_WIDTH,
                     (index + 1) * SCREEN_WIDTH,
                 ],
-                ['#D0D0D0', '#304FFE', '#D0D0D0']
+                ['#D0D0D0', theme.color10.val, '#D0D0D0']
             );
 
             return {

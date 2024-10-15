@@ -12,7 +12,7 @@ import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {
   selectSettings,
   updateAppearance,
-  updateHiddenFeatureFlag,
+  updateHiddenFeatureFlag, updateOnboardingState,
   updateSelectedLanguage
 } from "@/lib/store/features/settings/settingsSlice";
 import {View} from "tamagui";
@@ -126,6 +126,8 @@ const InitialLayout = () => {
     if (appearance) dispatch(updateAppearance(appearance as 'system' | 'light' | 'dark'));
     if (!isOnBoardingShown) {
       router.replace('/onboarding')
+    } else {
+      dispatch(updateOnboardingState(isOnBoardingShown as boolean))
     }
   }
 

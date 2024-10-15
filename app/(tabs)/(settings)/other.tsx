@@ -2,7 +2,12 @@ import {ListItem, ScrollView, Separator, Switch, Text, View, YGroup} from "tamag
 import React from "react";
 import {Platform, StyleSheet} from "react-native";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {selectSettings, updateAppearance, updateHiddenFeatureFlag} from "@/lib/store/features/settings/settingsSlice";
+import {
+    selectSettings,
+    updateAppearance,
+    updateHiddenFeatureFlag,
+    updateOnboardingState
+} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {save, saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
@@ -10,15 +15,24 @@ import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const dispatch = useAppDispatch();
-    const {hidden_feature_flag} = useAppSelector(selectSettings)
+    const {hidden_feature_flag, isOnboardingShown} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
 
     async function handleChangeSetting(setting: string, value: boolean) {
-        const saved = await save('hidden_feature_flag', value);
-        if  (saved) {
-            dispatch(updateHiddenFeatureFlag(value));
+        if (setting === 'hidden_feature_flag') {
+            const saved = await save('hidden_feature_flag', value);
+            if  (saved) {
+                dispatch(updateHiddenFeatureFlag(value));
+            }
+        }
+
+        if (setting === 'reset_onboarding_screen') {
+            const saved = await save('is_onboarding_shown', value);
+            if (saved) {
+                dispatch(updateOnboardingState(value))
+            }
         }
     }
 
@@ -36,6 +50,16 @@ export default function Screen() {
                         title={t('SETTINGS.OTHER.OPTIONS.HIDDEN_FLAG')}
                         iconAfter={
                             <Switch size="$2" defaultChecked={hidden_feature_flag} onCheckedChange={(value) => handleChangeSetting('hidden_feature_flag', value)}>
+                                <Switch.Thumb animation="quicker" />
+                            </Switch>
+                        }
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}
+                        iconAfter={
+                            <Switch size="$2" defaultChecked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting('reset_onboarding_screen', value)}>
                                 <Switch.Thumb animation="quicker" />
                             </Switch>
                         }

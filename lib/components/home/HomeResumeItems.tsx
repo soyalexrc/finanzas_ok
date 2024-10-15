@@ -139,7 +139,7 @@ export default function HomeResumeItems() {
                                             }
                                             <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text style={[item.category.type === 'income' && { color: theme. green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
+                                        <Text style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
                                     </View>
                                 </Button>
                             </ContextMenu.Trigger>

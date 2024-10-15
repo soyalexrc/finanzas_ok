@@ -9,6 +9,7 @@
       "DUPLICATE": "Duplicar",
       "SELECT_CATEGORY_TYPE": "Seleccionar tipo de categoria",
       "DONE": "Hecho",
+      "GET_STARTED": "Iniciar",
       "ACCOUNT": "Cuenta",
       "CATEGORY": "Categoria",
       "ALL_ACCOUNTS": "Todas las cuentas",
@@ -80,7 +81,8 @@
       "OTHER": {
         "TITLE": "Otros",
         "OPTIONS": {
-          "HIDDEN_FLAG": "Habilitar 'montos ocultos'"
+          "HIDDEN_FLAG": "Habilitar 'montos ocultos'",
+          "RESET_ONBOARDING": "Habilitar vistas de onboarding"
         }
       },
       "ACCOUNTS": {

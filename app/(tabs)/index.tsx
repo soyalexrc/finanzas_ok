@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import {Platform, StyleSheet, useColorScheme} from "react-native";
+import React, {useEffect, useRef} from "react";
+import {Animated, Platform, StyleSheet, useColorScheme} from "react-native";
 import {Button, useThemeName, View, ScrollView} from 'tamagui';
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -33,6 +33,16 @@ export default function HomeScreen() {
     const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300, // Adjust the duration as needed
+            useNativeDriver: true,
+        }).start();
+
+    }, []);
 
     function onPressNewTransaction() {
         dispatch(resetCurrentTransaction());
@@ -41,19 +51,25 @@ export default function HomeScreen() {
 
     return (
         <View flex={1} backgroundColor="$color1">
-            <CustomHeader style={{paddingTop: insets.top}}>
-                <AccountSelectDropdown/>
-                <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
-                    <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                </Button>
-            </CustomHeader>
-            <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
-                <ResumeDropDown/>
-                {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
-                {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
-                <HomeResumeItems/>
-                <View style={{height: 200}}/>
-            </ScrollView>
+            <Animated.View
+                style={{
+                    opacity: fadeAnim,
+                }}
+            >
+                <CustomHeader style={{paddingTop: insets.top}}>
+                    <AccountSelectDropdown/>
+                    <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
+                        <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                    </Button>
+                </CustomHeader>
+                <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
+                    <ResumeDropDown/>
+                    {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
+                    {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
+                    <HomeResumeItems/>
+                    <View style={{height: 200}}/>
+                </ScrollView>
+            </Animated.View>
         </View>
     );
 }

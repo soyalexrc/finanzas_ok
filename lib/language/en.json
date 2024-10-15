@@ -5,6 +5,7 @@
       "BACK": "Back",
       "CONFIRM": "Confirm",
       "DELETE": "Delete",
+      "GET_STARTED": "Get started",
       "STOP_RECURRING": "Stop Recurring",
       "DUPLICATE": "Duplicate",
       "DONE": "Done",
@@ -80,7 +81,8 @@
       "OTHER": {
         "TITLE": "Other",
         "OPTIONS": {
-          "HIDDEN_FLAG": "Enable 'hidden amounts'"
+          "HIDDEN_FLAG": "Enable 'hidden amounts'",
+          "RESET_ONBOARDING": "Reset onboarding flow"
         }
       },
       "ACCOUNTS": {

@@ -62,7 +62,7 @@ export default function Screen() {
     );
 
     return (
-        <View flex={1} backgroundColor="$color1" paddingTop={insets.top} paddingBottom={insets.bottom}
+        <View flex={1} backgroundColor="$color1" paddingBottom={insets.bottom}
               justifyContent="center" alignItems="center">
             <Animated.FlatList
                 ref={flatListRef}
