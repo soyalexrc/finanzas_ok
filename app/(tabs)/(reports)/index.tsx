@@ -132,8 +132,9 @@ export default function ReportScreen() {
                             height={200}
                         />
                         <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>
-                        <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>Create
-                            transaction</Button>
+                        <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>
+                            {t('COMMON.CREATE_TRANSACTION')}
+                        </Button>
                     </View>
                 }
                 {

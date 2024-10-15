@@ -82,7 +82,7 @@
         "TITLE": "Other",
         "OPTIONS": {
           "HIDDEN_FLAG": "Enable 'hidden amounts'",
-          "RESET_ONBOARDING": "Reset onboarding flow"
+          "RESET_ONBOARDING": "Onboarding flow completed"
         }
       },
       "ACCOUNTS": {

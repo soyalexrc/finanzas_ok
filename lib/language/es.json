@@ -82,7 +82,7 @@
         "TITLE": "Otros",
         "OPTIONS": {
           "HIDDEN_FLAG": "Habilitar 'montos ocultos'",
-          "RESET_ONBOARDING": "Habilitar vistas de onboarding"
+          "RESET_ONBOARDING": "Flujo de onboarding completado"
         }
       },
       "ACCOUNTS": {
