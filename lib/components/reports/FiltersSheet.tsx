@@ -41,6 +41,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
     const accounts = useAppSelector(selectAccounts);
     const categories = useAppSelector(selectCategories);
     const theme = useTheme();
+    const isIos = Platform.OS === "ios";
     const selectedCategory = useAppSelector(selectCategoryFilter);
     const selectedAccount = useAppSelector(selectAccountFilter);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
@@ -192,7 +193,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     />
                 </YStack>
 
-                <View bottom={0} left={0} width="100%" mb={insets.bottom} position='absolute'>
+                <View bottom={0} left={0} width="100%" mb={isIos ? insets.bottom + 50: insets.bottom + 20} position='absolute'>
                     <Button mx={10} onPress={applyFilters}>{t('REPORTS_SHEET.APPLY_FILTERS')}</Button>
                 </View>
 

@@ -59,7 +59,6 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
                 {/*{*/}
                 {/*    editMode &&*/}
                     <TextArea
-                        autoFocus
                         size='$4'
                         value={text}
                         marginHorizontal={10}

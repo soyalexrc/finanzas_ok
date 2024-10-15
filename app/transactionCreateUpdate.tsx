@@ -1,4 +1,4 @@
-import {FlatList, Platform, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {FlatList, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
 import {View, Text, Button, XStack, ToggleGroup} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -46,6 +46,8 @@ import {currency} from "expo-localization";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
+import HiddenFlagSheet from "@/lib/components/ui/android-dropdowns-sheets/HiddenFlagSheet";
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const router = useRouter();
@@ -71,6 +73,7 @@ export default function Screen() {
     const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
     const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
+    const [openHiddenMenuSheet, setOpenHiddenMenuSheet] = useState<boolean>(false)
     const {hidden_feature_flag} = useAppSelector(selectSettings)
 
     const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
@@ -131,10 +134,10 @@ export default function Screen() {
         }
     }, []);
 
-    console.log({
-        amount: currentTransaction.amount,
-        hidden_amount: currentTransaction.hidden_amount,
-    })
+    async function handlePopHiddenMenu() {
+        await Haptics.selectionAsync();
+        setOpenHiddenMenuSheet(true)
+    }
 
     return (
         <>
@@ -157,36 +160,56 @@ export default function Screen() {
                 </View>
                 <View flex={1}>
                     <View flex={0.4} justifyContent="center" alignItems="center">
-                        <DropdownMenu.Root>
-                            <DropdownMenu.Trigger action="longPress">
-                                <View flexDirection="row" alignItems="flex-start" gap="$2">
-                                    <Text marginTop="$3" fontSize="$9"
-                                          color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
-                                    {
-                                        tab === 'total' && <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
-                                    }
-                                    {
-                                        tab === 'visible' &&  <Text fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
-                                    }
-                                </View>
-                            </DropdownMenu.Trigger>
-                            <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0}
-                                                  collisionPadding={0} avoidCollisions={true}>
-                                <DropdownMenu.CheckboxItem key="total"
-                                                           value={tab === 'total' ? 'on' : 'off'}
-                                                           onValueChange={() => setTab('total')}>
-                                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</DropdownMenu.ItemTitle>
-                                    <DropdownMenu.ItemIndicator/>
-                                </DropdownMenu.CheckboxItem>
-                                <DropdownMenu.CheckboxItem key="visible"
-                                                           value={tab === 'visible' ? 'on' : 'off'}
-                                                           onValueChange={() => setTab('visible')}>
-                                    <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_VISIBLE')}</DropdownMenu.ItemTitle>
-                                    <DropdownMenu.ItemIndicator/>
-                                </DropdownMenu.CheckboxItem>
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Root>
-
+                        {
+                            isIos &&
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger action="longPress">
+                                    <View flexDirection="row" alignItems="flex-start" gap="$2">
+                                        <Text marginTop="$3" fontSize="$9"
+                                              color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
+                                        {
+                                            tab === 'total' && <Text
+                                                fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                                        }
+                                        {
+                                            tab === 'visible' && <Text
+                                                fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
+                                        }
+                                    </View>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center'
+                                                      alignOffset={0}
+                                                      collisionPadding={0} avoidCollisions={true}>
+                                    <DropdownMenu.CheckboxItem key="total"
+                                                               value={tab === 'total' ? 'on' : 'off'}
+                                                               onValueChange={() => setTab('total')}>
+                                        <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</DropdownMenu.ItemTitle>
+                                        <DropdownMenu.ItemIndicator/>
+                                    </DropdownMenu.CheckboxItem>
+                                    <DropdownMenu.CheckboxItem key="visible"
+                                                               value={tab === 'visible' ? 'on' : 'off'}
+                                                               onValueChange={() => setTab('visible')}>
+                                        <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_VISIBLE')}</DropdownMenu.ItemTitle>
+                                        <DropdownMenu.ItemIndicator/>
+                                    </DropdownMenu.CheckboxItem>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
+                        }
+                        {
+                            !isIos &&
+                            <Pressable onLongPress={() => handlePopHiddenMenu()} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 2 }}>
+                                <Text marginTop="$3" fontSize="$9"
+                                      color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
+                                {
+                                    tab === 'total' &&
+                                    <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                                }
+                                {
+                                    tab === 'visible' && <Text
+                                        fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
+                                }
+                            </Pressable>
+                        }
                     </View>
                     {/*{*/}
                     {/*    currentTransaction.is_hidden_transaction > 0 &&*/}
@@ -213,7 +236,8 @@ export default function Screen() {
                         <View borderBottomWidth={1} borderColor="$gray10Dark">
                             <TouchableOpacity onPress={() => setOpenNotesSheet(true)}
                                               style={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                <Text fontSize={16}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
+                                <Text
+                                    fontSize={16}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
                             </TouchableOpacity>
                         </View>
                         <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20}
@@ -267,6 +291,8 @@ export default function Screen() {
             <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet}/>
             <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet}/>
             <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet}/>
+            <HiddenFlagSheet open={openHiddenMenuSheet} setOpen={setOpenHiddenMenuSheet} fn={(value => setTab(value))}
+                             tab={tab}/>
         </>
     )
 }

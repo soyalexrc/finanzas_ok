@@ -1,4 +1,4 @@
-import {Alert, StyleSheet} from "react-native";
+import {Alert, Platform, StyleSheet} from "react-native";
 import * as ContextMenu from 'zeego/context-menu'
 import {useRouter} from "expo-router";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -36,8 +36,9 @@ import {
 } from "@/lib/store/features/transactions/reportSlice";
 import {useSelector} from "react-redux";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import * as Haptics from 'expo-haptics';
 
-export default function HomeResumeItems() {
+export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId: number) => void}) {
     const db = useSQLiteContext();
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -51,6 +52,7 @@ export default function HomeResumeItems() {
     const selectedAccountFilter = useSelector(selectAccountFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const {selectedLanguage} = useAppSelector(selectSettings);
+    const isIos = Platform.OS === 'ios';
 
     function handlePress(t: FullTransaction) {
         dispatch(updateCurrentTransaction({
@@ -61,6 +63,11 @@ export default function HomeResumeItems() {
         dispatch(selectCategory(t.category));
         dispatch(selectAccountForm(t.account));
         router.push('/transactionCreateUpdate')
+    }
+
+    async function handleLongPress(t: FullTransaction, groupId: number) {
+        await Haptics.selectionAsync();
+        fn(t, groupId);
     }
 
     function handleDeleteItem(id: number, groupId: number) {
@@ -122,10 +129,75 @@ export default function HomeResumeItems() {
                             </XStack>
                         </View>
                     </View>
-                    {group.items?.map((item) => (
-                        <ContextMenu.Root key={item.id}>
-                            <ContextMenu.Trigger>
-                                <Button icon={ <Text fontSize={30}>{item.category.icon}</Text>} backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
+                    {group.items?.map((item) => {
+                        if (isIos) {
+                            return (
+                                <ContextMenu.Root key={item.id}>
+                                    <ContextMenu.Trigger>
+                                        <Button icon={ <Text fontSize={30}>{item.category.icon}</Text>} backgroundColor='$background075' borderRadius={0} onPress={() => handlePress(item)} paddingHorizontal={20} gap={6} flexDirection="row" justifyContent="space-between" alignItems="center">
+                                            <View
+                                                flex={1}
+                                                flexDirection='row'
+                                                alignItems='center'
+                                                justifyContent='space-between'
+                                            >
+                                                <View flexDirection='row' gap={10} alignItems='center'>
+                                                    {
+                                                        item.recurrentDate !== 'none' &&
+                                                        <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>
+                                                    }
+                                                    <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
+                                                </View>
+                                                <Text style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
+                                            </View>
+                                        </Button>
+                                    </ContextMenu.Trigger>
+                                    <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
+                                                         avoidCollisions={true}>
+                                        {
+                                            item.recurrentDate !== 'none' &&
+                                            <ContextMenu.Item onSelect={() => stopRecurrent(item.id)} key='recurring'>
+                                                <ContextMenu.ItemTitle>Stop Recurring</ContextMenu.ItemTitle>
+                                                <ContextMenu.ItemIcon
+                                                    ios={{
+                                                        name: 'xmark'
+                                                    }}
+                                                />
+                                            </ContextMenu.Item>
+                                        }
+                                        <ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>
+                                            <ContextMenu.ItemTitle>Duplicate</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemIcon
+                                                ios={{
+                                                    name: 'doc.on.doc'
+                                                }}
+                                            />
+                                        </ContextMenu.Item>
+                                        <ContextMenu.Item key='delete' onSelect={() => handleDeleteItem(item.id, group.id)} destructive>
+                                            <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemIcon
+                                                ios={{
+                                                    name: 'trash'
+                                                }}
+                                            />
+                                        </ContextMenu.Item>
+                                    </ContextMenu.Content>
+                                </ContextMenu.Root>
+                            )
+                        } else {
+                            return (
+                                <Button
+                                    key={item.id}
+                                    icon={ <Text fontSize={30}>{item.category.icon}</Text>}
+                                    backgroundColor='$background075'
+                                    borderRadius={0}
+                                    onPress={() => handlePress(item)}
+                                    onLongPress={() => handleLongPress(item, group.id)}
+                                    paddingHorizontal={20}
+                                    gap={6}
+                                    flexDirection="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
                                     <View
                                         flex={1}
                                         flexDirection='row'
@@ -142,39 +214,44 @@ export default function HomeResumeItems() {
                                         <Text style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
                                     </View>
                                 </Button>
-                            </ContextMenu.Trigger>
-                            <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
-                                                 avoidCollisions={true}>
-                                {
-                                    item.recurrentDate !== 'none' &&
-                                    <ContextMenu.Item onSelect={() => stopRecurrent(item.id)} key='recurring'>
-                                        <ContextMenu.ItemTitle>Stop Recurring</ContextMenu.ItemTitle>
-                                        <ContextMenu.ItemIcon
-                                            ios={{
-                                                name: 'xmark'
-                                            }}
-                                        />
-                                    </ContextMenu.Item>
-                                }
-                                <ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>
-                                    <ContextMenu.ItemTitle>Duplicate</ContextMenu.ItemTitle>
-                                    <ContextMenu.ItemIcon
-                                        ios={{
-                                            name: 'doc.on.doc'
-                                        }}
-                                    />
-                                </ContextMenu.Item>
-                                <ContextMenu.Item key='delete' onSelect={() => handleDeleteItem(item.id, group.id)} destructive>
-                                    <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
-                                    <ContextMenu.ItemIcon
-                                        ios={{
-                                            name: 'trash'
-                                        }}
-                                    />
-                                </ContextMenu.Item>
-                            </ContextMenu.Content>
-                        </ContextMenu.Root>
-                    ))}
+
+                                // <ContextMenu.Root key={item.id}>
+                                //     <ContextMenu.Trigger>
+                                //     </ContextMenu.Trigger>
+                                //     <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
+                                //                          avoidCollisions={true}>
+                                //         {
+                                //             item.recurrentDate !== 'none' &&
+                                //             <ContextMenu.Item onSelect={() => stopRecurrent(item.id)} key='recurring'>
+                                //                 <ContextMenu.ItemTitle>Stop Recurring</ContextMenu.ItemTitle>
+                                //                 <ContextMenu.ItemIcon
+                                //                     ios={{
+                                //                         name: 'xmark'
+                                //                     }}
+                                //                 />
+                                //             </ContextMenu.Item>
+                                //         }
+                                //         <ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>
+                                //             <ContextMenu.ItemTitle>Duplicate</ContextMenu.ItemTitle>
+                                //             <ContextMenu.ItemIcon
+                                //                 ios={{
+                                //                     name: 'doc.on.doc'
+                                //                 }}
+                                //             />
+                                //         </ContextMenu.Item>
+                                //         <ContextMenu.Item key='delete' onSelect={() => handleDeleteItem(item.id, group.id)} destructive>
+                                //             <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                //             <ContextMenu.ItemIcon
+                                //                 ios={{
+                                //                     name: 'trash'
+                                //                 }}
+                                //             />
+                                //         </ContextMenu.Item>
+                                //     </ContextMenu.Content>
+                                // </ContextMenu.Root>
+                            )
+                        }
+                    })}
                 </View>
 
             ))}

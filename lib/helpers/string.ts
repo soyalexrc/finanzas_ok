@@ -1,4 +1,4 @@
-import {TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 
 export function textShortener(txt: string, limit = 10): string {
     return txt?.length > limit ? txt.substring(0, limit - 1).concat('...') : txt;
@@ -18,6 +18,11 @@ export function formatByThousands(value: string) {
 
 export function formatTitleOption(key: string, type: string): string {
     return key === 'Balance' ? key :  key + ' this ' + type
+}
+
+
+export function formatAccountTitle(account: Account, iconFirst = false, allAccountsText: string) {
+    return iconFirst ?  account.icon + '  ' + (account.title === 'All accounts' ? allAccountsText : account.title) :  account.title + '  ' + account.icon
 }
 
 // export function calculateTotal(data: TransactionsGroupedByDate[]): { amount: string, decimals: string } {

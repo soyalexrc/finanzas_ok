@@ -34,6 +34,9 @@ import {
     updateCategoriesList,
     updateCategoryCreateUpdate
 } from "@/lib/store/features/categories/categoriesSlice";
+import * as Haptics from "expo-haptics";
+import {useState} from "react";
+import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -49,7 +52,8 @@ export default function Screen() {
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
-
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
+    const [open, setOpen] = useState<boolean>(false);
 
     function onPressCategory(category: Category) {
         dispatch(updateCategoryCreateUpdate(category));
@@ -68,6 +72,8 @@ export default function Screen() {
                 isPreferred: false,
                 onPress: async () => {
                     await deleteCategory(db, categoryId);
+                    setOpen(false)
+                    setSelectedCategoryId(0)
                     dispatch(updateCategoriesList(getAllCategories(db)));
 
                     if (selectedCategoryForm.id === categoryId) {
@@ -98,47 +104,82 @@ export default function Screen() {
         ])
     }
 
+
+    async function handleLongPress(accountId: number) {
+        await Haptics.selectionAsync();
+        setSelectedCategoryId(accountId);
+        setOpen(true);
+    }
+
     return (
-        <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                    paddingTop={isIos ? headerHeight + 20 : 20}>
-            {
-                categories.map(category => (
-                    <ContextMenu.Root key={category.id}>
-                        <ContextMenu.Trigger>
-                            <TouchableOpacity style={[styles.item, {backgroundColor: theme.color1.val}]}
-                                              key={category.id}
-                                              onPress={() => onPressCategory(category)}>
-                                <Text fontSize={30}>{category.icon}</Text>
-                                <View
-                                    flex={1}
-                                    flexDirection='row'
-                                    alignItems='center'
-                                    justifyContent='space-between'
-                                    borderBottomWidth={1}
-                                    py={15}
-                                    borderColor='$color2'
+        <View flex={1}>
+            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
+                        paddingTop={isIos ? headerHeight + 20 : 20}>
+                {
+                    categories.map(category => {
+                        if (isIos) {
+                            return (
+                                <ContextMenu.Root key={category.id}>
+                                    <ContextMenu.Trigger>
+                                        <TouchableOpacity style={[styles.item, {backgroundColor: theme.color1.val}]}
+                                                          key={category.id}
+                                                          onPress={() => onPressCategory(category)}>
+                                            <Text fontSize={30}>{category.icon}</Text>
+                                            <View
+                                                flex={1}
+                                                flexDirection='row'
+                                                alignItems='center'
+                                                justifyContent='space-between'
+                                                borderBottomWidth={1}
+                                                py={15}
+                                                borderColor='$color2'
+                                            >
+                                                <Text fontSize={18}>{category.title}</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </ContextMenu.Trigger>
+                                    <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
+                                                         avoidCollisions={true}>
+                                        <ContextMenu.Item key='delete' destructive
+                                                          onSelect={() => onPressDeleteCategory(category.id)}>
+                                            <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemIcon
+                                                ios={{
+                                                    name: 'trash'
+                                                }}
+                                            />
+                                        </ContextMenu.Item>
+                                    </ContextMenu.Content>
+                                </ContextMenu.Root>
+                            )
+                        } else {
+                            return (
+                                <TouchableOpacity style={[styles.item, {backgroundColor: theme.color1.val}]}
+                                                  key={category.id}
+                                                  onPress={() => onPressCategory(category)}
+                                                  onLongPress={() => handleLongPress(category.id)}
                                 >
-                                    <Text fontSize={18}>{category.title}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </ContextMenu.Trigger>
-                        <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
-                                             avoidCollisions={true}>
-                            <ContextMenu.Item key='delete' destructive
-                                              onSelect={() => onPressDeleteCategory(category.id)}>
-                                <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
-                                <ContextMenu.ItemIcon
-                                    ios={{
-                                        name: 'trash'
-                                    }}
-                                />
-                            </ContextMenu.Item>
-                        </ContextMenu.Content>
-                    </ContextMenu.Root>
-                ))
-            }
-            <View height={200} />
-        </ScrollView>
+                                    <Text fontSize={30}>{category.icon}</Text>
+                                    <View
+                                        flex={1}
+                                        flexDirection='row'
+                                        alignItems='center'
+                                        justifyContent='space-between'
+                                        borderBottomWidth={1}
+                                        py={15}
+                                        borderColor='$color2'
+                                    >
+                                        <Text fontSize={18}>{category.title}</Text>
+                                    </View>
+                                </TouchableOpacity>                            )
+                        }
+                    })
+                }
+                <View height={200} />
+            </ScrollView>
+            <OnlyDeleteOptionSheet open={open} setOpen={setOpen} fn={() => onPressDeleteCategory(selectedCategoryId)}/>
+        </View>
+
     )
 }
 

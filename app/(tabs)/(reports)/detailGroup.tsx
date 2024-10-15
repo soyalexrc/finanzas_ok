@@ -13,6 +13,7 @@ import {selectCategories, selectCategory} from "@/lib/store/features/categories/
 import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/accountsSlice";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
+import {Platform} from "react-native";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
@@ -22,6 +23,7 @@ export default function Screen() {
     const categories = useAppSelector(selectCategories);
     const detailGroup = useAppSelector(selectDetailGroup)
     const {hidden_feature_flag} = useAppSelector(selectSettings)
+    const isIos = Platform.OS === 'ios';
 
     function handlePress(item: TransactionWithAmountNumber) {
         dispatch(updateCurrentTransaction({
@@ -43,7 +45,7 @@ export default function Screen() {
     }
 
     return (
-        <ScrollView  backgroundColor="$color1" style={{ paddingTop: insets.top + 50, flex: 1 }}>
+        <ScrollView  backgroundColor="$color1" style={{ paddingTop: isIos ? insets.top + 50 : 0, flex: 1 }}>
             {
                 detailGroup.transactions.map((item, i) => (
                     <ContextMenu.Root key={item.id}>

@@ -1,7 +1,7 @@
-import React, {useEffect, useRef} from "react";
-import {Animated, Platform, StyleSheet, useColorScheme} from "react-native";
-import {Button, useThemeName, View, ScrollView} from 'tamagui';
-import {Feather} from "@expo/vector-icons";
+import React, {useEffect, useRef, useState} from "react";
+import {Animated, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {Button, useThemeName, View, ScrollView, Text} from 'tamagui';
+import {Entypo, Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
 import {
@@ -25,6 +25,13 @@ import {
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
+import AccountSelectSheet from "@/lib/components/ui/android-dropdowns-sheets/AccountSelectSheet";
+import {formatAccountTitle} from "@/lib/helpers/string";
+import {useTranslation} from "react-i18next";
+import ResumeSheet from "@/lib/components/ui/android-dropdowns-sheets/ResumeSheet";
+import TransactionSelectionOptionsSheet
+    from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
+import {FullTransaction} from "@/lib/types/Transaction";
 
 
 export default function HomeScreen() {
@@ -34,6 +41,14 @@ export default function HomeScreen() {
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const [accountsSheetOpen, setAccountsSheetOpen] = useState<boolean>(false);
+    const [resumeSheetOpen, setResumeSheetOpen] = useState<boolean>(false);
+    const [transactionSelectionOpen, setTransactionSelectionOpen] = useState<boolean>(false);
+    const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
+    const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
+    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
+    const {t} = useTranslation()
+    const scheme = useColorScheme();
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -49,26 +64,51 @@ export default function HomeScreen() {
         router.push('/transactionCreateUpdate');
     }
 
+    function onSelectTransaction(t: FullTransaction, groupId: number) {
+        setTransactionSelectionOpen(true);
+        setSelectedTransaction(t)
+        setSelectedGroupId(groupId)
+    }
+
     return (
         <View flex={1} backgroundColor="$color1">
             <Animated.View
                 style={{
                     opacity: fadeAnim,
+                    flex: 1,
                 }}
             >
                 <CustomHeader style={{paddingTop: insets.top}}>
-                    <AccountSelectDropdown/>
+                    {isIos && <AccountSelectDropdown/>}
+                    {
+                        !isIos &&
+                        <TouchableOpacity onPress={() => setAccountsSheetOpen(true)}
+                                          style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                            <Text
+                                fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>
+                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
+                        </TouchableOpacity>
+                    }
                     <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
                         <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </Button>
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
-                    <ResumeDropDown/>
+                    <ResumeDropDown fn={() => setResumeSheetOpen(true)}/>
                     {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
                     {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
-                    <HomeResumeItems/>
+                    <HomeResumeItems fn={(t, groupId) => onSelectTransaction(t, groupId)}/>
                     <View style={{height: 200}}/>
                 </ScrollView>
+                {!isIos && <AccountSelectSheet setOpen={setAccountsSheetOpen} open={accountsSheetOpen}/>}
+                {!isIos && <ResumeSheet open={resumeSheetOpen} setOpen={setResumeSheetOpen}/>}
+                {!isIos && <TransactionSelectionOptionsSheet open={transactionSelectionOpen}
+                                                             setOpen={setTransactionSelectionOpen}
+                                                             item={selectedTransaction} itemGroupId={selectedGroupId}
+                                                             resetData={() => {
+                                                                 setSelectedGroupId(0);
+                                                                 setSelectedTransaction(undefined)
+                                                             }}/>}
             </Animated.View>
         </View>
     );

@@ -1,7 +1,7 @@
 import {Stack, useRouter} from "expo-router";
 import React from "react";
-import {Text} from 'tamagui';
-import {StyleSheet, TouchableOpacity} from "react-native";
+import {Text, View} from 'tamagui';
+import {Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {BlurView} from "expo-blur";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -41,16 +41,29 @@ function CustomHeader() {
     const detailGroup = useAppSelector(selectDetailGroup);
     const {hidden_feature_flag} = useAppSelector(selectSettings)
     const {t} = useTranslation()
+    const isIos = Platform.OS === 'ios';
 
-    return (
-        <BlurView intensity={100} tint='prominent' style={[styles.header, { paddingTop: insets.top }]}>
-            <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
-                <Text fontSize={16} color="$gray10Dark">{t('COMMON.BACK')}</Text>
-            </TouchableOpacity>
-            <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions, hidden_feature_flag)}</Text>
-        </BlurView>
-    )
+    if (isIos) {
+        return (
+            <BlurView intensity={100} tint='prominent' style={[styles.header, { paddingTop: insets.top }]}>
+                <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
+                    <Text fontSize={16} color="$gray10Dark">{t('COMMON.BACK')}</Text>
+                </TouchableOpacity>
+                <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions, hidden_feature_flag)}</Text>
+            </BlurView>
+        )
+    } else {
+        return (
+            <View backgroundColor="$color1" style={[styles.headerAndroid, { paddingTop: insets.top + 10 }]}>
+                <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <MaterialCommunityIcons name="chevron-left" size={30} color="gray" />
+                    <Text fontSize={16} color="$gray10Dark">{t('COMMON.BACK')}</Text>
+                </TouchableOpacity>
+                <Text fontSize="$7" fontWeight="bold">{detailGroup.category.title}:  {detailGroup.account.currency_symbol} {calculateTotalTransactions(detailGroup.transactions, hidden_feature_flag)}</Text>
+            </View>
+        )
+    }
 }
 
 
@@ -61,6 +74,13 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         zIndex: 100,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingBottom: 10,
+    },
+    headerAndroid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

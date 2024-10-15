@@ -15,7 +15,7 @@ import {
     getAmountOfTransactionsByAccountId, getTransactions,
     getTransactionsGroupedAndFiltered
 } from "@/lib/db";
-import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Account, FullTransaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
 import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 import * as ContextMenu from "zeego/context-menu";
@@ -31,6 +31,10 @@ import {
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 import {useTranslation} from "react-i18next";
+import * as Haptics from "expo-haptics";
+import {onLongPress} from "@vueuse/core/index";
+import {useState} from "react";
+import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -47,6 +51,8 @@ export default function Screen() {
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const {t} = useTranslation()
+    const [selectedAccountId, setSelectAccountId] = useState<number>(0);
+    const [open, setOpen] = useState<boolean>(false);
 
     function onPressAccount(account: Account) {
         dispatch(updateAccountCreateUpdate(account));
@@ -65,6 +71,8 @@ export default function Screen() {
                 isPreferred: false,
                 onPress: async () => {
                     await deleteAccount(db, accountId);
+                    setSelectAccountId(0);
+                    setOpen(false);
                     dispatch(updateAccountsList(getAllAccounts(db)));
                     if (selectedAccountForm.id === accountId) {
                         dispatch(selectAccountForm(accounts[0]))
@@ -99,51 +107,92 @@ export default function Screen() {
         ])
     }
 
+    async function handleLongPress(accountId: number) {
+            await Haptics.selectionAsync();
+            setSelectAccountId(accountId);
+            setOpen(true);
+    }
+
     return (
-        <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                    paddingTop={isIos ? headerHeight + 20 : 20}>
-            {
-                accounts.map(account => (
-                    <ContextMenu.Root key={account.id}>
-                        <ContextMenu.Trigger>
-                            <TouchableOpacity style={[styles.item, { backgroundColor:  theme.color1.val}]} key={account.id}
-                                              onPress={() => onPressAccount(account)}>
-                                <Text fontSize={40}>{account.icon}</Text>
-                                <View
-                                    flex={1}
-                                    flexDirection='row'
-                                    alignItems='center'
-                                    justifyContent='space-between'
-                                    borderBottomWidth={1}
-                                    py={10}
-                                    borderColor='$color2'
-                                >
-                                    <YStack gap={4}>
-                                        <Text fontSize={18} fontWeight="bold">{account.title}</Text>
+        <View flex={1}>
+            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
+                        paddingTop={isIos ? headerHeight + 20 : 20}>
+                {
+                    accounts.map(account => {
+                        if (isIos) {
+                            return (
+                                <ContextMenu.Root key={account.id}>
+                                    <ContextMenu.Trigger>
+                                        <TouchableOpacity style={[styles.item, {backgroundColor: theme.color1.val}]}
+                                                          key={account.id}
+                                                          onPress={() => onPressAccount(account)}>
+                                            <Text fontSize={40}>{account.icon}</Text>
+                                            <View
+                                                flex={1}
+                                                flexDirection='row'
+                                                alignItems='center'
+                                                justifyContent='space-between'
+                                                borderBottomWidth={1}
+                                                py={10}
+                                                borderColor='$color2'
+                                            >
+                                                <YStack gap={4}>
+                                                    <Text fontSize={18} fontWeight="bold">{account.title}</Text>
+                                                    <Text
+                                                        color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                                </YStack>
+                                                <Text
+                                                    fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </ContextMenu.Trigger>
+                                    <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
+                                                         avoidCollisions={true}>
+                                        <ContextMenu.Item key='delete' destructive
+                                                          onSelect={() => onPressDeleteAccount(account.id)}>
+                                            <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemIcon
+                                                ios={{
+                                                    name: 'trash'
+                                                }}
+                                            />
+                                        </ContextMenu.Item>
+                                    </ContextMenu.Content>
+                                </ContextMenu.Root>
+                            )
+                        } else {
+                            return (
+                                <TouchableOpacity style={[styles.item, {backgroundColor: theme.color1.val}]}
+                                                  key={account.id}
+                                                  onPress={() => onPressAccount(account)}
+                                                  onLongPress={() => handleLongPress(account.id)}>
+                                    <Text fontSize={40}>{account.icon}</Text>
+                                    <View
+                                        flex={1}
+                                        flexDirection='row'
+                                        alignItems='center'
+                                        justifyContent='space-between'
+                                        borderBottomWidth={1}
+                                        py={10}
+                                        borderColor='$color2'
+                                    >
+                                        <YStack gap={4}>
+                                            <Text fontSize={18} fontWeight="bold">{account.title}</Text>
+                                            <Text
+                                                color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                        </YStack>
                                         <Text
-                                            color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
-                                    </YStack>
-                                    <Text
-                                        fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </ContextMenu.Trigger>
-                        <ContextMenu.Content loop={false} alignOffset={0} collisionPadding={0}
-                                             avoidCollisions={true}>
-                            <ContextMenu.Item key='delete'  destructive onSelect={() => onPressDeleteAccount(account.id)}>
-                                <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
-                                <ContextMenu.ItemIcon
-                                    ios={{
-                                        name: 'trash'
-                                    }}
-                                />
-                            </ContextMenu.Item>
-                        </ContextMenu.Content>
-                    </ContextMenu.Root>
-                ))
-            }
-            <View height={200} />
-        </ScrollView>
+                                            fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )
+                        }
+                    })
+                }
+                <View height={200}/>
+            </ScrollView>
+            <OnlyDeleteOptionSheet open={open} setOpen={setOpen} fn={() => onPressDeleteAccount(selectedAccountId)}/>
+        </View>
     )
 }
 

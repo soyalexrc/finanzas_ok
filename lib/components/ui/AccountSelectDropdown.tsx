@@ -17,6 +17,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
+import {formatAccountTitle} from "@/lib/helpers/string";
 
 export default function AccountSelectDropdown() {
     const db = useSQLiteContext();
@@ -46,10 +47,6 @@ export default function AccountSelectDropdown() {
             const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, account.id);
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
-    }
-
-    function formatAccountTitle(account: Account, iconFirst = false, allAccountsText: string) {
-        return iconFirst ?  account.icon + '  ' + (account.title === 'All accounts' ? allAccountsText : account.title) :  account.title + '  ' + account.icon
     }
 
     return (
