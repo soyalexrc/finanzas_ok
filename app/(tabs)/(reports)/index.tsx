@@ -110,13 +110,14 @@ export default function ReportScreen() {
     }
 
     return (
-        <YStack flex={1} backgroundColor="$color1" paddingTop={insets.top}>
+        <YStack flex={1} backgroundColor="$color1">
             <Animated.View
                 style={{
                     opacity: fadeAnim,
+                    flex: 1,
                 }}
             >
-                <CustomHeader>
+                <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: isIos ? 'auto' :  85, marginTop: !isIos ? 10 : 0 }}>
                     <Text
                         fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
                     <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
@@ -140,7 +141,7 @@ export default function ReportScreen() {
                 {
                     transactions.length > 0 &&
                     <ScrollView
-                        marginTop={insets.top}
+                        marginTop={isIos && insets.top + 60}
                         refreshControl={
                             <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
                         }

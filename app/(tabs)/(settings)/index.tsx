@@ -54,9 +54,10 @@ export default function Screen() {
             <Animated.View
                 style={{
                     opacity: fadeAnim,
+                    flex: 1
                 }}
             >
-                <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? headerHeight + 20 : headerHeight}>
+                <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? headerHeight + 20 : 20}>
                     <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}  separator={<Separator />}>
                         <YGroup.Item>
                             <ListItem

@@ -101,7 +101,7 @@ export default function Screen() {
 
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                    paddingTop={isIos ? headerHeight + 20 : headerHeight}>
+                    paddingTop={isIos ? headerHeight + 20 : 20}>
             {
                 accounts.map(account => (
                     <ContextMenu.Root key={account.id}>

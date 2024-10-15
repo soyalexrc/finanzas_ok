@@ -27,7 +27,7 @@ export default function Screen() {
 
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                    paddingTop={isIos ? headerHeight + 20 : headerHeight}>
+                    paddingTop={isIos ? headerHeight + 20 : 20}>
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
                 <YGroup.Item>
                     <ListItem

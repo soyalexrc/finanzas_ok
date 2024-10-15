@@ -1,5 +1,5 @@
 import {Button, Input, Separator, Text, useTheme, View, XStack, YStack} from "tamagui";
-import {Alert, TouchableOpacity, useColorScheme} from "react-native";
+import {Alert, Platform, TouchableOpacity, useColorScheme} from "react-native";
 import {useRouter} from "expo-router";
 import {Entypo} from "@expo/vector-icons";
 import * as DropdownMenu from 'zeego/dropdown-menu'
@@ -39,6 +39,7 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {useTranslation} from "react-i18next";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -56,7 +57,7 @@ export default function Screen() {
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
-
+    const insets = useSafeAreaInsets();
     // TODO add support for multi currency per account (for example, a savings account in USD, credit card in PEN) with name and icons (coins api), and manage exchange rates from api. Rememeber to make the exchange rate between the coin of the account and the coin of the transaction (this is the global currency selected)
 
     useEffect(() => {
@@ -113,7 +114,7 @@ export default function Screen() {
 
     return (
         <>
-            <View flex={1} backgroundColor="$color1" p={20}>
+            <View flex={1} backgroundColor="$color1"px={20} pb={20} pt={Platform.OS === 'android' ? insets.top + 20 : 20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
                     <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.back()}>
                         <Text>{t('COMMON.CANCEL')}</Text>

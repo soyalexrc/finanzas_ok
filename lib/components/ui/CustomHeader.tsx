@@ -1,7 +1,7 @@
 import {Platform, StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import {BlurView} from "expo-blur";
 
-export default function CustomHeader({ children, style, centered = false }: { children: React.ReactNode, style?: StyleProp<ViewStyle>, centered?: boolean }) {
+export default function CustomHeader({ children, style, centered = false, alignedEnd = true }: { children: React.ReactNode, style?: StyleProp<ViewStyle>, centered?: boolean, alignedEnd?: boolean }) {
     const isIos = Platform.OS === 'ios';
 
     if (isIos) {
@@ -12,7 +12,7 @@ export default function CustomHeader({ children, style, centered = false }: { ch
         )
     } else {
         return (
-            <View style={[styles.header, centered ? styles.spaceCentered : styles.spaceBetween, style]}>
+            <View style={[styles.header, centered ? styles.spaceCentered : styles.spaceBetween, alignedEnd ? styles.alignedEnd : styles.alignedCentered, style]}>
                 {children}
             </View>
         )
@@ -33,10 +33,15 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
         height: 80,
         paddingHorizontal: 15,
         paddingBottom: 10,
+    },
+    alignedEnd: {
+        alignItems: 'flex-end',
+    },
+    alignedCentered: {
+        alignItems: 'center',
     },
     spaceBetween: {
         justifyContent: 'space-between',
