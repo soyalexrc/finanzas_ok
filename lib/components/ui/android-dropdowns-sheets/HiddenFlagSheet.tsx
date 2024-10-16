@@ -54,7 +54,7 @@ export default function HiddenFlagSheet({open, setOpen, fn, tab} : Props) {
             />
 
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} pb={20}>
-                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">Seleccionar</Text>
+                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">{t('COMMON.SELECT')}</Text>
 
                 <TouchableOpacity onPress={() => fn('total')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
                     <Text fontSize={17}>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</Text>

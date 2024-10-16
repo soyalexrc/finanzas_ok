@@ -63,11 +63,11 @@ export default function Screen() {
     async function onPressDeleteAccount(accountId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
-        Alert.alert('Are you sure you want to delete this account?', 'The associated transactions to this account will be deleted. This action cannot be undone.', [
+        Alert.alert(t('SETTINGS.ACCOUNTS.DELETE.TITLE'), t('SETTINGS.ACCOUNTS.DELETE.TEXT'), [
             {style: 'default', text: 'Cancel', isPreferred: true},
             {
                 style: 'destructive',
-                text: 'Delete',
+                text: t('COMMON.DELETE'),
                 isPreferred: false,
                 onPress: async () => {
                     await deleteAccount(db, accountId);

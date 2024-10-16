@@ -145,7 +145,7 @@ export default function Screen() {
 
     function handleDeleteItem() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        Alert.alert('Delete entry?', 'This action cannot be undone.', [
+        Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {

@@ -3,9 +3,13 @@
     "COMMON": {
       "CANCEL": "Cancelar",
       "BACK": "Atras",
+      "ACCEPT": "Aceptar",
+      "OK": "Ok",
+      "LOADING": "Cargando",
+      "SELECT": "Seleccionar",
       "CONFIRM": "Confirmar",
       "DELETE": "Eliminar",
-      "STOP_RECURRING": "Detener recurrenica",
+      "STOP_RECURRING": "Detener gasto recurrente",
       "DUPLICATE": "Duplicar",
       "SELECT_CATEGORY_TYPE": "Seleccionar tipo de categoria",
       "DONE": "Hecho",
@@ -32,6 +36,39 @@
       "REVENUE_THIS_WEEK": "Ingresos esta semana",
       "REVENUE_THIS_MONTH": "Ingresos este mes",
       "BALANCE": "Balance"
+    },
+    "TRANSACTIONS": {
+      "DUPLICATE": "Duplicar",
+      "DELETE": {
+        "TITLE": "Eliminar transaccion?",
+        "TEXT": "Esta accion es irreversible."
+      }
+    },
+    "AUTH": {
+      "LOGIN": "Iniciar sesion",
+      "LOGOUT": "Cerrar sesion",
+      "EMAIL": "Correo electronico",
+      "PASSWORD": "Contrasena",
+      "LOGIN_BUTTON": "Iniciar sesion",
+      "SIGNUP_BUTTON": "Crear cuenta",
+      "ALREADY_HAVE_ACCOUNT": "Ya tienes una cuenta? Haz click aqui.",
+      "DONT_HAVE_ACCOUNT": "No estas registrado? Haz click aqui.",
+      "OR": "O",
+      "FIRSTNAME": "Nombre",
+      "LASTNAME": "Apellido",
+      "VERIFY_EMAIL": "Verificar Correo",
+      "ACCESS_CODE": {
+        "TITLE": "Introduce código de acceso",
+        "DESCRIPTION": "Por favor, introduce el código que hemos enviado a"
+      },
+      "LOGOUT_CONFIRMATION_TITLE": "Cerrar sesion?",
+      "LOGOUT_CONFIRMATION_DESCRIPTION": "No podras guardar respaldos si no estas autenticado.",
+      "NAME_REQUIRED_ERROR": "Por favor ingresa un nombre",
+      "LASTNAME_REQUIRED_ERROR": "Por favor ingresa un apellido",
+      "EMAIL_REQUIRED_ERROR": "Por favor ingresa un correo electronico",
+      "PASSWORD_REQUIRED_ERROR": "Por favor ingresa una contrasena",
+      "CONTINUE_WITH_GOOGLE": "Continuar con google",
+      "CONTINUE_WITH_APPLE": "Continuar con apple"
     },
     "REPORTS": {
       "LAST": "Ult.",
@@ -71,6 +108,9 @@
           "LIGHT": "Claro"
         }
       },
+      "AUTH": {
+        "TITLE": "Autenticacion"
+      },
       "LANGUAGE": {
         "TITLE": "Idiomas",
         "OPTIONS": {
@@ -93,11 +133,19 @@
         "STATE": "Estado",
         "NEGATIVE": "Negativo",
         "POSITIVE": "Positivo",
-        "STATE_TIP": "Valor negativo agregar un signo de negativo al inicio del balance."
+        "STATE_TIP": "Valor negativo agregar un signo de negativo al inicio del balance.",
+        "DELETE": {
+          "TITLE": "Eliminar cuenta?",
+          "TEXT": "Las transacciones asociadas a esta cuenta seran eliminadas. Esta accion es irreversible."
+        }
       },
       "CATEGORIES": {
         "TITLE": "Categorias",
-        "PLACE_HOLDER": "Nueva Categoria"
+        "PLACE_HOLDER": "Nueva Categoria",
+        "DELETE": {
+          "TITLE": "Eliminar categoria?",
+          "TEXT": "Las transacciones asociadas a esta categoria seran eliminadas. Esta accion es irreversible."
+        }
       },
       "NOTIFICATIONS": {
         "TITLE": "Notificaciones"

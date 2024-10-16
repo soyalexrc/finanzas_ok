@@ -8,7 +8,7 @@ import {
     Square,
     GetThemeValueForKey,
     XStack,
-    Button
+    Button, Image
 } from 'tamagui';
 import React, {useEffect, useRef, useState} from "react";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -21,14 +21,15 @@ import {useRouter} from "expo-router";
 import {useHeaderHeight} from "@react-navigation/elements";
 import * as MailComposer from 'expo-mail-composer';
 import {useTranslation} from "react-i18next";
+import {useAuth, useUser} from "@clerk/clerk-expo";
 
 export default function Screen() {
-    const insets = useSafeAreaInsets();
+    const {signOut, isSignedIn} = useAuth();
+    const {user } = useUser()
     const isIos = Platform.OS === 'ios';
     const router = useRouter();
     const headerHeight = useHeaderHeight();
     const {t} = useTranslation()
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,6 +42,18 @@ export default function Screen() {
 
     }, []);
 
+    function handleLogout() {
+        Alert.alert(t('AUTH.LOGOUT_CONFIRMATION_TITLE'), t('AUTH.LOGOUT_CONFIRMATION_DESCRIPTION'), [
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
+            {
+                style: 'destructive',
+                text: t('COMMON.ACCEPT'),
+                isPreferred: false,
+                onPress: () => signOut({redirectUrl: '/(tabs)'})
+            }
+        ])
+    }
+
     async function sentEmail() {
         try {
             const isAvailable = await MailComposer.isAvailableAsync();
@@ -50,6 +63,7 @@ export default function Screen() {
             } else {
                 await MailComposer.composeAsync({
                     subject: 'FinanzasOK - Contact Developer',
+                    recipients: ['alexcarvajal2404@gmail.com'],
                     body: 'Hi Alex, I would like to ask you about...'
                 });
             }
@@ -57,7 +71,6 @@ export default function Screen() {
             console.error('Error sending email', error)
         }
     }
-
 
     return (
         <View backgroundColor="$color1" flex={1}>
@@ -76,29 +89,30 @@ export default function Screen() {
                             separator={<Separator/>}>
                         <YGroup.Item>
                             <ListItem>
-                                <View flex={1} h={120} flexDirection="column" justifyContent="space-between">
+                                <View flex={1} h={100} flexDirection="column" justifyContent="space-between">
                                     {
-                                        isLoggedIn &&
+                                        isSignedIn &&
                                         <>
                                             <View flexDirection="row" alignItems="center">
-                                                <Ionicons name="person-circle-outline" size={60} color="black"/>
+                                                    <Image borderRadius={50} width={50} height={50} mr={10} source={{
+                                                        uri: user?.imageUrl
+                                                    }} />
                                                 <View>
-                                                    <Text>Alex Rodriguez</Text>
+                                                    <Text>{user?.firstName ?? '-'} { user?.lastName ?? '-'}</Text>
                                                     <Text fontSize={12}
-                                                          color="$gray10Dark">alexcarvajal2404@gmail.com</Text>
+                                                          color="$gray10Dark">{user?.emailAddresses[0].emailAddress}</Text>
                                                 </View>
                                             </View>
-                                            <Button>Logout</Button>
+                                            <Button onPress={handleLogout}>{t('AUTH.LOGOUT')}</Button>
                                         </>
-
                                     }
                                     {
-                                        !isLoggedIn &&
+                                        !isSignedIn &&
                                         <>
                                             <View flexDirection="row" alignItems="center" justifyContent="center">
-                                                <Ionicons name="person-circle-outline" size={60} color="black"/>
+                                                <Ionicons name="person-circle-outline" size={50} color="black"/>
                                             </View>
-                                            <Button>Log in</Button>
+                                            <Button onPress={() => router.push('/auth')}>{t('AUTH.LOGIN')}</Button>
 
                                         </>
                                     }

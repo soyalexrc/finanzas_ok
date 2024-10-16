@@ -24,6 +24,7 @@ export default function Screen() {
     const detailGroup = useAppSelector(selectDetailGroup)
     const {hidden_feature_flag} = useAppSelector(selectSettings)
     const isIos = Platform.OS === 'ios';
+    const {t} = useTranslation()
 
     function handlePress(item: TransactionWithAmountNumber) {
         dispatch(updateCurrentTransaction({
@@ -74,7 +75,7 @@ export default function Screen() {
                             {
                                 item.recurrentDate !== 'none' &&
                                 <ContextMenu.Item key='recurring'>
-                                    <ContextMenu.ItemTitle>Stop Recurring</ContextMenu.ItemTitle>
+                                    <ContextMenu.ItemTitle>{t('COMMON.STOP_RECURRING')}</ContextMenu.ItemTitle>
                                     <ContextMenu.ItemIcon
                                         ios={{
                                             name: 'xmark'
@@ -83,7 +84,7 @@ export default function Screen() {
                                 </ContextMenu.Item>
                             }
                             <ContextMenu.Item key='duplicate' >
-                                <ContextMenu.ItemTitle>Duplicate</ContextMenu.ItemTitle>
+                                <ContextMenu.ItemTitle>{t('TRANSACTIONS.DUPLICATE')}</ContextMenu.ItemTitle>
                                 <ContextMenu.ItemIcon
                                     ios={{
                                         name: 'doc.on.doc'
@@ -91,7 +92,7 @@ export default function Screen() {
                                 />
                             </ContextMenu.Item>
                             <ContextMenu.Item key='delete'  destructive>
-                                <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
                                 <ContextMenu.ItemIcon
                                     ios={{
                                         name: 'trash'

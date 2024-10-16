@@ -49,7 +49,7 @@ export default function RecurringSelectorSheet({open, setOpen}: Props) {
                 exitStyle={{opacity: 0}}
             />
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} pb={20}>
-                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">Seleccionar</Text>
+                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">{t('COMMON.SELECT')}</Text>
 
                 <TouchableOpacity onPress={() => onSelect('none')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
                     <Text fontSize={17}>{t('CREATE_TRANSACTION.RECURRENT_OPTIONS.NONE')}</Text>

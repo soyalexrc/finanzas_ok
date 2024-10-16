@@ -4,6 +4,7 @@ import {ScrollView, Separator, Sheet, Text} from "tamagui";
 import {Entypo} from "@expo/vector-icons";
 import {Locale} from "expo-localization";
 import currencies from '@/lib/utils/data/currencies';
+import {useTranslation} from "react-i18next";
 
 type Props = {
     open: boolean;
@@ -17,7 +18,7 @@ type Props = {
 export default function CurrenciesSheet({open, setOpen, locales, currentCode, onSelect}: Props) {
     const scheme = useColorScheme();
     const [position, setPosition] = useState(0);
-
+    const {t} = useTranslation()
     return (
 
         <Sheet
@@ -40,7 +41,7 @@ export default function CurrenciesSheet({open, setOpen, locales, currentCode, on
                 exitStyle={{opacity: 0}}
             />
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} pb={20}>
-                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">Seleccionar</Text>
+                <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">{t('COMMON.SELECT')}</Text>
 
                 <ScrollView flex={1} showsVerticalScrollIndicator={false}>
                     {

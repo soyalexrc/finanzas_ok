@@ -37,6 +37,7 @@ import {
 import * as Haptics from "expo-haptics";
 import {useState} from "react";
 import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
+import {useTranslation} from "react-i18next";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -54,6 +55,7 @@ export default function Screen() {
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
+    const {t} = useTranslation();
 
     function onPressCategory(category: Category) {
         dispatch(updateCategoryCreateUpdate(category));
@@ -64,11 +66,11 @@ export default function Screen() {
     async function onPressDeleteCategory(categoryId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
-        Alert.alert('Are you sure you want to delete this category?', 'The associated transactions to this category will be deleted. This action cannot be undone.', [
+        Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), 'SETTINGS.CATEGORIES.DELETE.TEXT', [
             {style: 'default', text: 'Cancel', isPreferred: true},
             {
                 style: 'destructive',
-                text: 'Delete',
+                text: t('COMMON.DELETE'),
                 isPreferred: false,
                 onPress: async () => {
                     await deleteCategory(db, categoryId);

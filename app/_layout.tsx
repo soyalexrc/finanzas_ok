@@ -1,7 +1,7 @@
 import {useFonts} from 'expo-font';
 import {Slot, Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import 'react-native-reanimated';
 import NetInfo from '@react-native-community/netinfo';
 import Providers from "@/lib/components/Providers";
@@ -35,6 +35,7 @@ import i18next from "i18next";
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
+
   const dispatch = useAppDispatch();
   const appearance = useAppSelector(selectSettings).appearance;
   const segments = useSegments();
@@ -140,6 +141,10 @@ const InitialLayout = () => {
           <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="onboarding" options={{presentation: 'modal', gestureEnabled: false, headerShown: false }}/>
           <Stack.Screen name="emojiSelection" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
+          <Stack.Screen name="auth" options={{
+            headerShown: false,
+            presentation: 'modal',
+          }}/>
           <Stack.Screen name="+not-found"/>
         </Stack>
       </View>

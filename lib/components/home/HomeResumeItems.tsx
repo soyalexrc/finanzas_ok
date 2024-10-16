@@ -37,6 +37,7 @@ import {
 import {useSelector} from "react-redux";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import * as Haptics from 'expo-haptics';
+import {useTranslation} from "react-i18next";
 
 export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId: number) => void}) {
     const db = useSQLiteContext();
@@ -53,6 +54,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const {selectedLanguage} = useAppSelector(selectSettings);
     const isIos = Platform.OS === 'ios';
+    const {t} = useTranslation();
 
     function handlePress(t: FullTransaction) {
         dispatch(updateCurrentTransaction({
@@ -72,10 +74,10 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
 
     function handleDeleteItem(id: number, groupId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        Alert.alert('Delete entry?', 'This action cannot be undone.', [
+        Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: 'Cancel', isPreferred: true},
             {
-                style: 'destructive', text: 'Delete', isPreferred: true, onPress: async () => {
+                style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
                     const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
@@ -157,7 +159,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                         {
                                             item.recurrentDate !== 'none' &&
                                             <ContextMenu.Item onSelect={() => stopRecurrent(item.id)} key='recurring'>
-                                                <ContextMenu.ItemTitle>Stop Recurring</ContextMenu.ItemTitle>
+                                                <ContextMenu.ItemTitle>{t('COMMON.STOP_RECURRING')}</ContextMenu.ItemTitle>
                                                 <ContextMenu.ItemIcon
                                                     ios={{
                                                         name: 'xmark'
@@ -166,7 +168,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                             </ContextMenu.Item>
                                         }
                                         <ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>
-                                            <ContextMenu.ItemTitle>Duplicate</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemTitle>{t('TRANSACTIONS.DUPLICATE')}</ContextMenu.ItemTitle>
                                             <ContextMenu.ItemIcon
                                                 ios={{
                                                     name: 'doc.on.doc'
@@ -174,7 +176,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                             />
                                         </ContextMenu.Item>
                                         <ContextMenu.Item key='delete' onSelect={() => handleDeleteItem(item.id, group.id)} destructive>
-                                            <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                                            <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
                                             <ContextMenu.ItemIcon
                                                 ios={{
                                                     name: 'trash'
