@@ -12,6 +12,8 @@ import {createAccount, getAllAccounts, updateAccount} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useTranslation} from "react-i18next";
+import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
+import currencies from '@/lib/utils/data/currencies';
 
 export default function Screen() {
     const locales = getLocales();
@@ -24,6 +26,8 @@ export default function Screen() {
     const {t} = useTranslation()
 
     const accountCreateUpdate = useAppSelector(selectAccountCreateUpdate);
+    const isIos = Platform.OS === 'ios';
+    const [openCurrenciesSheet, setOpenCurrenciesSheet] = useState<boolean>(false)
     const [accountTitle, setAccountTitle] = useState<string>('')
     const [accountBalance, setAccountBalance] = useState<string>('0')
     const [accountCurrency, setAccountCurrency] = useState<{ code: string, symbol: string }>({
@@ -38,6 +42,7 @@ export default function Screen() {
         if (state === 'Positive') {
             setAccountBalance(accountBalance.replace('-', ''));
         } else {
+            if (accountBalance.includes('-')) return;
             setAccountBalance('-' + accountBalance)
         }
     }
@@ -140,7 +145,7 @@ export default function Screen() {
                             </View>
                         }
                         {
-                            accountCreateUpdate.id < 1 &&
+                            accountCreateUpdate.id < 1 && isIos &&
                             <DropdownMenu.Root key="currency" style={{
                                 position: 'absolute',
                                 top: 5,
@@ -159,23 +164,48 @@ export default function Screen() {
                                 <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0}
                                                       collisionPadding={0}
                                                       avoidCollisions={true}>
-                                    {
-                                        locales.filter(item => item.currencyCode !== 'USD').map(locale => (
-                                            <DropdownMenu.Item key={locale.currencyCode!}
-                                                               onSelect={() => setAccountCurrency(prevState => ({
-                                                                   ...prevState,
-                                                                   code: locale.currencyCode!
-                                                               }))}>
-                                                <DropdownMenu.ItemTitle>{locale.currencyCode ?? '...'}</DropdownMenu.ItemTitle>
-                                            </DropdownMenu.Item>
-                                        ))
-                                    }
-                                    <DropdownMenu.Item key="USD"
-                                                       onSelect={() => setAccountCurrency({code: 'USD', symbol: '$'})}>
-                                        <DropdownMenu.ItemTitle>USD</DropdownMenu.ItemTitle>
-                                    </DropdownMenu.Item>
+                                   <DropdownMenu.Group key="locales">
+                                       {
+                                           locales.map(locale => (
+                                               <DropdownMenu.Item key={locale.currencyCode!}
+                                                                  onSelect={() => setAccountCurrency({ code: locale.currencyCode!, symbol: locale.currencySymbol! })}>
+                                                   <DropdownMenu.ItemTitle>{locale.currencyCode ?? '...'}</DropdownMenu.ItemTitle>
+                                               </DropdownMenu.Item>
+                                           ))
+                                       }
+                                   </DropdownMenu.Group>
+
+                                    <DropdownMenu.Group key="additionals">
+                                        {
+                                            currencies.map(({code, symbol}) => (
+                                                <DropdownMenu.Item key={code}
+                                                                   onSelect={() => setAccountCurrency({ code, symbol })}>
+                                                    <DropdownMenu.ItemTitle>{code}</DropdownMenu.ItemTitle>
+                                                </DropdownMenu.Item>
+                                            ))
+                                        }
+                                    </DropdownMenu.Group>
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
+                        }
+
+                        {
+                            accountCreateUpdate.id < 1 && !isIos &&
+                            <TouchableOpacity
+                                onPress={() => setOpenCurrenciesSheet(true)}
+                                style={{
+                                    position: 'absolute',
+                                    top: 2,
+                                    zIndex: 11,
+                                    left: 5,
+                                    padding: 10,
+                                    borderRightWidth: 1,
+                                    borderStyle: 'solid',
+                                    borderColor: theme.color1.val
+                                }}
+                            >
+                                <Text>{accountCurrency.code}</Text>
+                            </TouchableOpacity>
                         }
 
 
@@ -222,6 +252,7 @@ export default function Screen() {
                 </YStack>
 
             </View>
+            {!isIos && <CurrenciesSheet open={openCurrenciesSheet} setOpen={setOpenCurrenciesSheet} currentCode={accountCurrency.code} locales={locales} onSelect={(code, symbol) => setAccountCurrency({ code, symbol})} />}
             {/*<EmojiSelectionSheet open={openEmojisSheet} setOpen={setOpenEmojisSheet} onSelectEmoji={onEmojiSelected} />*/}
         </>
     )
