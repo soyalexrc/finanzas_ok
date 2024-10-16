@@ -11,11 +11,12 @@ import {
     activities
 } from '@/lib/utils/data/emojis';
 import {FlashList} from "@shopify/flash-list";
-import {TouchableOpacity} from "react-native";
+import {Platform, TouchableOpacity} from "react-native";
 import {useState} from "react";
 import {useAppDispatch} from "@/lib/store/hooks";
 import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 import {useRouter} from "expo-router";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 const data = [
     {
@@ -60,6 +61,8 @@ export default function Screen() {
     const [category, setCategory] = useState('smileys');
     const dispatch = useAppDispatch();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
+    const isIos = Platform.OS === 'ios';
 
     function getCurrentCategory() {
         switch (category) {
@@ -90,7 +93,7 @@ export default function Screen() {
     }
 
     return (
-        <View flex={1} backgroundColor="$color1">
+        <View flex={1} backgroundColor="$color1" paddingTop={isIos ? 0 : insets.top}>
             <XStack justifyContent='center' p={20}>
                 <Text fontSize={20}>Emoji</Text>
             </XStack>
