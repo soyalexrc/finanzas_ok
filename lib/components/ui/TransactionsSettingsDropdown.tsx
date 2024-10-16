@@ -1,77 +1,15 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {Alert, StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
-import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {
-    onChangeHiddenAmount,
-    onRecurrentSettingChange,
-    removeTransactionFromHomeList,
-    selectCurrentTransaction,
-    selectHomeViewTypeFilter,
-    selectTransactionsGroupedByDate,
-    updateHiddenFlag,
-    updateTransactionsGroupedByDate
-} from "@/lib/store/features/transactions/transactionsSlice";
+import {StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {Entypo} from "@expo/vector-icons";
 import * as ContextMenu from "zeego/context-menu";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {deleteTransaction, getAllAccounts, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
-import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
-import {
-    selectAccountFilter,
-    selectCategoryFilter,
-    selectDateRangeFilter,
-    updateChartPoints,
-    updateTransactionsGroupedByCategory
-} from "@/lib/store/features/transactions/reportSlice";
-import {useSQLiteContext} from "expo-sqlite";
-import {useSelector} from "react-redux";
-import {useRouter} from "expo-router";
 import {useTranslation} from "react-i18next";
 
 
-export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () => void}) {
-    const db = useSQLiteContext();
-    const currentTransaction = useAppSelector(selectCurrentTransaction);
-    const dispatch = useAppDispatch();
+export default function TransactionsSettingsDropdown({resetTab, fn}: {resetTab: () => void, fn: () => void}) {
     const scheme = useColorScheme();
-    const filterType = useAppSelector(selectHomeViewTypeFilter)
-    const router = useRouter();
     const {t} = useTranslation()
 
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const selectedCategoryFilter = useSelector(selectCategoryFilter);
-    const selectedAccountFilter = useSelector(selectAccountFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
 
-    function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
-        if (value === 'on') {
-            dispatch(updateHiddenFlag(1))
-        } else {
-            dispatch(updateHiddenFlag(0))
-            dispatch(onChangeHiddenAmount("0"))
-            resetTab()
-        }
-    }
-
-    function handleDeleteItem(id: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        Alert.alert('Delete entry?', 'This action cannot be undone.', [
-            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
-            {
-                style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
-                    await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                    const accounts = getAllAccounts(db);
-                    dispatch(updateAccountsList(accounts))
-                    dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
-                    router.back()
-                }
-            },
-        ])
-    }
 
 
     return (
@@ -90,7 +28,7 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
                 {/*    <DropdownMenu.ItemIndicator/>*/}
                 {/*</DropdownMenu.CheckboxItem>*/}
                     <ContextMenu.Item key='delete' destructive
-                                      onSelect={() => handleDeleteItem(currentTransaction.id)}>
+                                      onSelect={fn}>
                         <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
                         <ContextMenu.ItemIcon
                             ios={{
@@ -103,29 +41,3 @@ export default function TransactionsSettingsDropdown({resetTab}: {resetTab: () =
 
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        height: 300,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    fs32: {
-        fontSize: 32
-    },
-    fwBold: {
-        fontWeight: 'bold'
-    },
-    fs18: {
-        fontSize: 18
-    },
-    fw64: {
-        fontSize: 64
-    },
-    fw18: {
-        fontSize: 18
-    },
-    opacityMedium: {
-        opacity: 0.5
-    }
-})

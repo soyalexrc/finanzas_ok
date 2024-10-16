@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {Sheet} from "tamagui";
 import {onChangeNotes, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useTranslation} from "react-i18next";
+import {Keyboard, Platform} from "react-native";
 
 type Props = {
     open: boolean;
@@ -17,10 +18,12 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const [text, setText] = useState<string>('');
     const {t} = useTranslation()
+    const isIos = Platform.OS === 'ios';
     function handleButtonToggle() {
         // if (editMode) {
             dispatch(onChangeNotes(text));
             setOpen(false);
+            Keyboard.dismiss();
         // }
         // setEditMode(!editMode);
     }
@@ -38,7 +41,7 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={[35]}
+            snapPoints={isIos ? [35] : [42]}
             moveOnKeyboardChange
             snapPointsMode='percent'
             dismissOnSnapToBottom

@@ -1,131 +1,67 @@
-import * as DropdownMenu from "zeego/dropdown-menu";
-import {Alert, StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
-import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
+import {Sheet, Text} from "tamagui";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    onChangeHiddenAmount,
-    onRecurrentSettingChange,
-    removeTransactionFromHomeList,
-    selectCurrentTransaction,
+    selectSelectedAccountGlobal
+} from "@/lib/store/features/accounts/accountsSlice";
+import {
     selectHomeViewTypeFilter,
-    selectTransactionsGroupedByDate,
-    updateHiddenFlag,
-    updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import * as ContextMenu from "zeego/context-menu";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {deleteTransaction, getAllAccounts, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
-import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
+import {useSQLiteContext} from "expo-sqlite";
+import {TouchableOpacity, useColorScheme} from "react-native";
+import {useTranslation} from "react-i18next";
+import {useState} from "react";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
     selectAccountFilter,
     selectCategoryFilter,
     selectDateRangeFilter,
-    updateChartPoints,
-    updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
-import {useSQLiteContext} from "expo-sqlite";
 import {useSelector} from "react-redux";
-import {useRouter} from "expo-router";
-import {useTranslation} from "react-i18next";
 
-
-export default function TransactionsSettingsSheet({resetTab}: {resetTab: () => void}) {
-    const db = useSQLiteContext();
-    const currentTransaction = useAppSelector(selectCurrentTransaction);
-    const dispatch = useAppDispatch();
-    const scheme = useColorScheme();
-    const filterType = useAppSelector(selectHomeViewTypeFilter)
-    const router = useRouter();
-    const {t} = useTranslation()
-
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const selectedCategoryFilter = useSelector(selectCategoryFilter);
-    const selectedAccountFilter = useSelector(selectAccountFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
-
-    function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
-        if (value === 'on') {
-            dispatch(updateHiddenFlag(1))
-        } else {
-            dispatch(updateHiddenFlag(0))
-            dispatch(onChangeHiddenAmount("0"))
-            resetTab()
-        }
-    }
-
-    function handleDeleteItem(id: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        Alert.alert('Delete entry?', 'This action cannot be undone.', [
-            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
-            {
-                style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
-                    await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                    const accounts = getAllAccounts(db);
-                    dispatch(updateAccountsList(accounts))
-                    dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
-                    router.back()
-                }
-            },
-        ])
-    }
-
-
-    return (
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-                <TouchableOpacity>
-                    <Entypo name="dots-three-horizontal" size={24}
-                            color={scheme === 'light' ? 'black' : 'white'}/>
-                </TouchableOpacity>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>
-                {/*<DropdownMenu.CheckboxItem key="hidden_feature"*/}
-                {/*                           value={currentTransaction.is_hidden_transaction > 0 ? 'on' : 'off'}*/}
-                {/*                           onValueChange={(value) => onSelect(value, 'hidden_feature')}>*/}
-                {/*    <DropdownMenu.ItemTitle>Is hidden transaction</DropdownMenu.ItemTitle>*/}
-                {/*    <DropdownMenu.ItemIndicator/>*/}
-                {/*</DropdownMenu.CheckboxItem>*/}
-                    <ContextMenu.Item key='delete' destructive
-                                      onSelect={() => handleDeleteItem(currentTransaction.id)}>
-                        <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
-                        <ContextMenu.ItemIcon
-                            ios={{
-                                name: 'trash'
-                            }}
-                        />
-                    </ContextMenu.Item>
-            </DropdownMenu.Content>
-        </DropdownMenu.Root>
-
-    )
+type Props = {
+    open: boolean;
+    setOpen: (value: boolean) => void;
+    fn: () => void;
 }
 
-const styles = StyleSheet.create({
-    container: {
-        height: 300,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    fs32: {
-        fontSize: 32
-    },
-    fwBold: {
-        fontWeight: 'bold'
-    },
-    fs18: {
-        fontSize: 18
-    },
-    fw64: {
-        fontSize: 64
-    },
-    fw18: {
-        fontSize: 18
-    },
-    opacityMedium: {
-        opacity: 0.5
-    }
-})
+export default function TransactionsSettingsSheet({open, setOpen, fn}: Props) {
+    const db = useSQLiteContext();
+    const [position, setPosition] = useState(0);
+    const {t} = useTranslation()
+
+    return (
+        <Sheet
+            forceRemoveScrollEnabled={open}
+            modal={false}
+            open={open}
+            dismissOnOverlayPress
+            onOpenChange={setOpen}
+            position={position}
+            onPositionChange={setPosition}
+            snapPoints={[10]}
+            snapPointsMode='percent'
+            dismissOnSnapToBottom
+            zIndex={100_000}
+            animation="quick"
+        >
+            <Sheet.Overlay
+                animation="quick"
+                enterStyle={{opacity: 0}}
+                exitStyle={{opacity: 0}}
+            />
+
+            <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} pb={20}>
+                <TouchableOpacity onPress={fn} style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 20,
+                    gap: 12,
+                    paddingVertical: 15
+                }}>
+                    <MaterialIcons name="delete-forever" size={20} color="red"/>
+                    <Text fontSize={17}>{t('COMMON.DELETE')}</Text>
+                </TouchableOpacity>
+            </Sheet.Frame>
+        </Sheet>
+    )
+}

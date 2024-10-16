@@ -1,8 +1,8 @@
-import {FlatList, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {Alert, FlatList, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
 import {View, Text, Button, XStack, ToggleGroup} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Entypo} from "@expo/vector-icons";
+import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
 import {AntDesign} from '@expo/vector-icons';
 import {useEffect, useState} from "react";
 import DatePicker from 'react-native-date-picker'
@@ -48,6 +48,9 @@ import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import HiddenFlagSheet from "@/lib/components/ui/android-dropdowns-sheets/HiddenFlagSheet";
 import * as Haptics from "expo-haptics";
+import TransactionsSettingsSheet from "@/lib/components/ui/android-dropdowns-sheets/TransactionsSettingsSheet";
+import {useSelector} from "react-redux";
+import RecurringSelectorSheet from "@/lib/components/ui/android-dropdowns-sheets/RecurringSelectorSheet";
 
 export default function Screen() {
     const router = useRouter();
@@ -74,10 +77,11 @@ export default function Screen() {
     const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
     const [openHiddenMenuSheet, setOpenHiddenMenuSheet] = useState<boolean>(false)
+    const [openConfigSheet, setOpenConfigSheet] = useState<boolean>(false)
+    const [openRecurrencySheet, setOpenRecurrencySheet] = useState<boolean>(false)
     const {hidden_feature_flag} = useAppSelector(selectSettings)
 
     const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
-
     // callbacks
 
     async function handleCreateOrEditTransaction() {
@@ -139,6 +143,26 @@ export default function Screen() {
         setOpenHiddenMenuSheet(true)
     }
 
+    function handleDeleteItem() {
+        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        Alert.alert('Delete entry?', 'This action cannot be undone.', [
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
+            {
+                style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
+                    await deleteTransaction(db, currentTransaction.id)
+                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    const accounts = getAllAccounts(db);
+                    dispatch(updateAccountsList(accounts))
+                    dispatch(updateTransactionsGroupedByDate(transactions));
+                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                    dispatch(updateChartPoints(amountsGroupedByDate))
+                    router.back()
+                }
+            },
+        ])
+    }
+
     return (
         <>
             <View position="relative" flex={1} backgroundColor="$background">
@@ -151,10 +175,23 @@ export default function Screen() {
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
                     <View style={styles.headerRightSide}>
-                        <RecurringSelectorDropdown/>
+                        {isIos && <RecurringSelectorDropdown/>}
                         {
-                            currentTransaction.id > 0 &&
-                            <TransactionsSettingsDropdown resetTab={() => setTab('total')}/>
+                            !isIos &&
+                            <TouchableOpacity onPress={() => setOpenRecurrencySheet(true)}>
+                                <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
+                            </TouchableOpacity>
+                        }
+                        {
+                            currentTransaction.id > 0 && isIos &&
+                            <TransactionsSettingsDropdown fn={handleDeleteItem} resetTab={() => setTab('total')}/>
+                        }
+                        {
+                            currentTransaction.id > 0 && !isIos &&
+                            <TouchableOpacity onPress={() => setOpenConfigSheet(true)}>
+                                <Entypo name="dots-three-horizontal" size={24}
+                                        color={scheme === 'light' ? 'black' : 'white'}/>
+                            </TouchableOpacity>
                         }
                     </View>
                 </View>
@@ -291,8 +328,14 @@ export default function Screen() {
             <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet}/>
             <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet}/>
             <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet}/>
-            <HiddenFlagSheet open={openHiddenMenuSheet} setOpen={setOpenHiddenMenuSheet} fn={(value => setTab(value))}
-                             tab={tab}/>
+            {
+                !isIos &&
+                <>
+                    <HiddenFlagSheet open={openHiddenMenuSheet} setOpen={setOpenHiddenMenuSheet} fn={(value => setTab(value))} tab={tab}/>
+                    <TransactionsSettingsSheet open={openConfigSheet} setOpen={setOpenConfigSheet} fn={handleDeleteItem} />
+                    <RecurringSelectorSheet open={openRecurrencySheet} setOpen={setOpenRecurrencySheet}/>
+                </>
+            }
         </>
     )
 }
