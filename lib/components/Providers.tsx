@@ -4,14 +4,19 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {useColorScheme} from "@/lib/hooks/useColorScheme";
 import {SQLiteProvider} from "expo-sqlite";
 import {migrateDbIfNeeded} from "@/lib/db";
-import {TamaguiProvider} from "tamagui";
-import tamaguiConfig from "@/lib/styles/tamagui.config";
+import {Button, TamaguiProvider} from "tamagui";
+import dynamicTamaguiConfig from "@/lib/styles/tamagui.config";
 import {ClerkLoaded, ClerkProvider} from "@clerk/clerk-expo";
 import * as SecureStore from 'expo-secure-store'
+import * as defaultTheme from '@/lib/styles/red'
+import * as greenTheme from '@/lib/styles/green'
+import {useState} from "react";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
+import {loadString, saveString} from "@/lib/utils/storage";
 
 
 export default function Providers({children}: { children: React.ReactNode }) {
-    const colorScheme = useColorScheme();
     const tokenCache = {
         async getToken(key: string) {
             try {
@@ -57,15 +62,27 @@ export default function Providers({children}: { children: React.ReactNode }) {
         <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
             <ClerkLoaded>
                 <Provider store={store}>
-                    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>
-                        <SQLiteProvider databaseName="finanzas_ok.db" onInit={migrateDbIfNeeded}>
-                            <GestureHandlerRootView>
-                                {children}
-                            </GestureHandlerRootView>
-                        </SQLiteProvider>
-                    </TamaguiProvider>
+                    <SQLiteProvider databaseName="finanzas_ok.db" onInit={migrateDbIfNeeded}>
+                        <GestureHandlerRootView>
+                            <ThemeHandler children={children} />
+                        </GestureHandlerRootView>
+                    </SQLiteProvider>
                 </Provider>
             </ClerkLoaded>
         </ClerkProvider>
+    )
+}
+
+function ThemeHandler({children}: { children: React.ReactNode }) {
+    const currentTheme = useAppSelector(selectCurrentCustomTheme);
+    const colorScheme = useColorScheme();
+
+    return (
+        <TamaguiProvider config={dynamicTamaguiConfig(currentTheme)}
+                         defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>
+         <>
+             {children}
+         </>
+        </TamaguiProvider>
     )
 }

@@ -31,6 +31,7 @@ import {getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import '@/lib/language';
 import i18next from "i18next";
+import {changeCurrentTheme} from "@/lib/store/features/ui/uiSlice";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -118,6 +119,9 @@ const InitialLayout = () => {
     const hidden_feature_flag = await load('hidden_feature_flag');
     const selected_language = await loadString('selected_language');
     const isOnBoardingShown = await load('is_onboarding_shown');
+    const customTheme: any = await loadString('custom_theme') ?? 'green';
+
+    dispatch(changeCurrentTheme(customTheme));
 
     if (hidden_feature_flag) dispatch(updateHiddenFeatureFlag(hidden_feature_flag as boolean));
     if (selected_language) {

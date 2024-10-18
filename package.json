@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "generate-themes": "tamagui generate-themes ./lib/styles/theme-builder.ts ./lib/styles/theme-output.ts"
+    "generate-themes": "tamagui generate-themes ./lib/styles/theme-builder.ts lib/styles/black.ts"
   },
   "jest": {
     "preset": "jest-expo"
@@ -25,7 +25,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@shopify/flash-list": "^1.7.0",
     "@shopify/react-native-skia": "1.2.3",
-    "@tamagui/cli": "^1.108.2",
+    "@tamagui/cli": "^1.115.5",
     "@tamagui/config": "^1.108.2",
     "apisauce": "^3.0.1",
     "date-fns": "^3.6.0",

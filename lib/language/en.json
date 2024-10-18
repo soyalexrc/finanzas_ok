@@ -3,6 +3,7 @@
     "COMMON": {
       "CANCEL": "Cancel",
       "BACK": "Back",
+      "WARNING": "Warning",
       "ACCEPT": "Accept",
       "OK": "Ok",
       "LOADING": "Loading",
@@ -99,6 +100,15 @@
       }
     },
     "SETTINGS": {
+      "COLORS": {
+        "CHANGE_COLOR_MESSAGE": "The change will be applied once you restart the app",
+        "GREEN": "Green",
+        "RED":  "Red",
+        "BLUE": "Blue",
+        "YELLOW": "Yellow",
+        "PURPLE":  "Purple",
+        "BLACK":  "Black"
+      },
       "TITLE": "Settings",
       "APPEARANCE": {
         "TITLE": "Appearance",

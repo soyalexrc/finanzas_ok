@@ -3,6 +3,7 @@
     "COMMON": {
       "CANCEL": "Cancelar",
       "BACK": "Atras",
+      "WARNING": "Aviso",
       "ACCEPT": "Aceptar",
       "OK": "Ok",
       "LOADING": "Cargando",
@@ -99,6 +100,15 @@
       }
     },
     "SETTINGS": {
+      "COLORS": {
+        "CHANGE_COLOR_MESSAGE": "El cambio se aplicara una vez reinicies el app",
+        "GREEN": "Verde",
+        "RED":  "Rojo",
+        "BLUE": "Azul",
+        "YELLOW": "Amarillo",
+        "PURPLE":  "Purpura",
+        "BLACK":  "Negro"
+      },
       "TITLE": "Configuracion",
       "APPEARANCE": {
         "TITLE": "Apariencia",
