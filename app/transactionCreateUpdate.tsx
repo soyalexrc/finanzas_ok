@@ -1,5 +1,14 @@
-import {Alert, FlatList, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
-import {View, Text, Button, XStack, ToggleGroup} from 'tamagui';
+import {
+    Alert,
+    FlatList,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Touchable,
+    TouchableOpacity,
+    useColorScheme
+} from "react-native";
+import {View, Text, Button, XStack, ToggleGroup, useTheme} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -51,12 +60,14 @@ import * as Haptics from "expo-haptics";
 import TransactionsSettingsSheet from "@/lib/components/ui/android-dropdowns-sheets/TransactionsSettingsSheet";
 import {useSelector} from "react-redux";
 import RecurringSelectorSheet from "@/lib/components/ui/android-dropdowns-sheets/RecurringSelectorSheet";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 export default function Screen() {
     const router = useRouter();
     const db = useSQLiteContext();
     const isIos = Platform.OS === 'ios';
     const scheme = useColorScheme();
+    const theme = useTheme()
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
@@ -166,34 +177,36 @@ export default function Screen() {
     return (
         <>
             <View position="relative" flex={1} backgroundColor="$background">
-                <View style={[styles.header, {paddingTop: isIos ? insets.top : insets.top + 20}]}>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <Text fontSize={18} color="$gray10Dark">{t('COMMON.CANCEL')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
-                        <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'MMM d')}</Text>
-                        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
-                    </TouchableOpacity>
-                    <View style={styles.headerRightSide}>
-                        {isIos && <RecurringSelectorDropdown/>}
-                        {
-                            !isIos &&
-                            <TouchableOpacity onPress={() => setOpenRecurrencySheet(true)}>
-                                <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
-                            </TouchableOpacity>
-                        }
-                        {
-                            currentTransaction.id > 0 && isIos &&
-                            <TransactionsSettingsDropdown fn={handleDeleteItem} resetTab={() => setTab('total')}/>
-                        }
-                        {
-                            currentTransaction.id > 0 && !isIos &&
-                            <TouchableOpacity onPress={() => setOpenConfigSheet(true)}>
-                                <Entypo name="dots-three-horizontal" size={24}
-                                        color={scheme === 'light' ? 'black' : 'white'}/>
-                            </TouchableOpacity>
-                        }
+                <View style={[styles.header, {paddingTop: isIos ? 30 : insets.top + 20}]}>
+                    <View flexDirection="row" gap={20}>
+                        <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
+                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM')}</Text>
+                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
+                        </TouchableOpacity>
+                        <View style={styles.headerRightSide}>
+                            {isIos && <RecurringSelectorDropdown/>}
+                            {
+                                !isIos &&
+                                <TouchableOpacity onPress={() => setOpenRecurrencySheet(true)}>
+                                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
+                                </TouchableOpacity>
+                            }
+                            {
+                                currentTransaction.id > 0 && isIos &&
+                                <TransactionsSettingsDropdown fn={handleDeleteItem} resetTab={() => setTab('total')}/>
+                            }
+                            {
+                                currentTransaction.id > 0 && !isIos &&
+                                <TouchableOpacity onPress={() => setOpenConfigSheet(true)}>
+                                    <Entypo name="dots-three-horizontal" size={24}
+                                            color={scheme === 'light' ? 'black' : 'white'}/>
+                                </TouchableOpacity>
+                            }
+                        </View>
                     </View>
+                    <TouchableOpacity onPress={() => router.back()}>
+                        <AntDesign name="closecircleo" size={24} color={scheme === 'light' ? 'black' : 'white'} />
+                    </TouchableOpacity>
                 </View>
                 <View flex={1}>
                     <View flex={0.4} justifyContent="center" alignItems="center">
@@ -270,36 +283,35 @@ export default function Screen() {
                     {/*    </XStack>*/}
                     {/*}*/}
                     <View flex={0.6}>
-                        <View borderBottomWidth={1} borderColor="$gray10Dark">
+                        <View alignItems="center" >
                             <TouchableOpacity onPress={() => setOpenNotesSheet(true)}
-                                              style={{paddingVertical: 10, paddingHorizontal: 20}}>
-                                <Text
-                                    fontSize={16}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
+                                              style={{flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#f5f5f5', borderRadius: 100}}>
+                                <FontAwesome name="commenting-o" size={18} color="black" />
+                                <Text color="$gray6Dark" fontSize={14}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
                             </TouchableOpacity>
                         </View>
-                        <View borderBottomWidth={1} borderColor="$gray10Dark" flexDirection="row" gap={20}
+                        <View  flexDirection="row" gap={10} alignItems="center"
                               paddingHorizontal={20}>
                             <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
                                     <Text fontSize={16}>{selectedAccount.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedAccount.title)}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedAccount.title, 13)}</Text>
                                 </View>
-                                <AntDesign name="arrowright" size={24} color="gray"/>
                             </TouchableOpacity>
+                            <AntDesign name="arrowright" size={24} color="gray"/>
                             <TouchableOpacity onPress={() => setOpenCategoriesSheet(true)}
                                               style={styles.categoriesWrapper}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
                                     <Text fontSize={16}>{selectedCategory.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedCategory.title)}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedCategory.title, 15)}</Text>
                                 </View>
                             </TouchableOpacity>
-                            <View flex={0.2} justifyContent="center">
-                                <Button onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
-                                        width={70} height={35} justifyContent='center' alignItems='center'>
-                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
-                                </Button>
-                            </View>
                         </View>
+                            {/*<Button mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}*/}
+                            {/*        height={35} justifyContent='center' alignItems='center'>*/}
+                            {/*    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>*/}
+                            {/*</Button>*/}
+
                         <TransactionKeyboard tab={tab}/>
                     </View>
                 </View>
@@ -369,14 +381,14 @@ const styles = StyleSheet.create({
     accountsWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
+        flex: 1,
         justifyContent: 'space-between',
-        flex: 0.4,
         paddingVertical: 10
     },
     categoriesWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        flex: 0.4,
+        flex: 1,
         paddingVertical: 10
     }
 

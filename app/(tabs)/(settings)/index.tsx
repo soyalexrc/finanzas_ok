@@ -22,6 +22,7 @@ import {useHeaderHeight} from "@react-navigation/elements";
 import * as MailComposer from 'expo-mail-composer';
 import {useTranslation} from "react-i18next";
 import {useAuth, useUser} from "@clerk/clerk-expo";
+import * as Application from 'expo-application';
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
@@ -288,7 +289,7 @@ export default function Screen() {
                     </YGroup>
 
                     <XStack justifyContent="center" gap={5} alignSelf="center">
-                        <Text color="$gray10Dark">Version x.x.x (xxx)</Text>
+                        <Text color="$gray10Dark">Version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</Text>
                         <Text color="$gray10Dark">•</Text>
                         <Text>{t('COMMON.TERMS')}</Text>
                         <Text color="$gray10Dark">•</Text>

@@ -6,25 +6,13 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
 import {
     resetCurrentTransaction,
-    selectHomeViewTypeFilter,
-    updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
 import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
-import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
-import {useSQLiteContext} from "expo-sqlite";
-import {getCurrentWeek, getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
-import {getAllAccounts, getAllCategories, getTransactions, getTransactionsGroupedAndFiltered} from "@/lib/db";
-import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
-import {
-    selectAccountFilter, selectCategoryFilter,
-    selectDateRangeFilter, updateAccountFilter, updateCategoryFilter,
-    updateChartPoints,
-    updateTransactionsGroupedByCategory
-} from "@/lib/store/features/transactions/reportSlice";
+import {selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import AccountSelectSheet from "@/lib/components/ui/android-dropdowns-sheets/AccountSelectSheet";
 import {formatAccountTitle} from "@/lib/helpers/string";
 import {useTranslation} from "react-i18next";
@@ -59,11 +47,6 @@ export default function HomeScreen() {
 
     }, []);
 
-    function onPressNewTransaction() {
-        dispatch(resetCurrentTransaction());
-        router.push('/transactionCreateUpdate');
-    }
-
     function onSelectTransaction(t: FullTransaction, groupId: number) {
         setTransactionSelectionOpen(true);
         setSelectedTransaction(t)
@@ -89,9 +72,6 @@ export default function HomeScreen() {
                             <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                         </TouchableOpacity>
                     }
-                    <Button onPress={onPressNewTransaction} size="$2" borderRadius="$12">
-                        <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                    </Button>
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                     <ResumeDropDown fn={() => setResumeSheetOpen(true)}/>

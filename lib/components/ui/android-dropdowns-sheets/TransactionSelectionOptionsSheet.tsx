@@ -64,7 +64,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
     function handleDeleteItem(id: number, groupId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
-            {style: 'default', text: 'Cancel', isPreferred: true},
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     setOpen(false)

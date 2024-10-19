@@ -36,7 +36,7 @@ export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
     } else if (isYesterday(localDate)) {
         return locale === 'es' ? 'Ayer' : 'Yesterday';
     } else if (isSameWeek(localDate, now)) {
-        return format(localDate, 'EEEE'); // e.g., Monday, Tuesday
+        return format(localDate, 'EEEE', {locale: locale === 'es' ? es : enUS}); // e.g., Monday, Tuesday
     } else {
         // For dates beyond a week, use formatDistanceToNow
         return formatDistanceToNow(date, { addSuffix: true, locale: locale === 'es' ? es : enUS });

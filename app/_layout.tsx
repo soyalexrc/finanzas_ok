@@ -142,7 +142,7 @@ const InitialLayout = () => {
         <StatusBar barStyle={appearance === 'system' ? (colorScheme === 'dark' ? 'light-content' : 'dark-content') : appearance === 'light' ? 'dark-content' : 'light-content'} />
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-          <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'fullScreenModal', headerShown: false, animation: "slide_from_bottom"}}/>
+          <Stack.Screen name="transactionCreateUpdate" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="onboarding" options={{presentation: 'modal', gestureEnabled: false, headerShown: false }}/>
           <Stack.Screen name="emojiSelection" options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
           <Stack.Screen name="auth" options={{

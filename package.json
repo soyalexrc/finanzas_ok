@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "generate-themes": "tamagui generate-themes ./lib/styles/theme-builder.ts lib/styles/black.ts"
+    "generate-themes": "tamagui generate-themes ./lib/styles/theme-builder.ts lib/styles/green.ts"
   },
   "jest": {
     "preset": "jest-expo"

@@ -101,7 +101,7 @@
     },
     "SETTINGS": {
       "COLORS": {
-        "CHANGE_COLOR_MESSAGE": "El cambio se aplicara una vez reinicies el app",
+        "CHANGE_COLOR_MESSAGE": "La app se reiniciara para aplicar los cambios.",
         "GREEN": "Verde",
         "RED":  "Rojo",
         "BLUE": "Azul",

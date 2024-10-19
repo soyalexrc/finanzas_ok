@@ -64,7 +64,7 @@ export default function Screen() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
         Alert.alert(t('SETTINGS.ACCOUNTS.DELETE.TITLE'), t('SETTINGS.ACCOUNTS.DELETE.TEXT'), [
-            {style: 'default', text: 'Cancel', isPreferred: true},
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive',
                 text: t('COMMON.DELETE'),

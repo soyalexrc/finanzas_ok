@@ -17,6 +17,7 @@
       "channel": "ios-simulator"
     },
     "preview": {
+      "autoIncrement": true,
       "distribution": "internal",
       "channel": "preview"
     },

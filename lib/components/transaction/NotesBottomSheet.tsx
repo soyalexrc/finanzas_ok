@@ -46,10 +46,10 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
-            animation="medium"
+            animation="quick"
         >
             <Sheet.Overlay
-                animation="lazy"
+                animation="quick"
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
             />

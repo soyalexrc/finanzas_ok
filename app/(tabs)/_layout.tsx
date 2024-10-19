@@ -1,15 +1,27 @@
-import {Tabs} from 'expo-router';
+import {Tabs, useRouter} from 'expo-router';
 import React from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 
-import {Platform, Text, View} from "react-native";
+import {Platform, Text, useColorScheme, View} from "react-native";
 import CustomBottomBar from "@/lib/components/ui/CustomBottomBar";
-import {useTheme} from "tamagui";
+import {Button, useTheme} from "tamagui";
+import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
+import {useAppDispatch} from "@/lib/store/hooks";
+import {AntDesign, Entypo} from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function TabLayout() {
     const theme = useTheme()
     const isIos = Platform.OS === 'ios';
+    const router = useRouter();
+    const schemeColor = useColorScheme();
+    const dispatch = useAppDispatch();
+
+    function onPressNewTransaction() {
+        dispatch(resetCurrentTransaction());
+        router.push('/transactionCreateUpdate');
+    }
 
     return (
         <Tabs
@@ -32,9 +44,34 @@ export default function TabLayout() {
                     title: '',
                     headerShown: false,
                     tabBarIcon: ({color, focused}) => (
-                        <Feather name="inbox" size={28} color={color}/>
+                        <AntDesign name="clockcircle" size={28} color={color}/>
                     ),
                 }}
+            />
+            <Tabs.Screen
+                name="scheduledTransactions"
+                options={{
+                    title: '',
+                    tabBarIcon: ({color}) => (
+                        <FontAwesome6 style={{ transform: 'rotate(280deg)' }} name="arrow-rotate-right" size={28} color={color}/>
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="action"
+                options={{
+                    title: '',
+                    tabBarIcon: () => (
+                        <Button onPress={onPressNewTransaction} size="$2.5" borderRadius="$12">
+                            <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                        </Button>
+                    )
+                }}
+                listeners={() => ({
+                    tabPress: e => {
+                        e.preventDefault();
+                    }
+                })}
             />
             <Tabs.Screen
                 name="(reports)"
@@ -52,7 +89,7 @@ export default function TabLayout() {
                     title: '',
                     headerShown: false,
                     tabBarIcon: ({color, focused}) => (
-                        <Feather name="settings" size={28} color={color}/>
+                        <Entypo name="dots-three-horizontal" size={28} color={color}/>
                     ),
                 }}
             />
