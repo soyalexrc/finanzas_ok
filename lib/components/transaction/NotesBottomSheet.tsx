@@ -78,7 +78,7 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
                 {/*    </View>*/}
                 {/*}*/}
                 <Button padding={12} marginHorizontal={10} onPress={handleButtonToggle}>
-                    <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 16 }}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 16 }}>{t('CREATE_TRANSACTION.SAVE')}</Text>
                 </Button>
             </Sheet.Frame>
         </Sheet>

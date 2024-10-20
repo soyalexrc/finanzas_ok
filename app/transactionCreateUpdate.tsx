@@ -191,25 +191,28 @@ export default function Screen() {
                                     <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
                                 </TouchableOpacity>
                             }
-                            {
-                                currentTransaction.id > 0 && isIos &&
-                                <TransactionsSettingsDropdown fn={handleDeleteItem} resetTab={() => setTab('total')}/>
-                            }
-                            {
-                                currentTransaction.id > 0 && !isIos &&
-                                <TouchableOpacity onPress={() => setOpenConfigSheet(true)}>
-                                    <Entypo name="dots-three-horizontal" size={24}
-                                            color={scheme === 'light' ? 'black' : 'white'}/>
-                                </TouchableOpacity>
-                            }
+                            {/*{*/}
+                            {/*    currentTransaction.id > 0 && isIos &&*/}
+                            {/*    <TransactionsSettingsDropdown fn={handleDeleteItem} resetTab={() => setTab('total')}/>*/}
+                            {/*}*/}
+                            {/*{*/}
+                            {/*    currentTransaction.id > 0 && !isIos &&*/}
+                            {/*    <TouchableOpacity onPress={() => setOpenConfigSheet(true)}>*/}
+                            {/*        <Entypo name="dots-three-horizontal" size={24}*/}
+                            {/*                color={scheme === 'light' ? 'black' : 'white'}/>*/}
+                            {/*    </TouchableOpacity>*/}
+                            {/*}*/}
                         </View>
+                        <TouchableOpacity onPress={() => setOpenNotesSheet(true)}>
+                            <FontAwesome name="commenting-o" size={24} color={currentTransaction.notes.length < 1  ? 'gray' : scheme === 'light' ? 'black' : 'white'} />
+                        </TouchableOpacity>
                     </View>
                     <TouchableOpacity onPress={() => router.back()}>
                         <AntDesign name="closecircleo" size={24} color={scheme === 'light' ? 'black' : 'white'} />
                     </TouchableOpacity>
                 </View>
                 <View flex={1}>
-                    <View flex={0.4} justifyContent="center" alignItems="center">
+                    <View flex={0.45} justifyContent="center" alignItems="center">
                         {
                             isIos &&
                             <DropdownMenu.Root>
@@ -282,16 +285,9 @@ export default function Screen() {
                     {/*        </ToggleGroup>*/}
                     {/*    </XStack>*/}
                     {/*}*/}
-                    <View flex={0.6}>
-                        <View alignItems="center" >
-                            <TouchableOpacity onPress={() => setOpenNotesSheet(true)}
-                                              style={{flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#f5f5f5', borderRadius: 100}}>
-                                <FontAwesome name="commenting-o" size={18} color="black" />
-                                <Text color="$gray6Dark" fontSize={14}>{textShortener(currentTransaction.notes, 35) || t('CREATE_TRANSACTION.NOTE')}</Text>
-                            </TouchableOpacity>
-                        </View>
+                    <View flex={0.55}>
                         <View  flexDirection="row" gap={10} alignItems="center"
-                              paddingHorizontal={20}>
+                               paddingHorizontal={20}>
                             <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
                                     <Text fontSize={16}>{selectedAccount.icon}</Text>
@@ -307,11 +303,17 @@ export default function Screen() {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                            {/*<Button mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}*/}
-                            {/*        height={35} justifyContent='center' alignItems='center'>*/}
-                            {/*    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>*/}
-                            {/*</Button>*/}
+                        <View flexDirection="row">
+                            {/*<TouchableOpacity onPress={() => setOpenNotesSheet(true)}*/}
+                            {/*                  style={{flexDirection: 'row', flex: 1, alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#f5f5f5', borderRadius: 100}}>*/}
 
+                            {/*    <Text color="$gray6Dark" fontSize={14}>{textShortener(currentTransaction.notes, 27) || t('CREATE_TRANSACTION.NOTE')}</Text>*/}
+                            {/*</TouchableOpacity>*/}
+                            <Button flex={1} mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
+                                    height={35} justifyContent='center' alignItems='center'>
+                                <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                            </Button>
+                        </View>
                         <TransactionKeyboard tab={tab}/>
                     </View>
                 </View>

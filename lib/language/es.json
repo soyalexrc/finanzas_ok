@@ -86,7 +86,7 @@
     },
     "CREATE_TRANSACTION": {
       "NOTE": "Nota",
-      "SAVE": "Guard.",
+      "SAVE": "Guardar",
       "EDIT": "Editar",
       "RECURRENT_OPTIONS": {
         "NONE": "Ninguno",
