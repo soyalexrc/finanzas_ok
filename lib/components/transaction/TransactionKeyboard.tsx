@@ -46,7 +46,7 @@ export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' })
 
 
     return (
-        <View flex={1}>
+        <View flex={1} marginTop={-30} style={{ zIndex: -1 }}>
             <FlatList
                 data={keypadData}
                 contentContainerStyle={{flex: 1, justifyContent: 'center', marginHorizontal: 30}}
@@ -54,12 +54,12 @@ export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' })
                 numColumns={3}
                 scrollEnabled={false}
                 renderItem={({item}) => (
-                    <View flex={1} justifyContent="center" alignItems="center" margin={5}>
+                    <View flex={1} justifyContent="center" alignItems="center" margin={3}>
                         <Button
                             onPress={() => handleNumberPress(item)}
                             justifyContent="center"
                             alignItems="center"
-                            height={70}
+                            height={60}
                             width={80}
                             borderRadius="$12"
                             backgroundColor="$background025"
