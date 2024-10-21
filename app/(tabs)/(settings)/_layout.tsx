@@ -50,6 +50,16 @@ export default function SettingsLayout() {
                 },
             }}/>
 
+            <Stack.Screen name="privacy" options={{
+                title: t('SETTINGS.PRIVACY.TITLE'),
+                headerBlurEffect: 'prominent',
+                headerTransparent: isIos,
+                headerTintColor: theme.color12.val,
+                headerStyle: {
+                    backgroundColor: theme.color1.val,
+                },
+            }}/>
+
             <Stack.Screen name="other" options={{
                 title: t('SETTINGS.OTHER.TITLE'),
                 headerBlurEffect: 'prominent',

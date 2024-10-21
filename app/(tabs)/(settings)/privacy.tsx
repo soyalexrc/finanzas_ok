@@ -11,34 +11,22 @@ import {
 import {useHeaderHeight} from "@react-navigation/elements";
 import {save, saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
-import Entypo from "@expo/vector-icons/Entypo";
-import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
-import {useRouter} from "expo-router";
 
 
 export default function Screen() {
     const dispatch = useAppDispatch();
-    const {isOnboardingShown} = useAppSelector(selectSettings)
+    const {hidden_feature_flag, isOnboardingShown} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
-    const {authenticate} = useBiometricAuth()
-    const router = useRouter();
 
     async function handleChangeSetting(value: boolean) {
-            const saved = await save('is_onboarding_shown', value);
-            if (saved) {
-                dispatch(updateOnboardingState(value))
-            }
-    }
-
-    async function goToPrivacy() {
-        const isAuthenticated = await authenticate()
-
-        if (isAuthenticated) {
-            router.push('/privacy')
+        const saved = await save('hidden_feature_flag', value);
+        if (saved) {
+            dispatch(updateHiddenFeatureFlag(value));
         }
     }
+
 
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
@@ -46,19 +34,11 @@ export default function Screen() {
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
                 <YGroup.Item>
                     <ListItem
-                        hoverTheme
-                        pressTheme
-                        onPress={goToPrivacy}
-                        title={t('SETTINGS.PRIVACY.TITLE')}
-                        iconAfter={<Entypo name="chevron-small-right" size={24}/>}
-                    />
-                </YGroup.Item>
-                <YGroup.Item>
-                    <ListItem
-                        title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}
+                        title={t('SETTINGS.PRIVACY.OPTIONS.HIDDEN_FLAG')}
                         iconAfter={
-                            <Switch size="$2" defaultChecked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>
-                                <Switch.Thumb animation="quicker" />
+                            <Switch size="$2" defaultChecked={hidden_feature_flag}
+                                    onCheckedChange={(value) => handleChangeSetting(value)}>
+                                <Switch.Thumb animation="quicker"/>
                             </Switch>
                         }
                     />

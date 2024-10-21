@@ -110,6 +110,12 @@
         "BLACK":  "Negro"
       },
       "TITLE": "Configuracion",
+      "PRIVACY": {
+        "TITLE": "Privacidad",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "Habilitar 'montos ocultos'"
+        }
+      },
       "APPEARANCE": {
         "TITLE": "Apariencia",
         "OPTIONS": {
@@ -131,7 +137,6 @@
       "OTHER": {
         "TITLE": "Otros",
         "OPTIONS": {
-          "HIDDEN_FLAG": "Habilitar 'montos ocultos'",
           "RESET_ONBOARDING": "Flujo de onboarding completado"
         }
       },

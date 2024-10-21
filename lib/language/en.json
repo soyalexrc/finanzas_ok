@@ -110,6 +110,12 @@
         "BLACK":  "Black"
       },
       "TITLE": "Settings",
+      "PRIVACY": {
+        "TITLE": "Privacy",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "Enable 'hidden amounts'"
+        }
+      },
       "APPEARANCE": {
         "TITLE": "Appearance",
         "OPTIONS": {
@@ -131,7 +137,6 @@
       "OTHER": {
         "TITLE": "Other",
         "OPTIONS": {
-          "HIDDEN_FLAG": "Enable 'hidden amounts'",
           "RESET_ONBOARDING": "Onboarding flow completed"
         }
       },
