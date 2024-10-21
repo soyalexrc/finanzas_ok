@@ -202,7 +202,6 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
                                 title={t('SETTINGS.DATA_MANAGEMENT.TITLE')}
                                 onPress={() => router.push('/data')}
                                 icon={<IconWrapper bgColor="$purple10Light"

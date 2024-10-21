@@ -118,11 +118,6 @@ export default function SettingsLayout() {
                 headerStyle: {
                     backgroundColor: theme.color1.val,
                 },
-                headerRight: () => (
-                    <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>
-                        <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                    </Button>
-                )
             }}/>
 
             <Stack.Screen
