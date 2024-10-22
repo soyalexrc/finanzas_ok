@@ -118,8 +118,6 @@ const migrations = [
                 const categories = db.getAllSync(`SELECT * FROM categories`);
                 const languageCode = getLocales()[0].languageCode ?? 'en';
 
-                console.log('categories', categories)
-
                 if (categories.length < 1) {
                     const categoriesToInsert = languageCode === 'es' ? spanishCategories : englishCategories;
                     for (const category of categoriesToInsert) {
