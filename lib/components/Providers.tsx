@@ -8,12 +8,18 @@ import {Button, TamaguiProvider} from "tamagui";
 import dynamicTamaguiConfig from "@/lib/styles/tamagui.config";
 import {ClerkLoaded, ClerkProvider} from "@clerk/clerk-expo";
 import * as SecureStore from 'expo-secure-store'
-import * as defaultTheme from '@/lib/styles/red'
-import * as greenTheme from '@/lib/styles/green'
-import {useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
-import {loadString, saveString} from "@/lib/utils/storage";
+import {useAppSelector} from "@/lib/store/hooks";
+import {selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
+import {NotificationProvider} from "@/lib/context/NotificationsContext";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 
 export default function Providers({children}: { children: React.ReactNode }) {
@@ -64,7 +70,7 @@ export default function Providers({children}: { children: React.ReactNode }) {
                 <Provider store={store}>
                     <SQLiteProvider databaseName="finanzas_ok.db" onInit={migrateDbIfNeeded}>
                         <GestureHandlerRootView>
-                            <ThemeHandler children={children} />
+                            <ThemeHandler children={children}/>
                         </GestureHandlerRootView>
                     </SQLiteProvider>
                 </Provider>
@@ -80,9 +86,9 @@ function ThemeHandler({children}: { children: React.ReactNode }) {
     return (
         <TamaguiProvider config={dynamicTamaguiConfig(currentTheme)}
                          defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>
-         <>
-             {children}
-         </>
+            <NotificationProvider>
+                {children}
+            </NotificationProvider>
         </TamaguiProvider>
     )
 }
