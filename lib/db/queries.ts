@@ -8,6 +8,7 @@ import {
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
 import {a} from "ofetch/dist/shared/ofetch.8459ad38";
+import {migrateDbIfNeeded} from "@/lib/db/migrations";
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
@@ -19,6 +20,24 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
 export function getAllCategories(db: SQLiteDatabase): Category[] {
     return db.getAllSync(`SELECT *
                           FROM categories ORDER BY title`);
+}
+
+export async function wipeData(db: SQLiteDatabase): Promise<void> {
+    try {
+        // await db.runAsync('DELETE FROM accounts')
+        // await db.runAsync('DELETE FROM migrations')
+        // await db.runAsync('DELETE FROM transactions')
+        // await db.runAsync('DELETE FROM categories')
+        //
+        await db.runAsync('DROP TABLE migrations')
+        await db.runAsync('DROP TABLE accounts')
+        await db.runAsync('DROP TABLE categories')
+        await db.runAsync('DROP TABLE transactions')
+
+        await migrateDbIfNeeded(db)
+    } catch (e) {
+        console.error(e)
+    }
 }
 
 export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{
