@@ -46,21 +46,24 @@ export default function Screen() {
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
                 <YGroup.Item>
                     <ListItem
-                        hoverTheme
-                        pressTheme
-                        onPress={goToPrivacy}
-                        title={t('SETTINGS.PRIVACY.TITLE')}
-                        iconAfter={<Entypo name="chevron-small-right" size={24}/>}
-                    />
-                </YGroup.Item>
-                <YGroup.Item>
-                    <ListItem
                         title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}
                         iconAfter={
                             <Switch size="$2" defaultChecked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>
                                 <Switch.Thumb animation="quicker" />
                             </Switch>
                         }
+                    />
+                </YGroup.Item>
+            </YGroup>
+
+            <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        onPress={goToPrivacy}
+                        title={t('SETTINGS.PRIVACY.TITLE')}
+                        iconAfter={<Entypo name="chevron-small-right" size={24}/>}
                     />
                 </YGroup.Item>
             </YGroup>
