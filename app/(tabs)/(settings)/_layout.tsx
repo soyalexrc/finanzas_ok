@@ -120,6 +120,16 @@ export default function SettingsLayout() {
                 },
             }}/>
 
+            <Stack.Screen name="notifications" options={{
+                headerBlurEffect: 'prominent',
+                headerTransparent: isIos,
+                title: t('SETTINGS.NOTIFICATIONS.TITLE'),
+                headerTintColor: theme.color12.val,
+                headerStyle: {
+                    backgroundColor: theme.color1.val,
+                },
+            }}/>
+
             <Stack.Screen
                 name="createEditAccount"
                 options={{presentation: 'modal', gestureEnabled: false, headerShown: false}}

@@ -12,7 +12,7 @@ import {Appearance, StatusBar, useColorScheme} from "react-native";
 import {
   selectSettings,
   updateAppearance,
-  updateHiddenFeatureFlag, updateOnboardingState,
+  updateHiddenFeatureFlag, updateNotificationsScheduling, updateOnboardingState,
   updateSelectedLanguage
 } from "@/lib/store/features/settings/settingsSlice";
 import {View} from "tamagui";
@@ -120,8 +120,10 @@ const InitialLayout = () => {
     const selected_language = await loadString('selected_language');
     const isOnBoardingShown = await load('is_onboarding_shown');
     const customTheme: any = await loadString('custom_theme') ?? 'green';
+    const notifications_scheduling: any = await load('notifications_scheduling') ?? {hour: 20, minute: 0, active: false};
 
     dispatch(changeCurrentTheme(customTheme));
+    dispatch(updateNotificationsScheduling(notifications_scheduling));
 
     if (hidden_feature_flag) dispatch(updateHiddenFeatureFlag(hidden_feature_flag as boolean));
     if (selected_language) {

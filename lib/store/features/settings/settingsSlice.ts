@@ -9,6 +9,13 @@ interface SettingsState {
     hidden_feature_flag: boolean;
     selectedLanguage: string;
     isOnboardingShown: boolean;
+    notifications: {
+        scheduling: {
+            hour: number,
+            minute: number,
+            active: boolean,
+        }
+    }
 }
 
 // Define the initial state using that type
@@ -17,6 +24,13 @@ const initialState: SettingsState = {
     hidden_feature_flag: false,
     selectedLanguage: 'es',
     isOnboardingShown: false,
+    notifications: {
+        scheduling: {
+            active: false,
+            hour: 20,
+            minute: 0
+        }
+    }
 }
 
 export const settingsSlice = createSlice({
@@ -35,6 +49,9 @@ export const settingsSlice = createSlice({
         },
         updateOnboardingState: (state, action: PayloadAction<boolean>) => {
             state.isOnboardingShown = action.payload;
+        },
+        updateNotificationsScheduling: (state, action: PayloadAction<{hour: number, minute: number, active: boolean}>) => {
+            state.notifications.scheduling = action.payload;
         }
     },
 })
@@ -44,6 +61,7 @@ export const {
     updateSelectedLanguage,
     updateHiddenFeatureFlag,
     updateOnboardingState,
+    updateNotificationsScheduling,
 } = settingsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

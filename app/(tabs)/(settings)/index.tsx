@@ -140,7 +140,6 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
                                 title={t('SETTINGS.NOTIFICATIONS.TITLE')}
                                 onPress={() => router.push('/notifications')}
                                 icon={<IconWrapper bgColor="$red9Light"
