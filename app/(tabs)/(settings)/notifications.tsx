@@ -11,7 +11,7 @@ import {
     YGroup
 } from "tamagui";
 import React, {useEffect, useState} from "react";
-import {Platform} from "react-native";
+import {Alert, Platform} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useTranslation} from "react-i18next";
 import * as Notifications from "expo-notifications";
@@ -115,7 +115,9 @@ export default function Screen() {
                 content: notification,
                 trigger,
             });
-
+            Alert.alert(t('COMMON.WARNING'), t('SETTINGS.NOTIFICATIONS.OPTIONS.SCHEDULING_OK'),  [
+                { style: 'default', text: 'Ok' }
+            ])
             console.log('Daily notification scheduled:', schedulingResult);
         } catch (error) {
             console.error('Error scheduling daily notification:', error);

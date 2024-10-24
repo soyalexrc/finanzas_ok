@@ -166,6 +166,7 @@
       "NOTIFICATIONS": {
         "TITLE": "Notificaciones",
         "OPTIONS": {
+          "SCHEDULING_OK": "Se configuro la notificacion diaria correctamente",
           "ENABLE": "Habilitar notificationes",
           "ENABLE_DAILY": "Habilitar notificationes diarias",
           "SCHEDULING": "Horario",
@@ -174,7 +175,15 @@
         }
       },
       "DATA_MANAGEMENT": {
-        "TITLE": "Manejo de data"
+        "TITLE": "Manejo de data",
+        "OPTIONS": {
+          "BACKUP": "Respaldar informacion",
+          "FORCE_PULL_SYNC": "Sincronizar con datos en la nube (forzar)",
+          "IMPORT": "Importar desde plantilla",
+          "EXPORT": "Exportar",
+          "WIPE": "Limpiar (eliminar informacion)",
+          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias"
+        }
       },
       "CONTACT_DEV": {
         "TITLE": "Contactar desarrollador"

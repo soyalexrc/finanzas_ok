@@ -45,11 +45,11 @@ export default function Screen() {
     const dispatch = useAppDispatch();
 
     function handleWipeData() {
-        Alert.alert('Warning', 'All data will be lost', [
-            {style: 'default', text: 'Cancel', isPreferred: true},
+        Alert.alert(t('COMMON.WARNING'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.POPUP_MESSAGE'), [
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive',
-                text: 'Accept',
+                text: t('COMMON.ACCEPT'),
                 onPress: async () => {
                     await wipeData(db);
                     const accounts = getAllAccounts(db);
@@ -81,7 +81,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Respaldar data"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.BACKUP')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -89,7 +89,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Sincronizar con ultimo respaldo"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.FORCE_PULL_SYNC')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -97,7 +97,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Importar de una hoja de calculo (.xsl, .csv)"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.IMPORT')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -105,7 +105,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Exportar a hoja de calculo (.xsl, .csv)"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.EXPORT')}
                     />
                 </YGroup.Item>
             </YGroup>
@@ -116,7 +116,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         onPress={handleWipeData}
-                        title="Limpiar data"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.WIPE')}
                     />
                 </YGroup.Item>
             </YGroup>

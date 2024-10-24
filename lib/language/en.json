@@ -166,6 +166,7 @@
       "NOTIFICATIONS": {
         "TITLE": "Notifications",
         "OPTIONS": {
+          "SCHEDULING_OK": "Daily notification configured correctly",
           "ENABLE": "Enable notifications",
           "ENABLE_DAILY": "Enable daily notifications",
           "SCHEDULING": "Scheduling",
@@ -174,7 +175,16 @@
         }
       },
       "DATA_MANAGEMENT": {
-        "TITLE": "Data management"
+        "TITLE": "Data management",
+        "OPTIONS": {
+          "BACKUP": "Backup data",
+          "FORCE_PULL_SYNC": "Sync with data from cloud (force)",
+          "IMPORT": "Import from template",
+          "EXPORT": "Export",
+          "WIPE": "Wipe (reset data)",
+          "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories."
+
+        }
       },
       "CONTACT_DEV": {
         "TITLE": "Contact Developer"
