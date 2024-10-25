@@ -1,6 +1,6 @@
 import {TouchableOpacity, StyleSheet} from "react-native";
-import {View, Text} from 'tamagui';
-import {useState} from "react";
+import {View, Text, XStack, ToggleGroup} from 'tamagui';
+import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectCategories,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/store/features/accounts/accountsSlice";
 import {Category} from "@/lib/types/Transaction";
 import {Sheet} from "tamagui";
+import {useTranslation} from "react-i18next";
 
 type Props = {
     open: boolean
@@ -27,6 +28,8 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
     const [position, setPosition] = useState(0);
+    const {t} = useTranslation();
+    const [categoryType, setCategoryType] = useState<string>('expense')
 
     function handlePressCategory(category: Category) {
         dispatch(selectCategory(category));
@@ -56,36 +59,47 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
 
             <Sheet.Handle />
 
-            <Sheet.ScrollView backgroundColor="$background" showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
-                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">EXPENSES</Text>
+            <Sheet.ScrollView stickyHeaderIndices={[0]} backgroundColor="$background" showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
+                <XStack backgroundColor='$color1' justifyContent="center">
+                    <ToggleGroup
+                        margin={10}
+                        value={categoryType}
+                        onValueChange={setCategoryType}
+                        orientation="horizontal"
+                        id="simple-filter"
+                        type="single"
+                    >
+                        <ToggleGroup.Item value="expense" aria-label="Filter by week">
+                            <Text>{t('COMMON.EXPENSE')}</Text>
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value="income" aria-label="Filter by year">
+                            <Text>{t('COMMON.INCOME')}</Text>
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value="account" aria-label="Filter by year">
+                            <Text>{t('COMMON.ACCOUNT')}</Text>
+                        </ToggleGroup.Item>
+                    </ToggleGroup>
+                </XStack>
                 <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
-                    {categories.filter(c => c.type === 'expense')?.map(item => (
+                    {categories.filter(c => c.type === categoryType)?.map(item => (
                         <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id} style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
                             <Text style={{fontSize: 40}}>{item.icon}</Text>
                             <Text>{textShortener(item.title)}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
-                <Text textAlign="center" marginTop={50} marginBottom={15} fontSize={16} fontWeight="bold" color="$gray10Dark">INCOMES</Text>
-                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
-                    {categories.filter(c => c.type === 'income').map(item => (
-                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
-                                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
-                            <Text style={{fontSize: 40}}>{item.icon}</Text>
-                            <Text>{textShortener(item.title)}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-                <Text textAlign="center" marginTop={50} marginBottom={15} fontSize={16} fontWeight="bold" color="$gray10Dark">ACCOUNTS</Text>
-                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
-                    {accounts.map(item => (
-                        <TouchableOpacity onPress={() => {
-                        }} key={item.id} style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>
-                            <Text style={{fontSize: 40}}>{item.icon}</Text>
-                            <Text>{textShortener(item.title, 15)}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                {
+                    categoryType === 'account' &&
+                    <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
+                        {accounts.map(item => (
+                            <TouchableOpacity onPress={() => {
+                            }} key={item.id} style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>
+                                <Text style={{fontSize: 40}}>{item.icon}</Text>
+                                <Text>{textShortener(item.title, 15)}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                }
                 <View style={{height: 100}}/>
             </Sheet.ScrollView>
         </Sheet>

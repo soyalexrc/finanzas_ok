@@ -1,4 +1,4 @@
-import {ScrollView, Text, useTheme, View, YStack} from "tamagui";
+import {ScrollView, Text, ToggleGroup, useTheme, View, XStack, YStack} from "tamagui";
 import {Alert, Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -35,7 +35,7 @@ import {
     updateCategoryCreateUpdate
 } from "@/lib/store/features/categories/categoriesSlice";
 import * as Haptics from "expo-haptics";
-import {useState} from "react";
+import React, {useState} from "react";
 import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 import {useTranslation} from "react-i18next";
 
@@ -56,6 +56,7 @@ export default function Screen() {
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
+    const [categoryType, setCategoryType] = useState<string>('expense')
 
     async function onPressCategory(category: Category) {
         await Haptics.selectionAsync();
@@ -116,10 +117,26 @@ export default function Screen() {
 
     return (
         <View flex={1}>
-            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                        paddingTop={isIos ? headerHeight + 20 : 20}>
+            <XStack backgroundColor="$color1" justifyContent="center"  paddingTop={isIos ? headerHeight + 20 : 20}>
+                <ToggleGroup
+                    marginBottom={10}
+                    value={categoryType}
+                    onValueChange={setCategoryType}
+                    orientation="horizontal"
+                    id="simple-filter"
+                    type="single"
+                >
+                    <ToggleGroup.Item value="expense" aria-label="Filter by week">
+                        <Text>{t('COMMON.EXPENSE')}</Text>
+                    </ToggleGroup.Item>
+                    <ToggleGroup.Item value="income" aria-label="Filter by year">
+                        <Text>{t('COMMON.INCOME')}</Text>
+                    </ToggleGroup.Item>
+                </ToggleGroup>
+            </XStack>
+            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}>
                 {
-                    categories.map(category => {
+                    categories.filter(c => c.type === categoryType).map(category => {
                         if (isIos) {
                             return (
                                 <ContextMenu.Root key={category.id}>
