@@ -32,7 +32,8 @@
       "CREATE_TRANSACTION": "取引を作成",
       "NO_DATA_CHART": "グラフを表示するデータがありません。",
       "MESSAGES": {
-        "INSERT_AMOUNT": "取引の金額を入力してください。"
+        "INSERT_AMOUNT": "取引の金額を入力してください。",
+        "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
       }
     },
     "HOME_RESUME_DROPDOWN": {

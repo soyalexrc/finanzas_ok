@@ -32,7 +32,8 @@
       "CREATE_TRANSACTION": "Transaktion erstellen",
       "NO_DATA_CHART": "Keine Daten zum Anzeigen des Diagramms vorhanden.",
       "MESSAGES": {
-        "INSERT_AMOUNT": "Bitte geben Sie einen Betrag für die Transaktion ein."
+        "INSERT_AMOUNT": "Bitte geben Sie einen Betrag für die Transaktion ein.",
+        "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
       }
     },
     "HOME_RESUME_DROPDOWN": {

@@ -32,7 +32,8 @@
       "CREATE_TRANSACTION": "创建交易",
       "NO_DATA_CHART": "没有数据可以显示图表。",
       "MESSAGES": {
-        "INSERT_AMOUNT": "请输入交易金额。"
+        "INSERT_AMOUNT": "请输入交易金额。",
+        "SCREEN_UNDER_DEVELOPMENT": "该应用程序的这一部分正在开发中。"
       }
     },
     "HOME_RESUME_DROPDOWN": {

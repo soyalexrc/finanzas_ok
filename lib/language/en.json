@@ -32,7 +32,8 @@
       "CREATE_TRANSACTION": "Create transaction",
       "NO_DATA_CHART": "There are no data to display the graph.",
       "MESSAGES": {
-        "INSERT_AMOUNT": "Please insert an amount for the transaction."
+        "INSERT_AMOUNT": "Please insert an amount for the transaction.",
+        "SCREEN_UNDER_DEVELOPMENT": "This section of the app is under development."
       }
     },
     "HOME_RESUME_DROPDOWN": {

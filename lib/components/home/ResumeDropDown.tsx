@@ -1,6 +1,6 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {Platform, Pressable, StyleSheet} from "react-native";
-import {Text, useTheme, View, XStack} from 'tamagui'
+import {Text, useTheme, View, XStack, YStack} from 'tamagui'
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectHomeViewTypeFilter, selectCurrentBalance, selectTransactionsGroupedByDate,
@@ -147,11 +147,11 @@ export default function ResumeDropDown({fn}: {fn: () => void}) {
                     </Text>
                     {
                         filterType.type === 'Balance' &&
-                        <>
-                            <Text
-                                fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
+                        <XStack mb={4}>
+                            <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
+                            <Text mt={-12} fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
                             <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
-                        </>
+                        </XStack>
                     }
                     {
                         filterType.type !== 'Balance' &&
