@@ -128,6 +128,7 @@ export type TransactionsGroupedByCategory = {
         id: number,
         title: string;
         icon: string;
+        type: string;
     },
     account: {
         id: number,

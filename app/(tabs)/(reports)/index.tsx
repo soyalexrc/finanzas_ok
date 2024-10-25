@@ -246,7 +246,7 @@ export default function ReportScreen() {
                                         alignItems='center'
                                         justifyContent='space-between'
                                     >
-                                        <View flexDirection='row' gap={10} alignItems='center'>
+                                        <View flexDirection='row' flex={0.6} gap={10} alignItems='center'>
                                             {/*{*/}
                                             {/*    item.recurrentDate !== 'none' &&*/}
                                             {/*    <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>*/}
@@ -258,7 +258,7 @@ export default function ReportScreen() {
                                                       color="$gray10Dark">x {item.transactions.length}</Text>
                                             }
                                         </View>
-                                        <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
+                                        <Text flex={0.4} style={[item.category.type === 'income' && { color: theme.green10Dark.val}]} textAlign="right">{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
                                     </View>
                                 </Button>
                             ))

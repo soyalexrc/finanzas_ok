@@ -90,11 +90,19 @@ export default function Screen() {
                 Alert.alert('No se pudo registrar la cuenta', newAccount.desc)
             } else {
                 dispatch(addAccount(newAccount.data));
-                router.back();
+                handleGoBack()
             }
         }
 
 
+    }
+
+    function handleGoBack(): void {
+        if (router.canGoBack()) {
+            router.back()
+        } else {
+            router.replace('/(settings)')
+        }
     }
 
 
@@ -102,7 +110,7 @@ export default function Screen() {
         <>
             <View flex={1} backgroundColor="$color1" px={20} pb={20} pt={Platform.OS === 'android' ? insets.top + 20 : 20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
-                    <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.replace('/(settings)')}>
+                    <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={handleGoBack}>
                         <Text>{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
                     <Text fontSize={20}>{t('COMMON.ACCOUNT')}</Text>

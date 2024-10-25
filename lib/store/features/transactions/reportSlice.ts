@@ -13,6 +13,7 @@ import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 import {getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
 
 export interface ReportState {
+    // TODO dividir en dos, gastos e ingresos.
     amountsGroupedByDate: ChartPoints[];
     transactionsGroupedByCategory: TransactionsGroupedByCategory[];
     detailGroup: TransactionsGroupedByCategory;

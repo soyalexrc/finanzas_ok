@@ -3,6 +3,7 @@ import {View, Text, XStack, ToggleGroup} from 'tamagui';
 import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
+    resetCategoryCreateUpdate,
     selectCategories,
     selectCategory,
     selectSelectedCategory
@@ -16,6 +17,7 @@ import {Category} from "@/lib/types/Transaction";
 import {Sheet} from "tamagui";
 import {useTranslation} from "react-i18next";
 import {useRouter} from "expo-router";
+import * as Haptics from "expo-haptics";
 
 type Props = {
     open: boolean
@@ -36,6 +38,18 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
     function handlePressCategory(category: Category) {
         dispatch(selectCategory(category));
         setOpen(false);
+    }
+
+    async function goToCreateCategory() {
+        await Haptics.selectionAsync();
+        dispatch(resetCategoryCreateUpdate());
+        router.push('/(tabs)/(settings)/createEditCategory')
+    }
+
+    async function goToCreateAccount() {
+        await Haptics.selectionAsync();
+        dispatch(resetCategoryCreateUpdate());
+        router.push('/(tabs)/(settings)/createEditAccount')
     }
 
     return (
@@ -90,7 +104,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                     ))}
                     {
                         categoryType !== 'account' &&
-                        <TouchableOpacity onPress={() => router.push('/(tabs)/(settings)/createEditCategory')} style={[localStyles.item]}>
+                        <TouchableOpacity onPress={goToCreateCategory} style={[localStyles.item]}>
                             <Text style={{fontSize: 40}}>+</Text>
                             <Text>{t('COMMON.NEW')}</Text>
                         </TouchableOpacity>
@@ -106,7 +120,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
                         ))}
-                        <TouchableOpacity style={[localStyles.item]} onPress={() => router.push('/(tabs)/(settings)/createEditAccount')}>
+                        <TouchableOpacity style={[localStyles.item]} onPress={goToCreateAccount}>
                             <Text style={{fontSize: 40}}>+</Text>
                             <Text>{t('COMMON.NEW')}</Text>
                         </TouchableOpacity>

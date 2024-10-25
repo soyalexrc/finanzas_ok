@@ -8,6 +8,8 @@ import {Account} from "@/lib/types/Transaction";
 import {Sheet} from "tamagui";
 import {useRouter} from "expo-router";
 import {useTranslation} from "react-i18next";
+import {resetCategoryCreateUpdate} from "@/lib/store/features/categories/categoriesSlice";
+import * as Haptics from "expo-haptics";
 
 type Props = {
     open: boolean
@@ -24,6 +26,12 @@ export default function AccountsBottomSheet({ open, setOpen }: Props) {
     function handlePressAccount(account: Account) {
         dispatch(selectAccountForm(account));
         setOpen(false);
+    }
+
+    async function goToCreateAccount() {
+        await Haptics.selectionAsync();
+        dispatch(resetCategoryCreateUpdate());
+        router.push('/(tabs)/(settings)/createEditAccount')
     }
 
     return (
@@ -58,7 +66,7 @@ export default function AccountsBottomSheet({ open, setOpen }: Props) {
                             <Text>{textShortener(item.title, 15)}</Text>
                         </TouchableOpacity>
                     ))}
-                    <TouchableOpacity onPress={() => router.push('/(tabs)/(settings)/createEditAccount')} style={{ justifyContent: 'center', width: '23%', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={goToCreateAccount} style={{ justifyContent: 'center', width: '23%', alignItems: 'center' }}>
                         <Text style={{fontSize: 40}}>+</Text>
                         <Text>{t('COMMON.NEW')}</Text>
                     </TouchableOpacity>
