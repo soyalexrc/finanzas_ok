@@ -29,7 +29,10 @@
       "BY": "by",
       "NO_DATA": "There are no data.",
       "CREATE_TRANSACTION": "Create transaction",
-      "NO_DATA_CHART": "There are no data to display the graph."
+      "NO_DATA_CHART": "There are no data to display the graph.",
+      "MESSAGES": {
+        "INSERT_AMOUNT": "Please insert an amount for the transaction."
+      }
     },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Spent this week",

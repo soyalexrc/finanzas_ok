@@ -97,6 +97,12 @@ export default function Screen() {
 
     async function handleCreateOrEditTransaction() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+
+        if (Number(currentTransaction.amount) < 1 && Number(currentTransaction.hidden_amount) < 1) {
+            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_AMOUNT'))
+            return;
+        }
+
         if (currentTransaction.id > 0) {
             await deleteTransaction(db, currentTransaction.id);
             // transaction = await updateTransaction(db, {
