@@ -57,16 +57,19 @@ export default function Screen() {
                         vibrationPattern: [0, 250, 250, 250],
                         lightColor: '#FF231F7C',
                     });
-                    const {status, canAskAgain} = await Notifications.requestPermissionsAsync();
-
-                    if (status === 'granted') {
-                        setNotificationsEnabled(true);
-                    }
-
-                    if (status === 'denied' && !canAskAgain) {
-                        await Linking.openSettings();
-                    }
                 }
+
+                const {status, canAskAgain} = await Notifications.requestPermissionsAsync();
+
+                if (status === 'granted') {
+                    setNotificationsEnabled(true);
+                }
+
+                if (status === 'denied' && !canAskAgain) {
+                    await Linking.openSettings();
+                }
+
+
             } else {
                 await Linking.openSettings();
             }
@@ -96,7 +99,7 @@ export default function Screen() {
         }
     }, []);
 
-    async function scheduleDailyNotification(hour: number, minute: number) {
+    async function scheduleDailyNotification(hour: number, minute: number, displayPopup = false) {
         await Notifications.cancelAllScheduledNotificationsAsync();
         const notification = {
             title: t('SETTINGS.NOTIFICATIONS.OPTIONS.NOTIFICATION_TITLE'),
@@ -115,9 +118,11 @@ export default function Screen() {
                 content: notification,
                 trigger,
             });
-            Alert.alert(t('COMMON.WARNING'), t('SETTINGS.NOTIFICATIONS.OPTIONS.SCHEDULING_OK'),  [
-                { style: 'default', text: 'Ok' }
-            ])
+            if (displayPopup) {
+                Alert.alert(t('COMMON.WARNING'), t('SETTINGS.NOTIFICATIONS.OPTIONS.SCHEDULING_OK'),  [
+                    { style: 'default', text: 'Ok' }
+                ])
+            }
             console.log('Daily notification scheduled:', schedulingResult);
         } catch (error) {
             console.error('Error scheduling daily notification:', error);
@@ -195,7 +200,7 @@ export default function Screen() {
 
                     if (res) {
                         dispatch(updateNotificationsScheduling({ hour, minute, active: true }))
-                        await scheduleDailyNotification(hour, minute)
+                        await scheduleDailyNotification(hour, minute, true)
                     }
 
                     setShowCalendar(false)
