@@ -27,6 +27,7 @@ import {FlashList} from "@shopify/flash-list";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {useTranslation} from "react-i18next";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import * as Haptics from "expo-haptics";
 
 type Props = {
     open: boolean;
@@ -55,6 +56,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
     const insets = useSafeAreaInsets();
 
     async function applyFilters() {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryFilter(localCategory))
         dispatch(updateAccountFilter(localAccount))
         const {
@@ -68,14 +70,26 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         setOpen(false);
     }
 
-    function clearCategory() {
+    async function clearCategory() {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryFilter({id: 0, title: '', icon: '', type: ''}));
         setLocalCategory({id: 0, title: '', icon: '', type: ''});
     }
 
-    function clearAccount() {
+    async function clearAccount() {
+        await Haptics.selectionAsync()
         // dispatch(updateAccountFilter({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1}));
         // setLocalAccount({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1});
+    }
+
+    async function handleTouchLocalCategory(item: Category) {
+        await Haptics.selectionAsync()
+        setLocalCategory(item);
+    }
+
+    async function handleTouchLocalAccount(item: Account) {
+        await Haptics.selectionAsync()
+        setLocalAccount(item);
     }
 
 
@@ -140,7 +154,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
                           color="$gray10Dark">{localCategory.icon} {localCategory.title}</Text>
-                    <FlashList
+                    <FlatList
                         estimatedItemSize={200}
                         data={categories}
                         contentContainerStyle={{paddingHorizontal: 20}}
@@ -148,8 +162,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity style={styles.item} onPress={() => setLocalCategory(item)}>
-                                <Text style={{fontSize: 50}}>{item.icon}</Text>
+                            <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalCategory(item)}>
+                                <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
                         )}
@@ -185,8 +199,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity style={styles.item} onPress={() => setLocalAccount(item)}>
-                                <Text style={{fontSize: 50}}>{item.icon}</Text>
+                            <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalAccount(item)}>
+                                <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
                         )}

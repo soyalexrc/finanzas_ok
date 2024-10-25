@@ -159,6 +159,18 @@ export default function Screen() {
         await Haptics.selectionAsync();
         setOpenHiddenMenuSheet(true)
     }
+    async function handleTouchCalendar() {
+        await Haptics.selectionAsync();
+        setShowCalendar(true)
+    }
+    async function handleTouchNotes() {
+        await Haptics.selectionAsync();
+        setOpenNotesSheet(true)
+    }
+    async function handleTouchRecurrency() {
+        await Haptics.selectionAsync();
+        setOpenRecurrencySheet(true)
+    }
 
     function handleDeleteItem() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
@@ -185,7 +197,7 @@ export default function Screen() {
             <View position="relative" flex={1} backgroundColor="$background">
                 <View style={[styles.header, {paddingTop: isIos ? 30 : insets.top + 20}]}>
                     <View flexDirection="row" gap={20}>
-                        <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
+                        <TouchableOpacity style={styles.calendarButton} onPress={handleTouchCalendar}>
                             <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM')}</Text>
                             <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                         </TouchableOpacity>
@@ -193,7 +205,7 @@ export default function Screen() {
                             {isIos && <RecurringSelectorDropdown/>}
                             {
                                 !isIos &&
-                                <TouchableOpacity onPress={() => setOpenRecurrencySheet(true)}>
+                                <TouchableOpacity onPress={handleTouchRecurrency}>
                                     <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
                                 </TouchableOpacity>
                             }
@@ -209,7 +221,7 @@ export default function Screen() {
                             {/*    </TouchableOpacity>*/}
                             {/*}*/}
                         </View>
-                        <TouchableOpacity onPress={() => setOpenNotesSheet(true)}>
+                        <TouchableOpacity onPress={handleTouchNotes}>
                             <FontAwesome name="commenting-o" size={24} color={currentTransaction.notes.length < 1  ? 'gray' : scheme === 'light' ? 'black' : 'white'} />
                         </TouchableOpacity>
                     </View>

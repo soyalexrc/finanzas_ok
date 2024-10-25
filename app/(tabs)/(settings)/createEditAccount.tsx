@@ -14,6 +14,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useTranslation} from "react-i18next";
 import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
 import currencies from '@/lib/utils/data/currencies';
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const locales = getLocales();
@@ -51,13 +52,15 @@ export default function Screen() {
 
     useEffect(() => {
         setAccountTitle(accountCreateUpdate.title)
-        setAccountBalance(accountCreateUpdate.balance.toString())
+        setAccountBalance(accountCreateUpdate.balance.toFixed(2))
         setAccountPositiveState(accountCreateUpdate.positive_state ? t('SETTINGS.ACCOUNTS.POSITIVE') : t('SETTINGS.ACCOUNTS.NEGATIVE'));
     }, []);
 
     async function manageCreateAccount() {
         if (!accountTitle) return;
         if (!accountCurrency) return;
+
+        await Haptics.selectionAsync();
 
         if (accountCreateUpdate.id) {
             await updateAccount(

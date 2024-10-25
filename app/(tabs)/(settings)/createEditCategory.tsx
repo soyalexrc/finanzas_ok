@@ -4,28 +4,21 @@ import {useRouter} from "expo-router";
 import {Entypo} from "@expo/vector-icons";
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import {
-    addAccount,
-    selectAccountCreateUpdate,
     selectSelectedAccountGlobal,
-    updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
-import {getLocales} from "expo-localization";
 import {
-    createAccount,
     createCategory,
-    getAllAccounts,
     getAllCategories,
     getTransactions, getTransactionsGroupedAndFiltered,
-    updateAccount,
     updateCategory
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {
     addCategory,
-    selectCategoryCreateUpdate, selectSelectedCategory,
+    selectCategoryCreateUpdate,
     updateCategoriesList
 } from "@/lib/store/features/categories/categoriesSlice";
 import {
@@ -40,6 +33,7 @@ import {
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {useTranslation} from "react-i18next";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -69,6 +63,8 @@ export default function Screen() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
 
         if (!categoryTitle) return;
+
+        await Haptics.selectionAsync();
 
         if (categoryCreateUpdate.id) {
             await updateCategory(

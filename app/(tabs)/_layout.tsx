@@ -10,6 +10,7 @@ import {resetCurrentTransaction} from "@/lib/store/features/transactions/transac
 import {useAppDispatch} from "@/lib/store/hooks";
 import {AntDesign, Entypo} from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import * as Haptics from "expo-haptics";
 
 export default function TabLayout() {
     const theme = useTheme()
@@ -18,7 +19,8 @@ export default function TabLayout() {
     const schemeColor = useColorScheme();
     const dispatch = useAppDispatch();
 
-    function onPressNewTransaction() {
+    async function onPressNewTransaction() {
+        await Haptics.selectionAsync();
         dispatch(resetCurrentTransaction());
         router.push('/transactionCreateUpdate');
     }

@@ -24,6 +24,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateNotificationsScheduling} from "@/lib/store/features/settings/settingsSlice";
 import {save} from "@/lib/utils/storage";
 import {formatTimeBasedOnHourAndMinute} from "@/lib/helpers/string";
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const headerHeight = useHeaderHeight()
@@ -48,6 +49,7 @@ export default function Screen() {
     }
 
     async function handleChangeSetting(value: boolean) {
+        await Haptics.selectionAsync();
         try {
             if (value) {
                 if (Platform.OS === 'android') {
@@ -100,6 +102,7 @@ export default function Screen() {
     }, []);
 
     async function scheduleDailyNotification(hour: number, minute: number, displayPopup = false) {
+        await Haptics.selectionAsync();
         await Notifications.cancelAllScheduledNotificationsAsync();
         const notification = {
             title: t('SETTINGS.NOTIFICATIONS.OPTIONS.NOTIFICATION_TITLE'),

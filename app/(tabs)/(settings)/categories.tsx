@@ -57,7 +57,8 @@ export default function Screen() {
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
 
-    function onPressCategory(category: Category) {
+    async function onPressCategory(category: Category) {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryCreateUpdate(category));
         dispatch(changeEmoji(category.icon))
         router.push('/createEditCategory')

@@ -56,7 +56,8 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
 
-    function handlePress(t: FullTransaction) {
+    async function handlePress(t: FullTransaction) {
+        await Haptics.selectionAsync();
         dispatch(updateCurrentTransaction({
             ...t,
             account_id: t.account.id,

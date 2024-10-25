@@ -23,6 +23,7 @@ import * as MailComposer from 'expo-mail-composer';
 import {useTranslation} from "react-i18next";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import * as Application from 'expo-application';
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
@@ -43,7 +44,8 @@ export default function Screen() {
 
     }, []);
 
-    function handleLogout() {
+    async function handleLogout() {
+        await Haptics.selectionAsync()
         Alert.alert(t('AUTH.LOGOUT_CONFIRMATION_TITLE'), t('AUTH.LOGOUT_CONFIRMATION_DESCRIPTION'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {

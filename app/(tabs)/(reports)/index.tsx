@@ -3,7 +3,6 @@ import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme, I
 import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import {formatByThousands} from "@/lib/helpers/string";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -23,10 +22,10 @@ import {CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
 import {getDateRangeBetweenGapDaysAndToday, getDateRangeAlongTimeAgo} from "@/lib/helpers/date";
-import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 import {useAppSelector} from "@/lib/store/hooks";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -60,7 +59,8 @@ export default function ReportScreen() {
     }, []);
 
 
-    function handlePress(item: TransactionsGroupedByCategory) {
+    async function handlePress(item: TransactionsGroupedByCategory) {
+        await Haptics.selectionAsync();
         dispatch(updateDetailGroup(item));
         router.push('/detailGroup')
     }
@@ -85,6 +85,7 @@ export default function ReportScreen() {
     }, [daysFrom]);
 
     async function handleGetReportByPresetDays() {
+        await Haptics.selectionAsync();
         if (daysFrom) {
             const {start, end} = getDateRangeBetweenGapDaysAndToday(Number(daysFrom));
             dispatch(updateDateRangeFilter({type: 'start', value: start.toISOString()}));
@@ -109,6 +110,11 @@ export default function ReportScreen() {
         }
     }
 
+    async function handleTouchSheetFilter() {
+        await Haptics.selectionAsync();
+        setOpenFiltersSheet(true)
+    }
+
     return (
         <YStack flex={1} backgroundColor="$color1">
             <Animated.View
@@ -120,7 +126,7 @@ export default function ReportScreen() {
                 <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: isIos ? 'auto' :  85, marginTop: !isIos ? 10 : 0 }}>
                     <Text
                         fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
-                    <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+                    <Button onPress={handleTouchSheetFilter} height="$2" borderRadius="$12">
                         <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </Button>
                 </CustomHeader>

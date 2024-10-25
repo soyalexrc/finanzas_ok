@@ -7,6 +7,7 @@ import {useAppDispatch} from "@/lib/store/hooks";
 import {resetAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
 import {resetCategoryCreateUpdate} from "@/lib/store/features/categories/categoriesSlice";
 import {useTranslation} from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 export default function SettingsLayout() {
     const theme = useTheme();
@@ -16,12 +17,14 @@ export default function SettingsLayout() {
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation()
 
-    function onPressCreateAccount() {
+    async function onPressCreateAccount() {
+        await Haptics.selectionAsync();
         dispatch(resetAccountCreateUpdate());
         router.push('/createEditAccount')
     }
 
-    function onPressCreateCategory() {
+    async function onPressCreateCategory() {
+        await Haptics.selectionAsync();
         dispatch(resetCategoryCreateUpdate());
         router.push('/createEditCategory')
     }
