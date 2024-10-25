@@ -61,11 +61,12 @@ export default function Screen() {
         try {
             const isAvailable = await MailComposer.isAvailableAsync();
             if (!isAvailable) {
-                Alert.alert('Error', 'Email is not available on this device');
+                Alert.alert(t('COMMON.ERROR'), 'Email is not available on this device');
                 return;
             } else {
+                // TODO add version / Operating system / translations / Sent from...
                 await MailComposer.composeAsync({
-                    subject: 'FinanzasOK - Contact Developer',
+                    subject: 'FinanzasOK - Feedback',
                     recipients: ['alexcarvajal2404@gmail.com'],
                     body: 'Hi Alex, I would like to ask you about...'
                 });
