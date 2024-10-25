@@ -49,6 +49,46 @@ export default function Screen() {
                                               color={selectedLanguage === 'es' ? 'black' : 'transparent'}/>}
                     />
                 </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.FRENCH')}
+                        onPress={() => onPressAppearanceValue('fr')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'fr' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.JAPANESE')}
+                        onPress={() => onPressAppearanceValue('ja')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'ja' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.CHINESE')}
+                        onPress={() => onPressAppearanceValue('zh')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'zh' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.GERMAN')}
+                        onPress={() => onPressAppearanceValue('de')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'de' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
             </YGroup>
         </ScrollView>
 

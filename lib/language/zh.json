@@ -1,0 +1,213 @@
+{
+  "translation": {
+    "COMMON": {
+      "CANCEL": "取消",
+      "BACK": "返回",
+      "WARNING": "警告",
+      "ACCEPT": "接受",
+      "OK": "好",
+      "LOADING": "加载中",
+      "CONFIRM": "确认",
+      "DELETE": "删除",
+      "GET_STARTED": "开始",
+      "STOP_RECURRING": "停止重复",
+      "DUPLICATE": "复制",
+      "DONE": "完成",
+      "ALL_ACCOUNTS": "所有账户",
+      "ACCOUNT": "账户",
+      "CATEGORY": "类别",
+      "TRANSACTIONS": "交易",
+      "NAME": "名称",
+      "TYPE": "类型",
+      "EXPENSE": "支出",
+      "SELECT": "选择",
+      "SELECT_CATEGORY_TYPE": "选择类别类型",
+      "INCOME": "收入",
+      "TERMS": "条款",
+      "PRIVACY": "隐私",
+      "MADE_WITH": "由",
+      "BY": "由",
+      "NO_DATA": "没有数据。",
+      "CREATE_TRANSACTION": "创建交易",
+      "NO_DATA_CHART": "没有数据可以显示图表。",
+      "MESSAGES": {
+        "INSERT_AMOUNT": "请输入交易金额。"
+      }
+    },
+    "HOME_RESUME_DROPDOWN": {
+      "SPENT_THIS_WEEK": "本周支出",
+      "SPENT_THIS_MONTH": "本月支出",
+      "REVENUE_THIS_WEEK": "本周收入",
+      "REVENUE_THIS_MONTH": "本月收入",
+      "BALANCE": "余额"
+    },
+    "TRANSACTIONS": {
+      "DUPLICATE": "复制",
+      "DELETE": {
+        "TITLE": "您确定要删除此交易吗？",
+        "TEXT": "此操作无法撤销。"
+      }
+    },
+    "AUTH": {
+      "LOGIN": "登录",
+      "LOGOUT": "注销",
+      "EMAIL": "电子邮件",
+      "PASSWORD": "密码",
+      "LOGIN_BUTTON": "登录",
+      "FIRSTNAME": "名字",
+      "VERIFY_EMAIL": "验证电子邮件",
+      "LASTNAME": "姓氏",
+      "SIGNUP_BUTTON": "创建账户",
+      "ALREADY_HAVE_ACCOUNT": "已经有账户？点击这里。",
+      "DONT_HAVE_ACCOUNT": "没有账户？点击这里。",
+      "OR": "或",
+      "LOGOUT_CONFIRMATION_TITLE": "您确定要注销吗？",
+      "LOGOUT_CONFIRMATION_DESCRIPTION": "如果您未经身份验证，则无法备份数据。",
+      "ACCESS_CODE": {
+        "TITLE": "输入访问代码",
+        "DESCRIPTION": "请输入发送到"
+      },
+      "NAME_REQUIRED_ERROR": "请输入姓名",
+      "LASTNAME_REQUIRED_ERROR": "请输入姓氏",
+      "EMAIL_REQUIRED_ERROR": "请输入电子邮件",
+      "PASSWORD_REQUIRED_ERROR": "请输入密码",
+      "CONTINUE_WITH_GOOGLE": "继续使用Google",
+      "CONTINUE_WITH_APPLE": "继续使用Apple"
+    },
+    "REPORTS": {
+      "LAST": "最后",
+      "DAYS": "天"
+    },
+    "REPORTS_SHEET": {
+      "SELECT_DATE_RANGE": "选择日期范围",
+      "SELECT_TIME": "选择时间",
+      "DATE_FROM": "起始日期",
+      "DATE_TO": "结束日期",
+      "SELECT_CATEGORY": "选择类别",
+      "CLEAR": "清除",
+      "SELECT_ACCOUNT": "选择账户",
+      "APPLY_FILTERS": "应用过滤器"
+    },
+    "CREATE_TRANSACTION": {
+      "NOTE": "备注",
+      "SAVE": "保存",
+      "EDIT": "编辑",
+      "RECURRENT_OPTIONS": {
+        "NONE": "无",
+        "WEEKLY": "每周",
+        "MONTHLY": "每月",
+        "YEARLY": "每年"
+      },
+      "HIDDEN_FEATURE": {
+        "SEE_TOTAL": "查看总计（实际）",
+        "SEE_VISIBLE": "查看可见的期望值"
+      }
+    },
+    "SETTINGS": {
+      "COLORS": {
+        "CHANGE_COLOR_MESSAGE": "应用程序将重新启动以应用更改",
+        "GREEN": "绿色",
+        "RED": "红色",
+        "BLUE": "蓝色",
+        "YELLOW": "黄色",
+        "PURPLE": "紫色",
+        "BLACK": "黑色"
+      },
+      "TITLE": "设置",
+      "PRIVACY": {
+        "TITLE": "隐私",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "启用“隐藏金额”"
+        }
+      },
+      "APPEARANCE": {
+        "TITLE": "外观",
+        "OPTIONS": {
+          "SYSTEM": "系统",
+          "DARK": "深色",
+          "LIGHT": "浅色"
+        }
+      },
+      "AUTH": {
+        "TITLE": "身份验证"
+      },
+      "LANGUAGE": {
+        "TITLE": "语言",
+        "OPTIONS": {
+          "SPANISH": "西班牙语",
+          "ENGLISH": "英语",
+          "FRENCH": "法语",
+          "JAPANESE": "日本人",
+          "CHINESE": "中文（简体）",
+          "GERMAN": "德语"
+        }
+      },
+      "OTHER": {
+        "TITLE": "其他",
+        "OPTIONS": {
+          "RESET_ONBOARDING": "已完成入职流程"
+        }
+      },
+      "ACCOUNTS": {
+        "TITLE": "账户",
+        "PLACE_HOLDER": "新账户",
+        "BALANCE": "余额",
+        "BALANCE_TIP": "您无法更改此账户的货币。",
+        "STATE": "状态",
+        "NEGATIVE": "负数",
+        "POSITIVE": "正数",
+        "STATE_TIP": "负数会在余额开头添加减号。",
+        "DELETE": {
+          "TITLE": "您确定要删除此账户吗？",
+          "TEXT": "与该账户关联的交易将被删除。此操作无法撤销。"
+        }
+      },
+      "CATEGORIES": {
+        "TITLE": "类别",
+        "PLACE_HOLDER": "新类别",
+        "DELETE": {
+          "TITLE": "您确定要删除此类别吗？",
+          "TEXT": "与该类别关联的交易将被删除。此操作无法撤销。"
+        }
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "通知",
+        "OPTIONS": {
+          "SCHEDULING_OK": "已正确配置每日通知",
+          "ENABLE": "启用通知",
+          "ENABLE_DAILY": "启用每日通知",
+          "SCHEDULING": "调度",
+          "NOTIFICATION_TITLE": "记得更新您的财务状况！",
+          "NOTIFICATION_BODY": "输入您的日常收入、账户变动等，以保持个人财务井井有条。"
+        }
+      },
+      "DATA_MANAGEMENT": {
+        "TITLE": "数据管理",
+        "OPTIONS": {
+          "BACKUP": "备份数据",
+          "FORCE_PULL_SYNC": "强制与云中的数据同步",
+          "IMPORT": "从模板导入",
+          "EXPORT": "导出",
+          "WIPE": "擦除（重置数据）",
+          "POPUP_MESSAGE": "所有数据都将丢失，包括交易、账户和类别。"
+
+        }
+      },
+      "CONTACT_DEV": {
+        "TITLE": "联系开发者"
+      },
+      "RATE_ON_STORE": {
+        "TITLE": "在商店上评价应用"
+      },
+      "SHARE_WITH_FRIENDS": {
+        "TITLE": "与朋友分享"
+      },
+      "FOLLOW_ON_IG": {
+        "TITLE": "关注@finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "支持开发者"
+      }
+    }
+  }
+}

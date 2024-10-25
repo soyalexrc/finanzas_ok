@@ -135,7 +135,11 @@
         "TITLE": "Idiomas",
         "OPTIONS": {
           "SPANISH": "Español",
-          "ENGLISH": "Ingles"
+          "ENGLISH": "Ingles",
+          "FRENCH": "Frances",
+          "JAPANESE": "Japones",
+          "CHINESE": "Chino (Simplificado)",
+          "GERMAN": "Aleman"
         }
       },
       "OTHER": {
