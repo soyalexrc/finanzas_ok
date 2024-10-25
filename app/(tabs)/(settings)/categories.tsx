@@ -12,7 +12,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     deleteAccount, deleteCategory,
     getAllAccounts, getAllCategories,
-    getAmountOfTransactionsByAccountId, getTransactions,
+    getAmountOfTransactionsByAccountId, getAmountOfTransactionsByCategoryId, getTransactions,
     getTransactionsGroupedAndFiltered
 } from "@/lib/db";
 import {Account, Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
@@ -123,7 +123,6 @@ export default function Screen() {
                     value={categoryType}
                     onValueChange={setCategoryType}
                     orientation="horizontal"
-                    id="simple-filter"
                     type="single"
                 >
                     <ToggleGroup.Item value="expense" aria-label="Filter by week">
@@ -189,7 +188,11 @@ export default function Screen() {
                                         py={15}
                                         borderColor='$color2'
                                     >
-                                        <Text fontSize={18}>{category.title}</Text>
+                                        <YStack>
+                                            <Text fontSize={18}>{category.title}</Text>
+                                            <Text
+                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryId(db, category.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                        </YStack>
                                     </View>
                                 </TouchableOpacity>                            )
                         }

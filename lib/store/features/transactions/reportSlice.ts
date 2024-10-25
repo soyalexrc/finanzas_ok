@@ -31,7 +31,8 @@ const initialState: ReportState = {
         category: {
             id: 0,
             title: '',
-            icon: ''
+            icon: '',
+            type: ''
         },
         transactions: [],
         account: {
