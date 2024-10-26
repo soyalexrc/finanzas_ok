@@ -4,8 +4,6 @@ import {Platform, StyleSheet} from "react-native";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectSettings,
-    updateAppearance,
-    updateHiddenFeatureFlag,
     updateOnboardingState
 } from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
