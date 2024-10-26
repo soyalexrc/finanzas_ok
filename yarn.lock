@@ -3136,6 +3136,11 @@
   resolved "https://registry.yarnpkg.com/@repeaterjs/repeater/-/repeater-3.0.6.tgz#be23df0143ceec3c69f8b6c2517971a5578fdaa2"
   integrity sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==
 
+"@revenuecat/purchases-typescript-internal@13.5.1":
+  version "13.5.1"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-typescript-internal/-/purchases-typescript-internal-13.5.1.tgz#90ce1ab4ce382c84f0045b38508a0ea737791cf7"
+  integrity sha512-QpnJz17yg9m9/0y13/JeCZSvq/G9l7teErwag6jhyIdFyv+shhre3vRzepuqL+FkSfXUVnKD0lzO40j7+o0VYw==
+
 "@rnx-kit/chromium-edge-launcher@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@rnx-kit/chromium-edge-launcher/-/chromium-edge-launcher-1.0.0.tgz#c0df8ea00a902c7a417cd9655aab06de398b939c"
@@ -11202,6 +11207,21 @@ react-native-pager-view@^6.3.3:
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.3.3.tgz#00c4426eb3d3b60fa8d5cf430a759209a32c2715"
   integrity sha512-HViKBlfN/kBJUSu5mRL/V9Bkf1j7uDZozGAjbzh4o9XYo11qVcIK7IwvfzqrkNerVSDy/cAmZcXbcyWnII8xMA==
+
+react-native-purchases-ui@^8.2.4:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-purchases-ui/-/react-native-purchases-ui-8.2.4.tgz#180cb4eb250985caf99f4343d32331115685c537"
+  integrity sha512-/10CPRRGVXJ/FQXdbRCS18uTesUyeKh6b8gPGY0/UrkkgYvK/aRRe8P2o+973Iyh5JJciIFWeywE7KmxlnGndw==
+  dependencies:
+    "@revenuecat/purchases-typescript-internal" "13.5.1"
+    react-native-purchases "8.2.4"
+
+react-native-purchases@8.2.4, react-native-purchases@^8.2.4:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-8.2.4.tgz#353eda39a4efb7e20ed4a9aa3d58318735331091"
+  integrity sha512-/4qOBpCPJWyXkwwi/wVOsvNWuEB0r1KT/Akb1U2rJTdR+8Rb9hs35fgwyFBTFWIPPSOACJFnSzBHu0c5sSfggQ==
+  dependencies:
+    "@revenuecat/purchases-typescript-internal" "13.5.1"
 
 react-native-reanimated@^3.15.0:
   version "3.15.0"
