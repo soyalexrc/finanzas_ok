@@ -30,6 +30,7 @@ import {useAppSelector} from "@/lib/store/hooks";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import * as Haptics from "expo-haptics";
+import {isIS} from "@clerk/localizations";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -127,7 +128,7 @@ export default function ReportScreen() {
                     flex: 1,
                 }}
             >
-                <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: isIos ? 'auto' :  85, marginTop: !isIos ? 10 : 0 }}>
+                <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: 'auto'}}>
                     <View>
                         <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalExpense)}</Text>
                         <Text fontSize={16} color="$green10Dark">{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalIncome)}</Text>
@@ -164,7 +165,7 @@ export default function ReportScreen() {
                         {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
 
-                        <YStack paddingHorizontal={10} paddingVertical={5} backgroundColor="$color1">
+                        <YStack paddingHorizontal={10} mt={isIos ? 10 : 0} paddingVertical={5} backgroundColor="$color1">
                             <Text fontSize={12} textAlign="center"
                                   color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
                             {/*<View  flexDirection="row"*/}
@@ -201,7 +202,7 @@ export default function ReportScreen() {
                                                   color='red' strokeWidth={3}
                                                   curveType="cardinal50"/>
                                             <Line points={hidden_feature_flag ? points.total_income_hidden : points.total_income}
-                                                  color={theme.color10?.val} strokeWidth={3}
+                                                  color={theme.green10Dark?.val} strokeWidth={3}
                                                   curveType="cardinal50"/>
                                         </>
                                     )}
