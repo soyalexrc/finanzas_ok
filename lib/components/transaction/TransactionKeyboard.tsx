@@ -64,7 +64,7 @@ export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' })
                             borderRadius="$12"
                             backgroundColor="$background025"
                         >
-                            <Text fontSize={30} color="$gray10Dark">{item.value}</Text>
+                            <Text fontSize={30} color="$color12">{item.value}</Text>
                         </Button>
                     </View>
                 )}
