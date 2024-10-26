@@ -55,8 +55,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             ROUND(SUM(hidden_amount), 2) AS total_hidden,
             ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
             ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
-            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
-            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
             FROM transactions t
                 LEFT JOIN categories c ON t.category_id = c.id
             WHERE
@@ -100,8 +100,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             ROUND(SUM(hidden_amount), 2) AS total_hidden,
             ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
             ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
-            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
-            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
             FROM transactions t
                 LEFT JOIN categories c ON t.category_id = c.id
             WHERE
@@ -148,8 +148,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             ROUND(SUM(hidden_amount), 2) AS total_hidden,
             ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
             ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
-            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
-            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
             FROM transactions t
                 LEFT JOIN categories c ON t.category_id = c.id
             WHERE
@@ -196,8 +196,8 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             ROUND(SUM(hidden_amount), 2) AS total_hidden,
             ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
             ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
-            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
-            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
             FROM transactions t
                 LEFT JOIN categories c ON t.category_id = c.id
             WHERE

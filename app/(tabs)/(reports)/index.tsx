@@ -17,7 +17,11 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {TransactionsGroupedByCategory} from "@/lib/types/Transaction";
-import {calculateTotalFromChartPoints, calculateTotalTransactions} from "@/lib/helpers/operations";
+import {
+    calculateTotalFromChartPoints,
+    calculateTotalsFromChartPoints,
+    calculateTotalTransactions
+} from "@/lib/helpers/operations";
 import {CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
@@ -124,9 +128,11 @@ export default function ReportScreen() {
                 }}
             >
                 <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: isIos ? 'auto' :  85, marginTop: !isIos ? 10 : 0 }}>
-                    <Text
-                        fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
-                    <Button onPress={handleTouchSheetFilter} height="$2" borderRadius="$12">
+                    <View>
+                        <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalExpense)}</Text>
+                        <Text fontSize={16} color="$green10Dark">{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalIncome)}</Text>
+                    </View>
+                   <Button onPress={handleTouchSheetFilter} height="$2" borderRadius="$12">
                         <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </Button>
                 </CustomHeader>
@@ -178,7 +184,7 @@ export default function ReportScreen() {
                             {
                                 chartPoints.length > 2 &&
                                 <CartesianChart data={chartPoints} xKey="date"
-                                                yKeys={hidden_feature_flag ? ["total_hidden"] : ["total"]}
+                                                yKeys={hidden_feature_flag ? ["total_expense_hidden", "total_income_hidden"] : [ "total_expense", "total_income"]}
                                                 domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
 
                                     {/* 👇 render function exposes various data, such as points. */}
@@ -191,7 +197,10 @@ export default function ReportScreen() {
                                         //     roundedCorners={{ topLeft: 10, topRight: 10 }}
                                         // />
                                         <>
-                                            <Line points={hidden_feature_flag ? points.total_hidden : points.total}
+                                            <Line points={hidden_feature_flag ? points.total_expense_hidden : points.total_expense}
+                                                  color='red' strokeWidth={3}
+                                                  curveType="cardinal50"/>
+                                            <Line points={hidden_feature_flag ? points.total_income_hidden : points.total_income}
                                                   color={theme.color10?.val} strokeWidth={3}
                                                   curveType="cardinal50"/>
                                         </>
