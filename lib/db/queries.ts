@@ -46,12 +46,19 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     let amountsGroupedByDate: ChartPoints[] = [];
     let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
 
+    console.log({accountId, categoryId})
+
     if (accountId === 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -90,8 +97,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -133,8 +145,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -176,8 +193,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -223,6 +245,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     // console.log(JSON.parse(debugTr?.transactions as any)?.map((t, index) => ({  i: index, t: t.amount })));
 
 
+    console.log(amountsGroupedByDate);
     const result = {
         amountsGroupedByDate,
         transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
