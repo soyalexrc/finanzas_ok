@@ -39,7 +39,6 @@ const InitialLayout = () => {
 
   const dispatch = useAppDispatch();
   const appearance = useAppSelector(selectSettings).appearance;
-  const segments = useSegments();
   const router = useRouter();
   const colorScheme = useColorScheme();
 
