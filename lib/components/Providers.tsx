@@ -12,6 +12,10 @@ import {useAppSelector} from "@/lib/store/hooks";
 import {selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
 import {NotificationProvider} from "@/lib/context/NotificationsContext";
 import * as Notifications from "expo-notifications";
+import {useEffect} from "react";
+import Purchases, {LOG_LEVEL} from "react-native-purchases";
+import {Alert, Platform} from "react-native";
+import {tokenCache} from "@/lib/helpers/auth";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -23,31 +27,27 @@ Notifications.setNotificationHandler({
 
 
 export default function Providers({children}: { children: React.ReactNode }) {
-    const tokenCache = {
-        async getToken(key: string) {
-            try {
-                const item = await SecureStore.getItemAsync(key)
-                if (item) {
-                    console.log(`${key} was used 🔐 \n`)
-                } else {
-                    console.log('No values stored under key: ' + key)
-                }
-                return item
-            } catch (error) {
-                console.error('SecureStore get item error: ', error)
-                await SecureStore.deleteItemAsync(key)
-                return null
-            }
-        },
-        async saveToken(key: string, value: string) {
-            try {
-                return SecureStore.setItemAsync(key, value)
-            } catch (err) {
-                return
-            }
-        },
-    }
     const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
+    useEffect(() => {
+        Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+        if (Platform.OS === 'ios') {
+            if (!process.env.EXPO_PUBLIC_RC_IOS_KEY) {
+                Alert.alert('Error configuring key', 'no revenue cat key found for ios.')
+                return;
+            } else {
+                Purchases.configure({apiKey: process.env.EXPO_PUBLIC_RC_IOS_KEY});
+            }
+        } else if (Platform.OS === 'android') {
+            if (!process.env.EXPO_PUBLIC_RC_ANDROID_KEY) {
+                Alert.alert('Error configuring key', 'no revenue cat key found for android.')
+                return;
+            } else {
+                Purchases.configure({apiKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY});
+            }
+        }
+    }, [])
 
     if (!publishableKey) {
         throw new Error(
