@@ -348,8 +348,9 @@ export default function Screen() {
                 date={new Date(currentTransaction.date)}
                 maximumDate={new Date()}
                 onConfirm={(date) => {
+                    // TODO GET DATE TIME CORRECTLY
                     const timeZonedDate = formatDate(date)
-                    console.log(timeZonedDate)
+                    console.log({timeZonedDate, date})
                     timeZonedDate.setHours(5);
                     setShowCalendar(false)
                     dispatch(onChangeDate(timeZonedDate.toISOString()))
