@@ -7,7 +7,6 @@ import {
     Transaction, TransactionsGroupedByCategory,
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
-import {a} from "ofetch/dist/shared/ofetch.8459ad38";
 import {migrateDbIfNeeded} from "@/lib/db/migrations";
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
