@@ -42,7 +42,7 @@ export default function Screen() {
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         // Your custom onScroll logic here
-        console.log(event.nativeEvent.contentOffset);
+        // console.log(event.nativeEvent.contentOffset);
         x.value = event.nativeEvent.contentOffset.x;
     };
 

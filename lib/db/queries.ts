@@ -46,8 +46,6 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
     let amountsGroupedByDate: ChartPoints[] = [];
     let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
 
-    console.log({accountId, categoryId})
-
     if (accountId === 0 && categoryId === 0) {
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
@@ -244,8 +242,6 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
 
     // console.log(JSON.parse(debugTr?.transactions as any)?.map((t, index) => ({  i: index, t: t.amount })));
 
-
-    console.log(amountsGroupedByDate);
     const result = {
         amountsGroupedByDate,
         transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
