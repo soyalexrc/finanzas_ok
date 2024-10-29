@@ -289,14 +289,14 @@ export default function Screen() {
                             >{t('AUTH.OR')}</Text>
                         </View>
                         <View backgroundColor="$color1">
-                            {
-                                isIos &&
-                                <TouchableOpacity onPress={() => signInWithOAuth('apple')}
-                                                  style={[styles.btnLight, styles.btn, {marginBottom: 10}]}>
-                                    <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white"/>
-                                    <Text fontSize={18} color="white">{t('AUTH.CONTINUE_WITH_APPLE')}</Text>
-                                </TouchableOpacity>
-                            }
+                            {/*{*/}
+                            {/*    isIos &&*/}
+                            {/*    <TouchableOpacity onPress={() => signInWithOAuth('apple')}*/}
+                            {/*                      style={[styles.btnLight, styles.btn, {marginBottom: 10}]}>*/}
+                            {/*        <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white"/>*/}
+                            {/*        <Text fontSize={18} color="white">{t('AUTH.CONTINUE_WITH_APPLE')}</Text>*/}
+                            {/*    </TouchableOpacity>*/}
+                            {/*}*/}
                             <TouchableOpacity
                                 onPress={() => signInWithOAuth('google')}
                                 style={[
