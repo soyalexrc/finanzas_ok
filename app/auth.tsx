@@ -231,6 +231,7 @@ export default function Screen() {
                     <LottieView
                         autoPlay
                         ref={animation}
+                        enableMergePathsAndroidForKitKatAndAbove={true}
                         style={{
                             width: type === 'login' ? 200 : 150,
                             height: type === 'login' ? 200 : 150,

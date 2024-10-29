@@ -87,6 +87,12 @@ export const reportSlice = createSlice({
         },
         updateAccountFilter: (state, action: PayloadAction<Account>) => {
             state.filters.account = action.payload;
+        },
+        resetFilters: (state) => {
+            state.filters = initialState.filters;
+            state.amountsGroupedByDate = initialState.amountsGroupedByDate;
+            state.detailGroup = initialState.detailGroup;
+            state.transactionsGroupedByCategory = initialState.transactionsGroupedByCategory;
         }
     }
 });
@@ -96,6 +102,7 @@ export const {
     updateTransactionsGroupedByCategory,
     updateDetailGroup,
     updateCategoryFilter,
+    resetFilters,
     updateDateRangeFilter,
     updateAccountFilter
 } = reportSlice.actions;

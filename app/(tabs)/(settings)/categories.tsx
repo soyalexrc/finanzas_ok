@@ -68,7 +68,7 @@ export default function Screen() {
     async function onPressDeleteCategory(categoryId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
-        Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), 'SETTINGS.CATEGORIES.DELETE.TEXT', [
+        Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), t('SETTINGS.CATEGORIES.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive',

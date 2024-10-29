@@ -34,6 +34,8 @@
       "NO_DATA_CHART": "Aucune donnée pour afficher le graphique.",
       "MESSAGES": {
         "INSERT_AMOUNT": "Veuillez saisir un montant pour la transaction.",
+        "INSERT_CATEGORY": "Veuillez sélectionner une catégorie",
+        "INSERT_ACCOUNT": "Veuillez sélectionner un compte",
         "SCREEN_UNDER_DEVELOPMENT": "Cette section de l'application est en cours de développement."
       }
     },

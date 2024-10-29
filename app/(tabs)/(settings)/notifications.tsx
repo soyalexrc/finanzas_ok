@@ -1,12 +1,9 @@
 import {
-    Button,
     ListItem,
     ScrollView,
     Separator,
     Switch,
     Text,
-    useIsomorphicLayoutEffect,
-    View,
     XStack,
     YGroup
 } from "tamagui";
@@ -16,15 +13,15 @@ import {useHeaderHeight} from "@react-navigation/elements";
 import {useTranslation} from "react-i18next";
 import * as Notifications from "expo-notifications";
 import * as Linking from 'expo-linking';
-import {useFocusEffect} from "expo-router";
 import DatePicker from "react-native-date-picker";
 import {formatDate} from "@/lib/helpers/date";
-import {onChangeDate} from "@/lib/store/features/transactions/transactionsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateNotificationsScheduling} from "@/lib/store/features/settings/settingsSlice";
 import {save} from "@/lib/utils/storage";
 import {formatTimeBasedOnHourAndMinute} from "@/lib/helpers/string";
 import * as Haptics from "expo-haptics";
+import {updateSettingByKey} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
 
 export default function Screen() {
     const headerHeight = useHeaderHeight()
@@ -35,6 +32,7 @@ export default function Screen() {
     const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
     const {selectedLanguage} = useAppSelector(selectSettings)
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
+    const db = useSQLiteContext();
 
     async function handleChangeActiveNotificationScheduling(value: boolean) {
         await save('notifications_scheduling', {...notifications.scheduling, active: value});
@@ -126,7 +124,8 @@ export default function Screen() {
                     { style: 'default', text: 'Ok' }
                 ])
             }
-            console.log('Daily notification scheduled:', schedulingResult);
+            updateSettingByKey(db, 'daily_notification', schedulingResult);
+
         } catch (error) {
             console.error('Error scheduling daily notification:', error);
         }

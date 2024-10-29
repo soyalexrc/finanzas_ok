@@ -47,6 +47,9 @@ export default function Providers({children}: { children: React.ReactNode }) {
                 Purchases.configure({apiKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY});
             }
         }
+
+        // Purchases.getOfferings().then(console.log)
+
     }, [])
 
     if (!publishableKey) {

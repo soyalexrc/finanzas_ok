@@ -34,6 +34,8 @@
       "NO_DATA_CHART": "グラフを表示するデータがありません。",
       "MESSAGES": {
         "INSERT_AMOUNT": "取引の金額を入力してください。",
+        "INSERT_CATEGORY": "カテゴリを選択してください",
+        "INSERT_ACCOUNT": "アカウントを選択してください",
         "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
       }
     },

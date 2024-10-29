@@ -34,6 +34,8 @@
       "NO_DATA_CHART": "No hay data para mostrar la grafica.",
       "MESSAGES": {
         "INSERT_AMOUNT": "Por favor ingresa un monto de operacion",
+        "INSERT_CATEGORY": "Por favor selecciona una categoria",
+        "INSERT_ACCOUNT": "Por favor selecciona una cuenta",
         "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
       }
     },

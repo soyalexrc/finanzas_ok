@@ -3,7 +3,6 @@ import {Animated, Platform, Pressable, StyleSheet, TouchableOpacity, useColorSch
 import {Button, useThemeName, View, ScrollView, Text} from 'tamagui';
 import {Entypo, Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {useRouter} from "expo-router";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
@@ -18,6 +17,7 @@ import TransactionSelectionOptionsSheet
     from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
 import {FullTransaction} from "@/lib/types/Transaction";
 import * as Haptics from "expo-haptics";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 
 export default function HomeScreen() {
@@ -30,6 +30,7 @@ export default function HomeScreen() {
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
     const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
+    const {isOnboardingShown} = useAppSelector(selectSettings);
     const {t} = useTranslation()
     const scheme = useColorScheme();
 
@@ -67,6 +68,7 @@ export default function HomeScreen() {
                     flex: 1,
                 }}
             >
+
                 <CustomHeader style={{paddingTop: insets.top}}>
                     {isIos && <AccountSelectDropdown/>}
                     {

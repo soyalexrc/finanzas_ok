@@ -10,9 +10,12 @@ import {useHeaderHeight} from "@react-navigation/elements";
 import {saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import i18next from "i18next";
+import {useSQLiteContext} from "expo-sqlite";
+import {updateSettingByKey} from "@/lib/db";
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const { t } = useTranslation();
     const {selectedLanguage} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
@@ -20,9 +23,11 @@ export default function Screen() {
 
 
     async function onPressAppearanceValue(value: string) {
-        dispatch(updateSelectedLanguage(value));
-        await saveString('selected_language', value);
-        await i18next.changeLanguage(value);
+        const result = updateSettingByKey(db, 'selected_language', value);
+        if (result) {
+            dispatch(updateSelectedLanguage(value));
+            await i18next.changeLanguage(value);
+        }
     }
 
     return (

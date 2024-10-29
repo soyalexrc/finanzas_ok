@@ -1,10 +1,15 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import {
-    Account, AccountCreate, AccountEdit,
-    Category, CategoryCreate, ChartPoints,
+    Account,
+    AccountCreate,
+    AccountEdit,
+    Category,
+    CategoryCreate,
+    ChartPoints,
     FullTransaction,
     FullTransactionRaw,
-    Transaction, TransactionsGroupedByCategory,
+    Transaction,
+    TransactionsGroupedByCategory,
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
 import {migrateDbIfNeeded} from "@/lib/db/migrations";
@@ -14,6 +19,64 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
     return db.getAllSync(`SELECT *
                           FROM accounts ORDER BY title`);
+}
+
+export function getSettings(db: SQLiteDatabase): {[key: string]: string} {
+    const data =  db.getAllSync(`SELECT * FROM settings`);
+
+    const settingsObject: { [key: string]: string } = {};
+    data.forEach((row: any) => {
+        settingsObject[row.key] = row.value;
+    });
+    return settingsObject
+}
+
+export function updateSettingByKey(db: SQLiteDatabase, key: string, value: string): boolean{
+    try {
+        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        if (!row) {
+            db.runSync('INSERT INTO settings (key, value) VALUES ($key, $value)', {$key: key, $value: value});
+            return true;
+        } else {
+            db.runSync(`UPDATE settings  SET value = ? WHERE key = ?`, [value, key]);
+            return true
+        }
+    } catch (err) {
+        console.erro(err);
+        return false
+    }
+}
+
+export function insertMultipleCategories(db: SQLiteDatabase, categories: { type: string, title: string, icon: string, id: number }[]): void {
+    try {
+        for (const category of categories) {
+            const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
+            statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export function deleteSettingByKey(db: SQLiteDatabase, key: string): boolean{
+    try {
+        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        if (!row) {
+            return false;
+        } else {
+            db.runSync(`DELETE FROM settings WHERE key = ?`, [key]);
+            return true
+        }
+    } catch (err) {
+        console.error(err);
+        return false
+    }
+}
+
+export function getSettingByKey(db: SQLiteDatabase, key: string): {value: string} | null {
+    // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
+    // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
+    return db.getFirstSync(`SELECT value FROM settings WHERE key = ? `, [key]);
 }
 
 export function getAllCategories(db: SQLiteDatabase): Category[] {
@@ -30,7 +93,7 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         //
         await db.runAsync('DROP TABLE migrations')
         await db.runAsync('DROP TABLE accounts')
-        await db.runAsync('DROP TABLE categories')
+        // await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
 
         await migrateDbIfNeeded(db)

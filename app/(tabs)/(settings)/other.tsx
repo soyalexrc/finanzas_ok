@@ -12,10 +12,13 @@ import {useTranslation} from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
 import {useRouter} from "expo-router";
+import {updateSettingByKey} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
 
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const {isOnboardingShown} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
@@ -24,8 +27,8 @@ export default function Screen() {
     const router = useRouter();
 
     async function handleChangeSetting(value: boolean) {
-            const saved = await save('is_onboarding_shown', value);
-            if (saved) {
+            const result = updateSettingByKey(db, 'is_onboarding_shown', String(value))
+            if (result) {
                 dispatch(updateOnboardingState(value))
             }
     }
@@ -46,7 +49,7 @@ export default function Screen() {
                     <ListItem
                         title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}
                         iconAfter={
-                            <Switch size="$2" defaultChecked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>
+                            <Switch size="$2" checked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>
                                 <Switch.Thumb animation="quicker" />
                             </Switch>
                         }

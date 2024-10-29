@@ -7,6 +7,7 @@ import {RootState} from "@/lib/store";
 interface SettingsState {
     appearance: 'system' | 'light' | 'dark';
     hidden_feature_flag: boolean;
+    onBoardingLastStep: number;
     selectedLanguage: string;
     isOnboardingShown: boolean;
     notifications: {
@@ -24,6 +25,7 @@ const initialState: SettingsState = {
     hidden_feature_flag: false,
     selectedLanguage: 'es',
     isOnboardingShown: false,
+    onBoardingLastStep: 1,
     notifications: {
         scheduling: {
             active: false,
@@ -50,6 +52,9 @@ export const settingsSlice = createSlice({
         updateOnboardingState: (state, action: PayloadAction<boolean>) => {
             state.isOnboardingShown = action.payload;
         },
+        updateOnBoardingLastStep: (state, action: PayloadAction<number>) => {
+            state.onBoardingLastStep = action.payload;
+        },
         updateNotificationsScheduling: (state, action: PayloadAction<{hour: number, minute: number, active: boolean}>) => {
             state.notifications.scheduling = action.payload;
         }
@@ -61,6 +66,7 @@ export const {
     updateSelectedLanguage,
     updateHiddenFeatureFlag,
     updateOnboardingState,
+    updateOnBoardingLastStep,
     updateNotificationsScheduling,
 } = settingsSlice.actions
 
