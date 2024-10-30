@@ -1,11 +1,18 @@
 {
   "expo": {
     "name": "Finanzas Ok",
+    "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
     "version": "1.0.0",
+    "owner": "Alex Rodriguez",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "finanzasok",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "githubUrl": "https://github.com/soyalexrc/finanzas_ok",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -105,9 +112,9 @@
       }
     },
     "runtimeVersion": "1.0.0",
-//    "runtimeVersion": {
-//      "policy": "appVersion"
-//    },
+    //    "runtimeVersion": {
+    //      "policy": "appVersion"
+    //    },
     "updates": {
       "url": "https://u.expo.dev/f3f3f3a8-d2ec-4088-ae83-cc81c8c47638",
       "fallbackToCacheTimeout": 1
