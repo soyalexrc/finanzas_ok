@@ -214,6 +214,9 @@
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Suivre @finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "Soutenir le développeur"
       }
     },
     "ONBOARDING": {
