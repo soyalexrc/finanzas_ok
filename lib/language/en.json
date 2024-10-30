@@ -3,9 +3,11 @@
     "COMMON": {
       "CANCEL": "Cancel",
       "BACK": "Back",
+      "NEXT": "Next",
       "WELCOME": "Welcome",
       "WARNING": "Warning",
       "ACCEPT": "Accept",
+      "ACTIVATE": "Activate",
       "OK": "Ok",
       "NEW": "New",
       "GIVE_ACCESS": "Give access",
@@ -37,6 +39,8 @@
         "INSERT_AMOUNT": "Please insert an amount for the transaction.",
         "INSERT_CATEGORY": "Please select a category",
         "INSERT_ACCOUNT": "Please select an account",
+        "INSERT_ACCOUNT_TITLE": "Please type a title for the account",
+        "ACTIVATE_NOTIFICATIONS": "To receive notifications of new offers, updates and reminders, please enable notification permissions.",
         "MINIMUM_AMOUNT_ACCOUNTS": "you must have at least one account.",
         "SCREEN_UNDER_DEVELOPMENT": "This section of the app is under development."
       }
@@ -184,8 +188,8 @@
           "ENABLE": "Enable notifications",
           "ENABLE_DAILY": "Enable daily notifications",
           "SCHEDULING": "Scheduling",
-          "NOTIFICATION_TITLE": "Remember to update your finances!",
-          "NOTIFICATION_BODY": "Enter your daily income, account movements, and more to keep your personal finances in order."
+          "NOTIFICATION_TITLE": "Update Your Finances",
+          "NOTIFICATION_BODY": "Keep track of your income and expenses. Update now!"
         }
       },
       "DATA_MANAGEMENT": {
@@ -214,6 +218,36 @@
       },
       "SUPPORT_DEV": {
         "TITLE": "Support Developer"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "All set!",
+      "LANGUAGE": {
+        "TITLE": "Language",
+        "DESC": "You can always change it in the settings panel."
+      },
+      "ACCOUNT": {
+        "TITLE": "Account",
+        "DESC": "To keep your transactions organized, you just need to give it a name and an icon with which you can identify it."
+      },
+      "CATEGORIES": {
+        "TITLE": "Categories",
+        "DESC": "Below we present generic categories, edit the list to your liking. You can always add more categories and configure them in the configuration panel."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notifications",
+        "DESC": "We can remind you to update your finances at the time you specify.",
+        "OPTIONS": {
+          "NONE": "None",
+          "MORNINGS": "All mornings at 9:00 AM",
+          "AFTERNOONS": "All afternoons at 3:00 PM",
+          "NIGHTS": "All nights at 9:00 PM"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "Let's get your money in shape",
+        "MONEY_MISSION": "Your money, your mission.",
+        "TAME_FINANCES": "Time to tame your finances"
       }
     }
   }

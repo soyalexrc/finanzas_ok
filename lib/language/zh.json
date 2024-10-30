@@ -6,6 +6,8 @@
       "WARNING": "警告",
       "ACCEPT": "接受",
       "WELCOME": "欢迎",
+      "NEXT": "下一个",
+      "ACTIVATE": "激活",
       "OK": "好",
       "NEW": "新的",
       "GIVE_ACCESS": "授予访问权限",
@@ -37,6 +39,8 @@
         "INSERT_AMOUNT": "请输入交易金额。",
         "INSERT_CATEGORY": "请选择类别",
         "INSERT_ACCOUNT": "请选择帐户",
+        "ACTIVATE_NOTIFICATIONS": "要接收新优惠、更新和提醒的通知，请启用通知权限。",
+        "INSERT_ACCOUNT_TITLE": "请输入帐户的标题",
         "MINIMUM_AMOUNT_ACCOUNTS": "您必须至少拥有一个帐户。",
         "SCREEN_UNDER_DEVELOPMENT": "该应用程序的这一部分正在开发中。"
       }
@@ -214,6 +218,36 @@
       },
       "SUPPORT_DEV": {
         "TITLE": "支持开发者"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "完成！",
+      "LANGUAGE": {
+        "TITLE": "语言",
+        "DESC": "您可以在设置面板中随时更改。"
+      },
+      "ACCOUNT": {
+        "TITLE": "账户",
+        "DESC": "要组织您的交易，只需为其命名并添加一个用于识别的图标。"
+      },
+      "CATEGORIES": {
+        "TITLE": "类别",
+        "DESC": "下面我们展示了通用类别。您可以根据自己的喜好编辑列表。您还可以随时添加更多类别并在配置面板中进行配置。"
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "通知",
+        "DESC": "我们可以提醒您在指定时间更新您的财务状况。",
+        "OPTIONS": {
+          "NONE": "无",
+          "MORNINGS": "每天早上9:00 AM",
+          "AFTERNOONS": "每天下午3:00 PM",
+          "NIGHTS": "每天晚上9:00 PM"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "让我们整理你的财务",
+        "MONEY_MISSION": "你的钱，你的使命。",
+        "TAME_FINANCES": "是时候驯服你的财务了"
       }
     }
   }

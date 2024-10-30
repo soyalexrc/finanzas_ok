@@ -165,7 +165,10 @@ export default function Screen() {
     }
 
     async function manageCreateAccount() {
-        if (!accountTitle) return;
+        if (!accountTitle) {
+            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_ACCOUNT_TITLE'))
+            return;
+        };
         if (!accountCurrency) return;
 
         const newAccount: any = await createAccount(
@@ -278,12 +281,12 @@ export default function Screen() {
                     <XStack justifyContent="center">
                         <Image source={require('@/assets/images/adaptive-icon.png')} width={170} height={170}/>
                     </XStack>
-                    <Text fontSize="$10" textAlign="center" mb={10}>Bienvenido!</Text>
-                    <Text fontSize={14} textAlign="center">Let's get your money in shape! 💪</Text>
-                    <Text fontSize={14} textAlign="center">Your money, your mission. 🚀</Text>
-                    <Text fontSize={14} textAlign="center">Time to tame your finances! 🦁</Text>
+                    <Text fontSize="$10" textAlign="center" mb={10}>{t('COMMON.WELCOME')}!</Text>
+                    <Text fontSize={14} textAlign="center">{t('ONBOARDING.WELCOME.MONEY_IN_SHAPE')}! 💪</Text>
+                    <Text fontSize={14} textAlign="center">{t('ONBOARDING.WELCOME.MONEY_MISSION')} 🚀</Text>
+                    <Text fontSize={14} textAlign="center">{t('ONBOARDING.WELCOME.TAME_FINANCES')}! 🦁</Text>
                     <View flex={1}/>
-                    <Button mx={20} onPress={() => changeStep('next')}>Iniciar</Button>
+                    <Button mx={20} onPress={() => changeStep('next')}>{t('COMMON.GET_STARTED')}</Button>
                 </View>
             }
             {
@@ -298,9 +301,10 @@ export default function Screen() {
                         />
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>Idioma</Text>
+                        <Text fontSize={30} mb={10}>{t('ONBOARDING.LANGUAGE.TITLE')}</Text>
                         <Text fontSize={14} mb={10}>
-                            Podras cambiarlo siempre en el panel de configuraciones.
+                            {t('ONBOARDING.LANGUAGE.DESC')}
+
                         </Text>
                     </YStack>
 
@@ -379,7 +383,7 @@ export default function Screen() {
                     </YStack>
 
                     <View flex={1}/>
-                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.COMPLETE')}</Button>
+                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -395,11 +399,8 @@ export default function Screen() {
                         />
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>Cuenta</Text>
-                        <Text fontSize={14} mb={10}>
-                            Para llevar tus transacciones de manera ordenada, solo basta con que le des un nombre y un
-                            icono con el que puedas identificarla
-                        </Text>
+                        <Text fontSize={30} mb={10}>{t('ONBOARDING.ACCOUNT.TITLE')}</Text>
+                        <Text fontSize={14} mb={10}>{t('ONBOARDING.ACCOUNT.DESC')}</Text>
                     </YStack>
 
                     <YStack px={20}>
@@ -560,7 +561,7 @@ export default function Screen() {
                     </YStack>
 
                     <View flex={1}/>
-                    <Button mx={20} onPress={manageCreateAccount} >{t('COMMON.COMPLETE')}</Button>
+                    <Button mx={20} onPress={manageCreateAccount} >{t('COMMON.NEXT')}</Button>
 
                 </KeyboardAvoidingView>
             }
@@ -577,11 +578,8 @@ export default function Screen() {
                         />
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>Categorias</Text>
-                        <Text fontSize={14} mb={10}>
-                            A continuacion te presentamos categorias genericas, edita la lista a tu gusto. Siempre
-                            podras agregar mas categorias y configurarlas en el panel de configuracion
-                        </Text>
+                        <Text fontSize={30} mb={10}>{t('ONBOARDING.CATEGORIES.TITLE')}</Text>
+                        <Text fontSize={14} mb={10}>{t('ONBOARDING.CATEGORIES.DESC')}</Text>
                     </YStack>
 
                     {/*<ScrollView flex={1} mb={10} p={20}>*/}
@@ -615,7 +613,7 @@ export default function Screen() {
                         )}
                     />
 
-                    <Button mx={20} onPress={manageCreateCategories} >{t('COMMON.COMPLETE')}</Button>
+                    <Button mx={20} onPress={manageCreateCategories} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -631,10 +629,8 @@ export default function Screen() {
                         />
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>Notificaciones</Text>
-                        <Text fontSize={14} mb={10}>
-                            Podemos recordarte actualizar tus finanzas en el horario que nos indiques.
-                        </Text>
+                        <Text fontSize={30} mb={10}>{t('ONBOARDING.NOTIFICATIONS.TITLE')}</Text>
+                        <Text fontSize={14} mb={10}>{t('ONBOARDING.NOTIFICATIONS.DESC')}</Text>
                     </YStack>
 
                     {
@@ -645,7 +641,7 @@ export default function Screen() {
                                 justifyContent: 'space-between',
                                 alignItems: 'center'
                             }}>
-                                <Text fontSize={16}>Ninguna</Text>
+                                <Text fontSize={16}>{t('ONBOARDING.NOTIFICATIONS.OPTIONS.NONE')}</Text>
                                 {!notifications.scheduling.active && <Entypo name="check" size={20} color="black"/>}
                             </TouchableOpacity>
 
@@ -654,7 +650,7 @@ export default function Screen() {
                                 justifyContent: 'space-between',
                                 alignItems: 'center'
                             }}>
-                                <Text fontSize={16}>Todas las mananas a las 9:00 AM</Text>
+                                <Text fontSize={16}>{t('ONBOARDING.NOTIFICATIONS.OPTIONS.MORNINGS')}</Text>
                                 {notifications.scheduling.hour === 9 && <Entypo name="check" size={20} color="black"/>}
                             </TouchableOpacity>
 
@@ -663,7 +659,7 @@ export default function Screen() {
                                 justifyContent: 'space-between',
                                 alignItems: 'center'
                             }}>
-                                <Text fontSize={16}>Todas las tardes a las 3:00 PM</Text>
+                                <Text fontSize={16}>{t('ONBOARDING.NOTIFICATIONS.OPTIONS.AFTERNOONS')}</Text>
                                 {notifications.scheduling.hour === 15 && <Entypo name="check" size={20} color="black"/>}
                             </TouchableOpacity>
 
@@ -672,19 +668,19 @@ export default function Screen() {
                                 justifyContent: 'space-between',
                                 alignItems: 'center'
                             }}>
-                                <Text fontSize={16}>Todas las noches a las 9:00 PM</Text>
+                                <Text fontSize={16}>{t('ONBOARDING.NOTIFICATIONS.OPTIONS.NIGHTS')}</Text>
                                 {notifications.scheduling.hour === 21 && <Entypo name="check" size={20} color="black"/>}
                             </TouchableOpacity>
 
 
-                            <TouchableOpacity style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
-                                <Text fontSize={16}>Personalizar</Text>
-                                {selectedLanguage === 'fr' && <Entypo name="check" size={20} color="black"/>}
-                            </TouchableOpacity>
+                            {/*<TouchableOpacity style={{*/}
+                            {/*    flexDirection: 'row',*/}
+                            {/*    justifyContent: 'space-between',*/}
+                            {/*    alignItems: 'center'*/}
+                            {/*}}>*/}
+                            {/*    <Text fontSize={16}>Personalizar</Text>*/}
+                            {/*    {selectedLanguage === 'fr' && <Entypo name="check" size={20} color="black"/>}*/}
+                            {/*</TouchableOpacity>*/}
 
 
                         </YStack>
@@ -700,16 +696,16 @@ export default function Screen() {
                                 objectFit="contain"
                             />
                             <View maxWidth={300}>
-                                <Text textAlign="center">Para recibir notificaciones de nuevas ofertas, actualizaciones y recordatorios, por favor, habilita los permisos de notificación.</Text>
+                                <Text textAlign="center">{t('COMMON.MESSAGES.ACTIVATE_NOTIFICATIONS')}</Text>
                             </View>
                             <Button backgroundColor="$color11" onPress={askForPermissions}>
-                                <Text color="$color1">Activar notificaciones</Text>
+                                <Text color="$color1">{t('COMMON.ACTIVATE')}</Text>
                             </Button>
                         </YStack>
                     }
                     <View flex={1}/>
 
-                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.COMPLETE')}</Button>
+                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -717,22 +713,22 @@ export default function Screen() {
                 onBoardingLastStep === 6 &&
                 <View flex={1}>
                     <XStack justifyContent="center" alignItems="center" flex={1}>
-
-                    </XStack>
-                    <YStack px={20} mt={20} alignItems="center">
                         <Image
                             source={require('@/assets/images/completed.webp')}
-                            width={170}
-                            height={170}
+                            width={100}
+                            height={100}
                             objectFit="contain"
                         />
-                        <Text fontSize={30} my={20} textAlign='center'>¡Listo para empezar!</Text>
+                    </XStack>
+                    <YStack px={20} mt={20} alignItems="center">
+
+                        <Text fontSize={30} my={20} textAlign='center'>{t('ONBOARDING.FINISH')}</Text>
                     </YStack>
 
 
                     <View flex={1}/>
 
-                    <Button mx={20} onPress={complete} >{t('COMMON.COMPLETE')}</Button>
+                    <Button mx={20} onPress={complete} >{t('COMMON.DONE')}</Button>
 
 
                 </View>

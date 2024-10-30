@@ -1,9 +1,11 @@
 {
   "translation": {
     "COMMON": {
+      "NEXT": "Siguiente",
       "CANCEL": "Cancelar",
       "BACK": "Atras",
       "WARNING": "Aviso",
+      "ACTIVATE": "Activar",
       "ACCEPT": "Aceptar",
       "OK": "Ok",
       "NEW": "Nuevo",
@@ -37,6 +39,8 @@
         "INSERT_AMOUNT": "Por favor ingresa un monto de operacion",
         "INSERT_CATEGORY": "Por favor selecciona una categoria",
         "INSERT_ACCOUNT": "Por favor selecciona una cuenta",
+        "INSERT_ACCOUNT_TITLE": "Por favor ingresa un titulo para la cuenta.",
+        "ACTIVATE_NOTIFICATIONS": "Para recibir notificaciones de nuevas ofertas, actualizaciones y recordatorios, por favor, habilita los permisos de notificación.",
         "MINIMUM_AMOUNT_ACCOUNTS": "debes tener una cuenta como minimo.",
         "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
       }
@@ -184,8 +188,8 @@
           "ENABLE": "Habilitar notificationes",
           "ENABLE_DAILY": "Habilitar notificationes diarias",
           "SCHEDULING": "Horario",
-          "NOTIFICATION_TITLE": "Recuerda actualizar tus finanzas!",
-          "NOTIFICATION_BODY": "Ingresa tus ingresos del dia, movimientos de cuentas y demas para mantener orden en tus finanzas personales."
+          "NOTIFICATION_TITLE": "Actualiza tus finanzas.",
+          "NOTIFICATION_BODY": "Lleva un registro de tus ingresos y gastos. ¡Actualízalo ahora!"
         }
       },
       "DATA_MANAGEMENT": {
@@ -216,11 +220,33 @@
       }
     },
     "ONBOARDING": {
+      "FINISH": "¡Listo!",
+      "LANGUAGE": {
+        "TITLE": "Idioma",
+        "DESC": "Puedes cambiarlo en cualquier momento en el panel de configuración."
+      },
+      "ACCOUNT": {
+        "TITLE": "Cuenta",
+        "DESC": "Para organizar tus transacciones, solo necesitas darle un nombre y un icono con el que puedas identificarla."
+      },
+      "CATEGORIES": {
+        "TITLE": "Categorías",
+        "DESC": "A continuación, presentamos categorías genéricas. Edita la lista a tu gusto. Siempre puedes agregar más categorías y configurarlas en el panel de configuración."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notificaciones",
+        "DESC": "Podemos recordarte que actualices tus finanzas en el momento que especifiques.",
+        "OPTIONS": {
+          "NONE": "Ninguno",
+          "MORNINGS": "Todas las mañanas a las 9:00 AM",
+          "AFTERNOONS": "Todas las tardes a las 3:00 PM",
+          "NIGHTS": "Todas las noches a las 9:00 PM"
+        }
+      },
       "WELCOME": {
-        "TITLE": "",
-        "MONEY_IN_SHAPE": "",
-        "MONEY_MISSION": "",
-        "TAME_FINANCES": ""
+        "MONEY_IN_SHAPE": "Pongamos tus finanzas en forma",
+        "MONEY_MISSION": "Tu dinero, tu misión.",
+        "TAME_FINANCES": "Es hora de domar tus finanzas"
       }
     }
   }

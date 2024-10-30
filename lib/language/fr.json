@@ -4,6 +4,8 @@
       "CANCEL": "Annuler",
       "BACK": "Retour",
       "WELCOME": "Bienvenue",
+      "NEXT": "Suivant",
+      "ACTIVATE": "Activer",
       "WARNING": "Avertissement",
       "ACCEPT": "Accepter",
       "OK": "OK",
@@ -37,6 +39,8 @@
         "INSERT_AMOUNT": "Veuillez saisir un montant pour la transaction.",
         "INSERT_CATEGORY": "Veuillez sélectionner une catégorie",
         "INSERT_ACCOUNT": "Veuillez sélectionner un compte",
+        "ACTIVATE_NOTIFICATIONS": "Pour recevoir des notifications de nouvelles offres, mises à jour et rappels, veuillez activer les autorisations de notification.",
+        "INSERT_ACCOUNT_TITLE": "Veuillez saisir un titre pour le compte",
         "MINIMUM_AMOUNT_ACCOUNTS": "Vous devez avoir au moins un compte.",
         "SCREEN_UNDER_DEVELOPMENT": "Cette section de l'application est en cours de développement."
       }
@@ -184,8 +188,8 @@
           "ENABLE": "Activer les notifications",
           "ENABLE_DAILY": "Activer les notifications quotidiennes",
           "SCHEDULING": "Planification",
-          "NOTIFICATION_TITLE": "N'oubliez pas de mettre à jour vos finances !",
-          "NOTIFICATION_BODY": "Saisissez vos revenus quotidiens, vos mouvements de compte et plus encore pour garder vos finances personnelles en ordre."
+          "NOTIFICATION_TITLE": "Mettez à jour vos finances.",
+          "NOTIFICATION_BODY": "Suivez vos revenus et vos dépenses. Mettez à jour maintenant !"
         }
       },
       "DATA_MANAGEMENT": {
@@ -210,6 +214,36 @@
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Suivre @finanzasokapp"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "C'est fini!",
+      "LANGUAGE": {
+        "TITLE": "Langue",
+        "DESC": "Vous pouvez toujours le changer dans le panneau de configuration."
+      },
+      "ACCOUNT": {
+        "TITLE": "Compte",
+        "DESC": "Pour organiser vos transactions, il vous suffit de lui donner un nom et une icône avec laquelle vous pouvez l'identifier."
+      },
+      "CATEGORIES": {
+        "TITLE": "Catégories",
+        "DESC": "Ci-dessous, nous présentons des catégories génériques. Modifiez la liste à votre guise. Vous pouvez toujours ajouter plus de catégories et les configurer dans le panneau de configuration."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notifications",
+        "DESC": "Nous pouvons vous rappeler de mettre à jour vos finances au moment que vous spécifiez.",
+        "OPTIONS": {
+          "NONE": "Aucun",
+          "MORNINGS": "Tous les matins à 9h00",
+          "AFTERNOONS": "Tous les après-midi à 15h00",
+          "NIGHTS": "Tous les soirs à 21h00"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "Mettons vos finances en forme",
+        "MONEY_MISSION": "Votre argent, votre mission.",
+        "TAME_FINANCES": "Il est temps de dompter vos finances"
       }
     }
   }

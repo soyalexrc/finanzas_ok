@@ -2,9 +2,11 @@
   "translation": {
     "COMMON": {
       "CANCEL": "キャンセル",
+      "NEXT": "次",
       "BACK": "戻る",
       "WELCOME": "いらっしゃいませ",
       "WARNING": "警告",
+      "ACTIVATE": "活性化",
       "ACCEPT": "受け入れる",
       "OK": "OK",
       "GIVE_ACCESS": "アクセス権を与える",
@@ -37,7 +39,9 @@
         "INSERT_AMOUNT": "取引の金額を入力してください。",
         "INSERT_CATEGORY": "カテゴリを選択してください",
         "INSERT_ACCOUNT": "アカウントを選択してください",
+        "INSERT_ACCOUNT_TITLE": "アカウントのタイトルを入力してください",
         "MINIMUM_AMOUNT_ACCOUNTS": "少なくとも 1 つのアカウントが必要です。",
+        "ACTIVATE_NOTIFICATIONS": "新しいオファー、更新、リマインダーの通知を受け取るには、通知許可を有効にしてください。",
         "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
       }
     },
@@ -184,8 +188,8 @@
           "ENABLE": "通知を有効化",
           "ENABLE_DAILY": "毎日の通知を有効化",
           "SCHEDULING": "スケジュール",
-          "NOTIFICATION_TITLE": "財務状況を更新してください！",
-          "NOTIFICATION_BODY": "日々の収入、口座の動きなどを記入して、個人財務を整理してください。"
+          "NOTIFICATION_TITLE": "財務を更新します。",
+          "NOTIFICATION_BODY": "収入と支出を追跡します。今すぐ更新しましょう!"
         }
       },
       "DATA_MANAGEMENT": {
@@ -214,6 +218,36 @@
       },
       "SUPPORT_DEV": {
         "TITLE": "開発者をサポート"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "完了！",
+      "LANGUAGE": {
+        "TITLE": "言語",
+        "DESC": "設定パネルでいつでも変更できます。"
+      },
+      "ACCOUNT": {
+        "TITLE": "アカウント",
+        "DESC": "取引を整理するには、名前と識別用のアイコンを付けるだけです。"
+      },
+      "CATEGORIES": {
+        "TITLE": "カテゴリ",
+        "DESC": "以下に一般的なカテゴリを示します。リストを編集して好みに合わせてください。いつでもカテゴリを追加して設定パネルで構成できます。"
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "通知",
+        "DESC": "指定した時間に財務情報を更新するよう通知できます。",
+        "OPTIONS": {
+          "NONE": "なし",
+          "MORNINGS": "毎朝9:00 AM",
+          "AFTERNOONS": "毎午後3:00 PM",
+          "NIGHTS": "毎晩9:00 PM"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "お金を整えましょう",
+        "MONEY_MISSION": "あなたのお金、あなたの使命。",
+        "TAME_FINANCES": "あなたの財務を飼いならす時です"
       }
     }
   }

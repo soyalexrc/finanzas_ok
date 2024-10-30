@@ -3,7 +3,9 @@
     "COMMON": {
       "CANCEL": "Abbrechen",
       "BACK": "Zurück",
+      "NEXT": "Nächste",
       "WELCOME": "Willkommen",
+      "ACTIVATE": "Aktivieren",
       "WARNING": "Warnung",
       "ACCEPT": "Akzeptieren",
       "OK": "OK",
@@ -37,7 +39,9 @@
         "INSERT_AMOUNT": "Bitte geben Sie einen Betrag für die Transaktion ein.",
         "INSERT_CATEGORY": "Bitte wählen Sie eine Kategorie",
         "INSERT_ACCOUNT": "Bitte wählen Sie ein Konto",
+        "INSERT_ACCOUNT_TITLE": "Bitte geben Sie einen Titel für das Konto ein",
         "MINIMUM_AMOUNT_ACCOUNTS": "Sie müssen mindestens ein Konto haben.",
+        "ACTIVATE_NOTIFICATIONS": "Um Benachrichtigungen über neue Angebote, Aktualisierungen und Erinnerungen zu erhalten, aktivieren Sie bitte die Benachrichtigungsberechtigungen.",
         "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
       }
     },
@@ -184,8 +188,8 @@
           "ENABLE": "Benachrichtigungen aktivieren",
           "ENABLE_DAILY": "Tägliche Benachrichtigungen aktivieren",
           "SCHEDULING": "Planung",
-          "NOTIFICATION_TITLE": "Denken Sie daran, Ihre Finanzen zu aktualisieren!",
-          "NOTIFICATION_BODY": "Geben Sie Ihr tägliches Einkommen, Kontobewegungen und mehr ein, um Ihre persönlichen Finanzen in Ordnung zu halten."
+          "NOTIFICATION_TITLE": "Aktualisieren Sie Ihre Finanzen.",
+          "NOTIFICATION_BODY": "Behalten Sie den Überblick über Ihre Einnahmen und Ausgaben. Jetzt aktualisieren!"
         }
       },
       "DATA_MANAGEMENT": {
@@ -211,6 +215,36 @@
       "FOLLOW_ON_IG": {
         "TITLE": "Folge @finanzasokapp"
       }
-    }
+    },
+    "ONBOARDING": {
+      "FINISH": "Fertig!",
+      "LANGUAGE": {
+        "TITLE": "Sprache",
+        "DESC": "Du kannst es jederzeit im Einstellungsbereich ändern."
+      },
+      "ACCOUNT": {
+        "TITLE": "Konto",
+        "DESC": "Um deine Transaktionen zu organisieren, musst du ihm nur einen Namen und ein Symbol geben, mit dem du es identifizieren kannst."
+      },
+      "CATEGORIES": {
+        "TITLE": "Kategorien",
+        "DESC": "Im Folgenden präsentieren wir allgemeine Kategorien. Bearbeite die Liste nach Belieben. Du kannst jederzeit weitere Kategorien hinzufügen und diese im Einstellungsbereich konfigurieren."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Benachrichtigungen",
+        "DESC": "Wir können dich daran erinnern, deine Finanzen zu einem bestimmten Zeitpunkt zu aktualisieren.",
+        "OPTIONS": {
+          "NONE": "Keine",
+          "MORNINGS": "Jeden Morgen um 9:00 Uhr",
+          "AFTERNOONS": "Jeden Nachmittag um 15:00 Uhr",
+          "NIGHTS": "Jeden Abend um 21:00 Uhr"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "Bringen wir deine Finanzen in Form",
+        "MONEY_MISSION": "Dein Geld, deine Mission.",
+        "TAME_FINANCES": "Zeit, deine Finanzen zu zähmen"
+      }
+    },
   }
 }
