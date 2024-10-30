@@ -13,6 +13,7 @@ import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 import {getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
 
 export interface ReportState {
+    // TODO dividir en dos, gastos e ingresos.
     amountsGroupedByDate: ChartPoints[];
     transactionsGroupedByCategory: TransactionsGroupedByCategory[];
     detailGroup: TransactionsGroupedByCategory;
@@ -30,7 +31,8 @@ const initialState: ReportState = {
         category: {
             id: 0,
             title: '',
-            icon: ''
+            icon: '',
+            type: ''
         },
         transactions: [],
         account: {
@@ -85,6 +87,12 @@ export const reportSlice = createSlice({
         },
         updateAccountFilter: (state, action: PayloadAction<Account>) => {
             state.filters.account = action.payload;
+        },
+        resetFilters: (state) => {
+            state.filters = initialState.filters;
+            state.amountsGroupedByDate = initialState.amountsGroupedByDate;
+            state.detailGroup = initialState.detailGroup;
+            state.transactionsGroupedByCategory = initialState.transactionsGroupedByCategory;
         }
     }
 });
@@ -94,6 +102,7 @@ export const {
     updateTransactionsGroupedByCategory,
     updateDetailGroup,
     updateCategoryFilter,
+    resetFilters,
     updateDateRangeFilter,
     updateAccountFilter
 } = reportSlice.actions;

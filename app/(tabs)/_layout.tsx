@@ -3,13 +3,15 @@ import React from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 
-import {Platform, Text, useColorScheme, View} from "react-native";
+import {Alert, Platform, Text, useColorScheme, View} from "react-native";
 import CustomBottomBar from "@/lib/components/ui/CustomBottomBar";
 import {Button, useTheme} from "tamagui";
 import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
-import {useAppDispatch} from "@/lib/store/hooks";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {AntDesign, Entypo} from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import * as Haptics from "expo-haptics";
+import {useTranslation} from "react-i18next";
 
 export default function TabLayout() {
     const theme = useTheme()
@@ -17,8 +19,10 @@ export default function TabLayout() {
     const router = useRouter();
     const schemeColor = useColorScheme();
     const dispatch = useAppDispatch();
+    const {t} = useTranslation();
 
-    function onPressNewTransaction() {
+    async function onPressNewTransaction() {
+        await Haptics.selectionAsync();
         dispatch(resetCurrentTransaction());
         router.push('/transactionCreateUpdate');
     }
@@ -56,6 +60,12 @@ export default function TabLayout() {
                         <FontAwesome6 style={{ transform: 'rotate(280deg)' }} name="arrow-rotate-right" size={28} color={color}/>
                     )
                 }}
+                listeners={() => ({
+                    tabPress: e => {
+                        e.preventDefault();
+                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.SCREEN_UNDER_DEVELOPMENT'))
+                    }
+                })}
             />
             <Tabs.Screen
                 name="action"

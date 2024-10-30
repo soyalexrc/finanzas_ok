@@ -54,7 +54,8 @@ export default function Screen() {
     const [selectedAccountId, setSelectAccountId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
 
-    function onPressAccount(account: Account) {
+    async function onPressAccount(account: Account) {
+        await Haptics.selectionAsync();
         dispatch(updateAccountCreateUpdate(account));
         dispatch(changeEmoji(account.icon))
         router.push('/createEditAccount')
@@ -70,6 +71,11 @@ export default function Screen() {
                 text: t('COMMON.DELETE'),
                 isPreferred: false,
                 onPress: async () => {
+                    const allAccounts = getAllAccounts(db).length;
+                    if (allAccounts === 1) {
+                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.MINIMUM_AMOUNT_ACCOUNTS'))
+                        return;
+                    }
                     await deleteAccount(db, accountId);
                     setSelectAccountId(0);
                     setOpen(false);
@@ -142,7 +148,7 @@ export default function Screen() {
                                                         color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
                                                 </YStack>
                                                 <Text
-                                                    fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toString())} {account.currency_code}</Text>
+                                                    fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toFixed(2))} {account.currency_code}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </ContextMenu.Trigger>

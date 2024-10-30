@@ -3,7 +3,7 @@ import { englishCategories, spanishCategories } from '@/lib/utils/data/categorie
 import {getLocales} from "expo-localization";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-    console.log('migrations ran');
+    console.log('migrations called');
 
     // Clear table
 
@@ -42,6 +42,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // Get the latest applied migration version
         for (const migration of migrations) {
             if (migration.version > latestAppliedMigration) {
+                console.log('new migration ran')
                 await migration.migrate(db);
                 const statement = await db.prepareAsync(
                     `INSERT INTO migrations (version, name, applied_at) VALUES ($version, $name, $applied_at)`
@@ -115,25 +116,6 @@ const migrations = [
                 )
             `);
 
-                const categories = db.getAllSync(`SELECT * FROM categories`);
-                const languageCode = getLocales()[0].languageCode ?? 'en';
-
-                if (categories.length < 1) {
-                    const categoriesToInsert = languageCode === 'es' ? spanishCategories : englishCategories;
-                    for (const category of categoriesToInsert) {
-                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
-                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
-                    }
-                }
-
-                const accounts = db.getAllSync(`SELECT * FROM accounts`);
-                if (accounts.length < 1) {
-                    const locales = getLocales();
-                    const statement = db.prepareSync(`INSERT INTO accounts (title, icon, balance, positive_state, currency_code, currency_symbol) VALUES ($title, $icon, $balance, $positive_state, $currency_code, $currency_symbol)`)
-                    statement.executeSync({ $title: languageCode === 'es' ? 'Efectivo' : 'Cash', $icon: '💵', $balance: 0, $positive_state: true, $currency_code: locales[0].currencyCode, $currency_symbol: locales[0].currencySymbol })
-                }
-
-
             } catch (err) {
                 console.error('Ocurrio un error corriendo las migraciones... ', err)
             }
@@ -202,6 +184,19 @@ const migrations = [
         migrate: async (db: SQLiteDatabase) => {
             await db.execAsync(`
                 ALTER TABLE transactions ADD COLUMN is_hidden_transaction BOOLEAN NOT NULL DEFAULT FALSE;
+            `)
+        }
+    },
+    {
+        version: 1.4,
+        name: 'create new table settings for key value data',
+        migrate: async (db: SQLiteDatabase) => {
+            await db.execAsync(`
+                CREATE TABLE IF NOT EXISTS settings (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        key TEXT NOT NULL,
+                        value INTEGER NOT NULL
+                    )
             `)
         }
     }

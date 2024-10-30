@@ -1,14 +1,12 @@
 import {
     Alert,
-    FlatList,
     Platform,
     Pressable,
     StyleSheet,
-    Touchable,
     TouchableOpacity,
     useColorScheme
 } from "react-native";
-import {View, Text, Button, XStack, ToggleGroup, useTheme} from 'tamagui';
+import {View, Text, Button} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -18,7 +16,7 @@ import DatePicker from 'react-native-date-picker'
 import {format} from "date-fns";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSelectedCategory} from "@/lib/store/features/categories/categoriesSlice";
-import {formatByThousands, formatTitleOption, textShortener} from "@/lib/helpers/string";
+import {formatByThousands, textShortener} from "@/lib/helpers/string";
 import {
     selectAccountForm,
     selectAccounts,
@@ -33,7 +31,6 @@ import {
     getAllAccounts,
     getTransactions,
     getTransactionsGroupedAndFiltered,
-    updateTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
@@ -49,25 +46,21 @@ import {
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
-import {loadString} from "@/lib/utils/storage";
-import TransactionsSettingsDropdown from "@/lib/components/ui/TransactionsSettingsDropdown";
-import {currency} from "expo-localization";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import HiddenFlagSheet from "@/lib/components/ui/android-dropdowns-sheets/HiddenFlagSheet";
 import * as Haptics from "expo-haptics";
 import TransactionsSettingsSheet from "@/lib/components/ui/android-dropdowns-sheets/TransactionsSettingsSheet";
-import {useSelector} from "react-redux";
 import RecurringSelectorSheet from "@/lib/components/ui/android-dropdowns-sheets/RecurringSelectorSheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {es, enUS} from 'date-fns/locale';
 
 export default function Screen() {
     const router = useRouter();
     const db = useSQLiteContext();
     const isIos = Platform.OS === 'ios';
     const scheme = useColorScheme();
-    const theme = useTheme()
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
@@ -97,6 +90,21 @@ export default function Screen() {
 
     async function handleCreateOrEditTransaction() {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+
+        if (Number(currentTransaction.amount) < 1 && Number(currentTransaction.hidden_amount) < 1) {
+            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_AMOUNT'))
+            return;
+        }
+
+        if (selectedCategory.id < 1) {
+            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_CATEGORY'))
+            return;
+        }
+        if (selectedAccount.id < 1) {
+            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_ACCOUNT'))
+            return;
+        }
+
         if (currentTransaction.id > 0) {
             await deleteTransaction(db, currentTransaction.id);
             // transaction = await updateTransaction(db, {
@@ -140,7 +148,7 @@ export default function Screen() {
     }
 
     useEffect(() => {
-        if (selectedAccount.id === 0) {
+        if (selectedAccount?.id === 0) {
             if (globalAccount.id > 0) {
                 dispatch(selectAccountForm(globalAccount));
             } else {
@@ -152,6 +160,18 @@ export default function Screen() {
     async function handlePopHiddenMenu() {
         await Haptics.selectionAsync();
         setOpenHiddenMenuSheet(true)
+    }
+    async function handleTouchCalendar() {
+        await Haptics.selectionAsync();
+        setShowCalendar(true)
+    }
+    async function handleTouchNotes() {
+        await Haptics.selectionAsync();
+        setOpenNotesSheet(true)
+    }
+    async function handleTouchRecurrency() {
+        await Haptics.selectionAsync();
+        setOpenRecurrencySheet(true)
     }
 
     function handleDeleteItem() {
@@ -179,15 +199,15 @@ export default function Screen() {
             <View position="relative" flex={1} backgroundColor="$background">
                 <View style={[styles.header, {paddingTop: isIos ? 30 : insets.top + 20}]}>
                     <View flexDirection="row" gap={20}>
-                        <TouchableOpacity style={styles.calendarButton} onPress={() => setShowCalendar(true)}>
-                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM')}</Text>
+                        <TouchableOpacity style={styles.calendarButton} onPress={handleTouchCalendar}>
+                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}</Text>
                             <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                         </TouchableOpacity>
                         <View style={styles.headerRightSide}>
                             {isIos && <RecurringSelectorDropdown/>}
                             {
                                 !isIos &&
-                                <TouchableOpacity onPress={() => setOpenRecurrencySheet(true)}>
+                                <TouchableOpacity onPress={handleTouchRecurrency}>
                                     <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
                                 </TouchableOpacity>
                             }
@@ -203,7 +223,7 @@ export default function Screen() {
                             {/*    </TouchableOpacity>*/}
                             {/*}*/}
                         </View>
-                        <TouchableOpacity onPress={() => setOpenNotesSheet(true)}>
+                        <TouchableOpacity onPress={handleTouchNotes}>
                             <FontAwesome name="commenting-o" size={24} color={currentTransaction.notes.length < 1  ? 'gray' : scheme === 'light' ? 'black' : 'white'} />
                         </TouchableOpacity>
                     </View>
@@ -290,8 +310,8 @@ export default function Screen() {
                                paddingHorizontal={20}>
                             <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
-                                    <Text fontSize={16}>{selectedAccount.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedAccount.title, 13)}</Text>
+                                    <Text fontSize={16}>{selectedAccount?.icon}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedAccount?.title, 13) ?? 'Select account'}</Text>
                                 </View>
                             </TouchableOpacity>
                             <AntDesign name="arrowright" size={24} color="gray"/>
@@ -330,7 +350,9 @@ export default function Screen() {
                 date={new Date(currentTransaction.date)}
                 maximumDate={new Date()}
                 onConfirm={(date) => {
+                    // TODO GET DATE TIME CORRECTLY
                     const timeZonedDate = formatDate(date)
+                    // console.log({timeZonedDate, date})
                     timeZonedDate.setHours(5);
                     setShowCalendar(false)
                     dispatch(onChangeDate(timeZonedDate.toISOString()))

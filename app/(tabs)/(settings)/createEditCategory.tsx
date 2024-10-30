@@ -4,28 +4,21 @@ import {useRouter} from "expo-router";
 import {Entypo} from "@expo/vector-icons";
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import {
-    addAccount,
-    selectAccountCreateUpdate,
     selectSelectedAccountGlobal,
-    updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
-import {getLocales} from "expo-localization";
 import {
-    createAccount,
     createCategory,
-    getAllAccounts,
     getAllCategories,
     getTransactions, getTransactionsGroupedAndFiltered,
-    updateAccount,
     updateCategory
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {
     addCategory,
-    selectCategoryCreateUpdate, selectSelectedCategory,
+    selectCategoryCreateUpdate,
     updateCategoriesList
 } from "@/lib/store/features/categories/categoriesSlice";
 import {
@@ -40,6 +33,7 @@ import {
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {useTranslation} from "react-i18next";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -70,6 +64,8 @@ export default function Screen() {
 
         if (!categoryTitle) return;
 
+        await Haptics.selectionAsync();
+
         if (categoryCreateUpdate.id) {
             await updateCategory(
                 db,
@@ -94,7 +90,7 @@ export default function Screen() {
                 Alert.alert('No se pudo registrar la categoria', newCategory.desc)
             } else {
                 dispatch(addCategory(newCategory.data));
-                router.back();
+                handleGoBack()
             }
         }
 
@@ -111,12 +107,19 @@ export default function Screen() {
 
     }
 
+    function handleGoBack(): void {
+        if (router.canGoBack()) {
+            router.back()
+        } else {
+            router.replace('/(settings)')
+        }
+    }
 
     return (
         <>
             <View flex={1} backgroundColor="$color1"px={20} pb={20} pt={Platform.OS === 'android' ? insets.top + 20 : 20}>
                 <XStack justifyContent='space-between' alignItems='center' mb={30}>
-                    <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={() => router.back()}>
+                    <TouchableOpacity style={{padding: 10, borderRadius: 12}} onPress={handleGoBack}>
                         <Text>{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
                     <Text fontSize={20}>{t('COMMON.CATEGORY')}</Text>

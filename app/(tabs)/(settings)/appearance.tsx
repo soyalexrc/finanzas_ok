@@ -9,6 +9,8 @@ import {saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as Updates from 'expo-updates'
+import {updateSettingByKey} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
 
 const themes = [
     {
@@ -46,6 +48,7 @@ const themes = [
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const appearance = useAppSelector(selectSettings).appearance
     const customTheme = useAppSelector(selectCurrentCustomTheme)
     const headerHeight = useHeaderHeight()
@@ -53,8 +56,11 @@ export default function Screen() {
     const {t} = useTranslation()
 
     async function onPressAppearanceValue(value: 'system' | 'light' | 'dark') {
-        dispatch(updateAppearance(value));
-        await saveString('appearance', value);
+        const result = updateSettingByKey(db,'appearance', value);
+        if (result) {
+            dispatch(updateAppearance(value));
+        }
+        // await saveString('appearance', value);
     }
 
     async function changeCustomTheme(value: CustomTheme) {
@@ -65,9 +71,12 @@ export default function Screen() {
                 text: t('COMMON.ACCEPT'),
                 isPreferred: false,
                 onPress: async () => {
-                    await saveString('custom_theme', value);
-                    dispatch(changeCurrentTheme(value));
-                    await Updates.reloadAsync()
+                    const result = updateSettingByKey(db, 'custom_theme', value);
+                    // await saveString('custom_theme', value);
+                    if (result) {
+                        dispatch(changeCurrentTheme(value));
+                        await Updates.reloadAsync()
+                    }
                 }
             }
 

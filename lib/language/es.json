@@ -1,13 +1,18 @@
 {
   "translation": {
     "COMMON": {
+      "NEXT": "Siguiente",
       "CANCEL": "Cancelar",
       "BACK": "Atras",
       "WARNING": "Aviso",
+      "ACTIVATE": "Activar",
       "ACCEPT": "Aceptar",
       "OK": "Ok",
+      "NEW": "Nuevo",
+      "GIVE_ACCESS": "Dar acceso",
       "LOADING": "Cargando",
       "SELECT": "Seleccionar",
+      "WELCOME": "Bienvenido",
       "CONFIRM": "Confirmar",
       "DELETE": "Eliminar",
       "STOP_RECURRING": "Detener gasto recurrente",
@@ -29,7 +34,16 @@
       "BY": "por",
       "NO_DATA": "No hay data.",
       "CREATE_TRANSACTION": "Crear transaccion",
-      "NO_DATA_CHART": "No hay data para mostrar la grafica."
+      "NO_DATA_CHART": "No hay data para mostrar la grafica.",
+      "MESSAGES": {
+        "INSERT_AMOUNT": "Por favor ingresa un monto de operacion",
+        "INSERT_CATEGORY": "Por favor selecciona una categoria",
+        "INSERT_ACCOUNT": "Por favor selecciona una cuenta",
+        "INSERT_ACCOUNT_TITLE": "Por favor ingresa un titulo para la cuenta.",
+        "ACTIVATE_NOTIFICATIONS": "Para recibir notificaciones de nuevas ofertas, actualizaciones y recordatorios, por favor, habilita los permisos de notificación.",
+        "MINIMUM_AMOUNT_ACCOUNTS": "debes tener una cuenta como minimo.",
+        "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
+      }
     },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Gastado esta semana",
@@ -77,6 +91,7 @@
     },
     "REPORTS_SHEET": {
       "SELECT_DATE_RANGE": "Seleccionar fecha",
+      "SELECT_TIME": "Seleccionar hora",
       "DATE_FROM": "Desde",
       "DATE_TO": "Hasta",
       "SELECT_CATEGORY": "Seleccionar Categoria",
@@ -131,7 +146,11 @@
         "TITLE": "Idiomas",
         "OPTIONS": {
           "SPANISH": "Español",
-          "ENGLISH": "Ingles"
+          "ENGLISH": "Ingles",
+          "FRENCH": "Frances",
+          "JAPANESE": "Japones",
+          "CHINESE": "Chino (Simplificado)",
+          "GERMAN": "Aleman"
         }
       },
       "OTHER": {
@@ -163,10 +182,26 @@
         }
       },
       "NOTIFICATIONS": {
-        "TITLE": "Notificaciones"
+        "TITLE": "Notificaciones",
+        "OPTIONS": {
+          "SCHEDULING_OK": "Se configuro la notificacion diaria correctamente",
+          "ENABLE": "Habilitar notificationes",
+          "ENABLE_DAILY": "Habilitar notificationes diarias",
+          "SCHEDULING": "Horario",
+          "NOTIFICATION_TITLE": "Actualiza tus finanzas.",
+          "NOTIFICATION_BODY": "Lleva un registro de tus ingresos y gastos. ¡Actualízalo ahora!"
+        }
       },
       "DATA_MANAGEMENT": {
-        "TITLE": "Manejo de data"
+        "TITLE": "Manejo de data",
+        "OPTIONS": {
+          "BACKUP": "Respaldar informacion",
+          "FORCE_PULL_SYNC": "Sincronizar con datos en la nube (forzar)",
+          "IMPORT": "Importar desde plantilla",
+          "EXPORT": "Exportar",
+          "WIPE": "Limpiar (eliminar informacion)",
+          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias"
+        }
       },
       "CONTACT_DEV": {
         "TITLE": "Contactar desarrollador"
@@ -182,6 +217,36 @@
       },
       "SUPPORT_DEV": {
         "TITLE": "Apoyar al desarrollador"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "¡Listo!",
+      "LANGUAGE": {
+        "TITLE": "Idioma",
+        "DESC": "Puedes cambiarlo en cualquier momento en el panel de configuración."
+      },
+      "ACCOUNT": {
+        "TITLE": "Cuenta",
+        "DESC": "Para organizar tus transacciones, solo necesitas darle un nombre y un icono con el que puedas identificarla."
+      },
+      "CATEGORIES": {
+        "TITLE": "Categorías",
+        "DESC": "A continuación, presentamos categorías genéricas. Edita la lista a tu gusto. Siempre puedes agregar más categorías y configurarlas en el panel de configuración."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Notificaciones",
+        "DESC": "Podemos recordarte que actualices tus finanzas en el momento que especifiques.",
+        "OPTIONS": {
+          "NONE": "Ninguno",
+          "MORNINGS": "Todas las mañanas a las 9:00 AM",
+          "AFTERNOONS": "Todas las tardes a las 3:00 PM",
+          "NIGHTS": "Todas las noches a las 9:00 PM"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "Pongamos tus finanzas en forma",
+        "MONEY_MISSION": "Tu dinero, tu misión.",
+        "TAME_FINANCES": "Es hora de domar tus finanzas"
       }
     }
   }

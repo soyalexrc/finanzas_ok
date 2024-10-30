@@ -23,10 +23,12 @@ import * as MailComposer from 'expo-mail-composer';
 import {useTranslation} from "react-i18next";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import * as Application from 'expo-application';
+import * as Haptics from "expo-haptics";
+import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
-    const {user } = useUser()
+    const {user} = useUser()
     const isIos = Platform.OS === 'ios';
     const router = useRouter();
     const headerHeight = useHeaderHeight();
@@ -43,7 +45,8 @@ export default function Screen() {
 
     }, []);
 
-    function handleLogout() {
+    async function handleLogout() {
+        await Haptics.selectionAsync()
         Alert.alert(t('AUTH.LOGOUT_CONFIRMATION_TITLE'), t('AUTH.LOGOUT_CONFIRMATION_DESCRIPTION'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -59,17 +62,40 @@ export default function Screen() {
         try {
             const isAvailable = await MailComposer.isAvailableAsync();
             if (!isAvailable) {
-                Alert.alert('Error', 'Email is not available on this device');
+                Alert.alert(t('COMMON.ERROR'), 'Email is not available on this device');
                 return;
             } else {
+                // TODO add version / Operating system / translations / Sent from...
                 await MailComposer.composeAsync({
-                    subject: 'FinanzasOK - Contact Developer',
+                    subject: 'FinanzasOK - Feedback',
                     recipients: ['alexcarvajal2404@gmail.com'],
                     body: 'Hi Alex, I would like to ask you about...'
                 });
             }
         } catch (error) {
             console.error('Error sending email', error)
+        }
+    }
+
+    async function supportDev() {
+        const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+
+        switch (paywallResult) {
+            case PAYWALL_RESULT.PURCHASED:
+                console.log('tip purchased!')
+                break;
+            case PAYWALL_RESULT.CANCELLED:
+                console.log('tip cancelled')
+                break;
+
+            case PAYWALL_RESULT.ERROR:
+                console.log('tip failed')
+                break;
+
+            case PAYWALL_RESULT.NOT_PRESENTED:
+                console.log('paywall not presented');
+                break;
+                
         }
     }
 
@@ -95,11 +121,11 @@ export default function Screen() {
                                         isSignedIn &&
                                         <>
                                             <View flexDirection="row" alignItems="center">
-                                                    <Image borderRadius={50} width={50} height={50} mr={10} source={{
-                                                        uri: user?.imageUrl
-                                                    }} />
+                                                <Image borderRadius={50} width={50} height={50} mr={10} source={{
+                                                    uri: user?.imageUrl
+                                                }}/>
                                                 <View>
-                                                    <Text>{user?.firstName ?? '-'} { user?.lastName ?? '-'}</Text>
+                                                    <Text>{user?.firstName ?? '-'} {user?.lastName ?? '-'}</Text>
                                                     <Text fontSize={12}
                                                           color="$gray10Dark">{user?.emailAddresses[0].emailAddress}</Text>
                                                 </View>
@@ -140,7 +166,6 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
                                 title={t('SETTINGS.NOTIFICATIONS.TITLE')}
                                 onPress={() => router.push('/notifications')}
                                 icon={<IconWrapper bgColor="$red9Light"
@@ -264,7 +289,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
+                                onPress={supportDev}
                                 title={t('SETTINGS.SUPPORT_DEV.TITLE')}
                                 icon={<IconWrapper bgColor="$red10Light"
                                                    icon={<Entypo name='heart' size={20} color="white"/>}/>}
@@ -288,7 +313,8 @@ export default function Screen() {
                     </YGroup>
 
                     <XStack justifyContent="center" gap={5} alignSelf="center">
-                        <Text color="$gray10Dark">Version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</Text>
+                        <Text
+                            color="$gray10Dark">Version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</Text>
                         <Text color="$gray10Dark">•</Text>
                         <Text>{t('COMMON.TERMS')}</Text>
                         <Text color="$gray10Dark">•</Text>

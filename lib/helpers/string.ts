@@ -8,6 +8,20 @@ export function formatAmountToNumber(numberString: string): number {
     return Number(numberString.replace(/,/g, ''));
 }
 
+export function formatTimeBasedOnHourAndMinute(hour: number, minute: number): string {
+    // Validate input
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+        throw new Error('Invalid hour or minute values.');
+    }
+
+    // Format hour and minute with leading zeros if necessary
+    const formattedHour = hour.toString().padStart(2, '0');
+    const formattedMinute = minute.toString().padStart(2, '0');
+
+    // Construct the formatted time string
+    return `${formattedHour}:${formattedMinute}`;
+}
+
 export function formatByThousands(value: string) {
     const decimals = value.split('.')[1] ?? '';
     const rawValue = value.split('.')[0];

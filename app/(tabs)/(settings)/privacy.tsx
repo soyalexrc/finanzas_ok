@@ -11,17 +11,20 @@ import {
 import {useHeaderHeight} from "@react-navigation/elements";
 import {save, saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
+import {useSQLiteContext} from "expo-sqlite";
+import {updateSettingByKey} from "@/lib/db";
 
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const {hidden_feature_flag, isOnboardingShown} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
 
     async function handleChangeSetting(value: boolean) {
-        const saved = await save('hidden_feature_flag', value);
+        const saved = updateSettingByKey(db, 'hidden_feature_flag', String(value));
         if (saved) {
             dispatch(updateHiddenFeatureFlag(value));
         }

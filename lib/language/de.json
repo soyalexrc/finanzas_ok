@@ -1,0 +1,253 @@
+{
+  "translation": {
+    "COMMON": {
+      "CANCEL": "Abbrechen",
+      "BACK": "Zurück",
+      "NEXT": "Nächste",
+      "WELCOME": "Willkommen",
+      "ACTIVATE": "Aktivieren",
+      "WARNING": "Warnung",
+      "ACCEPT": "Akzeptieren",
+      "OK": "OK",
+      "GIVE_ACCESS": "Zugang gewähren",
+      "NEW": "Neu",
+      "LOADING": "Wird geladen",
+      "CONFIRM": "Bestätigen",
+      "DELETE": "Löschen",
+      "GET_STARTED": "Loslegen",
+      "STOP_RECURRING": "Wiederkehrend stoppen",
+      "DUPLICATE": "Duplizieren",
+      "DONE": "Fertig",
+      "ALL_ACCOUNTS": "Alle Konten",
+      "ACCOUNT": "Konto",
+      "CATEGORY": "Kategorie",
+      "TRANSACTIONS": "Transaktionen",
+      "NAME": "Name",
+      "TYPE": "Typ",
+      "EXPENSE": "Ausgaben",
+      "SELECT": "Auswählen",
+      "SELECT_CATEGORY_TYPE": "Kategorieart auswählen",
+      "INCOME": "Einkommen",
+      "TERMS": "Bedingungen",
+      "PRIVACY": "Datenschutz",
+      "MADE_WITH": "Erstellt mit",
+      "BY": "von",
+      "NO_DATA": "Keine Daten vorhanden.",
+      "CREATE_TRANSACTION": "Transaktion erstellen",
+      "NO_DATA_CHART": "Keine Daten zum Anzeigen des Diagramms vorhanden.",
+      "MESSAGES": {
+        "INSERT_AMOUNT": "Bitte geben Sie einen Betrag für die Transaktion ein.",
+        "INSERT_CATEGORY": "Bitte wählen Sie eine Kategorie",
+        "INSERT_ACCOUNT": "Bitte wählen Sie ein Konto",
+        "INSERT_ACCOUNT_TITLE": "Bitte geben Sie einen Titel für das Konto ein",
+        "MINIMUM_AMOUNT_ACCOUNTS": "Sie müssen mindestens ein Konto haben.",
+        "ACTIVATE_NOTIFICATIONS": "Um Benachrichtigungen über neue Angebote, Aktualisierungen und Erinnerungen zu erhalten, aktivieren Sie bitte die Benachrichtigungsberechtigungen.",
+        "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
+      }
+    },
+    "HOME_RESUME_DROPDOWN": {
+      "SPENT_THIS_WEEK": "Diese Woche ausgegeben",
+      "SPENT_THIS_MONTH": "Diesen Monat ausgegeben",
+      "REVENUE_THIS_WEEK": "Diese Woche eingenommen",
+      "REVENUE_THIS_MONTH": "Diesen Monat eingenommen",
+      "BALANCE": "Bilanz"
+    },
+    "TRANSACTIONS": {
+      "DUPLICATE": "Duplizieren",
+      "DELETE": {
+        "TITLE": "Sind Sie sicher, dass Sie diese Transaktion löschen möchten?",
+        "TEXT": "Diese Aktion kann nicht rückgängig gemacht werden."
+      }
+    },
+    "AUTH": {
+      "LOGIN": "Anmelden",
+      "LOGOUT": "Abmelden",
+      "EMAIL": "E-Mail",
+      "PASSWORD": "Passwort",
+      "LOGIN_BUTTON": "Anmelden",
+      "FIRSTNAME": "Vorname",
+      "VERIFY_EMAIL": "E-Mail bestätigen",
+      "LASTNAME": "Nachname",
+      "SIGNUP_BUTTON": "Konto erstellen",
+      "ALREADY_HAVE_ACCOUNT": "Haben Sie bereits ein Konto? Klicken Sie hier.",
+      "DONT_HAVE_ACCOUNT": "Haben Sie noch kein Konto? Klicken Sie hier.",
+      "OR": "Oder",
+      "LOGOUT_CONFIRMATION_TITLE": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+      "LOGOUT_CONFIRMATION_DESCRIPTION": "Sie können keine Daten sichern, wenn Sie nicht authentifiziert sind.",
+      "ACCESS_CODE": {
+        "TITLE": "Zugangscode eingeben",
+        "DESCRIPTION": "Bitte geben Sie den an"
+      },
+      "NAME_REQUIRED_ERROR": "Bitte geben Sie einen Namen ein",
+      "LASTNAME_REQUIRED_ERROR": "Bitte geben Sie einen Nachnamen ein",
+      "EMAIL_REQUIRED_ERROR": "Bitte geben Sie eine E-Mail ein",
+      "PASSWORD_REQUIRED_ERROR": "Bitte geben Sie ein Passwort ein",
+      "CONTINUE_WITH_GOOGLE": "Mit Google fortfahren",
+      "CONTINUE_WITH_APPLE": "Mit Apple fortfahren"
+    },
+    "REPORTS": {
+      "LAST": "Letzte",
+      "DAYS": "Tage"
+    },
+    "REPORTS_SHEET": {
+      "SELECT_DATE_RANGE": "Datumsbereich auswählen",
+      "SELECT_TIME": "Zeit auswählen",
+      "DATE_FROM": "Datum von",
+      "DATE_TO": "Datum bis",
+      "SELECT_CATEGORY": "Kategorie auswählen",
+      "CLEAR": "Löschen",
+      "SELECT_ACCOUNT": "Konto auswählen",
+      "APPLY_FILTERS": "Filter anwenden"
+    },
+    "CREATE_TRANSACTION": {
+      "NOTE": "Notiz",
+      "SAVE": "Speichern",
+      "EDIT": "Bearbeiten",
+      "RECURRENT_OPTIONS": {
+        "NONE": "Keine",
+        "WEEKLY": "Wöchentlich",
+        "MONTHLY": "Monatlich",
+        "YEARLY": "Jährlich"
+      },
+      "HIDDEN_FEATURE": {
+        "SEE_TOTAL": "Gesamtbetrag anzeigen (real)",
+        "SEE_VISIBLE": "Sichtbaren gewünschten Wert anzeigen"
+      }
+    },
+    "SETTINGS": {
+      "COLORS": {
+        "CHANGE_COLOR_MESSAGE": "Die App wird neu gestartet, um die Änderungen anzuwenden",
+        "GREEN": "Grün",
+        "RED": "Rot",
+        "BLUE": "Blau",
+        "YELLOW": "Gelb",
+        "PURPLE": "Lila",
+        "BLACK": "Schwarz"
+      },
+      "TITLE": "Einstellungen",
+      "PRIVACY": {
+        "TITLE": "Datenschutz",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "'Versteckte Beträge' aktivieren"
+        }
+      },
+      "APPEARANCE": {
+        "TITLE": "Erscheinungsbild",
+        "OPTIONS": {
+          "SYSTEM": "System",
+          "DARK": "Dunkel",
+          "LIGHT": "Hell"
+        }
+      },
+      "AUTH": {
+        "TITLE": "Authentifizierung"
+      },
+      "LANGUAGE": {
+        "TITLE": "Sprache",
+        "OPTIONS": {
+          "SPANISH": "Spanisch",
+          "ENGLISH": "Englisch",
+          "FRENCH": "Französisch",
+          "JAPANESE": "Französisch",
+          "CHINESE": "Chinesisch (vereinfacht)",
+          "GERMAN": "Deutsch"
+        }
+      },
+      "OTHER": {
+        "TITLE": "Sonstiges",
+        "OPTIONS": {
+          "RESET_ONBOARDING": "Onboarding-Flow abgeschlossen"
+        }
+      },
+      "ACCOUNTS": {
+        "TITLE": "Konten",
+        "PLACE_HOLDER": "Neues Konto",
+        "BALANCE": "Bilanz",
+        "BALANCE_TIP": "Sie können die Währung für dieses Konto in Zukunft nicht mehr ändern.",
+        "STATE": "Zustand",
+        "NEGATIVE": "Negativ",
+        "POSITIVE": "Positiv",
+        "STATE_TIP": "Ein negativer Wert fügt am Anfang der Bilanz ein Minus hinzu.",
+        "DELETE": {
+          "TITLE": "Sind Sie sicher, dass Sie dieses Konto löschen möchten?",
+          "TEXT": "Die mit diesem Konto verknüpften Transaktionen werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+        }
+      },
+      "CATEGORIES": {
+        "TITLE": "Kategorien",
+        "PLACE_HOLDER": "Neue Kategorie",
+        "DELETE": {
+          "TITLE": "Sind Sie sicher, dass Sie diese Kategorie löschen möchten?",
+          "TEXT": "Die mit dieser Kategorie verknüpften Transaktionen werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+        }
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Benachrichtigungen",
+        "OPTIONS": {
+          "SCHEDULING_OK": "Tägliche Benachrichtigung korrekt konfiguriert",
+          "ENABLE": "Benachrichtigungen aktivieren",
+          "ENABLE_DAILY": "Tägliche Benachrichtigungen aktivieren",
+          "SCHEDULING": "Planung",
+          "NOTIFICATION_TITLE": "Aktualisieren Sie Ihre Finanzen.",
+          "NOTIFICATION_BODY": "Behalten Sie den Überblick über Ihre Einnahmen und Ausgaben. Jetzt aktualisieren!"
+        }
+      },
+      "DATA_MANAGEMENT": {
+        "TITLE": "Datenverwaltung",
+        "OPTIONS": {
+          "BACKUP": "Daten sichern",
+          "FORCE_PULL_SYNC": "Mit Daten aus der Cloud synchronisieren (erzwingen)",
+          "IMPORT": "Aus Vorlage importieren",
+          "EXPORT": "Exportieren",
+          "WIPE": "Wischen (Daten zurücksetzen)",
+          "POPUP_MESSAGE": "Alle Daten gehen verloren, einschließlich Transaktionen, Konten und Kategorien."
+        }
+      },
+      "CONTACT_DEV": {
+        "TITLE": "Entwickler kontaktieren"
+      },
+      "RATE_ON_STORE": {
+        "TITLE": "App im Store bewerten"
+      },
+      "SHARE_WITH_FRIENDS": {
+        "TITLE": "Mit Freunden teilen"
+      },
+      "FOLLOW_ON_IG": {
+        "TITLE": "Folge @finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "Apoyar al desarrollador"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "Fertig!",
+      "LANGUAGE": {
+        "TITLE": "Sprache",
+        "DESC": "Du kannst es jederzeit im Einstellungsbereich ändern."
+      },
+      "ACCOUNT": {
+        "TITLE": "Konto",
+        "DESC": "Um deine Transaktionen zu organisieren, musst du ihm nur einen Namen und ein Symbol geben, mit dem du es identifizieren kannst."
+      },
+      "CATEGORIES": {
+        "TITLE": "Kategorien",
+        "DESC": "Im Folgenden präsentieren wir allgemeine Kategorien. Bearbeite die Liste nach Belieben. Du kannst jederzeit weitere Kategorien hinzufügen und diese im Einstellungsbereich konfigurieren."
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "Benachrichtigungen",
+        "DESC": "Wir können dich daran erinnern, deine Finanzen zu einem bestimmten Zeitpunkt zu aktualisieren.",
+        "OPTIONS": {
+          "NONE": "Keine",
+          "MORNINGS": "Jeden Morgen um 9:00 Uhr",
+          "AFTERNOONS": "Jeden Nachmittag um 15:00 Uhr",
+          "NIGHTS": "Jeden Abend um 21:00 Uhr"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "Bringen wir deine Finanzen in Form",
+        "MONEY_MISSION": "Dein Geld, deine Mission.",
+        "TAME_FINANCES": "Zeit, deine Finanzen zu zähmen"
+      }
+    },
+  }
+}

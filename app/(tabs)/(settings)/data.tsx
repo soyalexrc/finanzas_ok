@@ -22,16 +22,26 @@ import {useRouter} from "expo-router";
 import {getCurrentWeek} from "@/lib/helpers/date";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
+    resetFilters,
     selectCategoryFilter,
     selectDateRangeFilter, updateAccountFilter, updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {
+    resetTransactionsSlice,
     selectHomeViewTypeFilter,
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
-import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
+import {
+    resetAccountsSlice,
+    selectSelectedAccountGlobal,
+    updateAccountsList
+} from "@/lib/store/features/accounts/accountsSlice";
+import {
+    resetCategoriesSlice,
+    selectCategory,
+    updateCategoriesList
+} from "@/lib/store/features/categories/categoriesSlice";
 
 export default function Screen() {
     const db = useSQLiteContext()
@@ -45,27 +55,16 @@ export default function Screen() {
     const dispatch = useAppDispatch();
 
     function handleWipeData() {
-        Alert.alert('Warning', 'All data will be lost', [
-            {style: 'default', text: 'Cancel', isPreferred: true},
+        Alert.alert(t('COMMON.WARNING'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.POPUP_MESSAGE'), [
+            {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive',
-                text: 'Accept',
+                text: t('COMMON.ACCEPT'),
                 onPress: async () => {
                     await wipeData(db);
-                    const accounts = getAllAccounts(db);
-                    const categories = getAllCategories(db);
-                    const {start, end} = getCurrentWeek();
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
-
-                    dispatch(updateAccountsList(accounts))
-                    dispatch(updateCategoriesList(categories));
-                    dispatch(selectCategory(categories[0]));
-
-                    dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
-                    dispatch(updateAccountFilter(accounts[0]));
+                    dispatch(resetAccountsSlice());
+                    dispatch(resetFilters());
+                    dispatch(resetTransactionsSlice());
                 }
             }
         ])
@@ -73,7 +72,7 @@ export default function Screen() {
 
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                    paddingTop={isIos ? headerHeight + 20 : headerHeight}>
+                    paddingTop={isIos ? headerHeight + 20 : 20}>
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}
                     separator={<Separator/>}>
                 <YGroup.Item>
@@ -81,7 +80,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Respaldar data"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.BACKUP')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -89,7 +88,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Sincronizar con ultimo respaldo"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.FORCE_PULL_SYNC')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -97,7 +96,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Importar de una hoja de calculo (.xsl, .csv)"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.IMPORT')}
                     />
                 </YGroup.Item>
                 <YGroup.Item>
@@ -105,7 +104,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         disabled
-                        title="Exportar a hoja de calculo (.xsl, .csv)"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.EXPORT')}
                     />
                 </YGroup.Item>
             </YGroup>
@@ -116,7 +115,7 @@ export default function Screen() {
                         hoverTheme
                         pressTheme
                         onPress={handleWipeData}
-                        title="Limpiar data"
+                        title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.WIPE')}
                     />
                 </YGroup.Item>
             </YGroup>

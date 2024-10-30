@@ -14,6 +14,7 @@ import {selectAccountForm, selectAccounts} from "@/lib/store/features/accounts/a
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import {Platform} from "react-native";
+import * as Haptics from "expo-haptics";
 
 export default function Screen() {
     const insets = useSafeAreaInsets();
@@ -26,7 +27,8 @@ export default function Screen() {
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation()
 
-    function handlePress(item: TransactionWithAmountNumber) {
+    async function handlePress(item: TransactionWithAmountNumber) {
+        await Haptics.selectionAsync()
         dispatch(updateCurrentTransaction({
             amount: item.amount.toString(),
             notes: item.notes,

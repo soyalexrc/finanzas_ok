@@ -1,13 +1,17 @@
 import {SQLiteDatabase} from "expo-sqlite";
 import {
-    Account, AccountCreate, AccountEdit,
-    Category, CategoryCreate, ChartPoints,
+    Account,
+    AccountCreate,
+    AccountEdit,
+    Category,
+    CategoryCreate,
+    ChartPoints,
     FullTransaction,
     FullTransactionRaw,
-    Transaction, TransactionsGroupedByCategory,
+    Transaction,
+    TransactionsGroupedByCategory,
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
-import {a} from "ofetch/dist/shared/ofetch.8459ad38";
 import {migrateDbIfNeeded} from "@/lib/db/migrations";
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
@@ -15,6 +19,64 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
     return db.getAllSync(`SELECT *
                           FROM accounts ORDER BY title`);
+}
+
+export function getSettings(db: SQLiteDatabase): {[key: string]: string} {
+    const data =  db.getAllSync(`SELECT * FROM settings`);
+
+    const settingsObject: { [key: string]: string } = {};
+    data.forEach((row: any) => {
+        settingsObject[row.key] = row.value;
+    });
+    return settingsObject
+}
+
+export function updateSettingByKey(db: SQLiteDatabase, key: string, value: string): boolean{
+    try {
+        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        if (!row) {
+            db.runSync('INSERT INTO settings (key, value) VALUES ($key, $value)', {$key: key, $value: value});
+            return true;
+        } else {
+            db.runSync(`UPDATE settings  SET value = ? WHERE key = ?`, [value, key]);
+            return true
+        }
+    } catch (err) {
+        console.erro(err);
+        return false
+    }
+}
+
+export function insertMultipleCategories(db: SQLiteDatabase, categories: { type: string, title: string, icon: string, id: number }[]): void {
+    try {
+        for (const category of categories) {
+            const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
+            statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export function deleteSettingByKey(db: SQLiteDatabase, key: string): boolean{
+    try {
+        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        if (!row) {
+            return false;
+        } else {
+            db.runSync(`DELETE FROM settings WHERE key = ?`, [key]);
+            return true
+        }
+    } catch (err) {
+        console.error(err);
+        return false
+    }
+}
+
+export function getSettingByKey(db: SQLiteDatabase, key: string): {value: string} | null {
+    // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
+    // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
+    return db.getFirstSync(`SELECT value FROM settings WHERE key = ? `, [key]);
 }
 
 export function getAllCategories(db: SQLiteDatabase): Category[] {
@@ -31,7 +93,7 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         //
         await db.runAsync('DROP TABLE migrations')
         await db.runAsync('DROP TABLE accounts')
-        await db.runAsync('DROP TABLE categories')
+        // await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
 
         await migrateDbIfNeeded(db)
@@ -51,8 +113,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -63,10 +130,11 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   c.type,
                    a.id                AS account_id,
                    a.title             AS account_id,
+                   a.type             AS account_type,
                    a.currency_symbol   AS currency_symbol,
-                   a.currency_code     AS currency_code,
                    json_group_array(json_object(
                            'id', t.id,
                            'amount', t.amount,
@@ -90,8 +158,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -103,6 +176,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   c.type,
                    a.id                AS account_id,
                    a.title             AS account_id,
                    a.currency_symbol   AS currency_symbol,
@@ -132,8 +206,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -145,6 +224,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   c.type,
                    a.id                AS account_id,
                    a.title             AS account_id,
                    a.currency_symbol   AS currency_symbol,
@@ -174,8 +254,13 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
         amountsGroupedByDate = await db.getAllAsync(`
             SELECT strftime('%Y-%m-%d', date) AS date,
             ROUND(SUM(amount), 2) AS total,
-            ROUND(SUM(hidden_amount), 2) AS total_hidden
-            FROM transactions
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN c.type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN c.type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden
+            FROM transactions t
+                LEFT JOIN categories c ON t.category_id = c.id
             WHERE
                 date BETWEEN ?
               and ?
@@ -188,6 +273,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
             SELECT c.title,
                    c.icon,
                    c.id,
+                   c.type,
                    a.id                AS account_id,
                    a.title             AS account_id,
                    a.currency_symbol   AS currency_symbol,
@@ -219,7 +305,6 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
 
     // console.log(JSON.parse(debugTr?.transactions as any)?.map((t, index) => ({  i: index, t: t.amount })));
 
-
     const result = {
         amountsGroupedByDate,
         transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
@@ -227,6 +312,7 @@ export async function getTransactions(db: SQLiteDatabase, dateFrom: string, date
                 title: group.title,
                 icon: group.icon,
                 id: group.id,
+                type: group.type,
             },
             account: {
                 id: group.account_id,
@@ -760,6 +846,13 @@ export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId
     const result: {
         count: number
     } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
+    return result?.count ?? 0;
+}
+
+export function getAmountOfTransactionsByCategoryId(db: SQLiteDatabase, categoryId: number): number {
+    const result: {
+        count: number
+    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE category_id = ?', [categoryId]);
     return result?.count ?? 0;
 }
 

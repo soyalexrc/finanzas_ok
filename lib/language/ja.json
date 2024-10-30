@@ -1,0 +1,254 @@
+{
+  "translation": {
+    "COMMON": {
+      "CANCEL": "キャンセル",
+      "NEXT": "次",
+      "BACK": "戻る",
+      "WELCOME": "いらっしゃいませ",
+      "WARNING": "警告",
+      "ACTIVATE": "活性化",
+      "ACCEPT": "受け入れる",
+      "OK": "OK",
+      "GIVE_ACCESS": "アクセス権を与える",
+      "NEW": "新しい",
+      "LOADING": "読み込み中",
+      "CONFIRM": "確認",
+      "DELETE": "削除",
+      "GET_STARTED": "開始する",
+      "STOP_RECURRING": "定期的に停止",
+      "DUPLICATE": "複製",
+      "DONE": "完了",
+      "ALL_ACCOUNTS": "すべてのアカウント",
+      "ACCOUNT": "口座",
+      "CATEGORY": "カテゴリ",
+      "TRANSACTIONS": "取引",
+      "NAME": "名前",
+      "TYPE": "タイプ",
+      "EXPENSE": "支出",
+      "SELECT": "選択",
+      "SELECT_CATEGORY_TYPE": "カテゴリタイプを選択",
+      "INCOME": "収入",
+      "TERMS": "利用規約",
+      "PRIVACY": "プライバシー",
+      "MADE_WITH": "作成者",
+      "BY": "による",
+      "NO_DATA": "データがありません。",
+      "CREATE_TRANSACTION": "取引を作成",
+      "NO_DATA_CHART": "グラフを表示するデータがありません。",
+      "MESSAGES": {
+        "INSERT_AMOUNT": "取引の金額を入力してください。",
+        "INSERT_CATEGORY": "カテゴリを選択してください",
+        "INSERT_ACCOUNT": "アカウントを選択してください",
+        "INSERT_ACCOUNT_TITLE": "アカウントのタイトルを入力してください",
+        "MINIMUM_AMOUNT_ACCOUNTS": "少なくとも 1 つのアカウントが必要です。",
+        "ACTIVATE_NOTIFICATIONS": "新しいオファー、更新、リマインダーの通知を受け取るには、通知許可を有効にしてください。",
+        "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
+      }
+    },
+    "HOME_RESUME_DROPDOWN": {
+      "SPENT_THIS_WEEK": "今週の支出",
+      "SPENT_THIS_MONTH": "今月の支出",
+      "REVENUE_THIS_WEEK": "今週の収入",
+      "REVENUE_THIS_MONTH": "今月の収入",
+      "BALANCE": "残高"
+    },
+    "TRANSACTIONS": {
+      "DUPLICATE": "複製",
+      "DELETE": {
+        "TITLE": "この取引を削除してもよろしいですか？",
+        "TEXT": "この操作は元に戻すことができません。"
+      }
+    },
+    "AUTH": {
+      "LOGIN": "ログイン",
+      "LOGOUT": "ログアウト",
+      "EMAIL": "メール",
+      "PASSWORD": "パスワード",
+      "LOGIN_BUTTON": "ログイン",
+      "FIRSTNAME": "ファーストネーム",
+      "VERIFY_EMAIL": "メールを検証",
+      "LASTNAME": "ラストネーム",
+      "SIGNUP_BUTTON": "アカウントを作成",
+      "ALREADY_HAVE_ACCOUNT": "すでにアカウントをお持ちですか？こちらをクリックしてください。",
+      "DONT_HAVE_ACCOUNT": "アカウントをお持ちでないですか？こちらをクリックしてください。",
+      "OR": "または",
+      "LOGOUT_CONFIRMATION_TITLE": "ログアウトしてもよろしいですか？",
+      "LOGOUT_CONFIRMATION_DESCRIPTION": "認証されていない場合は、データをバックアップできません。",
+      "ACCESS_CODE": {
+        "TITLE": "アクセスコードを入力してください",
+        "DESCRIPTION": "送信されたアクセスコードを入力してください"
+      },
+      "NAME_REQUIRED_ERROR": "名前を入力してください",
+      "LASTNAME_REQUIRED_ERROR": "ラストネームを入力してください",
+      "EMAIL_REQUIRED_ERROR": "メールを入力してください",
+      "PASSWORD_REQUIRED_ERROR": "パスワードを入力してください",
+      "CONTINUE_WITH_GOOGLE": "Googleで続ける",
+      "CONTINUE_WITH_APPLE": "Appleで続ける"
+    },
+    "REPORTS": {
+      "LAST": "最後の",
+      "DAYS": "日"
+    },
+    "REPORTS_SHEET": {
+      "SELECT_DATE_RANGE": "日付範囲を選択",
+      "SELECT_TIME": "時間を選択",
+      "DATE_FROM": "開始日",
+      "DATE_TO": "終了日",
+      "SELECT_CATEGORY": "カテゴリを選択",
+      "CLEAR": "クリア",
+      "SELECT_ACCOUNT": "口座を選択",
+      "APPLY_FILTERS": "フィルターを適用"
+    },
+    "CREATE_TRANSACTION": {
+      "NOTE": "メモ",
+      "SAVE": "保存",
+      "EDIT": "編集",
+      "RECURRENT_OPTIONS": {
+        "NONE": "なし",
+        "WEEKLY": "毎週",
+        "MONTHLY": "毎月",
+        "YEARLY": "毎年"
+      },
+      "HIDDEN_FEATURE": {
+        "SEE_TOTAL": "合計を見る（実数）",
+        "SEE_VISIBLE": "表示したい値を見る"
+      }
+    },
+    "SETTINGS": {
+      "COLORS": {
+        "CHANGE_COLOR_MESSAGE": "変更を適用するためにアプリを再起動します",
+        "GREEN": "緑",
+        "RED": "赤",
+        "BLUE": "青",
+        "YELLOW": "黄色",
+        "PURPLE": "紫色",
+        "BLACK": "黒"
+      },
+      "TITLE": "設定",
+      "PRIVACY": {
+        "TITLE": "プライバシー",
+        "OPTIONS": {
+          "HIDDEN_FLAG": "'非表示の金額'を有効化"
+        }
+      },
+      "APPEARANCE": {
+        "TITLE": "外観",
+        "OPTIONS": {
+          "SYSTEM": "システム",
+          "DARK": "ダーク",
+          "LIGHT": "ライト"
+        }
+      },
+      "AUTH": {
+        "TITLE": "認証"
+      },
+      "LANGUAGE": {
+        "TITLE": "言語",
+        "OPTIONS": {
+          "SPANISH": "スペイン語",
+          "ENGLISH": "英語",
+          "FRENCH": "フランス語",
+          "JAPANESE": "日本語",
+          "CHINESE": "中国語（簡体字）",
+          "GERMAN": "ドイツ語"
+        }
+      },
+      "OTHER": {
+        "TITLE": "その他",
+        "OPTIONS": {
+          "RESET_ONBOARDING": "オンボーディングフローが完了しました"
+        }
+      },
+      "ACCOUNTS": {
+        "TITLE": "口座",
+        "PLACE_HOLDER": "新しい口座",
+        "BALANCE": "残高",
+        "BALANCE_TIP": "この口座の通貨は今後変更できません。",
+        "STATE": "状態",
+        "NEGATIVE": "マイナス",
+        "POSITIVE": "プラス",
+        "STATE_TIP": "マイナスの値は、残高の先頭にマイナスを追加します。",
+        "DELETE": {
+          "TITLE": "この口座を削除してもよろしいですか？",
+          "TEXT": "この口座に関連する取引は削除されます。この操作は元に戻すことができません。"
+        }
+      },
+      "CATEGORIES": {
+        "TITLE": "カテゴリ",
+        "PLACE_HOLDER": "新しいカテゴリ",
+        "DELETE": {
+          "TITLE": "このカテゴリを削除してもよろしいですか？",
+          "TEXT": "このカテゴリに関連する取引は削除されます。この操作は元に戻すことができません。"
+        }
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "通知",
+        "OPTIONS": {
+          "SCHEDULING_OK": "毎日の通知が正しく設定されました",
+          "ENABLE": "通知を有効化",
+          "ENABLE_DAILY": "毎日の通知を有効化",
+          "SCHEDULING": "スケジュール",
+          "NOTIFICATION_TITLE": "財務を更新します。",
+          "NOTIFICATION_BODY": "収入と支出を追跡します。今すぐ更新しましょう!"
+        }
+      },
+      "DATA_MANAGEMENT": {
+        "TITLE": "データ管理",
+        "OPTIONS": {
+          "BACKUP": "データをバックアップ",
+          "FORCE_PULL_SYNC": "クラウドからのデータと強制的に同期",
+          "IMPORT": "テンプレートからインポート",
+          "EXPORT": "エクスポート",
+          "WIPE": "ワイプ（データをリセット）",
+          "POPUP_MESSAGE": "すべてのデータが失われます。取引、口座、カテゴリなどすべてが含まれます。"
+
+        }
+      },
+      "CONTACT_DEV": {
+        "TITLE": "開発者に連絡"
+      },
+      "RATE_ON_STORE": {
+        "TITLE": "ストアでアプリを評価"
+      },
+      "SHARE_WITH_FRIENDS": {
+        "TITLE": "友達と共有"
+      },
+      "FOLLOW_ON_IG": {
+        "TITLE": "フォロー @finanzasokapp"
+      },
+      "SUPPORT_DEV": {
+        "TITLE": "開発者をサポート"
+      }
+    },
+    "ONBOARDING": {
+      "FINISH": "完了！",
+      "LANGUAGE": {
+        "TITLE": "言語",
+        "DESC": "設定パネルでいつでも変更できます。"
+      },
+      "ACCOUNT": {
+        "TITLE": "アカウント",
+        "DESC": "取引を整理するには、名前と識別用のアイコンを付けるだけです。"
+      },
+      "CATEGORIES": {
+        "TITLE": "カテゴリ",
+        "DESC": "以下に一般的なカテゴリを示します。リストを編集して好みに合わせてください。いつでもカテゴリを追加して設定パネルで構成できます。"
+      },
+      "NOTIFICATIONS": {
+        "TITLE": "通知",
+        "DESC": "指定した時間に財務情報を更新するよう通知できます。",
+        "OPTIONS": {
+          "NONE": "なし",
+          "MORNINGS": "毎朝9:00 AM",
+          "AFTERNOONS": "毎午後3:00 PM",
+          "NIGHTS": "毎晩9:00 PM"
+        }
+      },
+      "WELCOME": {
+        "MONEY_IN_SHAPE": "お金を整えましょう",
+        "MONEY_MISSION": "あなたのお金、あなたの使命。",
+        "TAME_FINANCES": "あなたの財務を飼いならす時です"
+      }
+    }
+  }
+}
