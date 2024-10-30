@@ -10,6 +10,7 @@
       "GIVE_ACCESS": "Dar acceso",
       "LOADING": "Cargando",
       "SELECT": "Seleccionar",
+      "WELCOME": "Bienvenido",
       "CONFIRM": "Confirmar",
       "DELETE": "Eliminar",
       "STOP_RECURRING": "Detener gasto recurrente",
@@ -212,6 +213,14 @@
       },
       "SUPPORT_DEV": {
         "TITLE": "Apoyar al desarrollador"
+      }
+    },
+    "ONBOARDING": {
+      "WELCOME": {
+        "TITLE": "",
+        "MONEY_IN_SHAPE": "",
+        "MONEY_MISSION": "",
+        "TAME_FINANCES": ""
       }
     }
   }
