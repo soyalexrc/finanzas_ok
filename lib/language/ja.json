@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "取引の金額を入力してください。",
         "INSERT_CATEGORY": "カテゴリを選択してください",
         "INSERT_ACCOUNT": "アカウントを選択してください",
+        "MINIMUM_AMOUNT_ACCOUNTS": "少なくとも 1 つのアカウントが必要です。",
         "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
       }
     },

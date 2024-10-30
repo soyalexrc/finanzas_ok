@@ -130,8 +130,8 @@ export default function ReportScreen() {
             >
                 <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: 'auto'}}>
                     <View>
-                        <Text fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalExpense)}</Text>
-                        <Text fontSize={16} color="$green10Dark">{selectedAccount.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag).totalIncome)}</Text>
+                        <Text fontSize={36}>{selectedAccount?.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag)?.totalExpense)}</Text>
+                        <Text fontSize={16} color="$green10Dark">{selectedAccount?.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag)?.totalIncome)}</Text>
                     </View>
                    <Button onPress={handleTouchSheetFilter} height="$2" borderRadius="$12">
                         <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
@@ -167,7 +167,7 @@ export default function ReportScreen() {
 
                         <YStack paddingHorizontal={10} mt={isIos ? 10 : 0} paddingVertical={5} backgroundColor="$color1">
                             <Text fontSize={12} textAlign="center"
-                                  color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
+                                  color="$gray10Dark">{selectedAccount?.icon} {selectedAccount?.title}</Text>
                             {/*<View  flexDirection="row"*/}
                             {/*     gap={15}>*/}
                             {/*    <Text fontSize={16} color="$gray10Dark">Spent this week</Text>*/}

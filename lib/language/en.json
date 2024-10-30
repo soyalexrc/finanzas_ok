@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "Please insert an amount for the transaction.",
         "INSERT_CATEGORY": "Please select a category",
         "INSERT_ACCOUNT": "Please select an account",
+        "MINIMUM_AMOUNT_ACCOUNTS": "you must have at least one account.",
         "SCREEN_UNDER_DEVELOPMENT": "This section of the app is under development."
       }
     },

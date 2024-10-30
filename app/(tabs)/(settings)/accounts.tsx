@@ -71,6 +71,11 @@ export default function Screen() {
                 text: t('COMMON.DELETE'),
                 isPreferred: false,
                 onPress: async () => {
+                    const allAccounts = getAllAccounts(db).length;
+                    if (allAccounts === 1) {
+                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.MINIMUM_AMOUNT_ACCOUNTS'))
+                        return;
+                    }
                     await deleteAccount(db, accountId);
                     setSelectAccountId(0);
                     setOpen(false);

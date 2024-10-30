@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "请输入交易金额。",
         "INSERT_CATEGORY": "请选择类别",
         "INSERT_ACCOUNT": "请选择帐户",
+        "MINIMUM_AMOUNT_ACCOUNTS": "您必须至少拥有一个帐户。",
         "SCREEN_UNDER_DEVELOPMENT": "该应用程序的这一部分正在开发中。"
       }
     },

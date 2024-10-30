@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "Por favor ingresa un monto de operacion",
         "INSERT_CATEGORY": "Por favor selecciona una categoria",
         "INSERT_ACCOUNT": "Por favor selecciona una cuenta",
+        "MINIMUM_AMOUNT_ACCOUNTS": "debes tener una cuenta como minimo.",
         "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
       }
     },

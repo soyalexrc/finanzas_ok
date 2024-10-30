@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "Veuillez saisir un montant pour la transaction.",
         "INSERT_CATEGORY": "Veuillez sélectionner une catégorie",
         "INSERT_ACCOUNT": "Veuillez sélectionner un compte",
+        "MINIMUM_AMOUNT_ACCOUNTS": "Vous devez avoir au moins un compte.",
         "SCREEN_UNDER_DEVELOPMENT": "Cette section de l'application est en cours de développement."
       }
     },

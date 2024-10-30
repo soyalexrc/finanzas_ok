@@ -191,7 +191,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         </TouchableOpacity>
                     </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
-                          color="$gray10Dark">{localAccount.icon} {localAccount.title}</Text>
+                          color="$gray10Dark">{localAccount?.icon} {localAccount?.title}</Text>
                     <FlatList
                         data={accounts}
                         contentContainerStyle={{paddingHorizontal: 20}}

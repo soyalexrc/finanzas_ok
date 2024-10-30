@@ -36,6 +36,7 @@
         "INSERT_AMOUNT": "Bitte geben Sie einen Betrag für die Transaktion ein.",
         "INSERT_CATEGORY": "Bitte wählen Sie eine Kategorie",
         "INSERT_ACCOUNT": "Bitte wählen Sie ein Konto",
+        "MINIMUM_AMOUNT_ACCOUNTS": "Sie müssen mindestens ein Konto haben.",
         "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
       }
     },
