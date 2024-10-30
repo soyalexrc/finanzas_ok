@@ -4,7 +4,6 @@
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
     "version": "1.0.0",
-    "owner": "Alex Rodriguez",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
