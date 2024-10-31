@@ -1,7 +1,7 @@
 import {FlatList} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
 import {
-    onChangeAmount, onChangeDate,
+    onChangeAmount,
     onChangeHiddenAmount,
     selectCurrentTransaction
 } from "@/lib/store/features/transactions/transactionsSlice";

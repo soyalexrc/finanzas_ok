@@ -1,7 +1,7 @@
 import {Stack, useRouter} from "expo-router";
 import React from "react";
-import {Button, Text, useTheme, View} from "tamagui";
-import {Platform, TouchableOpacity, useColorScheme} from "react-native";
+import {Button, useTheme} from "tamagui";
+import {Platform, useColorScheme} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {useAppDispatch} from "@/lib/store/hooks";
 import {resetAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";

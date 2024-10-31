@@ -1,24 +1,8 @@
-import * as DropdownMenu from "zeego/dropdown-menu";
-import {Sheet, Text, View} from "tamagui";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {
-    selectAccountGlobally,
-    selectAccounts,
-    selectSelectedAccountGlobal
-} from "@/lib/store/features/accounts/accountsSlice";
-import {Account} from "@/lib/types/Transaction";
-import {getCurrentBalance, getTransactionsGroupedAndFiltered} from "@/lib/db";
-import {
-    selectHomeViewTypeFilter, updateCurrentBalance, updateHomeViewTypeFilter,
-    updateTransactionsGroupedByDate
-} from "@/lib/store/features/transactions/transactionsSlice";
-import {useSQLiteContext} from "expo-sqlite";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {Touchable, TouchableOpacity, useColorScheme} from "react-native";
+import {Sheet, Text} from "tamagui";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useState} from "react";
 import {Entypo} from "@expo/vector-icons";
-import {formatAccountTitle} from "@/lib/helpers/string";
 
 type Props = {
     open: boolean;

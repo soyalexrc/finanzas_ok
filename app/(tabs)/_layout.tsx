@@ -7,7 +7,7 @@ import {Alert, Platform, Text, useColorScheme, View} from "react-native";
 import CustomBottomBar from "@/lib/components/ui/CustomBottomBar";
 import {Button, useTheme} from "tamagui";
 import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {useAppDispatch} from "@/lib/store/hooks";
 import {AntDesign, Entypo} from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
@@ -105,12 +105,4 @@ export default function TabLayout() {
             />
         </Tabs>
     );
-}
-
-function Fallback() {
-    return (
-        <View>
-            <Text>Loading...</Text>
-        </View>
-    )
 }

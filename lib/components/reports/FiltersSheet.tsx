@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {Button, Sheet, Text, TextArea, useTheme, View, XStack, YStack} from "tamagui";
-import {FlatList, Platform, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {Button, Sheet, Text, useTheme, View, XStack, YStack} from "tamagui";
+import {FlatList, Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {textShortener} from "@/lib/helpers/string";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -23,7 +23,6 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {getTransactions} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
-import {FlashList} from "@shopify/flash-list";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {useTranslation} from "react-i18next";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";

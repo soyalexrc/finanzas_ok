@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
-import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 import {formatDate} from "@/lib/helpers/date";
 
 export interface TransactionsState {

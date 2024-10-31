@@ -15,7 +15,7 @@ import {
     getAmountOfTransactionsByAccountId, getTransactions,
     getTransactionsGroupedAndFiltered
 } from "@/lib/db";
-import {Account, FullTransaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
 import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 import * as ContextMenu from "zeego/context-menu";
@@ -29,10 +29,8 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 import {useTranslation} from "react-i18next";
 import * as Haptics from "expo-haptics";
-import {onLongPress} from "@vueuse/core/index";
 import {useState} from "react";
 import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 

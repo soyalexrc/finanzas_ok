@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
-import {Account, Category} from "@/lib/types/Transaction";
+import {Category} from "@/lib/types/Transaction";
 
 export interface CategoriesState {
     list: Category[];

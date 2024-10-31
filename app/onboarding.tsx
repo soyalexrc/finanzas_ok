@@ -1,4 +1,4 @@
-import {Button, Image, Input, ScrollView, Text, useTheme, View, XStack, YStack} from "tamagui";
+import {Button, Image, Input, Text, useTheme, View, XStack, YStack} from "tamagui";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {save} from "@/lib/utils/storage";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -12,7 +12,6 @@ import {
     deleteSettingByKey,
     getAllAccounts, getAllCategories,
     getSettingByKey, insertMultipleCategories,
-    updateAccount,
     updateSettingByKey
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";

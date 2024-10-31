@@ -18,7 +18,6 @@ import {
 } from "@/lib/store/features/transactions/reportSlice";
 import {TransactionsGroupedByCategory} from "@/lib/types/Transaction";
 import {
-    calculateTotalFromChartPoints,
     calculateTotalsFromChartPoints,
     calculateTotalTransactions
 } from "@/lib/helpers/operations";
@@ -30,7 +29,6 @@ import {useAppSelector} from "@/lib/store/hooks";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import * as Haptics from "expo-haptics";
-import {isIS} from "@clerk/localizations";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -284,6 +282,6 @@ export default function ReportScreen() {
     );
 }
 
-function ToolTip({x, y}: { x: SharedValue<number>; y: SharedValue<number> }) {
-    return <Circle cx={x} cy={y} r={8} color="black"/>;
-}
+// function ToolTip({x, y}: { x: SharedValue<number>; y: SharedValue<number> }) {
+//     return <Circle cx={x} cy={y} r={8} color="black"/>;
+// }

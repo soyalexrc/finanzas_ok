@@ -1,45 +1,9 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useTranslation} from "react-i18next";
-
-type Props = {
-    groups: Item[];
-    onSelect: (value: 'on' | 'mixed' | 'off', keyItem: string) => void;
-    selectedItem: string;
-}
-
-type Item = {
-    key: string;
-    items: Array<{
-        key: string;
-        title: string;
-        icon: string;
-        iconAndroid: string;
-    }>
-}
-
-const items = [
-    {
-        key: 'none',
-        title: 'None'
-    },
-    {
-        key: 'weekly',
-        title: 'Weekly'
-    },
-    {
-        key: 'monthly',
-        title: 'Monthly'
-    },
-    {
-        key: 'yearly',
-        title: 'Yearly'
-    },
-
-]
 
 export default function RecurringSelectorDropdown() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
@@ -88,29 +52,3 @@ export default function RecurringSelectorDropdown() {
 
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        height: 300,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    fs32: {
-        fontSize: 32
-    },
-    fwBold: {
-        fontWeight: 'bold'
-    },
-    fs18: {
-        fontSize: 18
-    },
-    fw64: {
-        fontSize: 64
-    },
-    fw18: {
-        fontSize: 18
-    },
-    opacityMedium: {
-        opacity: 0.5
-    }
-})

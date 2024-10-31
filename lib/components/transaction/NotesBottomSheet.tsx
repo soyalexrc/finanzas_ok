@@ -1,4 +1,4 @@
-import {Button, Text, TextArea, View} from 'tamagui';
+import {Button, Text, TextArea} from 'tamagui';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {Sheet} from "tamagui";
@@ -12,7 +12,6 @@ type Props = {
 }
 
 export default function NotesBottomSheet({open, setOpen}: Props) {
-    const [editMode, setEditMode] = useState<boolean>(false);
     const [position, setPosition] = useState(0);
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction)

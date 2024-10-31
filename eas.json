@@ -27,6 +27,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "alexcarvajal2404@icloud.com",
+        "ascAppId": "6737455994",
+        "appleTeamId": "86978KA5GP"
+      }
+    }
   }
 }

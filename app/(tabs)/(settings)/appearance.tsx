@@ -1,11 +1,10 @@
 import {ListItem, ScrollView, Separator, Text, View, YGroup} from "tamagui";
 import React from "react";
-import {Alert, Platform, StyleSheet} from "react-native";
+import {Alert, Platform} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
-import {saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as Updates from 'expo-updates'
@@ -142,13 +141,3 @@ export default function Screen() {
 
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    }
-})

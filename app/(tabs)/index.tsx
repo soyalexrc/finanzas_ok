@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Animated, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
-import {Button, useThemeName, View, ScrollView, Text} from 'tamagui';
-import {Entypo, Feather} from "@expo/vector-icons";
+import {View, ScrollView, Text} from 'tamagui';
+import {Entypo} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
@@ -17,7 +17,6 @@ import TransactionSelectionOptionsSheet
     from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
 import {FullTransaction} from "@/lib/types/Transaction";
 import * as Haptics from "expo-haptics";
-import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 
 export default function HomeScreen() {
@@ -30,7 +29,6 @@ export default function HomeScreen() {
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
     const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
-    const {isOnboardingShown} = useAppSelector(selectSettings);
     const {t} = useTranslation()
     const scheme = useColorScheme();
 

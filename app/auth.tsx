@@ -1,19 +1,16 @@
-import {Button, Image, Input, Separator, Text, useTheme, View} from "tamagui";
+import {Button, Input, Text, useTheme, View} from "tamagui";
 import {RefObject, useCallback, useRef, useState} from "react";
 import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet, TextInput,
+    TextInput,
     TouchableOpacity,
-    useColorScheme,
-    useWindowDimensions
 } from "react-native";
 import useWarmUpBrowser from "@/lib/hooks/useWarmUpBrowser";
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking'
 import {useOAuth, useSignIn, useSignUp} from "@clerk/clerk-expo";
-import {Ionicons} from "@expo/vector-icons";
 import {useTranslation} from "react-i18next";
 import LottieView from 'lottie-react-native';
 import {OTPInput} from "@/lib/components/ui/OTPInput";
@@ -25,8 +22,6 @@ export default function Screen() {
     const isIos = Platform.OS === 'ios';
     const animation = useRef<LottieView>(null);
     const theme = useTheme();
-    const colorScheme = useColorScheme();
-    const {width} = useWindowDimensions();
     const {t} = useTranslation()
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -342,34 +337,34 @@ export default function Screen() {
     )
 }
 
-const styles = StyleSheet.create({
-    btn: {
-        height: 50,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
-    btnLight: {
-        backgroundColor: '#000',
-    },
-    btnLightText: {
-        color: '#000',
-        fontSize: 20,
-
-    },
-    btnDark: {
-        backgroundColor: '#ffffff',
-    },
-    btnDarkText: {
-        color: '#fff',
-        fontSize: 20,
-    },
-    btnOutline: {
-        borderWidth: 3,
-        borderColor: 'gray',
-    },
-    btnIcon: {
-        paddingRight: 8,
-    },
-});
+// const styles = StyleSheet.create({
+//     btn: {
+//         height: 50,
+//         borderRadius: 12,
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         flexDirection: 'row',
+//     },
+//     btnLight: {
+//         backgroundColor: '#000',
+//     },
+//     btnLightText: {
+//         color: '#000',
+//         fontSize: 20,
+//
+//     },
+//     btnDark: {
+//         backgroundColor: '#ffffff',
+//     },
+//     btnDarkText: {
+//         color: '#fff',
+//         fontSize: 20,
+//     },
+//     btnOutline: {
+//         borderWidth: 3,
+//         borderColor: 'gray',
+//     },
+//     btnIcon: {
+//         paddingRight: 8,
+//     },
+// });

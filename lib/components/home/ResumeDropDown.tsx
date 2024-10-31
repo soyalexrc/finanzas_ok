@@ -1,6 +1,6 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
 import {Platform, Pressable, StyleSheet} from "react-native";
-import {Text, useTheme, View, XStack, YStack} from 'tamagui'
+import {Text, useTheme, View, XStack} from 'tamagui'
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectHomeViewTypeFilter, selectCurrentBalance, selectTransactionsGroupedByDate,

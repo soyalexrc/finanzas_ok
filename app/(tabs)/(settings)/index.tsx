@@ -10,8 +10,7 @@ import {
     XStack,
     Button, Image
 } from 'tamagui';
-import React, {useEffect, useRef, useState} from "react";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import React, {useEffect, useRef} from "react";
 import {Alert, Animated, Linking, Platform} from "react-native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -95,7 +94,7 @@ export default function Screen() {
             case PAYWALL_RESULT.NOT_PRESENTED:
                 console.log('paywall not presented');
                 break;
-                
+
         }
     }
 

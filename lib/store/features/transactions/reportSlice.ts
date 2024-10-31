@@ -4,12 +4,8 @@ import {
     Account,
     Category,
     ChartPoints,
-    FullTransaction,
-    HomeViewTypeFilter,
-    Transaction, TransactionsGroupedByCategory,
-    TransactionsGroupedByDate, TransactionWithAmountNumber
+    TransactionsGroupedByCategory,
 } from "@/lib/types/Transaction";
-import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 import {getDateRangeBetweenGapDaysAndToday} from "@/lib/helpers/date";
 
 export interface ReportState {

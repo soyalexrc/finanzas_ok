@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {TouchableOpacity, useColorScheme, View} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {ScrollView, Separator, Sheet, Text} from "tamagui";
 import {Entypo} from "@expo/vector-icons";
 import {Locale} from "expo-localization";

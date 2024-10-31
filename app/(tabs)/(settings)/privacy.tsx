@@ -1,15 +1,12 @@
 import {ListItem, ScrollView, Separator, Switch, Text, View, YGroup} from "tamagui";
 import React from "react";
-import {Platform, StyleSheet} from "react-native";
+import {Platform} from "react-native";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectSettings,
-    updateAppearance,
     updateHiddenFeatureFlag,
-    updateOnboardingState
 } from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
-import {save, saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import {useSQLiteContext} from "expo-sqlite";
 import {updateSettingByKey} from "@/lib/db";
@@ -52,13 +49,3 @@ export default function Screen() {
 
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    }
-})

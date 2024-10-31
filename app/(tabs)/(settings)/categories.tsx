@@ -3,19 +3,16 @@ import {Alert, Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    selectAccountForm, selectAccountGlobally,
-    selectAccounts, selectSelectedAccountForm, selectSelectedAccountGlobal,
-    updateAccountCreateUpdate, updateAccountsList
+    selectSelectedAccountGlobal,
 } from "@/lib/store/features/accounts/accountsSlice";
-import {formatByThousands} from "@/lib/helpers/string";
 import {useSQLiteContext} from "expo-sqlite";
 import {
-    deleteAccount, deleteCategory,
-    getAllAccounts, getAllCategories,
-    getAmountOfTransactionsByAccountId, getAmountOfTransactionsByCategoryId, getTransactions,
+    deleteCategory,
+    getAllCategories,
+    getAmountOfTransactionsByCategoryId, getTransactions,
     getTransactionsGroupedAndFiltered
 } from "@/lib/db";
-import {Account, Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
 import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 import * as ContextMenu from "zeego/context-menu";
@@ -24,7 +21,7 @@ import {
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
-    selectAccountFilter, selectCategoryFilter, selectDateRangeFilter, updateAccountFilter, updateCategoryFilter,
+    selectAccountFilter, selectCategoryFilter, selectDateRangeFilter, updateCategoryFilter,
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";

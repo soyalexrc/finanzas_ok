@@ -42,7 +42,7 @@ export function updateSettingByKey(db: SQLiteDatabase, key: string, value: strin
             return true
         }
     } catch (err) {
-        console.erro(err);
+        console.error(err);
         return false
     }
 }
@@ -92,7 +92,7 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         // await db.runAsync('DELETE FROM categories')
         //
         await db.runAsync('DROP TABLE migrations')
-        await db.runAsync('DROP TABLE accounts')
+        // await db.runAsync('DROP TABLE accounts')
         // await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
 

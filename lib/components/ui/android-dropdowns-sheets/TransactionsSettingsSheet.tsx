@@ -1,22 +1,9 @@
 import {Sheet, Text} from "tamagui";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {
-    selectSelectedAccountGlobal
-} from "@/lib/store/features/accounts/accountsSlice";
-import {
-    selectHomeViewTypeFilter,
-} from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
 import {TouchableOpacity, useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useState} from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {
-    selectAccountFilter,
-    selectCategoryFilter,
-    selectDateRangeFilter,
-} from "@/lib/store/features/transactions/reportSlice";
-import {useSelector} from "react-redux";
 
 type Props = {
     open: boolean;
@@ -25,7 +12,6 @@ type Props = {
 }
 
 export default function TransactionsSettingsSheet({open, setOpen, fn}: Props) {
-    const db = useSQLiteContext();
     const [position, setPosition] = useState(0);
     const {t} = useTranslation()
 
