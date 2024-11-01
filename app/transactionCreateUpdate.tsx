@@ -391,10 +391,16 @@ export default function Screen() {
                 accessibilityLabel="Date selector"
                 accessibilityHint="Select a Date to this transaction"
                 accessibilityLanguage={selectedLanguage}
+                accessibilityElementsHidden={false}
+                accessibilityActions={[
+                    {name: 'activate', label: 'Activate'},
+                    {name: 'escape', label: 'Escape'},
+                    {name: 'increment', label: 'Increment'},
+                    {name: 'decrement', label: 'Decrement'}
+                ]}
                 title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                 cancelText={t('COMMON.CANCEL')}
                 confirmText={t('COMMON.CONFIRM')}
-                theme={'light'}
                 open={showCalendar}
                 date={new Date(currentTransaction.date)}
                 maximumDate={new Date()}

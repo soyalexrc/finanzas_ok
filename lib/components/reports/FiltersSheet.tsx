@@ -223,6 +223,13 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     accessibilityLabel="Date selector"
                     accessibilityHint="Select a Date to filter from"
                     accessibilityLanguage={selectedLanguage}
+                    accessibilityElementsHidden={false}
+                    accessibilityActions={[
+                        {name: 'activate', label: 'Activate'},
+                        {name: 'escape', label: 'Escape'},
+                        {name: 'increment', label: 'Increment'},
+                        {name: 'decrement', label: 'Decrement'}
+                    ]}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}
@@ -248,6 +255,13 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     accessibilityLabel="Date selector"
                     accessibilityHint="Select a Date to filter to"
                     accessibilityLanguage={selectedLanguage}
+                    accessibilityElementsHidden={false}
+                    accessibilityActions={[
+                        {name: 'activate', label: 'Activate'},
+                        {name: 'escape', label: 'Escape'},
+                        {name: 'increment', label: 'Increment'},
+                        {name: 'decrement', label: 'Decrement'}
+                    ]}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}

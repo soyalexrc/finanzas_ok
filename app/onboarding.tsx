@@ -424,7 +424,7 @@ export default function Screen() {
                         </YStack>
 
                         <YStack>
-                            <Text fontSize={16} mb={4}>{t('SETTINGS.ACCOUNTS.BALANCE')}</Text>
+                            <Text fontSize={16} nativeID="balanceInput" mb={4}>{t('SETTINGS.ACCOUNTS.BALANCE')}</Text>
                             <View flex={1} gap={6} position='relative'>
                                 {
                                     accountCreateUpdate.id > 0 &&
@@ -519,7 +519,11 @@ export default function Screen() {
                                 <Input keyboardType="numeric" returnKeyType="done" value={accountBalance}
                                        onChangeText={setAccountBalance}
                                        size="$4"
-                                       paddingLeft={60} placeholder="Balance"/>
+                                       accessible={true}
+                                       accessibilityLabel="Balance configuration"
+                                       accessibilityHint="You can set the balance of the account here."
+                                       accessibilityLabelledBy="balanceInput"
+                                       paddingLeft={60}/>
                             </View>
                         </YStack>
 
@@ -602,14 +606,14 @@ export default function Screen() {
                         style={{flex: 1, marginVertical: 10}}
                         contentContainerStyle={{paddingHorizontal: 20}}
                         keyExtractor={((item, index) => item.id.toString())}
-                        renderItem={({item}) => (
+                        renderItem={({item, index}) => (
                             <XStack justifyContent="space-between" mb={10}>
                                 <XStack gap={10} alignItems="center">
                                     <Text fontSize={24}>{item.icon}</Text>
                                     <Text fontSize={16}>{item.title}</Text>
                                 </XStack>
-                                <TouchableOpacity onPress={() => removeCategory(item.id)}>
-                                    <Feather name="trash-2" size={isIos ? 24 : 30} color="red" accessible={true} accessibilityLabel={`Remove category ${item.title}`} accessibilityHint={`Removes the default category named: ${item.title}`}/>
+                                <TouchableOpacity onPress={() => removeCategory(item.id)} accessible={true} accessibilityLabel={`Remove category ${item.title} ${index + 1}`} accessibilityHint={`Removes the default category named: ${item.title} ${index + 1}`}>
+                                    <Feather name="trash-2" size={isIos ? 24 : 30} color="red" />
                                 </TouchableOpacity>
                             </XStack>
                         )}
