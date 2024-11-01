@@ -1,62 +1,66 @@
 import {Provider} from "react-redux";
 import {store} from "@/lib/store";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import {useColorScheme} from "@/lib/hooks/useColorScheme";
+import {useColorScheme} from "react-native";
 import {SQLiteProvider} from "expo-sqlite";
 import {migrateDbIfNeeded} from "@/lib/db";
-import {Button, TamaguiProvider} from "tamagui";
+import {TamaguiProvider} from "tamagui";
 import dynamicTamaguiConfig from "@/lib/styles/tamagui.config";
 import {ClerkLoaded, ClerkProvider} from "@clerk/clerk-expo";
-import * as SecureStore from 'expo-secure-store'
-import * as defaultTheme from '@/lib/styles/red'
-import * as greenTheme from '@/lib/styles/green'
-import {useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
-import {loadString, saveString} from "@/lib/utils/storage";
+import {useAppSelector} from "@/lib/store/hooks";
+import {selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
+import {NotificationProvider} from "@/lib/context/NotificationsContext";
+import * as Notifications from "expo-notifications";
+import {useEffect} from "react";
+import Purchases, {LOG_LEVEL} from "react-native-purchases";
+import {Alert, Platform} from "react-native";
+import {tokenCache} from "@/lib/helpers/auth";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 
 export default function Providers({children}: { children: React.ReactNode }) {
-    const tokenCache = {
-        async getToken(key: string) {
-            try {
-                const item = await SecureStore.getItemAsync(key)
-                if (item) {
-                    console.log(`${key} was used 🔐 \n`)
-                } else {
-                    console.log('No values stored under key: ' + key)
-                }
-                return item
-            } catch (error) {
-                console.error('SecureStore get item error: ', error)
-                await SecureStore.deleteItemAsync(key)
-                return null
-            }
-        },
-        async saveToken(key: string, value: string) {
-            try {
-                return SecureStore.setItemAsync(key, value)
-            } catch (err) {
-                return
-            }
-        },
-    }
     const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
+    useEffect(() => {
+        Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+        if (Platform.OS === 'ios') {
+            if (!process.env.EXPO_PUBLIC_RC_IOS_KEY) {
+                Alert.alert('Error configuring key', 'no revenue cat key found for ios.')
+                return;
+            } else {
+                Purchases.configure({apiKey: process.env.EXPO_PUBLIC_RC_IOS_KEY});
+            }
+        } else if (Platform.OS === 'android') {
+            if (!process.env.EXPO_PUBLIC_RC_ANDROID_KEY) {
+                Alert.alert('Error configuring key', 'no revenue cat key found for android.')
+                return;
+            } else {
+                Purchases.configure({apiKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY});
+            }
+        }
+
+        // Purchases.getOfferings().then(console.log)
+
+    }, [])
 
     if (!publishableKey) {
         throw new Error(
             'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
         )
     }
-    // TODO manejar i18n
     // TODO export e impport data
-    // TODO erase data and restore full app data functionality
+    // TODO use more .android and .ios extensions for platform specific components
     // TODO rate app link
     // TODO notificaciones con timer
-    // TODO contactar developer mail functionality
     // TODO Share app functionality
-    // TODO support developer payments functionality
-    // TODO support logout from settings
 
     return (
         <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
@@ -64,7 +68,7 @@ export default function Providers({children}: { children: React.ReactNode }) {
                 <Provider store={store}>
                     <SQLiteProvider databaseName="finanzas_ok.db" onInit={migrateDbIfNeeded}>
                         <GestureHandlerRootView>
-                            <ThemeHandler children={children} />
+                            <ThemeHandler children={children}/>
                         </GestureHandlerRootView>
                     </SQLiteProvider>
                 </Provider>
@@ -80,9 +84,9 @@ function ThemeHandler({children}: { children: React.ReactNode }) {
     return (
         <TamaguiProvider config={dynamicTamaguiConfig(currentTheme)}
                          defaultTheme={colorScheme === 'light' ? 'light' : 'dark'}>
-         <>
-             {children}
-         </>
+            <NotificationProvider>
+                {children}
+            </NotificationProvider>
         </TamaguiProvider>
     )
 }

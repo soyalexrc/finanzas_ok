@@ -1,18 +1,18 @@
 import {ListItem, ScrollView, Separator, Text, View, YGroup} from "tamagui";
-import CustomHeader from "@/lib/components/ui/CustomHeader";
 import React from "react";
-import {Platform, StyleSheet} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {Platform} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {selectSettings, updateAppearance, updateSelectedLanguage} from "@/lib/store/features/settings/settingsSlice";
+import {selectSettings, updateSelectedLanguage} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
-import {saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import i18next from "i18next";
+import {useSQLiteContext} from "expo-sqlite";
+import {updateSettingByKey} from "@/lib/db";
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const { t } = useTranslation();
     const {selectedLanguage} = useAppSelector(selectSettings)
     const headerHeight = useHeaderHeight()
@@ -20,9 +20,11 @@ export default function Screen() {
 
 
     async function onPressAppearanceValue(value: string) {
-        dispatch(updateSelectedLanguage(value));
-        await saveString('selected_language', value);
-        await i18next.changeLanguage(value);
+        const result = updateSettingByKey(db, 'selected_language', value);
+        if (result) {
+            dispatch(updateSelectedLanguage(value));
+            await i18next.changeLanguage(value);
+        }
     }
 
     return (
@@ -49,18 +51,48 @@ export default function Screen() {
                                               color={selectedLanguage === 'es' ? 'black' : 'transparent'}/>}
                     />
                 </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.FRENCH')}
+                        onPress={() => onPressAppearanceValue('fr')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'fr' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.JAPANESE')}
+                        onPress={() => onPressAppearanceValue('ja')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'ja' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.CHINESE')}
+                        onPress={() => onPressAppearanceValue('zh')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'zh' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
+                <YGroup.Item>
+                    <ListItem
+                        hoverTheme
+                        pressTheme
+                        title={t('SETTINGS.LANGUAGE.OPTIONS.GERMAN')}
+                        onPress={() => onPressAppearanceValue('de')}
+                        iconAfter={<AntDesign name='check' size={20}
+                                              color={selectedLanguage === 'de' ? 'black' : 'transparent'}/>}
+                    />
+                </YGroup.Item>
             </YGroup>
         </ScrollView>
 
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    }
-})

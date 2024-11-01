@@ -1,5 +1,5 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {Entypo} from "@expo/vector-icons";
 import * as ContextMenu from "zeego/context-menu";
 import {useTranslation} from "react-i18next";

@@ -72,6 +72,12 @@ export const accountsSlice = createSlice({
                 currency_symbol: '',
                 balance: 0
             }
+        },
+        resetAccountsSlice: (state) => {
+            state.list = initialState.list;
+            state.selectedCreateUpdate = initialState.selectedCreateUpdate;
+            state.selected = initialState.selected;
+            state.selectedForm = initialState.selectedForm;
         }
     }
 });
@@ -83,6 +89,7 @@ export const {
     updateAccountCreateUpdate,
     addAccount,
     selectAccountForm,
+    resetAccountsSlice,
     updateAccountInList
 } = accountsSlice.actions;
 

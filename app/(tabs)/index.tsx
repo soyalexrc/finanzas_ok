@@ -1,13 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Animated, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
-import {Button, useThemeName, View, ScrollView, Text} from 'tamagui';
-import {Entypo, Feather} from "@expo/vector-icons";
+import {View, ScrollView, Text} from 'tamagui';
+import {Entypo} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {useRouter} from "expo-router";
-import {
-    resetCurrentTransaction,
-} from "@/lib/store/features/transactions/transactionsSlice";
-import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
@@ -20,13 +16,11 @@ import ResumeSheet from "@/lib/components/ui/android-dropdowns-sheets/ResumeShee
 import TransactionSelectionOptionsSheet
     from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
 import {FullTransaction} from "@/lib/types/Transaction";
+import * as Haptics from "expo-haptics";
 
 
 export default function HomeScreen() {
-    const router = useRouter();
-    const schemeColor = useColorScheme()
     const isIos = Platform.OS === 'ios';
-    const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const [accountsSheetOpen, setAccountsSheetOpen] = useState<boolean>(false);
@@ -47,10 +41,21 @@ export default function HomeScreen() {
 
     }, []);
 
-    function onSelectTransaction(t: FullTransaction, groupId: number) {
+    async function onSelectTransaction(t: FullTransaction, groupId: number) {
         setTransactionSelectionOpen(true);
         setSelectedTransaction(t)
         setSelectedGroupId(groupId)
+    }
+
+    async function handleTouchResume() {
+        await Haptics.selectionAsync();
+        setResumeSheetOpen(true)
+    }
+
+
+    async function handleTouchAccountsSelector() {
+        await Haptics.selectionAsync();
+        setAccountsSheetOpen(true)
     }
 
     return (
@@ -61,11 +66,12 @@ export default function HomeScreen() {
                     flex: 1,
                 }}
             >
+
                 <CustomHeader style={{paddingTop: insets.top}}>
                     {isIos && <AccountSelectDropdown/>}
                     {
                         !isIos &&
-                        <TouchableOpacity onPress={() => setAccountsSheetOpen(true)}
+                        <TouchableOpacity onPress={handleTouchAccountsSelector}
                                           style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
                             <Text
                                 fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>
@@ -74,7 +80,7 @@ export default function HomeScreen() {
                     }
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
-                    <ResumeDropDown fn={() => setResumeSheetOpen(true)}/>
+                    <ResumeDropDown fn={handleTouchResume}/>
                     {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
                     {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
                     <HomeResumeItems fn={(t, groupId) => onSelectTransaction(t, groupId)}/>

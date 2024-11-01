@@ -1,6 +1,5 @@
 import type {PayloadAction} from '@reduxjs/toolkit'
 import {createSlice} from '@reduxjs/toolkit'
-import {NetInfoState, NetInfoStateType} from "@react-native-community/netinfo";
 import {RootState} from "@/lib/store";
 
 export type CustomTheme = 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'brown' | 'black'

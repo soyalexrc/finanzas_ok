@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {Button, Sheet, Text, TextArea, useTheme, View, XStack, YStack} from "tamagui";
-import {FlatList, Platform, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
+import {Button, Sheet, Text, useTheme, View, XStack, YStack} from "tamagui";
+import {FlatList, Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {textShortener} from "@/lib/helpers/string";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -23,10 +23,10 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {getTransactions} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
-import {FlashList} from "@shopify/flash-list";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {useTranslation} from "react-i18next";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import * as Haptics from "expo-haptics";
 
 type Props = {
     open: boolean;
@@ -55,6 +55,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
     const insets = useSafeAreaInsets();
 
     async function applyFilters() {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryFilter(localCategory))
         dispatch(updateAccountFilter(localAccount))
         const {
@@ -68,14 +69,26 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         setOpen(false);
     }
 
-    function clearCategory() {
+    async function clearCategory() {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryFilter({id: 0, title: '', icon: '', type: ''}));
         setLocalCategory({id: 0, title: '', icon: '', type: ''});
     }
 
-    function clearAccount() {
+    async function clearAccount() {
+        await Haptics.selectionAsync()
         // dispatch(updateAccountFilter({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1}));
         // setLocalAccount({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1});
+    }
+
+    async function handleTouchLocalCategory(item: Category) {
+        await Haptics.selectionAsync()
+        setLocalCategory(item);
+    }
+
+    async function handleTouchLocalAccount(item: Account) {
+        await Haptics.selectionAsync()
+        setLocalAccount(item);
     }
 
 
@@ -123,7 +136,9 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     <XStack justifyContent="space-between">
                         <Text mx={30} fontSize={16} fontWeight="bold"
                               color="$gray10Dark">{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                            accessible={true} accessibilityLabel={`Clear category selection`} accessibilityHint="This will make the filter category empty and filter by all categories"
+                            style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
                             borderColor: theme.red10Dark.val,
@@ -138,9 +153,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                             <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
                         </TouchableOpacity>
                     </XStack>
-                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
+                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"   accessibilityLabel="Current category"
+                          accessibilityHint="This is empty by default, select one to filter by that cateogry"
                           color="$gray10Dark">{localCategory.icon} {localCategory.title}</Text>
-                    <FlashList
+                    <FlatList
                         estimatedItemSize={200}
                         data={categories}
                         contentContainerStyle={{paddingHorizontal: 20}}
@@ -148,8 +164,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity style={styles.item} onPress={() => setLocalCategory(item)}>
-                                <Text style={{fontSize: 50}}>{item.icon}</Text>
+                            <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalCategory(item)}>
+                                <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
                         )}
@@ -161,7 +177,9 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     <XStack justifyContent="space-between">
                         <Text mx={30} fontSize={16} fontWeight="bold"
                               color="$gray10Dark">{t('REPORTS_SHEET.SELECT_ACCOUNT')}</Text>
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                            accessible={true} accessibilityLabel={`Clear account selection`} accessibilityHint="This will make the filter account empty and filter by all accounts. is not available yet."
+                            style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
                             borderColor: theme.red10Dark.val,
@@ -177,7 +195,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         </TouchableOpacity>
                     </XStack>
                     <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
-                          color="$gray10Dark">{localAccount.icon} {localAccount.title}</Text>
+                          color="$gray10Dark">{localAccount?.icon} {localAccount?.title}</Text>
                     <FlatList
                         data={accounts}
                         contentContainerStyle={{paddingHorizontal: 20}}
@@ -185,8 +203,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) => (
-                            <TouchableOpacity style={styles.item} onPress={() => setLocalAccount(item)}>
-                                <Text style={{fontSize: 50}}>{item.icon}</Text>
+                            <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalAccount(item)}>
+                                <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
                                 <Text>{textShortener(item.title, 15)}</Text>
                             </TouchableOpacity>
                         )}
@@ -201,6 +219,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     modal
                     mode="date"
                     locale={selectedLanguage}
+                    accessible={true}
+                    accessibilityLabel="Date selector"
+                    accessibilityHint="Select a Date to filter from"
+                    accessibilityLanguage={selectedLanguage}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}
@@ -222,6 +244,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     modal
                     mode="date"
                     locale={selectedLanguage}
+                    accessible={true}
+                    accessibilityLabel="Date selector"
+                    accessibilityHint="Select a Date to filter to"
+                    accessibilityLanguage={selectedLanguage}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}

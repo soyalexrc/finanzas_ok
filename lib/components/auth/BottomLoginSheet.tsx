@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useCallback} from "react";
 import * as WebBrowser from 'expo-web-browser';
 import useWarmUpBrowser from "@/lib/hooks/useWarmUpBrowser";
-import * as Linking from 'expo-linking'
 
 const BottomLoginSheet = () => {
     useWarmUpBrowser();

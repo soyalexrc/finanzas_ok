@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
-import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 import {formatDate} from "@/lib/helpers/date";
 
 export interface TransactionsState {
@@ -106,6 +105,12 @@ export const transactionsSlice = createSlice({
             state.transactionsGroupedByDate[indexGroup].items.push(action.payload)
             const totalAmountInGroup = state.transactionsGroupedByDate[indexGroup].total;
             state.transactionsGroupedByDate[indexGroup].total = totalAmountInGroup + Number(action.payload.amount);
+        },
+        resetTransactionsSlice: (state) => {
+            state.currentTransaction = initialState.currentTransaction;
+            state.transactionsGroupedByDate = initialState.transactionsGroupedByDate;
+            state.currentBalance = initialState.currentBalance;
+            state.homeViewTypeFilter = initialState.homeViewTypeFilter;
         }
     }
 });
@@ -122,6 +127,7 @@ export const {
     removeTransactionFromHomeList,
     updateCurrentBalance,
     updateHiddenFlag,
+    resetTransactionsSlice,
     addTransactionInHomeList,
     onChangeHiddenAmount
 } = transactionsSlice.actions;

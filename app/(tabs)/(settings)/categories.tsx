@@ -1,21 +1,18 @@
-import {ScrollView, Text, useTheme, View, YStack} from "tamagui";
+import {ScrollView, Text, ToggleGroup, useTheme, View, XStack, YStack} from "tamagui";
 import {Alert, Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    selectAccountForm, selectAccountGlobally,
-    selectAccounts, selectSelectedAccountForm, selectSelectedAccountGlobal,
-    updateAccountCreateUpdate, updateAccountsList
+    selectSelectedAccountGlobal,
 } from "@/lib/store/features/accounts/accountsSlice";
-import {formatByThousands} from "@/lib/helpers/string";
 import {useSQLiteContext} from "expo-sqlite";
 import {
-    deleteAccount, deleteCategory,
-    getAllAccounts, getAllCategories,
-    getAmountOfTransactionsByAccountId, getTransactions,
+    deleteCategory,
+    getAllCategories,
+    getAmountOfTransactionsByCategoryId, getTransactions,
     getTransactionsGroupedAndFiltered
 } from "@/lib/db";
-import {Account, Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
 import {changeEmoji} from "@/lib/store/features/ui/uiSlice";
 import * as ContextMenu from "zeego/context-menu";
@@ -24,7 +21,7 @@ import {
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
-    selectAccountFilter, selectCategoryFilter, selectDateRangeFilter, updateAccountFilter, updateCategoryFilter,
+    selectAccountFilter, selectCategoryFilter, selectDateRangeFilter, updateCategoryFilter,
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
@@ -35,7 +32,7 @@ import {
     updateCategoryCreateUpdate
 } from "@/lib/store/features/categories/categoriesSlice";
 import * as Haptics from "expo-haptics";
-import {useState} from "react";
+import React, {useState} from "react";
 import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 import {useTranslation} from "react-i18next";
 
@@ -56,8 +53,10 @@ export default function Screen() {
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
+    const [categoryType, setCategoryType] = useState<string>('expense')
 
-    function onPressCategory(category: Category) {
+    async function onPressCategory(category: Category) {
+        await Haptics.selectionAsync();
         dispatch(updateCategoryCreateUpdate(category));
         dispatch(changeEmoji(category.icon))
         router.push('/createEditCategory')
@@ -66,7 +65,7 @@ export default function Screen() {
     async function onPressDeleteCategory(categoryId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
-        Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), 'SETTINGS.CATEGORIES.DELETE.TEXT', [
+        Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), t('SETTINGS.CATEGORIES.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive',
@@ -115,10 +114,25 @@ export default function Screen() {
 
     return (
         <View flex={1}>
-            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
-                        paddingTop={isIos ? headerHeight + 20 : 20}>
+            <XStack backgroundColor="$color1" justifyContent="center"  paddingTop={isIos ? headerHeight + 20 : 20}>
+                <ToggleGroup
+                    marginBottom={10}
+                    value={categoryType}
+                    onValueChange={setCategoryType}
+                    orientation="horizontal"
+                    type="single"
+                >
+                    <ToggleGroup.Item value="expense" aria-label="Categories of type expense filter">
+                        <Text>{t('COMMON.EXPENSE')}</Text>
+                    </ToggleGroup.Item>
+                    <ToggleGroup.Item value="income" aria-label="Categories of type income filter">
+                        <Text>{t('COMMON.INCOME')}</Text>
+                    </ToggleGroup.Item>
+                </ToggleGroup>
+            </XStack>
+            <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}>
                 {
-                    categories.map(category => {
+                    categories.filter(c => c.type === categoryType).map(category => {
                         if (isIos) {
                             return (
                                 <ContextMenu.Root key={category.id}>
@@ -171,7 +185,11 @@ export default function Screen() {
                                         py={15}
                                         borderColor='$color2'
                                     >
-                                        <Text fontSize={18}>{category.title}</Text>
+                                        <YStack>
+                                            <Text fontSize={18}>{category.title}</Text>
+                                            <Text
+                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryId(db, category.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                        </YStack>
                                     </View>
                                 </TouchableOpacity>                            )
                         }

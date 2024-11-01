@@ -1,50 +1,16 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import {StyleSheet, Text, TouchableOpacity, useColorScheme, View} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useTranslation} from "react-i18next";
-
-type Props = {
-    groups: Item[];
-    onSelect: (value: 'on' | 'mixed' | 'off', keyItem: string) => void;
-    selectedItem: string;
-}
-
-type Item = {
-    key: string;
-    items: Array<{
-        key: string;
-        title: string;
-        icon: string;
-        iconAndroid: string;
-    }>
-}
-
-const items = [
-    {
-        key: 'none',
-        title: 'None'
-    },
-    {
-        key: 'weekly',
-        title: 'Weekly'
-    },
-    {
-        key: 'monthly',
-        title: 'Monthly'
-    },
-    {
-        key: 'yearly',
-        title: 'Yearly'
-    },
-
-]
+import {useTheme} from "tamagui";
 
 export default function RecurringSelectorDropdown() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const dispatch = useAppDispatch();
     const scheme = useColorScheme();
+    const theme = useTheme()
     const {t} = useTranslation()
 
     function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
@@ -54,8 +20,8 @@ export default function RecurringSelectorDropdown() {
     return (
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
+                <TouchableOpacity style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100}}>
+                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={ scheme === 'light' ? 'black' : 'white'}/>
                 </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>
@@ -88,29 +54,3 @@ export default function RecurringSelectorDropdown() {
 
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        height: 300,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    fs32: {
-        fontSize: 32
-    },
-    fwBold: {
-        fontWeight: 'bold'
-    },
-    fs18: {
-        fontSize: 18
-    },
-    fw64: {
-        fontSize: 64
-    },
-    fw18: {
-        fontSize: 18
-    },
-    opacityMedium: {
-        opacity: 0.5
-    }
-})

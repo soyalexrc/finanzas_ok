@@ -109,7 +109,7 @@ export default function Screen() {
                 >
                     {
                         data.map(item => (
-                            <ToggleGroup.Item key={item.value} value={item.value} aria-label="Symbols">
+                            <ToggleGroup.Item key={item.value} value={item.value} aria-label={`${item.value} emojies`}>
                                 <Text fontSize={18}>{item.icon}</Text>
                             </ToggleGroup.Item>
                         ))

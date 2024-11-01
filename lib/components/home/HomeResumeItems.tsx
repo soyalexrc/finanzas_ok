@@ -56,7 +56,8 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
 
-    function handlePress(t: FullTransaction) {
+    async function handlePress(t: FullTransaction) {
+        await Haptics.selectionAsync();
         dispatch(updateCurrentTransaction({
             ...t,
             account_id: t.account.id,
@@ -143,14 +144,14 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                                 alignItems='center'
                                                 justifyContent='space-between'
                                             >
-                                                <View flexDirection='row' gap={10} alignItems='center'>
+                                                <View flexDirection='row' gap={10} alignItems='center' flex={0.7}>
                                                     {
                                                         item.recurrentDate !== 'none' &&
                                                         <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>
                                                     }
                                                     <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                                 </View>
-                                                <Text style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
+                                                <Text flex={0.3} textAlign="right" style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
                                             </View>
                                         </Button>
                                     </ContextMenu.Trigger>
@@ -206,14 +207,14 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                         alignItems='center'
                                         justifyContent='space-between'
                                     >
-                                        <View flexDirection='row' gap={10} alignItems='center'>
+                                        <View flexDirection='row' flex={0.7} gap={10} alignItems='center'>
                                             {
                                                 item.recurrentDate !== 'none' &&
                                                 <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>
                                             }
                                             <Text fontSize={18} fontWeight={500}>{item.category.title}</Text>
                                         </View>
-                                        <Text style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
+                                        <Text flex={0.3} textAlign="right" style={[item.category.type === 'income' && { color: theme.green10Dark.val}]}>{item.account.currency_symbol} {formatByThousands(hidden_feature_flag ? item.hidden_amount : item.amount)}</Text>
                                     </View>
                                 </Button>
 

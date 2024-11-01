@@ -15,9 +15,9 @@ import {selectAccounts, selectSelectedAccountGlobal} from "@/lib/store/features/
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 
-export default function ResumeDropDown({fn}: {fn: () => void}) {
+export default function ResumeDropDown({fn}: { fn: () => void }) {
     const db = useSQLiteContext();
-    const  theme = useTheme();
+    const theme = useTheme();
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
     const {hidden_feature_flag} = useAppSelector(selectSettings);
@@ -60,11 +60,11 @@ export default function ResumeDropDown({fn}: {fn: () => void}) {
                             </Text>
                             {
                                 filterType.type === 'Balance' &&
-                                <>
-                                    <Text
-                                        fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
-                                    <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
-                                </>
+                                <XStack mb={4}>
+                                    <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
+                                    <Text mt={-12}
+                                          fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
+                                </XStack>
                             }
                             {
                                 filterType.type !== 'Balance' &&
@@ -72,18 +72,23 @@ export default function ResumeDropDown({fn}: {fn: () => void}) {
                                     {
                                         transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                                             <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
-                                                <Text style={[index !== 0 && { color: theme.gray10Dark.val }]} fontSize={index === 0 ? '$9' : '$4'}>{total.symbol}</Text>
-                                                <Text style={[index !== 0 && { color: theme.gray10Dark.val }]}  mt={index !== 0 ? -6 : -12} fontSize={index === 0 ? '$12' : '$8'}>{formatByThousands(total.amount)}</Text>
-                                                <Text style={[index !== 0 && { color: theme.gray10Dark.val }]}  fontSize={index === 0 ? '$9' : '$4'}>.{total.decimals}</Text>
+                                                <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                                      fontSize={index === 0 ? '$9' : '$4'}>{total.symbol}</Text>
+                                                <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                                      mt={index !== 0 ? -6 : -12}
+                                                      fontSize={index === 0 ? '$12' : '$8'}>{formatByThousands(total.amount)}</Text>
+                                                <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                                      fontSize={index === 0 ? '$9' : '$4'}>.{total.decimals}</Text>
                                             </XStack>
                                         ))
                                     }
                                     {
                                         transactionsInView.length < 1 &&
-                                        <XStack  mb={4} mt={10}>
-                                            <Text fontSize="$9">{selectedAccount.currency_symbol || accounts[0]?.currency_symbol || '$'}</Text>
-                                            <Text mt={-10} fontSize="$12">0</Text>
-                                            <Text fontSize="$9">.00</Text>
+                                        <XStack mb={4}>
+                                            <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
+                                            <Text mt={-12}
+                                                  fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
+                                            <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
                                         </XStack>
                                     }
                                 </>
@@ -147,11 +152,12 @@ export default function ResumeDropDown({fn}: {fn: () => void}) {
                     </Text>
                     {
                         filterType.type === 'Balance' &&
-                        <>
-                            <Text
-                                fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
+                        <XStack mb={4}>
+                            <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
+                            <Text mt={-12}
+                                  fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
                             <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
-                        </>
+                        </XStack>
                     }
                     {
                         filterType.type !== 'Balance' &&
@@ -159,16 +165,21 @@ export default function ResumeDropDown({fn}: {fn: () => void}) {
                             {
                                 transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                                     <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
-                                        <Text style={[index !== 0 && { color: theme.gray10Dark.val }]} fontSize={index === 0 ? '$9' : '$4'}>{total.symbol}</Text>
-                                        <Text style={[index !== 0 && { color: theme.gray10Dark.val }]}  mt={index !== 0 ? -6 : -12} fontSize={index === 0 ? '$12' : '$8'}>{formatByThousands(total.amount)}</Text>
-                                        <Text style={[index !== 0 && { color: theme.gray10Dark.val }]}  fontSize={index === 0 ? '$9' : '$4'}>.{total.decimals}</Text>
+                                        <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                              fontSize={index === 0 ? '$9' : '$4'}>{total.symbol}</Text>
+                                        <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                              mt={index !== 0 ? -6 : -12}
+                                              fontSize={index === 0 ? '$12' : '$8'}>{formatByThousands(total.amount)}</Text>
+                                        <Text style={[index !== 0 && {color: theme.gray10Dark.val}]}
+                                              fontSize={index === 0 ? '$9' : '$4'}>.{total.decimals}</Text>
                                     </XStack>
                                 ))
                             }
                             {
                                 transactionsInView.length < 1 &&
-                                <XStack  mb={4} mt={10}>
-                                    <Text fontSize="$9">{selectedAccount.currency_symbol || accounts[0]?.currency_symbol || '$'}</Text>
+                                <XStack mb={4} mt={10}>
+                                    <Text
+                                        fontSize="$9">{selectedAccount.currency_symbol || accounts[0]?.currency_symbol || '$'}</Text>
                                     <Text mt={-10} fontSize="$12">0</Text>
                                     <Text fontSize="$9">.00</Text>
                                 </XStack>

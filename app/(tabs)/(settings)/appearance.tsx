@@ -1,14 +1,15 @@
 import {ListItem, ScrollView, Separator, Text, View, YGroup} from "tamagui";
 import React from "react";
-import {Alert, Platform, StyleSheet} from "react-native";
+import {Alert, Platform} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectSettings, updateAppearance} from "@/lib/store/features/settings/settingsSlice";
 import {useHeaderHeight} from "@react-navigation/elements";
-import {saveString} from "@/lib/utils/storage";
 import {useTranslation} from "react-i18next";
 import {changeCurrentTheme, CustomTheme, selectCurrentCustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as Updates from 'expo-updates'
+import {updateSettingByKey} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
 
 const themes = [
     {
@@ -46,6 +47,7 @@ const themes = [
 
 export default function Screen() {
     const dispatch = useAppDispatch();
+    const db = useSQLiteContext()
     const appearance = useAppSelector(selectSettings).appearance
     const customTheme = useAppSelector(selectCurrentCustomTheme)
     const headerHeight = useHeaderHeight()
@@ -53,8 +55,11 @@ export default function Screen() {
     const {t} = useTranslation()
 
     async function onPressAppearanceValue(value: 'system' | 'light' | 'dark') {
-        dispatch(updateAppearance(value));
-        await saveString('appearance', value);
+        const result = updateSettingByKey(db,'appearance', value);
+        if (result) {
+            dispatch(updateAppearance(value));
+        }
+        // await saveString('appearance', value);
     }
 
     async function changeCustomTheme(value: CustomTheme) {
@@ -65,9 +70,12 @@ export default function Screen() {
                 text: t('COMMON.ACCEPT'),
                 isPreferred: false,
                 onPress: async () => {
-                    await saveString('custom_theme', value);
-                    dispatch(changeCurrentTheme(value));
-                    await Updates.reloadAsync()
+                    const result = updateSettingByKey(db, 'custom_theme', value);
+                    // await saveString('custom_theme', value);
+                    if (result) {
+                        dispatch(changeCurrentTheme(value));
+                        await Updates.reloadAsync()
+                    }
                 }
             }
 
@@ -133,13 +141,3 @@ export default function Screen() {
 
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    }
-})

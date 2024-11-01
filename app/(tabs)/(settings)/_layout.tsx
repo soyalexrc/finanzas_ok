@@ -1,12 +1,13 @@
 import {Stack, useRouter} from "expo-router";
 import React from "react";
-import {Button, Text, useTheme, View} from "tamagui";
-import {Platform, TouchableOpacity, useColorScheme} from "react-native";
+import {Button, useTheme} from "tamagui";
+import {Platform, useColorScheme} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {useAppDispatch} from "@/lib/store/hooks";
 import {resetAccountCreateUpdate} from "@/lib/store/features/accounts/accountsSlice";
 import {resetCategoryCreateUpdate} from "@/lib/store/features/categories/categoriesSlice";
 import {useTranslation} from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 export default function SettingsLayout() {
     const theme = useTheme();
@@ -16,12 +17,14 @@ export default function SettingsLayout() {
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation()
 
-    function onPressCreateAccount() {
+    async function onPressCreateAccount() {
+        await Haptics.selectionAsync();
         dispatch(resetAccountCreateUpdate());
         router.push('/createEditAccount')
     }
 
-    function onPressCreateCategory() {
+    async function onPressCreateCategory() {
+        await Haptics.selectionAsync();
         dispatch(resetCategoryCreateUpdate());
         router.push('/createEditCategory')
     }
@@ -42,6 +45,16 @@ export default function SettingsLayout() {
             />
             <Stack.Screen name="appearance" options={{
                 title: t('SETTINGS.APPEARANCE.TITLE'),
+                headerBlurEffect: 'prominent',
+                headerTransparent: isIos,
+                headerTintColor: theme.color12.val,
+                headerStyle: {
+                    backgroundColor: theme.color1.val,
+                },
+            }}/>
+
+            <Stack.Screen name="privacy" options={{
+                title: t('SETTINGS.PRIVACY.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
                 headerTintColor: theme.color12.val,
@@ -108,11 +121,16 @@ export default function SettingsLayout() {
                 headerStyle: {
                     backgroundColor: theme.color1.val,
                 },
-                headerRight: () => (
-                    <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>
-                        <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                    </Button>
-                )
+            }}/>
+
+            <Stack.Screen name="notifications" options={{
+                headerBlurEffect: 'prominent',
+                headerTransparent: isIos,
+                title: t('SETTINGS.NOTIFICATIONS.TITLE'),
+                headerTintColor: theme.color12.val,
+                headerStyle: {
+                    backgroundColor: theme.color1.val,
+                },
             }}/>
 
             <Stack.Screen

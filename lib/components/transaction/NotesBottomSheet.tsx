@@ -1,4 +1,4 @@
-import {Button, Text, TextArea, View} from 'tamagui';
+import {Button, Text, TextArea} from 'tamagui';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {useEffect, useState} from "react";
 import {Sheet} from "tamagui";
@@ -12,7 +12,6 @@ type Props = {
 }
 
 export default function NotesBottomSheet({open, setOpen}: Props) {
-    const [editMode, setEditMode] = useState<boolean>(false);
     const [position, setPosition] = useState(0);
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction)
@@ -57,11 +56,15 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
             <Sheet.Handle />
 
             <Sheet.Frame backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
-                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">Notes</Text>
+                <Text nativeID="notesLabel" textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold">{t('CREATE_TRANSACTION.NOTE')}</Text>
 
                 {/*{*/}
                 {/*    editMode &&*/}
                     <TextArea
+                        accessible={true}
+                        accessibilityLabel="Tap me!"
+                        accessibilityHint="Write some comments about the transaction being registered"
+                        accessibilityLabelledBy="notesLabel"
                         size='$4'
                         value={text}
                         marginHorizontal={10}
@@ -77,8 +80,8 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
                 {/*        <Text fontSize={16} lineHeight={20}>{text}</Text>*/}
                 {/*    </View>*/}
                 {/*}*/}
-                <Button padding={12} marginHorizontal={10} onPress={handleButtonToggle}>
-                    <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 16 }}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                <Button accesible={true}  accessibilityLabel="Save note changes" accessibilityHint="This will save the comments about the transaction that you wrote"  padding={12} marginHorizontal={10} onPress={handleButtonToggle}>
+                    <Text style={{ textAlign: 'center', fontSize: 16 }}>{t('CREATE_TRANSACTION.SAVE')}</Text>
                 </Button>
             </Sheet.Frame>
         </Sheet>

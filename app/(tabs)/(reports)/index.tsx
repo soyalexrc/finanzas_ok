@@ -3,7 +3,6 @@ import {View, Text, ScrollView, ToggleGroup, XStack, Button, YStack, useTheme, I
 import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import {formatByThousands} from "@/lib/helpers/string";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -18,15 +17,18 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {TransactionsGroupedByCategory} from "@/lib/types/Transaction";
-import {calculateTotalFromChartPoints, calculateTotalTransactions} from "@/lib/helpers/operations";
+import {
+    calculateTotalsFromChartPoints,
+    calculateTotalTransactions
+} from "@/lib/helpers/operations";
 import {CartesianChart, Line} from "victory-native";
 import {SharedValue} from "react-native-reanimated";
 import {Circle} from "@shopify/react-native-skia";
 import {getDateRangeBetweenGapDaysAndToday, getDateRangeAlongTimeAgo} from "@/lib/helpers/date";
-import {selectCategories} from "@/lib/store/features/categories/categoriesSlice";
 import {useAppSelector} from "@/lib/store/hooks";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 export default function ReportScreen() {
     const db = useSQLiteContext();
@@ -60,7 +62,8 @@ export default function ReportScreen() {
     }, []);
 
 
-    function handlePress(item: TransactionsGroupedByCategory) {
+    async function handlePress(item: TransactionsGroupedByCategory) {
+        await Haptics.selectionAsync();
         dispatch(updateDetailGroup(item));
         router.push('/detailGroup')
     }
@@ -85,6 +88,7 @@ export default function ReportScreen() {
     }, [daysFrom]);
 
     async function handleGetReportByPresetDays() {
+        await Haptics.selectionAsync();
         if (daysFrom) {
             const {start, end} = getDateRangeBetweenGapDaysAndToday(Number(daysFrom));
             dispatch(updateDateRangeFilter({type: 'start', value: start.toISOString()}));
@@ -109,6 +113,11 @@ export default function ReportScreen() {
         }
     }
 
+    async function handleTouchSheetFilter() {
+        await Haptics.selectionAsync();
+        setOpenFiltersSheet(true)
+    }
+
     return (
         <YStack flex={1} backgroundColor="$color1">
             <Animated.View
@@ -117,10 +126,12 @@ export default function ReportScreen() {
                     flex: 1,
                 }}
             >
-                <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: isIos ? 'auto' :  85, marginTop: !isIos ? 10 : 0 }}>
-                    <Text
-                        fontSize={36}>{selectedAccount.currency_symbol} {formatByThousands(calculateTotalFromChartPoints(chartPoints, hidden_feature_flag))}</Text>
-                    <Button onPress={() => setOpenFiltersSheet(true)} height="$2" borderRadius="$12">
+                <CustomHeader alignedEnd={true} style={{ paddingTop: insets.top, height: 'auto'}}>
+                    <View>
+                        <Text fontSize={36}>{selectedAccount?.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag)?.totalExpense)}</Text>
+                        <Text fontSize={16} color="$green10Dark">{selectedAccount?.currency_symbol} {formatByThousands(calculateTotalsFromChartPoints(chartPoints, hidden_feature_flag)?.totalIncome)}</Text>
+                    </View>
+                   <Button onPress={handleTouchSheetFilter} height="$2" borderRadius="$12">
                         <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </Button>
                 </CustomHeader>
@@ -152,9 +163,9 @@ export default function ReportScreen() {
                         {/*Resumen de monto segun filtro (semana, mes, ano)*/}
 
 
-                        <YStack paddingHorizontal={10} paddingVertical={5} backgroundColor="$color1">
+                        <YStack paddingHorizontal={10} mt={isIos ? 10 : 0} paddingVertical={5} backgroundColor="$color1">
                             <Text fontSize={12} textAlign="center"
-                                  color="$gray10Dark">{selectedAccount.icon} {selectedAccount.title}</Text>
+                                  color="$gray10Dark">{selectedAccount?.icon} {selectedAccount?.title}</Text>
                             {/*<View  flexDirection="row"*/}
                             {/*     gap={15}>*/}
                             {/*    <Text fontSize={16} color="$gray10Dark">Spent this week</Text>*/}
@@ -172,7 +183,7 @@ export default function ReportScreen() {
                             {
                                 chartPoints.length > 2 &&
                                 <CartesianChart data={chartPoints} xKey="date"
-                                                yKeys={hidden_feature_flag ? ["total_hidden"] : ["total"]}
+                                                yKeys={hidden_feature_flag ? ["total_expense_hidden", "total_income_hidden"] : [ "total_expense", "total_income"]}
                                                 domainPadding={{left: 0, right: 0, top: 30, bottom: 10}}>
 
                                     {/* 👇 render function exposes various data, such as points. */}
@@ -185,8 +196,11 @@ export default function ReportScreen() {
                                         //     roundedCorners={{ topLeft: 10, topRight: 10 }}
                                         // />
                                         <>
-                                            <Line points={hidden_feature_flag ? points.total_hidden : points.total}
-                                                  color={theme.color10?.val} strokeWidth={3}
+                                            <Line points={hidden_feature_flag ? points.total_expense_hidden : points.total_expense}
+                                                  color='red' strokeWidth={3}
+                                                  curveType="cardinal50"/>
+                                            <Line points={hidden_feature_flag ? points.total_income_hidden : points.total_income}
+                                                  color={theme.green10Dark?.val} strokeWidth={3}
                                                   curveType="cardinal50"/>
                                         </>
                                     )}
@@ -212,13 +226,13 @@ export default function ReportScreen() {
                                 id="simple-filter"
                                 type="single"
                             >
-                                <ToggleGroup.Item value="15" aria-label="Filter by week">
+                                <ToggleGroup.Item value="15" aria-label="Filter by week tab">
                                     <Text>{t('REPORTS.LAST')} 15 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
-                                <ToggleGroup.Item value="45" aria-label="Filter by month">
+                                <ToggleGroup.Item value="45" aria-label="Filter by month tab">
                                     <Text>{t('REPORTS.LAST')} 45 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
-                                <ToggleGroup.Item value="60" aria-label="Filter by year">
+                                <ToggleGroup.Item value="60" aria-label="Filter by year tab">
                                     <Text>{t('REPORTS.LAST')} 60 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
                             </ToggleGroup>
@@ -240,7 +254,7 @@ export default function ReportScreen() {
                                         alignItems='center'
                                         justifyContent='space-between'
                                     >
-                                        <View flexDirection='row' gap={10} alignItems='center'>
+                                        <View flexDirection='row' flex={0.6} gap={10} alignItems='center'>
                                             {/*{*/}
                                             {/*    item.recurrentDate !== 'none' &&*/}
                                             {/*    <FontAwesome6 name="arrow-rotate-left" size={16} color="gray"/>*/}
@@ -252,7 +266,7 @@ export default function ReportScreen() {
                                                       color="$gray10Dark">x {item.transactions.length}</Text>
                                             }
                                         </View>
-                                        <Text>{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
+                                        <Text flex={0.4} style={[item.category.type === 'income' && { color: theme.green10Dark.val}]} textAlign="right">{item.account.currency_symbol} {formatByThousands(calculateTotalTransactions(item.transactions, hidden_feature_flag))}</Text>
                                     </View>
                                 </Button>
                             ))
@@ -268,6 +282,6 @@ export default function ReportScreen() {
     );
 }
 
-function ToolTip({x, y}: { x: SharedValue<number>; y: SharedValue<number> }) {
-    return <Circle cx={x} cy={y} r={8} color="black"/>;
-}
+// function ToolTip({x, y}: { x: SharedValue<number>; y: SharedValue<number> }) {
+//     return <Circle cx={x} cy={y} r={8} color="black"/>;
+// }

@@ -1,4 +1,3 @@
-import * as DropdownMenu from "zeego/dropdown-menu";
 import {ScrollView, Sheet, Text, View} from "tamagui";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -14,7 +13,7 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {Touchable, TouchableOpacity, useColorScheme} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useState} from "react";
 import {Entypo} from "@expo/vector-icons";

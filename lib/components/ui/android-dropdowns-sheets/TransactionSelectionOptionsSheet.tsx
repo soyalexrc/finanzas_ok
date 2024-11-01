@@ -1,9 +1,6 @@
-import * as DropdownMenu from "zeego/dropdown-menu";
-import {Sheet, Text, View} from "tamagui";
+import {Sheet, Text} from "tamagui";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
-    selectAccountGlobally,
-    selectAccounts,
     selectSelectedAccountGlobal, updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {FullTransaction} from "@/lib/types/Transaction";
@@ -17,7 +14,7 @@ import {
 import {
     addTransactionInHomeList,
     removeTransactionFromHomeList,
-    selectHomeViewTypeFilter, selectTransactionsGroupedByDate,
+    selectHomeViewTypeFilter,
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
@@ -48,9 +45,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
     const db = useSQLiteContext();
     const schemeColor = useColorScheme();
     const [position, setPosition] = useState(0);
-    const accounts = useAppSelector(selectAccounts);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const selectedCategoryFilter = useSelector(selectCategoryFilter);

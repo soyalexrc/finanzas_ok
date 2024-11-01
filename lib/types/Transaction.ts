@@ -107,6 +107,10 @@ export type AccountEdit = {
 export type ChartPoints = {
     date: string;
     total: number;
+    total_income: number;
+    total_expense: number;
+    total_expense_hidden: number;
+    total_income_hidden: number;
     total_hidden: number;
 }
 
@@ -128,6 +132,7 @@ export type TransactionsGroupedByCategory = {
         id: number,
         title: string;
         icon: string;
+        type: string;
     },
     account: {
         id: number,

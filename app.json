@@ -1,25 +1,46 @@
 {
   "expo": {
     "name": "Finanzas Ok",
+    "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "finanzasok",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "githubUrl": "https://github.com/soyalexrc/finanzas_ok",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.alexrc.finanzas-ok"
+      "bundleIdentifier": "com.alexrc.finanzasok2404",
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
       },
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
@@ -29,7 +50,8 @@
         "android.permission.USE_FINGERPRINT",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.alexrc.finanzas_ok"
+      "package": "com.alexrc.finanzas_ok",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -39,12 +61,19 @@
     "plugins": [
       "expo-router",
       [
+        "expo-notifications",
+        {
+          "defaultChannel": "default"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {
             "compileSdkVersion": 34,
-            "targetSdkVersion": 33,
-            "buildToolsVersion": "34.0.0"
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0",
+            "minSdkVersion": 24
           },
           "ios": {
             "deploymentTarget": "13.4"
@@ -96,9 +125,10 @@
         "projectId": "f3f3f3a8-d2ec-4088-ae83-cc81c8c47638"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
+    //    "runtimeVersion": {
+    //      "policy": "appVersion"
+    //    },
     "updates": {
       "url": "https://u.expo.dev/f3f3f3a8-d2ec-4088-ae83-cc81c8c47638",
       "fallbackToCacheTimeout": 1

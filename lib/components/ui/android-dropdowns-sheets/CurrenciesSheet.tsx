@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {TouchableOpacity, useColorScheme, View} from "react-native";
+import {TouchableOpacity, useColorScheme} from "react-native";
 import {ScrollView, Separator, Sheet, Text} from "tamagui";
 import {Entypo} from "@expo/vector-icons";
 import {Locale} from "expo-localization";
@@ -46,7 +46,7 @@ export default function CurrenciesSheet({open, setOpen, locales, currentCode, on
                 <ScrollView flex={1} showsVerticalScrollIndicator={false}>
                     {
                         locales.map(locale => (
-                                <TouchableOpacity key={locale.currencyCode!} onPress={() => onSelect(locale.currencyCode!, locale.currencySymbol!)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
+                                <TouchableOpacity accessible={true} accessibilityLabel={`Local currency detected: ${locale.currencyCode}`} key={locale.currencyCode!} onPress={() => onSelect(locale.currencyCode!, locale.currencySymbol!)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
                                     <Text fontSize={17}>{locale.currencyCode ?? 'NO CODE...'}</Text>
                                     {
                                         currentCode === locale.currencyCode &&

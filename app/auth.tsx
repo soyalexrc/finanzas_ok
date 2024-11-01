@@ -1,19 +1,16 @@
-import {Button, Image, Input, Separator, Text, useTheme, View} from "tamagui";
+import {Button, Input, Text, useTheme, View} from "tamagui";
 import {RefObject, useCallback, useRef, useState} from "react";
 import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet, TextInput,
+    TextInput,
     TouchableOpacity,
-    useColorScheme,
-    useWindowDimensions
 } from "react-native";
 import useWarmUpBrowser from "@/lib/hooks/useWarmUpBrowser";
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking'
 import {useOAuth, useSignIn, useSignUp} from "@clerk/clerk-expo";
-import {Ionicons} from "@expo/vector-icons";
 import {useTranslation} from "react-i18next";
 import LottieView from 'lottie-react-native';
 import {OTPInput} from "@/lib/components/ui/OTPInput";
@@ -25,8 +22,6 @@ export default function Screen() {
     const isIos = Platform.OS === 'ios';
     const animation = useRef<LottieView>(null);
     const theme = useTheme();
-    const colorScheme = useColorScheme();
-    const {width} = useWindowDimensions();
     const {t} = useTranslation()
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -231,6 +226,7 @@ export default function Screen() {
                     <LottieView
                         autoPlay
                         ref={animation}
+                        enableMergePathsAndroidForKitKatAndAbove={true}
                         style={{
                             width: type === 'login' ? 200 : 150,
                             height: type === 'login' ? 200 : 150,
@@ -276,42 +272,42 @@ export default function Screen() {
                                     mt={20}>{t(loading ? 'COMMON.LOADING' : 'AUTH.SIGNUP_BUTTON')}</Button>
                         }
 
-                        <View flexDirection="row" my={40} gap={40} position="relative">
-                            <Separator/>
-                            <Separator/>
-                            <Text
-                                style={{
-                                    position: 'absolute',
-                                    top: -10,
-                                    left: (width * 0.5) - 25,
-                                }}
-                            >{t('AUTH.OR')}</Text>
-                        </View>
-                        <View backgroundColor="$color1">
-                            {
-                                isIos &&
-                                <TouchableOpacity onPress={() => signInWithOAuth('apple')}
-                                                  style={[styles.btnLight, styles.btn, {marginBottom: 10}]}>
-                                    <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white"/>
-                                    <Text fontSize={18} color="white">{t('AUTH.CONTINUE_WITH_APPLE')}</Text>
-                                </TouchableOpacity>
-                            }
-                            <TouchableOpacity
-                                onPress={() => signInWithOAuth('google')}
-                                style={[
-                                    styles.btnDark,
-                                    styles.btn,
-                                    colorScheme === 'light' && {
-                                        borderColor: 'gray',
-                                        borderWidth: 1,
-                                        borderStyle: 'solid'
-                                    }
-                                ]}>
-                                <Image marginRight={8} source={require('@/assets/images/signin/google-icon.png')}
-                                       width={20} height={20}/>
-                                <Text fontSize={18} color="black">{t('AUTH.CONTINUE_WITH_GOOGLE')}</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {/*<View flexDirection="row" my={40} gap={40} position="relative">*/}
+                        {/*    <Separator/>*/}
+                        {/*    <Separator/>*/}
+                        {/*    <Text*/}
+                        {/*        style={{*/}
+                        {/*            position: 'absolute',*/}
+                        {/*            top: -10,*/}
+                        {/*            left: (width * 0.5) - 25,*/}
+                        {/*        }}*/}
+                        {/*    >{t('AUTH.OR')}</Text>*/}
+                        {/*</View>*/}
+                        {/*<View backgroundColor="$color1">*/}
+                        {/*    {*/}
+                        {/*        isIos &&*/}
+                        {/*        <TouchableOpacity onPress={() => signInWithOAuth('apple')}*/}
+                        {/*                          style={[styles.btnLight, styles.btn, {marginBottom: 10}]}>*/}
+                        {/*            <Ionicons name="logo-apple" size={20} style={styles.btnIcon} color="white"/>*/}
+                        {/*            <Text fontSize={18} color="white">{t('AUTH.CONTINUE_WITH_APPLE')}</Text>*/}
+                        {/*        </TouchableOpacity>*/}
+                        {/*    }*/}
+                        {/*    <TouchableOpacity*/}
+                        {/*        onPress={() => signInWithOAuth('google')}*/}
+                        {/*        style={[*/}
+                        {/*            styles.btnDark,*/}
+                        {/*            styles.btn,*/}
+                        {/*            colorScheme === 'light' && {*/}
+                        {/*                borderColor: 'gray',*/}
+                        {/*                borderWidth: 1,*/}
+                        {/*                borderStyle: 'solid'*/}
+                        {/*            }*/}
+                        {/*        ]}>*/}
+                        {/*        <Image marginRight={8} source={require('@/assets/images/signin/google-icon.png')}*/}
+                        {/*               width={20} height={20}/>*/}
+                        {/*        <Text fontSize={18} color="black">{t('AUTH.CONTINUE_WITH_GOOGLE')}</Text>*/}
+                        {/*    </TouchableOpacity>*/}
+                        {/*</View>*/}
                     </View>
                 }
                 {
@@ -341,34 +337,34 @@ export default function Screen() {
     )
 }
 
-const styles = StyleSheet.create({
-    btn: {
-        height: 50,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
-    btnLight: {
-        backgroundColor: '#000',
-    },
-    btnLightText: {
-        color: '#000',
-        fontSize: 20,
-
-    },
-    btnDark: {
-        backgroundColor: '#ffffff',
-    },
-    btnDarkText: {
-        color: '#fff',
-        fontSize: 20,
-    },
-    btnOutline: {
-        borderWidth: 3,
-        borderColor: 'gray',
-    },
-    btnIcon: {
-        paddingRight: 8,
-    },
-});
+// const styles = StyleSheet.create({
+//     btn: {
+//         height: 50,
+//         borderRadius: 12,
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         flexDirection: 'row',
+//     },
+//     btnLight: {
+//         backgroundColor: '#000',
+//     },
+//     btnLightText: {
+//         color: '#000',
+//         fontSize: 20,
+//
+//     },
+//     btnDark: {
+//         backgroundColor: '#ffffff',
+//     },
+//     btnDarkText: {
+//         color: '#fff',
+//         fontSize: 20,
+//     },
+//     btnOutline: {
+//         borderWidth: 3,
+//         borderColor: 'gray',
+//     },
+//     btnIcon: {
+//         paddingRight: 8,
+//     },
+// });

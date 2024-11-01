@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
-import {Account, Category} from "@/lib/types/Transaction";
+import {Category} from "@/lib/types/Transaction";
 
 export interface CategoriesState {
     list: Category[];
@@ -48,6 +48,11 @@ export const categoriesSlice = createSlice({
                 title: '',
                 type: 'expense'
             }
+        },
+        resetCategoriesSlice: (state) => {
+            state.list = initialState.list;
+            state.selected = initialState.selected;
+            state.selectedCreateUpdate = initialState.selectedCreateUpdate
         }
     }
 });
@@ -57,7 +62,8 @@ export const {
     resetCategoryCreateUpdate,
     updateCategoryCreateUpdate,
     addCategory,
-    selectCategory
+    selectCategory,
+    resetCategoriesSlice
 } = categoriesSlice.actions;
 
 export const selectCategories = (state: RootState) => state.categories.list
