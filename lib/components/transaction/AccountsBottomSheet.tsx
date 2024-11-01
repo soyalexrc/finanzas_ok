@@ -31,7 +31,7 @@ export default function AccountsBottomSheet({ open, setOpen }: Props) {
     async function goToCreateAccount() {
         await Haptics.selectionAsync();
         dispatch(resetCategoryCreateUpdate());
-        router.push('/(tabs)/(settings)/createEditAccount')
+        router.push('/(tabs)/(settings)')
     }
 
     return (
@@ -58,7 +58,7 @@ export default function AccountsBottomSheet({ open, setOpen }: Props) {
             <Sheet.Handle />
 
             <Sheet.ScrollView backgroundColor="$background" showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
-                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold" color="$gray10Dark">{t('COMMON.ACCOUNT')}</Text>
+                <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold">{t('COMMON.ACCOUNT')}</Text>
                 <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
                     {accounts?.map(item => (
                         <TouchableOpacity onPress={() => handlePressAccount(item)} key={item.id} style={{ justifyContent: 'center', width: '23%', alignItems: 'center' }}>

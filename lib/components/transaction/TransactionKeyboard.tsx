@@ -1,4 +1,4 @@
-import {FlatList} from "react-native";
+import {Dimensions, FlatList} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
 import {
     onChangeAmount,
@@ -11,6 +11,7 @@ import {View, Text, Button} from 'tamagui';
 export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' }) {
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction)
+    const {height} = Dimensions.get('screen');
 
     const handleNumberPress = (item: { id: string, value: string, isBackSpace?: boolean }) => {
         if (item.isBackSpace) {
@@ -46,7 +47,7 @@ export default function TransactionKeyboard({tab}: { tab: 'total' | 'visible' })
 
 
     return (
-        <View flex={1} marginTop={-30} style={{ zIndex: -1 }}>
+        <View flex={1} marginTop={height <= 812 ? -30 : 0} style={{ zIndex: -1 }}>
             <FlatList
                 data={keypadData}
                 contentContainerStyle={{flex: 1, justifyContent: 'center', marginHorizontal: 30}}

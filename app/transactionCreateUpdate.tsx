@@ -1,12 +1,12 @@
 import {
-    Alert,
+    Alert, Dimensions,
     Platform,
     Pressable,
     StyleSheet,
     TouchableOpacity,
     useColorScheme
 } from "react-native";
-import {View, Text, Button} from 'tamagui';
+import {View, Text, Button, useTheme, useWindowDimensions} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -57,9 +57,13 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {es, enUS} from 'date-fns/locale';
 
 export default function Screen() {
+    const {width, height} = Dimensions.get('screen');
+    const isSmallPhone = height <= 812;
+    const isMediumPhone = height > 812 && height < 855
     const router = useRouter();
     const db = useSQLiteContext();
     const isIos = Platform.OS === 'ios';
+    const theme = useTheme()
     const scheme = useColorScheme();
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAccounts);
@@ -86,6 +90,7 @@ export default function Screen() {
     const {hidden_feature_flag} = useAppSelector(selectSettings)
 
     const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
+
     // callbacks
 
     async function handleCreateOrEditTransaction() {
@@ -161,14 +166,17 @@ export default function Screen() {
         await Haptics.selectionAsync();
         setOpenHiddenMenuSheet(true)
     }
+
     async function handleTouchCalendar() {
         await Haptics.selectionAsync();
         setShowCalendar(true)
     }
+
     async function handleTouchNotes() {
         await Haptics.selectionAsync();
         setOpenNotesSheet(true)
     }
+
     async function handleTouchRecurrency() {
         await Haptics.selectionAsync();
         setOpenRecurrencySheet(true)
@@ -182,7 +190,10 @@ export default function Screen() {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     await deleteTransaction(db, currentTransaction.id)
                     const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    const {
+                        amountsGroupedByDate,
+                        transactionsGroupedByCategory
+                    } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                     const accounts = getAllAccounts(db);
                     dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
@@ -194,21 +205,35 @@ export default function Screen() {
         ])
     }
 
+    console.log({
+        platform: Platform.OS,
+        width,
+        height
+    })
+
     return (
         <>
             <View position="relative" flex={1} backgroundColor="$background">
                 <View style={[styles.header, {paddingTop: isIos ? 30 : insets.top + 20}]}>
                     <View flexDirection="row" gap={20}>
-                        <TouchableOpacity style={styles.calendarButton} onPress={handleTouchCalendar}>
-                            <Text fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}</Text>
+                        <TouchableOpacity style={[styles.calendarButton, {
+                            backgroundColor: theme.color2?.val,
+                            padding: 10,
+                            borderRadius: 100
+                        }]} onPress={handleTouchCalendar}>
+                            <Text
+                                fontSize={18}>{format(formatDate(currentTransaction.date), 'dd MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}</Text>
                             <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                         </TouchableOpacity>
                         <View style={styles.headerRightSide}>
                             {isIos && <RecurringSelectorDropdown/>}
                             {
                                 !isIos &&
-                                <TouchableOpacity onPress={handleTouchRecurrency}>
-                                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
+                                <TouchableOpacity
+                                    style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100}}
+                                    onPress={handleTouchRecurrency}>
+                                    <MaterialCommunityIcons name="calendar-sync-outline" size={24}
+                                                            color={scheme === 'light' ? 'black' : 'white'}/>
                                 </TouchableOpacity>
                             }
                             {/*{*/}
@@ -223,16 +248,21 @@ export default function Screen() {
                             {/*    </TouchableOpacity>*/}
                             {/*}*/}
                         </View>
-                        <TouchableOpacity onPress={handleTouchNotes}>
-                            <FontAwesome name="commenting-o" size={24} color={currentTransaction.notes.length < 1  ? 'gray' : scheme === 'light' ? 'black' : 'white'} />
+                        <TouchableOpacity style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100}}
+                                          onPress={handleTouchNotes}>
+                            <FontAwesome name="commenting-o" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <AntDesign name="closecircleo" size={24} color={scheme === 'light' ? 'black' : 'white'} />
+                    <TouchableOpacity style={{
+                        backgroundColor: scheme === 'light' ? '#ffe5e5' : '#9f0101',
+                        padding: 10,
+                        borderRadius: 100
+                    }} onPress={() => router.back()}>
+                        <AntDesign name="close" size={20} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
                 </View>
                 <View flex={1}>
-                    <View flex={0.45} justifyContent="center" alignItems="center">
+                    <View flex={isSmallPhone ? 0.45 : isMediumPhone ? 0.5 : 0.55} justifyContent="center" alignItems="center">
                         {
                             isIos &&
                             <DropdownMenu.Root>
@@ -270,7 +300,8 @@ export default function Screen() {
                         }
                         {
                             !isIos &&
-                            <Pressable onLongPress={() => handlePopHiddenMenu()} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 2 }}>
+                            <Pressable onLongPress={() => handlePopHiddenMenu()}
+                                       style={{flexDirection: 'row', alignItems: 'flex-start', gap: 2}}>
                                 <Text marginTop="$3" fontSize="$9"
                                       color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
                                 {
@@ -305,35 +336,48 @@ export default function Screen() {
                     {/*        </ToggleGroup>*/}
                     {/*    </XStack>*/}
                     {/*}*/}
-                    <View flex={0.55}>
-                        <View  flexDirection="row" gap={10} alignItems="center"
-                               paddingHorizontal={20}>
-                            <TouchableOpacity style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
+                    <View flex={isSmallPhone ? 0.55 : isMediumPhone ? 0.5 : 0.45}>
+                        <View flexDirection="row" gap={5} alignItems="center"
+                              paddingHorizontal={5}>
+                            <TouchableOpacity accessible={true} accessibilityLabel={`Account selection`}
+                                              accessibilityHint={`Select an account for the transaction, current account is: ${selectedAccount?.title ?? 'None'}`}
+                                              style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
                                     <Text fontSize={16}>{selectedAccount?.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedAccount?.title, 13) ?? 'Select account'}</Text>
+                                    <Text
+                                        fontSize={16}>{textShortener(selectedAccount?.title, 13) ?? 'Select account'}</Text>
                                 </View>
                             </TouchableOpacity>
                             <AntDesign name="arrowright" size={24} color="gray"/>
-                            <TouchableOpacity onPress={() => setOpenCategoriesSheet(true)}
+                            <TouchableOpacity accessible={true} accessibilityLabel={`Category selection`}
+                                              accessibilityHint={`Select a category for the transaction, current category is: ${selectedCategory?.title ?? 'None'}`}
+                                              onPress={() => setOpenCategoriesSheet(true)}
                                               style={styles.categoriesWrapper}>
                                 <View flexDirection="row" alignItems="center" gap={5}>
-                                    <Text fontSize={16}>{selectedCategory.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedCategory.title, 15)}</Text>
+                                    <Text fontSize={16}>{selectedCategory?.icon}</Text>
+                                    <Text fontSize={16}>{textShortener(selectedCategory?.title, 11)}</Text>
                                 </View>
                             </TouchableOpacity>
+                            {
+                                width > 375 &&
+                                <Button accesible={true} accessibilityLabel="Save transaction changes"
+                                        accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting."
+                                        flex={0.7} onPress={handleCreateOrEditTransaction} borderRadius="$4"
+                                        paddingHorizontal={0}
+                                        height={35} justifyContent='center' alignItems='center'>
+                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                                </Button>
+                            }
                         </View>
-                        <View flexDirection="row">
-                            {/*<TouchableOpacity onPress={() => setOpenNotesSheet(true)}*/}
-                            {/*                  style={{flexDirection: 'row', flex: 1, alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#f5f5f5', borderRadius: 100}}>*/}
-
-                            {/*    <Text color="$gray6Dark" fontSize={14}>{textShortener(currentTransaction.notes, 27) || t('CREATE_TRANSACTION.NOTE')}</Text>*/}
-                            {/*</TouchableOpacity>*/}
-                            <Button flex={1} mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
-                                    height={35} justifyContent='center' alignItems='center'>
-                                <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
-                            </Button>
-                        </View>
+                        {
+                            width <= 375 &&
+                            <View flexDirection="row">
+                                <Button accesible={true} accessibilityLabel="Save transaction changes" accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting." flex={1} mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
+                                        height={35} justifyContent='center' alignItems='center'>
+                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                                </Button>
+                            </View>
+                        }
                         <TransactionKeyboard tab={tab}/>
                     </View>
                 </View>
@@ -343,9 +387,14 @@ export default function Screen() {
                 modal
                 mode="date"
                 locale={selectedLanguage}
+                accessible={true}
+                accessibilityLabel="Date selector"
+                accessibilityHint="Select a Date to this transaction"
+                accessibilityLanguage={selectedLanguage}
                 title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                 cancelText={t('COMMON.CANCEL')}
                 confirmText={t('COMMON.CONFIRM')}
+                theme={'light'}
                 open={showCalendar}
                 date={new Date(currentTransaction.date)}
                 maximumDate={new Date()}
@@ -367,8 +416,10 @@ export default function Screen() {
             {
                 !isIos &&
                 <>
-                    <HiddenFlagSheet open={openHiddenMenuSheet} setOpen={setOpenHiddenMenuSheet} fn={(value => setTab(value))} tab={tab}/>
-                    <TransactionsSettingsSheet open={openConfigSheet} setOpen={setOpenConfigSheet} fn={handleDeleteItem} />
+                    <HiddenFlagSheet open={openHiddenMenuSheet} setOpen={setOpenHiddenMenuSheet}
+                                     fn={(value => setTab(value))} tab={tab}/>
+                    <TransactionsSettingsSheet open={openConfigSheet} setOpen={setOpenConfigSheet}
+                                               fn={handleDeleteItem}/>
                     <RecurringSelectorSheet open={openRecurrencySheet} setOpen={setOpenRecurrencySheet}/>
                 </>
             }
@@ -379,8 +430,9 @@ export default function Screen() {
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 20
+        paddingHorizontal: 10
     },
     container: {
         position: 'relative',

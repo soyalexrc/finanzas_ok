@@ -43,7 +43,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
     async function goToCreateCategory() {
         await Haptics.selectionAsync();
         dispatch(resetCategoryCreateUpdate());
-        router.push('/(tabs)/(settings)/createEditCategory')
+        router.push('/(tabs)/(settings)')
     }
 
     async function goToCreateAccount() {
@@ -81,16 +81,17 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                         margin={10}
                         value={categoryType}
                         onValueChange={setCategoryType}
+                        height={50}
                         orientation="horizontal"
                         type="single"
                     >
-                        <ToggleGroup.Item value="expense" aria-label="Filter by week">
+                        <ToggleGroup.Item value="expense" aria-label="expese categories tab filter">
                             <Text>{t('COMMON.EXPENSE')}</Text>
                         </ToggleGroup.Item>
-                        <ToggleGroup.Item value="income" aria-label="Filter by year">
+                        <ToggleGroup.Item value="income" aria-label="income categories tab filter">
                             <Text>{t('COMMON.INCOME')}</Text>
                         </ToggleGroup.Item>
-                        <ToggleGroup.Item value="account" aria-label="Filter by year">
+                        <ToggleGroup.Item value="account" aria-label="Accounts tab filter">
                             <Text>{t('COMMON.ACCOUNT')}</Text>
                         </ToggleGroup.Item>
                     </ToggleGroup>

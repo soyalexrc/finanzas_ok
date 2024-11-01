@@ -226,13 +226,13 @@ export default function ReportScreen() {
                                 id="simple-filter"
                                 type="single"
                             >
-                                <ToggleGroup.Item value="15" aria-label="Filter by week">
+                                <ToggleGroup.Item value="15" aria-label="Filter by week tab">
                                     <Text>{t('REPORTS.LAST')} 15 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
-                                <ToggleGroup.Item value="45" aria-label="Filter by month">
+                                <ToggleGroup.Item value="45" aria-label="Filter by month tab">
                                     <Text>{t('REPORTS.LAST')} 45 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
-                                <ToggleGroup.Item value="60" aria-label="Filter by year">
+                                <ToggleGroup.Item value="60" aria-label="Filter by year tab">
                                     <Text>{t('REPORTS.LAST')} 60 {t('REPORTS.DAYS')}</Text>
                                 </ToggleGroup.Item>
                             </ToggleGroup>

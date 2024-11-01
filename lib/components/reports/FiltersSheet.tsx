@@ -136,7 +136,9 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     <XStack justifyContent="space-between">
                         <Text mx={30} fontSize={16} fontWeight="bold"
                               color="$gray10Dark">{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                            accessible={true} accessibilityLabel={`Clear category selection`} accessibilityHint="This will make the filter category empty and filter by all categories"
+                            style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
                             borderColor: theme.red10Dark.val,
@@ -151,7 +153,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                             <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
                         </TouchableOpacity>
                     </XStack>
-                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
+                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"   accessibilityLabel="Current category"
+                          accessibilityHint="This is empty by default, select one to filter by that cateogry"
                           color="$gray10Dark">{localCategory.icon} {localCategory.title}</Text>
                     <FlatList
                         estimatedItemSize={200}
@@ -174,7 +177,9 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     <XStack justifyContent="space-between">
                         <Text mx={30} fontSize={16} fontWeight="bold"
                               color="$gray10Dark">{t('REPORTS_SHEET.SELECT_ACCOUNT')}</Text>
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                            accessible={true} accessibilityLabel={`Clear account selection`} accessibilityHint="This will make the filter account empty and filter by all accounts. is not available yet."
+                            style={{
                             borderStyle: 'solid',
                             borderWidth: 1,
                             borderColor: theme.red10Dark.val,
@@ -214,6 +219,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     modal
                     mode="date"
                     locale={selectedLanguage}
+                    accessible={true}
+                    accessibilityLabel="Date selector"
+                    accessibilityHint="Select a Date to filter from"
+                    accessibilityLanguage={selectedLanguage}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}
@@ -235,6 +244,10 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                     modal
                     mode="date"
                     locale={selectedLanguage}
+                    accessible={true}
+                    accessibilityLabel="Date selector"
+                    accessibilityHint="Select a Date to filter to"
+                    accessibilityLanguage={selectedLanguage}
                     title={t('REPORTS_SHEET.SELECT_DATE_RANGE')}
                     cancelText={t('COMMON.CANCEL')}
                     confirmText={t('COMMON.CONFIRM')}

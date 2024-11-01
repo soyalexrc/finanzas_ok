@@ -285,7 +285,7 @@ export default function Screen() {
                     <Text fontSize={14} textAlign="center">{t('ONBOARDING.WELCOME.MONEY_MISSION')} 🚀</Text>
                     <Text fontSize={14} textAlign="center">{t('ONBOARDING.WELCOME.TAME_FINANCES')}! 🦁</Text>
                     <View flex={1}/>
-                    <Button mx={20} onPress={() => changeStep('next')}>{t('COMMON.GET_STARTED')}</Button>
+                    <Button mx={20} mb={10} onPress={() => changeStep('next')}>{t('COMMON.GET_STARTED')}</Button>
                 </View>
             }
             {
@@ -308,7 +308,7 @@ export default function Screen() {
                     </YStack>
 
                     <YStack p={20} gap={15}>
-                        <TouchableOpacity onPress={() => selectLanguage('en')} style={{
+                        <TouchableOpacity accessible={true} accessibilityLabel="Language selection: English"   onPress={() => selectLanguage('en')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -320,7 +320,7 @@ export default function Screen() {
                             {selectedLanguage === 'en' && <Entypo name="check" size={20} color="black"/>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => selectLanguage('es')} style={{
+                        <TouchableOpacity accessible={true} accessibilityLabel="Language selection: Spanish"  onPress={() => selectLanguage('es')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -332,7 +332,7 @@ export default function Screen() {
                             {selectedLanguage === 'es' && <Entypo name="check" size={20} color="black"/>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => selectLanguage('fr')} style={{
+                        <TouchableOpacity accessible={true} accessibilityLabel="Language selection: French"  onPress={() => selectLanguage('fr')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -344,7 +344,7 @@ export default function Screen() {
                             {selectedLanguage === 'fr' && <Entypo name="check" size={20} color="black"/>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => selectLanguage('de')} style={{
+                        <TouchableOpacity accessible={true} accessibilityLabel="Language selection: German"  onPress={() => selectLanguage('de')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -356,7 +356,7 @@ export default function Screen() {
                             {selectedLanguage === 'de' && <Entypo name="check" size={20} color="black"/>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => selectLanguage('ja')} style={{
+                        <TouchableOpacity accessible={true} accessibilityLabel="Language selection: Japanese"  onPress={() => selectLanguage('ja')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -368,7 +368,7 @@ export default function Screen() {
                             {selectedLanguage === 'ja' && <Entypo name="check" size={20} color="black"/>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => selectLanguage('zh')} style={{
+                        <TouchableOpacity  accessible={true} accessibilityLabel="Language selection: Chinese"  onPress={() => selectLanguage('zh')} style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center'
@@ -382,7 +382,7 @@ export default function Screen() {
                     </YStack>
 
                     <View flex={1}/>
-                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
+                    <Button mx={20} mb={10} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -496,6 +496,9 @@ export default function Screen() {
                                 {
                                     accountCreateUpdate.id < 1 && !isIos &&
                                     <TouchableOpacity
+                                        accessible={true}
+                                        accessibilityLabel="Currency selection"
+                                        accessibilityHint="You can select the currency of the account pressing here."
                                         onPress={() => setOpenCurrenciesSheet(true)}
                                         style={{
                                             position: 'absolute',
@@ -560,7 +563,7 @@ export default function Screen() {
                     </YStack>
 
                     <View flex={1}/>
-                    <Button mx={20} onPress={manageCreateAccount} >{t('COMMON.NEXT')}</Button>
+                    <Button mx={20} mb={10} onPress={manageCreateAccount} >{t('COMMON.NEXT')}</Button>
 
                 </KeyboardAvoidingView>
             }
@@ -606,13 +609,13 @@ export default function Screen() {
                                     <Text fontSize={16}>{item.title}</Text>
                                 </XStack>
                                 <TouchableOpacity onPress={() => removeCategory(item.id)}>
-                                    <Feather name="trash-2" size={24} color="red"/>
+                                    <Feather name="trash-2" size={isIos ? 24 : 30} color="red" accessible={true} accessibilityLabel={`Remove category ${item.title}`} accessibilityHint={`Removes the default category named: ${item.title}`}/>
                                 </TouchableOpacity>
                             </XStack>
                         )}
                     />
 
-                    <Button mx={20} onPress={manageCreateCategories} >{t('COMMON.NEXT')}</Button>
+                    <Button mx={20} mb={10} onPress={manageCreateCategories} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -704,7 +707,7 @@ export default function Screen() {
                     }
                     <View flex={1}/>
 
-                    <Button mx={20} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
+                    <Button mx={20} mb={10} onPress={() => changeStep('next')} >{t('COMMON.NEXT')}</Button>
 
                 </View>
             }
@@ -727,7 +730,7 @@ export default function Screen() {
 
                     <View flex={1}/>
 
-                    <Button mx={20} onPress={complete} >{t('COMMON.DONE')}</Button>
+                    <Button mx={20} mb={10} onPress={complete} >{t('COMMON.DONE')}</Button>
 
 
                 </View>

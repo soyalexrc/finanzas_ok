@@ -4,11 +4,13 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onRecurrentSettingChange, selectCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
 import {useTranslation} from "react-i18next";
+import {useTheme} from "tamagui";
 
 export default function RecurringSelectorDropdown() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const dispatch = useAppDispatch();
     const scheme = useColorScheme();
+    const theme = useTheme()
     const {t} = useTranslation()
 
     function onSelect(value: 'on' | 'mixed' | 'off', keyItem: string) {
@@ -18,8 +20,8 @@ export default function RecurringSelectorDropdown() {
     return (
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={currentTransaction.recurrentDate === 'none' ? 'gray' : scheme === 'light' ? 'black' : 'white'}/>
+                <TouchableOpacity style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100}}>
+                    <MaterialCommunityIcons name="calendar-sync-outline" size={24} color={ scheme === 'light' ? 'black' : 'white'}/>
                 </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0} collisionPadding={0} avoidCollisions={true}>

@@ -122,10 +122,10 @@ export default function Screen() {
                     orientation="horizontal"
                     type="single"
                 >
-                    <ToggleGroup.Item value="expense" aria-label="Filter by week">
+                    <ToggleGroup.Item value="expense" aria-label="Categories of type expense filter">
                         <Text>{t('COMMON.EXPENSE')}</Text>
                     </ToggleGroup.Item>
-                    <ToggleGroup.Item value="income" aria-label="Filter by year">
+                    <ToggleGroup.Item value="income" aria-label="Categories of type income filter">
                         <Text>{t('COMMON.INCOME')}</Text>
                     </ToggleGroup.Item>
                 </ToggleGroup>
