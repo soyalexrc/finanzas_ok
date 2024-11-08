@@ -27,6 +27,7 @@ import {
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
+import {getLocales} from "expo-localization";
 import {
     getAllAccounts,
     getAllCategories,
@@ -137,11 +138,13 @@ const InitialLayout = () => {
             }
         } catch (error) {
             // You can also add an alert() to see the error message in case of an error when fetching updates.
-            alert(`Error fetching latest Expo update: ${error}`);
+            console.log(`Error fetching latest Expo update: ${error}`);
         }
     }
 
     async function validateSettingsFromStorage() {
+        const {languageCode} = getLocales()[0]
+
         const settings = getSettings(db);
         dispatch(changeCurrentTheme(settings?.custom_theme as CustomTheme ?? 'green'));
         dispatch(updateAppearance(settings?.appearance as 'system' | 'light' | 'dark' ?? 'system'));
@@ -151,8 +154,7 @@ const InitialLayout = () => {
         if (!settings?.is_onboarding_shown || settings?.is_onboarding_shown === 'false') {
             router.replace('/onboarding')
         }
-
-        await i18next.changeLanguage(settings?.selected_language ?? 'en')
+        await i18next.changeLanguage(settings?.selected_language ? settings.selected_language : languageCode ?? 'en');
 
         const notifications_scheduling: any = await load('notifications_scheduling') ?? {
             hour: 20,

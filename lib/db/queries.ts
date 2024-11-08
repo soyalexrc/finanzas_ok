@@ -21,6 +21,11 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
                           FROM accounts ORDER BY title`);
 }
 
+export function getSettingsRaw(db: SQLiteDatabase): {key: string, value: string}[] {
+    return  db.getAllSync(`SELECT * FROM settings`);
+}
+
+
 export function getSettings(db: SQLiteDatabase): {[key: string]: string} {
     const data =  db.getAllSync(`SELECT * FROM settings`);
 
@@ -91,15 +96,48 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         // await db.runAsync('DELETE FROM transactions')
         // await db.runAsync('DELETE FROM categories')
         //
-        await db.runAsync('DROP TABLE migrations')
+        // await db.runAsync('DROP TABLE migrations')
         // await db.runAsync('DROP TABLE accounts')
         // await db.runAsync('DROP TABLE categories')
+        // await db.runAsync('DROP TABLE transactions')
+
+        await db.runAsync('DROP TABLE migrations')
+        await db.runAsync('DROP TABLE accounts')
+        await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
 
         await migrateDbIfNeeded(db)
     } catch (e) {
         console.error(e)
     }
+}
+
+export async function importSheetToDB(db: SQLiteDatabase, transactions: Transaction[], accounts: Account[], categories: Category[], settings: {key: string, value: string}[]) {
+    try {
+        // insert transaction, account, category and setting into Sqlite db
+        for (const account of accounts) {
+            await createAccount(db, account);
+        }
+
+        for (const category of categories) {
+            await createCategory(db, category);
+        }
+
+        for (const transaction of transactions) {
+            await createTransaction(db, transaction);
+        }
+
+        for (const setting of settings) {
+            updateSettingByKey(db, setting.key, setting.value);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getAllTransactions(db: SQLiteDatabase) {
+    return await db.getAllAsync('SELECT * FROM transactions');
 }
 
 export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{

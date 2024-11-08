@@ -66,8 +66,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // const allAccounts = await db.getAllAsync('SELECT * FROM accounts');
         // console.log(allAccounts)
 
-        // const transactions = await db.getAllAsync('SELECT * FROM transactions');
-        // console.log(transactions);
+        const transactions = await db.getAllAsync('SELECT * FROM transactions');
+        console.log(transactions);
 
     } catch (err) {
         console.error('Ocurrio un error corriendo las migraciones... ', err)
@@ -199,5 +199,55 @@ const migrations = [
                     )
             `)
         }
-    }
+    },
+    // {
+    //     version: 1.5,
+    //     name: 'Add currency fields to transactions and make account_id nullable',
+    //     migrate: async (db: SQLiteDatabase) => {
+    //         await db.execAsync(`
+    //         ALTER TABLE transactions
+    //         ADD COLUMN currency_symbol TEXT NOT NULL DEFAULT '',
+    //         ADD COLUMN currency_code TEXT NOT NULL DEFAULT '';
+    //     `);
+    //
+    //         // Create a temporary table to store non-null account_id values
+    //         await db.execAsync(`
+    //         CREATE TEMPORARY TABLE temp_transactions AS
+    //         SELECT * FROM transactions WHERE account_id IS NOT NULL;
+    //     `);
+    //
+    //         // Drop the original transactions table
+    //         await db.execAsync(`
+    //         DROP TABLE transactions;
+    //     `);
+    //
+    //         // Recreate the transactions table with nullable account_id
+    //         await db.execAsync(`
+    //         CREATE TABLE transactions (
+    //             id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //             date TEXT NOT NULL,
+    //             recurrentDate TEXT,
+    //             amount INTEGER NOT NULL,
+    //             notes TEXT,
+    //             category_id INTEGER NOT NULL,
+    //             account_id INTEGER,
+    //             currency_symbol TEXT NOT NULL DEFAULT '',
+    //             currency_code TEXT NOT NULL DEFAULT '',
+    //             FOREIGN KEY (category_id) REFERENCES categories(id),
+    //             FOREIGN KEY (account_id) REFERENCES accounts(id)
+    //         );
+    //     `);
+    //
+    //         // Insert data from the temporary table into the new table
+    //         await db.execAsync(`
+    //         INSERT INTO transactions
+    //         SELECT * FROM temp_transactions;
+    //     `);
+    //
+    //         // Drop the temporary table
+    //         await db.execAsync(`
+    //         DROP TABLE temp_transactions;
+    //     `);
+    //     }
+    // }
 ];
