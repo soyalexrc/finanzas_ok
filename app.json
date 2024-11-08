@@ -125,13 +125,13 @@
         "projectId": "f3f3f3a8-d2ec-4088-ae83-cc81c8c47638"
       }
     },
-    "runtimeVersion": "1.0.0",
-    //    "runtimeVersion": {
-    //      "policy": "appVersion"
-    //    },
+    //    "runtimeVersion": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "updates": {
       "url": "https://u.expo.dev/f3f3f3a8-d2ec-4088-ae83-cc81c8c47638",
-      "fallbackToCacheTimeout": 1
+      "checkAutomatically": "ON_ERROR_RECOVERY"
     }
   }
 }

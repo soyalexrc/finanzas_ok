@@ -6,9 +6,10 @@ import 'react-native-reanimated';
 import NetInfo from '@react-native-community/netinfo';
 import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {changeNetworkState} from "@/lib/store/features/network/networkSlice";
+import {changeNetworkState, selectNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, StatusBar, useColorScheme} from "react-native";
+import * as Updates from 'expo-updates';
 import {
     selectSettings,
     updateAppearance,
@@ -38,6 +39,7 @@ import {selectCategory, updateCategoriesList} from "@/lib/store/features/categor
 import '@/lib/language';
 import i18next from "i18next";
 import {changeCurrentTheme, CustomTheme} from "@/lib/store/features/ui/uiSlice";
+import * as net from "node:net";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -47,7 +49,7 @@ const InitialLayout = () => {
     const appearance = useAppSelector(selectSettings).appearance;
     const router = useRouter();
     const colorScheme = useColorScheme();
-
+    const networkState = useAppSelector(selectNetworkState);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
@@ -102,7 +104,12 @@ const InitialLayout = () => {
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(
-            state => dispatch(changeNetworkState(state))
+            state => {
+                if (state.isConnected) {
+                    onFetchUpdateAsync()
+                }
+                dispatch(changeNetworkState(state))
+            }
         )
         return () => {
             unsubscribe()
@@ -118,6 +125,20 @@ const InitialLayout = () => {
 
     if (!loaded) {
         return <Slot/>;
+    }
+
+    async function onFetchUpdateAsync() {
+        try {
+            const update = await Updates.checkForUpdateAsync();
+
+            if (update.isAvailable) {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+            }
+        } catch (error) {
+            // You can also add an alert() to see the error message in case of an error when fetching updates.
+            alert(`Error fetching latest Expo update: ${error}`);
+        }
     }
 
     async function validateSettingsFromStorage() {
