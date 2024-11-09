@@ -47,7 +47,7 @@ export default function CurrenciesSheet({open, setOpen, locales, currentCode, on
                     {
                         locales.map(locale => (
                                 <TouchableOpacity accessible={true} accessibilityLabel={`Local currency detected: ${locale.currencyCode}`} key={locale.currencyCode!} onPress={() => onSelect(locale.currencyCode!, locale.currencySymbol!)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
-                                    <Text fontSize={17}>{locale.currencyCode ?? 'NO CODE...'}</Text>
+                                    <Text fontSize={17}>{locale.currencyCode ?? 'NO CODE...'} ({locale.currencySymbol ?? ''})</Text>
                                     {
                                         currentCode === locale.currencyCode &&
                                         <Entypo name="check" size={24} color={scheme === 'light' ? 'black' : 'white'} />
@@ -60,7 +60,7 @@ export default function CurrenciesSheet({open, setOpen, locales, currentCode, on
                     {
                         currencies.map(({ code, symbol }) => (
                             <TouchableOpacity key={code} onPress={() => onSelect(code, symbol)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
-                                <Text fontSize={17}>{code}</Text>
+                                <Text fontSize={17}>{code} ({symbol})</Text>
                                 {
                                     currentCode === code &&
                                     <Entypo name="check" size={24} color={scheme === 'light' ? 'black' : 'white'} />

@@ -3,7 +3,7 @@ import React from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 
-import {Alert, Platform, Text, useColorScheme, View} from "react-native";
+import {Alert, Platform, Text, TouchableOpacity, useColorScheme, View} from "react-native";
 import CustomBottomBar from "@/lib/components/ui/CustomBottomBar";
 import {Button, useTheme} from "tamagui";
 import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactionsSlice";
@@ -37,7 +37,7 @@ export default function TabLayout() {
                     paddingHorizontal: 30
                 } : {borderTopWidth: 0, elevation: 0, paddingHorizontal: 30},
                 tabBarItemStyle: {
-                    height: 50,
+                    height: 60,
                     marginTop: 2,
                 },
                 tabBarBackground: () => <CustomBottomBar/>
@@ -48,7 +48,7 @@ export default function TabLayout() {
                     title: '',
                     headerShown: false,
                     tabBarIcon: ({color, focused}) => (
-                        <AntDesign name="clockcircle" size={28} color={color}/>
+                        <Feather name="clock" size={28} color={color}/>
                     ),
                 }}
             />
@@ -75,9 +75,29 @@ export default function TabLayout() {
                 options={{
                     title: '',
                     tabBarIcon: () => (
-                        <Button onPress={onPressNewTransaction} size="$2.5" borderRadius="$12">
-                            <Feather name="plus" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                        </Button>
+                        <TouchableOpacity onPress={onPressNewTransaction}
+                            style={{
+                                backgroundColor: theme.color10?.val,
+                                width: 40,
+                                height: 40,
+                                borderRadius: 25,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                position: 'absolute',
+                                // bottom: 5,
+                                // zIndex: 100,
+                                // shadowColor: '#000',
+                                // shadowOffset: {
+                                //     width: 0,
+                                //     height: 2,
+                                // },
+                                // shadowOpacity: 0.25,
+                                // shadowRadius: 3.84,
+                                // elevation: 5,
+                            }}
+                        >
+                            <Feather name="plus" size={20} color="white"/>
+                        </TouchableOpacity>
                     )
                 }}
                 listeners={() => ({
@@ -111,7 +131,7 @@ export default function TabLayout() {
                     title: '',
                     headerShown: false,
                     tabBarIcon: ({color, focused}) => (
-                        <Entypo name="dots-three-horizontal" size={28} color={color}/>
+                        <Feather name="settings" size={28} color={color}/>
                     ),
                 }}
             />

@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "CURRENCY": "Devise",
       "CANCEL": "Annuler",
       "BACK": "Retour",
       "WELCOME": "Bienvenue",

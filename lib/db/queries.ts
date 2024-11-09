@@ -1089,6 +1089,13 @@ export function getAmountOfTransactionsByCategoryId(db: SQLiteDatabase, category
     return result?.count ?? 0;
 }
 
+export function getAmountOfTransactionsByCategoryTitle(db: SQLiteDatabase, categoryTitle: string): number {
+    const result: {
+        count: number
+    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE category = ?', [categoryTitle]);
+    return result?.count ?? 0;
+}
+
 export async function deleteAccount(db: SQLiteDatabase, accountId: number) {
     await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
     await db.runAsync('DELETE FROM accounts WHERE id = ?', [accountId]);

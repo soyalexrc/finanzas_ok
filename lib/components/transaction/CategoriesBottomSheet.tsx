@@ -1,5 +1,5 @@
 import {TouchableOpacity, StyleSheet, Platform, useColorScheme, FlatList} from "react-native";
-import {View, Text, XStack, ToggleGroup} from 'tamagui';
+import {View, Text, XStack, ToggleGroup, useTheme} from 'tamagui';
 import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -29,14 +29,13 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
     const dispatch = useAppDispatch();
     const scheme = useColorScheme()
     const categories = useAppSelector(selectCategories);
-    const accounts = useAppSelector(selectAccounts);
     const isIos = Platform.OS === 'ios';
     const selectedCategory = useAppSelector(selectSelectedCategory);
-    const selectedAccount = useAppSelector(selectSelectedAccountForm);
     const [position, setPosition] = useState(0);
     const {t} = useTranslation();
     const [categoryType, setCategoryType] = useState<string>('expense')
     const router = useRouter();
+    const theme = useTheme();
 
     function handlePressCategory(category: Category) {
         dispatch(selectCategory(category));
@@ -130,14 +129,16 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                     alignItems: 'center',
                     flexDirection: 'row',
                     marginBottom: 20,
-                    backgroundColor: 'black',
+                    backgroundColor: theme.color5?.val,
                     marginHorizontal: 20,
                     height: 50,
+                    gap: 5,
                     borderRadius: 10,
                 }}>
                     <Entypo name="plus" size={24} color={ scheme === 'light' ? 'black' : 'white'} />
-                    <Text>{t('COMMON.NEW')}</Text>
+                    <Text>{t('SETTINGS.CATEGORIES.PLACE_HOLDER')}</Text>
                 </TouchableOpacity>
+                {isIos && <View style={{height: 10}}/>}
             </Sheet.Frame>
         </Sheet>
     )

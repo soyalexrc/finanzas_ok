@@ -9,7 +9,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     deleteCategory,
     getAllCategories,
-    getAmountOfTransactionsByCategoryId, getTransactions,
+    getAmountOfTransactionsByCategoryId, getAmountOfTransactionsByCategoryTitle, getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
@@ -45,11 +45,8 @@ export default function Screen() {
     const router = useRouter();
     const theme = useTheme();
     const filterType = useAppSelector(selectHomeViewTypeFilter);
-    const selectedAccountFilter = useAppSelector(selectAccountFilter);
     const selectedCategoryForm = useAppSelector(selectSelectedCategory);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
@@ -188,7 +185,7 @@ export default function Screen() {
                                         <YStack>
                                             <Text fontSize={18}>{category.title}</Text>
                                             <Text
-                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryId(db, category.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryTitle(db, category.title)} {t('COMMON.TRANSACTIONS')}</Text>
                                         </YStack>
                                     </View>
                                 </TouchableOpacity>                            )
