@@ -34,7 +34,7 @@ import {
     selectSelectedAccountGlobal,
     updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
-import {getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 
 export default function Screen() {
     const db = useSQLiteContext()
@@ -97,7 +97,7 @@ export default function Screen() {
 
         const accounts = getAllAccounts(db);
         const categories = getAllCategories(db);
-        const {start, end} = getCurrentWeek();
+        const {start, end} = getCurrentMonth();
         // const {
         //     amountsGroupedByDate,
         //     transactionsGroupedByCategory

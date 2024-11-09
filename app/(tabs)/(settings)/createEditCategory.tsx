@@ -60,7 +60,7 @@ export default function Screen() {
     }, []);
 
     async function manageCreateAccount() {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
 
         if (!categoryTitle) return;
 

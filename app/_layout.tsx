@@ -8,7 +8,7 @@ import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState, selectNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
-import {Appearance, StatusBar, useColorScheme} from "react-native";
+import {Appearance, Platform, StatusBar, useColorScheme} from "react-native";
 import * as Updates from 'expo-updates';
 import {
     selectSettings,
@@ -16,7 +16,7 @@ import {
     updateHiddenFeatureFlag, updateNotificationsScheduling, updateOnboardingState,
     updateSelectedLanguage
 } from "@/lib/store/features/settings/settingsSlice";
-import {View} from "tamagui";
+import {useTheme, View} from "tamagui";
 import {
     selectCategoryFilter,
     selectDateRangeFilter, updateAccountFilter, updateChartPoints, updateTransactionsGroupedByCategory
@@ -35,17 +35,20 @@ import {
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2
 } from "@/lib/db";
-import {getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import '@/lib/language';
 import i18next from "i18next";
 import {changeCurrentTheme, CustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as net from "node:net";
+import {useTranslation} from "react-i18next";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
-
+    const theme = useTheme();
+    const { t } = useTranslation();
+    const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
     const appearance = useAppSelector(selectSettings).appearance;
     const router = useRouter();
@@ -62,7 +65,7 @@ const InitialLayout = () => {
             await validateSettingsFromStorage();
             const accounts = getAllAccounts(db);
             const categories = getAllCategories(db);
-            const {start, end} = getCurrentWeek();
+            const {start, end} = getCurrentMonth();
             // const {
             //     amountsGroupedByDate,
             //     transactionsGroupedByCategory
@@ -178,6 +181,19 @@ const InitialLayout = () => {
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
                 <Stack.Screen name="emojiSelection"
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
+                <Stack.Screen name="search"
+
+                              options={{
+                                  animation: "slide_from_right",
+                                  title: 'Search',
+                                  headerBlurEffect: 'prominent',
+                                  headerBackTitle: t('COMMON.BACK'),
+                                  headerTransparent: isIos,
+                                  headerTintColor: theme.color12.val,
+                                  headerStyle: {
+                                      backgroundColor: theme.color1.val,
+                                  },
+                              }}/>
                 <Stack.Screen name="auth" options={{
                     headerShown: false,
                     presentation: 'modal',

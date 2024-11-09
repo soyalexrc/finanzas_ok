@@ -36,7 +36,7 @@ const initialState: TransactionsState = {
     currentBalance: 0,
     homeViewTypeFilter: {
         type: 'Spent',
-        date: 'week'
+        date: 'month'
     }
 }
 

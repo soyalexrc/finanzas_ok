@@ -57,7 +57,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
 
 
     function handleDeleteItem(id: number, groupId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -94,7 +94,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
     }
 
     async function stopRecurrent(transactionId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
             setOpen(false)
@@ -103,7 +103,6 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
     }
-
 
     return (
         <Sheet

@@ -30,16 +30,16 @@ export default function ResumeSheet({open, setOpen} : Props) {
     const {t} = useTranslation()
 
 
-    async function handleSelectOption(type: 'Spent' | 'Revenue' | 'Balance', date: 'week' | 'month' | 'none') {
+    async function handleSelectOption(type: 'Spent' | 'Revenue', date: 'month' | 'none') {
         dispatch(updateHomeViewTypeFilter({type, date}))
-        if (type !== 'Balance') {
-            const {start, end} = date === 'week' ? getCurrentWeek() : getCurrentMonth();
+        // if (type !== 'Balance') {
+            const {start, end} = getCurrentMonth();
             const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type);
             dispatch(updateTransactionsGroupedByDate(transactions));
-        } else {
-            const currentBalance = await getCurrentBalance(db);
-            dispatch(updateCurrentBalance(currentBalance));
-        }
+        // } else {
+        //     const currentBalance = await getCurrentBalance(db);
+        //     dispatch(updateCurrentBalance(currentBalance));
+        // }
     }
 
     return (
@@ -66,13 +66,13 @@ export default function ResumeSheet({open, setOpen} : Props) {
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} pb={20}>
                 <Text fontSize={20} mb={10} backgroundColor="$color1" pt={20} textAlign="center">{t('COMMON.SELECT')}</Text>
 
-                <TouchableOpacity onPress={() => handleSelectOption('Spent', 'week')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
-                    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')}</Text>
-                    {
-                        filterType.type === 'Spent' && filterType.date === "week" &&
-                        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />
-                    }
-                </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => handleSelectOption('Spent', 'week')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>*/}
+                {/*    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')}</Text>*/}
+                {/*    {*/}
+                {/*        filterType.type === 'Spent' && filterType.date === "week" &&*/}
+                {/*        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />*/}
+                {/*    }*/}
+                {/*</TouchableOpacity>*/}
 
                 <TouchableOpacity onPress={() => handleSelectOption('Spent', 'month')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
                     <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')}</Text>
@@ -82,13 +82,13 @@ export default function ResumeSheet({open, setOpen} : Props) {
                     }
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => handleSelectOption('Revenue', 'week')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
-                    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')}</Text>
-                    {
-                        filterType.type === 'Revenue' && filterType.date === "week" &&
-                        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />
-                    }
-                </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => handleSelectOption('Revenue', 'week')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>*/}
+                {/*    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')}</Text>*/}
+                {/*    {*/}
+                {/*        filterType.type === 'Revenue' && filterType.date === "week" &&*/}
+                {/*        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />*/}
+                {/*    }*/}
+                {/*</TouchableOpacity>*/}
 
                 <TouchableOpacity onPress={() => handleSelectOption('Revenue', 'month')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
                     <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')}</Text>
@@ -98,13 +98,13 @@ export default function ResumeSheet({open, setOpen} : Props) {
                     }
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => handleSelectOption('Balance', 'none')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>
-                    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.BALANCE')}</Text>
-                    {
-                        filterType.type === 'Balance' && filterType.date === "none" &&
-                        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />
-                    }
-                </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => handleSelectOption('Balance', 'none')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 }}>*/}
+                {/*    <Text fontSize={17}>{t('HOME_RESUME_DROPDOWN.BALANCE')}</Text>*/}
+                {/*    {*/}
+                {/*        filterType.type === 'Balance' && filterType.date === "none" &&*/}
+                {/*        <Entypo name="check" size={24} color={schemeColor === 'light' ? 'black' : 'white'} />*/}
+                {/*    }*/}
+                {/*</TouchableOpacity>*/}
             </Sheet.Frame>
         </Sheet>
     )

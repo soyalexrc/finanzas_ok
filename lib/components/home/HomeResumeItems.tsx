@@ -84,7 +84,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     }
 
     function handleDeleteItem(id: number, groupId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -117,7 +117,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     }
 
     async function stopRecurrent(transactionId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
             const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);

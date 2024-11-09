@@ -91,7 +91,7 @@ export default function Screen() {
     // callbacks
 
     async function handleCreateOrEditTransaction() {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
 
         if (Number(currentTransaction.amount) < 1 && Number(currentTransaction.hidden_amount) < 1) {
             Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_AMOUNT'))
@@ -184,7 +184,7 @@ export default function Screen() {
     }
 
     function handleDeleteItem() {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} =  getCurrentMonth()
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
