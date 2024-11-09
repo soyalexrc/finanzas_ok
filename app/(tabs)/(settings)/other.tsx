@@ -22,13 +22,13 @@ export default function Screen() {
     const {authenticate} = useBiometricAuth()
     const router = useRouter();
     const { isOnboardingShown } = useAppSelector(selectSettings)
-    //
-    async function handleChangeSetting(value: boolean) {
-            const result = updateSettingByKey(db, 'is_onboarding_shown', String(value))
-            if (result) {
-                dispatch(updateOnboardingState(value))
-            }
-    }
+
+    // async function handleChangeSetting(value: boolean) {
+    //         const result = updateSettingByKey(db, 'is_onboarding_shown', String(value))
+    //         if (result) {
+    //             dispatch(updateOnboardingState(value))
+    //         }
+    // }
 
     async function goToPrivacy() {
         const isAuthenticated = await authenticate()
@@ -41,18 +41,18 @@ export default function Screen() {
     return (
         <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
                     paddingTop={isIos ? headerHeight + 20 : 20}>
-            <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
-                <YGroup.Item>
-                    <ListItem
-                        title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}
-                        iconAfter={
-                            <Switch size="$2" checked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>
-                                <Switch.Thumb animation="quicker" />
-                            </Switch>
-                        }
-                    />
-                </YGroup.Item>
-            </YGroup>
+            {/*<YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>*/}
+            {/*    <YGroup.Item>*/}
+            {/*        <ListItem*/}
+            {/*            title={t('SETTINGS.OTHER.OPTIONS.RESET_ONBOARDING')}*/}
+            {/*            iconAfter={*/}
+            {/*                <Switch size="$2" checked={isOnboardingShown} onCheckedChange={(value) => handleChangeSetting(value)}>*/}
+            {/*                    <Switch.Thumb animation="quicker" />*/}
+            {/*                </Switch>*/}
+            {/*            }*/}
+            {/*        />*/}
+            {/*    </YGroup.Item>*/}
+            {/*</YGroup>*/}
 
             <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40} separator={<Separator/>}>
                 <YGroup.Item>
