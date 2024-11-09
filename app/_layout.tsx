@@ -148,9 +148,9 @@ const InitialLayout = () => {
         const settings = getSettings(db);
         dispatch(changeCurrentTheme(settings?.custom_theme as CustomTheme ?? 'green'));
         dispatch(updateAppearance(settings?.appearance as 'system' | 'light' | 'dark' ?? 'system'));
-        dispatch(updateOnboardingState(Boolean(settings?.is_onboarding_shown ?? 'false')))
+        dispatch(updateOnboardingState(settings?.is_onboarding_shown ? JSON.parse(settings?.is_onboarding_shown) : false));
         dispatch(updateSelectedLanguage(settings?.selected_language ?? 'en'))
-        dispatch(updateHiddenFeatureFlag(Boolean(settings?.hidden_feature_flag ?? 'false')));
+        dispatch(updateHiddenFeatureFlag(settings?.hidden_feature_flag ? JSON.parse(settings?.hidden_feature_flag) : false));
         if (!settings?.is_onboarding_shown || settings?.is_onboarding_shown === 'false') {
             router.replace('/onboarding')
         }

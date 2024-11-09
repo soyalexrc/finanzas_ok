@@ -53,6 +53,8 @@ export function updateSettingByKey(db: SQLiteDatabase, key: string, value: strin
 }
 
 export function insertMultipleCategories(db: SQLiteDatabase, categories: { type: string, title: string, icon: string, id: number }[]): void {
+    const filteredCategories = [...categories];
+
     try {
         for (const category of categories) {
             const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)

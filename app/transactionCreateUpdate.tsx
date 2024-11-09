@@ -37,7 +37,6 @@ import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
 import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboard";
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
-import AccountsBottomSheet from "@/lib/components/transaction/AccountsBottomSheet";
 import NotesBottomSheet from "@/lib/components/transaction/NotesBottomSheet";
 import {
     selectAccountFilter, selectCategoryFilter,
@@ -81,7 +80,6 @@ export default function Screen() {
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
     const [openCategoriesSheet, setOpenCategoriesSheet] = useState<boolean>(false)
-    const [openAccountsSheet, setOpenAccountsSheet] = useState<boolean>(false)
     const [openNotesSheet, setOpenNotesSheet] = useState<boolean>(false)
     const [openHiddenMenuSheet, setOpenHiddenMenuSheet] = useState<boolean>(false)
     const [openConfigSheet, setOpenConfigSheet] = useState<boolean>(false)
@@ -425,7 +423,7 @@ export default function Screen() {
                 }}
             />
             <CategoriesBottomSheet open={openCategoriesSheet} setOpen={setOpenCategoriesSheet}/>
-            <AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet}/>
+            {/*<AccountsBottomSheet open={openAccountsSheet} setOpen={setOpenAccountsSheet}/>*/}
             <NotesBottomSheet open={openNotesSheet} setOpen={setOpenNotesSheet}/>
             {
                 !isIos &&

@@ -91,9 +91,6 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                         <ToggleGroup.Item value="income" aria-label="income categories tab filter">
                             <Text>{t('COMMON.INCOME')}</Text>
                         </ToggleGroup.Item>
-                        <ToggleGroup.Item value="account" aria-label="Accounts tab filter">
-                            <Text>{t('COMMON.ACCOUNT')}</Text>
-                        </ToggleGroup.Item>
                     </ToggleGroup>
                 </XStack>
                 <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
