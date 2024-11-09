@@ -63,19 +63,19 @@ const InitialLayout = () => {
             const accounts = getAllAccounts(db);
             const categories = getAllCategories(db);
             const {start, end} = getCurrentWeek();
-            const {
-                amountsGroupedByDate,
-                transactionsGroupedByCategory
-            } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
+            // const {
+            //     amountsGroupedByDate,
+            //     transactionsGroupedByCategory
+            // } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
             const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
 
-            dispatch(selectCategory(categories[0]));
+            // dispatch(selectCategory(categories[0]));
             dispatch(updateTransactionsGroupedByDate(transactions));
-            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-            dispatch(updateChartPoints(amountsGroupedByDate))
-            dispatch(updateAccountFilter(accounts[0]));
+            // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            // dispatch(updateChartPoints(amountsGroupedByDate))
+            // dispatch(updateAccountFilter(accounts[0]));
         } catch (err) {
             console.log('update store', err);
         }

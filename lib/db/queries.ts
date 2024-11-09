@@ -195,34 +195,28 @@ export async function getTransactionsV2(db: SQLiteDatabase, dateFrom: string, da
             GROUP BY category
         `, [dateFrom, dateTo]);
 
-    console.log({amountsGroupedByDate, transactionsGroupedByCategory});
 
     return {
-        transactionsGroupedByCategory: [],
-        amountsGroupedByDate: []
-    }
-
-    // return {
-    //     amountsGroupedByDate,
-    //     transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
-    //         category: {
-    //             title: group.title,
-    //             icon: group.icon,
-    //             id: group.id,
-    //             type: group.type,
-    //         },
-    //         account: {
-    //             id: group.account_id,
-    //             title: group.account_title,
-    //             currency_code: group.currency_code,
-    //             currency_symbol: group.currency_symbol,
-    //         },
-    //         transactions: JSON.parse(group.transactions)?.map((t: any) => ({
-    //             ...t,
-    //             account_symbol: group.currency_symbol
-    //         }))
-    //     }))
-    // };
+        amountsGroupedByDate,
+        transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
+            category: {
+                title: group.category,
+                icon: group.category_icon,
+                id: 0,
+                type: group.category_type,
+            },
+            account: {
+                id: 0,
+                title: group.account,
+                currency_code: group.currency_code_t,
+                currency_symbol: group.currency_symbol_t,
+            },
+            transactions: JSON.parse(group.transactions)?.map((t: any) => ({
+                ...t,
+                account_symbol: group.currency_symbol_t
+            }))
+        }))
+    };
 }
 
 export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{
@@ -824,7 +818,7 @@ export function createTransactionV2(db: SQLiteDatabase, transaction: Transaction
             $category_icon: transaction.category_icon,
             $category_type: transaction.category_type,
             $hidden_amount: Number(transaction.hidden_amount),
-            $dateTime: transaction.dateTime.toDateString(),
+            $dateTime: transaction.dateTime,
             $currency_symbol_t: transaction.currency_symbol_t,
             $currency_code_t: transaction.currency_code_t
         });

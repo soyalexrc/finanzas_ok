@@ -20,7 +20,7 @@ import {
 } from "@/lib/store/features/transactions/reportSlice";
 import {format} from "date-fns";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {getTransactions} from "@/lib/db";
+import {getTransactions, getTransactionsV2} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {Account, Category} from "@/lib/types/Transaction";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -61,7 +61,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
         const {
             amountsGroupedByDate,
             transactionsGroupedByCategory
-        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, localAccount.id, localCategory.id);
+        } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
         dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
         dispatch(updateChartPoints(amountsGroupedByDate))
 
@@ -77,8 +77,8 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
     async function clearAccount() {
         await Haptics.selectionAsync()
-        // dispatch(updateAccountFilter({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1}));
-        // setLocalAccount({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1});
+        dispatch(updateAccountFilter({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1}));
+        setLocalAccount({ title: '', currency_symbol: '', currency_code: '', id: 0, icon: '', balance: 0, positive_state: 1});
     }
 
     async function handleTouchLocalCategory(item: Category) {
@@ -115,7 +115,7 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
 
             <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1">
                 <YStack gap={20}>
-                    <Text textAlign="center" marginVertical={15} fontSize={16} fontWeight="bold"
+                    <Text textAlign="center" marginTop={15} fontSize={16} fontWeight="bold"
                           color="$gray10Dark">{t('REPORTS_SHEET.SELECT_DATE_RANGE')}s</Text>
 
                     <XStack gap={20} paddingHorizontal={20}>
@@ -173,43 +173,46 @@ export default function ReportsSheet({open, setOpen, updatePresetDays}: Props) {
                 </YStack>
 
 
-                <YStack>
-                    <XStack justifyContent="space-between">
-                        <Text mx={30} fontSize={16} fontWeight="bold"
-                              color="$gray10Dark">{t('REPORTS_SHEET.SELECT_ACCOUNT')}</Text>
-                        <TouchableOpacity
-                            accessible={true} accessibilityLabel={`Clear account selection`} accessibilityHint="This will make the filter account empty and filter by all accounts. is not available yet."
-                            style={{
-                            borderStyle: 'solid',
-                            borderWidth: 1,
-                            borderColor: theme.red10Dark.val,
-                            borderRadius: 20,
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginRight: 30
-                        }} onPress={clearAccount}>
-                            <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
-                            <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
-                        </TouchableOpacity>
-                    </XStack>
-                    <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
-                          color="$gray10Dark">{localAccount?.icon} {localAccount?.title}</Text>
-                    <FlatList
-                        data={accounts}
-                        contentContainerStyle={{paddingHorizontal: 20}}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({item}) => (
-                            <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalAccount(item)}>
-                                <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
-                                <Text>{textShortener(item.title, 15)}</Text>
+                {
+                    accounts.length > 0 &&
+                    <YStack>
+                        <XStack justifyContent="space-between">
+                            <Text mx={30} fontSize={16} fontWeight="bold"
+                                  color="$gray10Dark">{t('REPORTS_SHEET.SELECT_ACCOUNT')}</Text>
+                            <TouchableOpacity
+                                accessible={true} accessibilityLabel={`Clear account selection`} accessibilityHint="This will make the filter account empty and filter by all accounts. is not available yet."
+                                style={{
+                                    borderStyle: 'solid',
+                                    borderWidth: 1,
+                                    borderColor: theme.red10Dark.val,
+                                    borderRadius: 20,
+                                    paddingVertical: 4,
+                                    paddingHorizontal: 8,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginRight: 30
+                                }} onPress={clearAccount}>
+                                <MaterialIcons name="clear" size={16} color={theme.red10Dark.val}/>
+                                <Text fontSize={12} color={theme.red10Dark.val}>{t('REPORTS_SHEET.CLEAR')}</Text>
                             </TouchableOpacity>
-                        )}
-                    />
-                </YStack>
+                        </XStack>
+                        <Text mt={5} mx={30} fontSize={12} fontWeight="bold"
+                              color="$gray10Dark">{localAccount?.icon} {localAccount?.title}</Text>
+                        <FlatList
+                            data={accounts}
+                            contentContainerStyle={{paddingHorizontal: 20}}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({item}) => (
+                                <TouchableOpacity style={styles.item} onPress={() => handleTouchLocalAccount(item)}>
+                                    <Text style={{fontSize: isIos ? 50 : 40}}>{item.icon}</Text>
+                                    <Text>{textShortener(item.title, 15)}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </YStack>
+                }
 
                 <View bottom={0} left={0} width="100%" mb={isIos ? insets.bottom + 50: insets.bottom + 20} position='absolute'>
                     <Button mx={10} onPress={applyFilters}>{t('REPORTS_SHEET.APPLY_FILTERS')}</Button>

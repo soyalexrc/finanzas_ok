@@ -124,11 +124,18 @@ export type TransactionWithAmountNumber = {
     date: string;
     amount: number;
     hidden_amount: number;
-    is_hidden_transaction: number;
+    // is_hidden_transaction: number;
     notes: string;
-    account_id: number;
-    category_id: number;
-    account_symbol: string;
+    account: string;
+    category: string;
+    category_type: string;
+    category_icon: string;
+    currency_symbol_t: string;
+    currency_code_t: string;
+    date_time: Date | string;
+    // account_id: number;
+    // category_id: number;
+    // account_symbol: string;
 }
 
 export type TransactionsGroupedByCategory = {

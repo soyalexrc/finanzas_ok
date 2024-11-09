@@ -51,9 +51,9 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
             }
         }
 
-        const r = await db.getAllAsync(`select * from sqlite_master where type = 'trigger'`)
-
-        console.log('triggers', r);
+        // const r = await db.getAllAsync(`select * from sqlite_master where type = 'trigger'`)
+        //
+        // console.log('triggers', r);
 
 
         // const allMigrations = await db.getAllAsync('SELECT * FROM migrations')
@@ -65,8 +65,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // const allAccounts = await db.getAllAsync('SELECT * FROM accounts');
         // console.log(allAccounts)
 
-        const transactions = await db.getAllAsync('SELECT * FROM transactions');
-        console.log(transactions);
+        // const transactions = await db.getAllAsync('SELECT * FROM transactions');
+        // console.log(transactions);
 
     } catch (err) {
         console.error('Ocurrio un error corriendo las migraciones... ', err)

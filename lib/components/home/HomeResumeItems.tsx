@@ -92,12 +92,12 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
                     const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
+                    // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
                     // const accounts = getAllAccounts(db);
                     // dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
+                    // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                    // dispatch(updateChartPoints(amountsGroupedByDate))
                 }
             },
         ])

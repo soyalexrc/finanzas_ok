@@ -122,8 +122,8 @@ export default function Screen() {
         const transaction: any = createTransactionV2(db, {
             id: -1,
             account: selectedAccount?.title ?? '',
-            currency_code_t: 'EUR',
-            currency_symbol_t: 'E',
+            currency_code_t: 'PEN',
+            currency_symbol_t: 'S/.',
             dateTime: new Date().toISOString(),
             category: selectedCategory.title,
             category_icon: selectedCategory.icon,
@@ -141,13 +141,13 @@ export default function Screen() {
         // dispatch(updateAccountsList(accounts))
 
         const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
-        const {
-            amountsGroupedByDate,
-            transactionsGroupedByCategory
-        } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
+        // const {
+        //     amountsGroupedByDate,
+        //     transactionsGroupedByCategory
+        // } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
         dispatch(updateTransactionsGroupedByDate(transactions));
-        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-        dispatch(updateChartPoints(amountsGroupedByDate))
+        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+        // dispatch(updateChartPoints(amountsGroupedByDate))
 
         // await sleep(100);
         router.back()
@@ -360,10 +360,17 @@ export default function Screen() {
                                               accessibilityHint={`Select a category for the transaction, current category is: ${selectedCategory?.title ?? 'None'}`}
                                               onPress={() => setOpenCategoriesSheet(true)}>
                                 <View flexDirection="row" alignItems="center" justifyContent="space-between" flex={1} gap={5}>
-                                    <XStack alignItems="center" gap={10}>
-                                        <Text fontSize={16}>{selectedCategory?.icon}</Text>
-                                        <Text fontSize={16}>{textShortener(selectedCategory?.title, 20)}</Text>
-                                    </XStack>
+                                    {
+                                        selectedCategory.id > 0 &&
+                                        <XStack alignItems="center" gap={10}>
+                                            <Text fontSize={16}>{selectedCategory?.icon}</Text>
+                                            <Text fontSize={16}>{textShortener(selectedCategory?.title, 20)}</Text>
+                                        </XStack>
+                                    }
+                                    {
+                                        selectedCategory.id < 1 &&
+                                        <Text fontSize={16}>{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
+                                    }
                                     <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                                 </View>
                             </TouchableOpacity>

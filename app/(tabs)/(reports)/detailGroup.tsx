@@ -33,17 +33,21 @@ export default function Screen() {
             amount: item.amount.toString(),
             notes: item.notes,
             id: item.id,
+            category: item.category,
+            account: item.account,
+            currency_symbol_t: item.currency_symbol_t,
+            currency_code_t: item.currency_code_t,
+            category_type: item.category_type,
+            category_icon: item.category_icon,
+            dateTime: item.date_time,
             hidden_amount: item.hidden_amount.toString(),
-            is_hidden_transaction: item.is_hidden_transaction,
-            category_id: item.category_id,
             recurrentDate: item.recurrentDate,
-            account_id: item.account_id,
             date: item.date
         }))
-        const category = categories.find((c) => c.id === item.category_id);
-        const account = accounts.find((a) => a.id === item.account_id);
+        const category = categories.find((c) => c.title === item.category);
+        // const account = accounts.find((a) => a.id === item.account_id);
         dispatch(selectCategory(category!));
-        dispatch(selectAccountForm(account!));
+        // dispatch(selectAccountForm(account!));
         router.push('/transactionCreateUpdate')
     }
 

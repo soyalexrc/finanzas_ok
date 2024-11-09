@@ -92,6 +92,12 @@ export default function TabLayout() {
                         <Feather name="bar-chart" size={28} color={color}/>
                     ),
                 }}
+                listeners={() => ({
+                    tabPress: e => {
+                        e.preventDefault();
+                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.SCREEN_UNDER_DEVELOPMENT'))
+                    }
+                })}
             />
             <Tabs.Screen
                 name="(settings)"
