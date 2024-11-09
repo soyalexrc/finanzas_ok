@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "CURRENCY": "Currency",
       "CANCEL": "Cancel",
       "BACK": "Back",
       "NEXT": "Next",

@@ -8,10 +8,10 @@ import {
     addTransactionInHomeList,
     removeTransactionFromHomeList,
     selectHomeViewTypeFilter,
-    selectTransactionsGroupedByDate,
+    selectTransactionsGroupedByDate, updateCurrency,
     updateCurrentTransaction, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {FullTransaction} from "@/lib/types/Transaction";
+import {Category, FullTransaction} from "@/lib/types/Transaction";
 import {selectCategory} from "@/lib/store/features/categories/categoriesSlice";
 import {
     selectAccountForm,
@@ -45,13 +45,8 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     const dispatch = useAppDispatch();
     const theme = useTheme();
     const {hidden_feature_flag} = useAppSelector(selectSettings);
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const transactions = useAppSelector(selectTransactionsGroupedByDate);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
-    const selectedCategoryFilter = useSelector(selectCategoryFilter);
-    const selectedAccountFilter = useSelector(selectAccountFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const {selectedLanguage} = useAppSelector(selectSettings);
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
@@ -73,7 +68,9 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
             notes: t.notes,
             recurrentDate: t.recurrentDate
         }));
-        dispatch(selectCategory(t.category));
+        const category = db.getFirstSync('SELECT * FROM categories WHERE title = ?', [t.category.title]);
+        dispatch(selectCategory(category as Category));
+        dispatch(updateCurrency({symbol: t.account.currency_symbol, code: t.account.currency_code}))
         // dispatch(selectAccountForm(t.account));
         router.push('/transactionCreateUpdate')
     }

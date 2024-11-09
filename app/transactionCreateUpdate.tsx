@@ -23,8 +23,8 @@ import {
     selectSelectedAccountForm, selectSelectedAccountGlobal, updateAccountInList, updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
 import {
-    onChangeDate,
-    selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
+    onChangeDate, selectCurrency,
+    selectCurrentTransaction, selectHomeViewTypeFilter, updateCurrency, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
     createTransactionV2, deleteTransaction,
@@ -53,8 +53,14 @@ import TransactionsSettingsSheet from "@/lib/components/ui/android-dropdowns-she
 import RecurringSelectorSheet from "@/lib/components/ui/android-dropdowns-sheets/RecurringSelectorSheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {es, enUS} from 'date-fns/locale';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
+import {getLocales} from "expo-localization";
+import currencies from "@/lib/utils/data/currencies";
 
 export default function Screen() {
+    const locales = getLocales();
     const {width, height} = Dimensions.get('screen');
     const isSmallPhone = height <= 812;
     const isMediumPhone = height > 812 && height < 855
@@ -74,6 +80,7 @@ export default function Screen() {
     const selectedAccountFilter = useAppSelector(selectAccountFilter);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const {selectedLanguage} = useAppSelector(selectSettings)
+    const currency = useAppSelector(selectCurrency);
     const {t} = useTranslation()
 
     const insets = useSafeAreaInsets();
@@ -84,7 +91,8 @@ export default function Screen() {
     const [openHiddenMenuSheet, setOpenHiddenMenuSheet] = useState<boolean>(false)
     const [openConfigSheet, setOpenConfigSheet] = useState<boolean>(false)
     const [openRecurrencySheet, setOpenRecurrencySheet] = useState<boolean>(false)
-    const {hidden_feature_flag} = useAppSelector(selectSettings)
+    const {hidden_feature_flag} = useAppSelector(selectSettings);
+    const [openCurrenciesSheet, setOpenCurrenciesSheet] = useState<boolean>(false)
 
     const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
 
@@ -122,8 +130,8 @@ export default function Screen() {
         const transaction: any = createTransactionV2(db, {
             id: -1,
             account: selectedAccount?.title ?? '',
-            currency_code_t: 'PEN',
-            currency_symbol_t: 'S/.',
+            currency_code_t: currency.code,
+            currency_symbol_t: currency.symbol,
             dateTime: new Date().toISOString(),
             category: selectedCategory.title,
             category_icon: selectedCategory.icon,
@@ -184,7 +192,7 @@ export default function Screen() {
     }
 
     function handleDeleteItem() {
-        const {start, end} =  getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -206,11 +214,7 @@ export default function Screen() {
         ])
     }
 
-    console.log({
-        platform: Platform.OS,
-        width,
-        height
-    })
+    console.log(currency)
 
     return (
         <>
@@ -263,57 +267,108 @@ export default function Screen() {
                     </TouchableOpacity>
                 </View>
                 <View flex={1}>
-                    <View flex={isSmallPhone ? 0.45 : isMediumPhone ? 0.5 : 0.55} justifyContent="center" alignItems="center">
+                    <View flex={isSmallPhone ? 0.45 : isMediumPhone ? 0.5 : 0.55} justifyContent="center"
+                          alignItems="center">
                         {
                             isIos &&
-                            <DropdownMenu.Root>
-                                <DropdownMenu.Trigger action="longPress">
-                                    <View flexDirection="row" alignItems="flex-start" gap="$2">
-                                        <Text marginTop="$3" fontSize="$9"
-                                              color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
-                                        {
-                                            tab === 'total' && <Text
-                                                fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
-                                        }
-                                        {
-                                            tab === 'visible' && <Text
-                                                fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
-                                        }
-                                    </View>
-                                </DropdownMenu.Trigger>
-                                <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center'
-                                                      alignOffset={0}
-                                                      collisionPadding={0} avoidCollisions={true}>
-                                    <DropdownMenu.CheckboxItem key="total"
-                                                               value={tab === 'total' ? 'on' : 'off'}
-                                                               onValueChange={() => setTab('total')}>
-                                        <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</DropdownMenu.ItemTitle>
-                                        <DropdownMenu.ItemIndicator/>
-                                    </DropdownMenu.CheckboxItem>
-                                    <DropdownMenu.CheckboxItem key="visible"
-                                                               value={tab === 'visible' ? 'on' : 'off'}
-                                                               onValueChange={() => setTab('visible')}>
-                                        <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_VISIBLE')}</DropdownMenu.ItemTitle>
-                                        <DropdownMenu.ItemIndicator/>
-                                    </DropdownMenu.CheckboxItem>
-                                </DropdownMenu.Content>
-                            </DropdownMenu.Root>
+                            <>
+                                <DropdownMenu.Root>
+                                    <DropdownMenu.Trigger action="longPress">
+                                        <View flexDirection="row" alignItems="flex-start" gap="$2" mb={10}>
+                                            <Text marginTop="$3" fontSize="$9"
+                                                  color="$gray10Dark">{currency.symbol}</Text>
+                                            {
+                                                tab === 'total' && <Text
+                                                    fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                                            }
+                                            {
+                                                tab === 'visible' && <Text
+                                                    fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
+                                            }
+                                        </View>
+                                    </DropdownMenu.Trigger>
+                                    <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center'
+                                                          alignOffset={0}
+                                                          collisionPadding={0} avoidCollisions={true}>
+                                        <DropdownMenu.CheckboxItem key="total"
+                                                                   value={tab === 'total' ? 'on' : 'off'}
+                                                                   onValueChange={() => setTab('total')}>
+                                            <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_TOTAL')}</DropdownMenu.ItemTitle>
+                                            <DropdownMenu.ItemIndicator/>
+                                        </DropdownMenu.CheckboxItem>
+                                        <DropdownMenu.CheckboxItem key="visible"
+                                                                   value={tab === 'visible' ? 'on' : 'off'}
+                                                                   onValueChange={() => setTab('visible')}>
+                                            <DropdownMenu.ItemTitle>{t('CREATE_TRANSACTION.HIDDEN_FEATURE.SEE_VISIBLE')}</DropdownMenu.ItemTitle>
+                                            <DropdownMenu.ItemIndicator/>
+                                        </DropdownMenu.CheckboxItem>
+                                    </DropdownMenu.Content>
+                                </DropdownMenu.Root>
+                                <DropdownMenu.Root>
+                                    <DropdownMenu.Trigger>
+                                        <TouchableOpacity
+                                            style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100, flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                                            <Text fontSize={12}>{t('COMMON.CURRENCY')} ({currency.code})</Text>
+                                            <FontAwesome6 name="arrows-rotate" size={16} color="black" />
+                                        </TouchableOpacity>
+                                    </DropdownMenu.Trigger>
+                                    <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0}
+                                                          collisionPadding={0}
+                                                          avoidCollisions={true}>
+                                        <DropdownMenu.Group key="locales">
+                                            {
+                                                locales.map(locale => (
+                                                    <DropdownMenu.Item key={locale.currencyCode!}
+                                                                       onSelect={() => dispatch(updateCurrency({ code: locale.currencyCode!, symbol: locale.currencySymbol! }))}>
+                                                        <DropdownMenu.ItemTitle>{locale.currencyCode ?? '...'}</DropdownMenu.ItemTitle>
+                                                    </DropdownMenu.Item>
+                                                ))
+                                            }
+                                        </DropdownMenu.Group>
+
+                                        <DropdownMenu.Group key="additionals">
+                                            {
+                                                currencies.map(({code, symbol}) => (
+                                                    <DropdownMenu.Item key={code}
+                                                                       onSelect={() => dispatch(updateCurrency({ code: code, symbol }))}>
+                                                        <DropdownMenu.ItemTitle>{code}</DropdownMenu.ItemTitle>
+                                                    </DropdownMenu.Item>
+                                                ))
+                                            }
+                                        </DropdownMenu.Group>
+                                    </DropdownMenu.Content>
+                                </DropdownMenu.Root>
+                            </>
                         }
                         {
                             !isIos &&
-                            <Pressable onLongPress={() => handlePopHiddenMenu()}
-                                       style={{flexDirection: 'row', alignItems: 'flex-start', gap: 2}}>
-                                <Text marginTop="$3" fontSize="$9"
-                                      color="$gray10Dark">{selectedAccount?.currency_symbol}</Text>
-                                {
-                                    tab === 'total' &&
-                                    <Text fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
-                                }
-                                {
-                                    tab === 'visible' && <Text
-                                        fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
-                                }
-                            </Pressable>
+                            <>
+                                <Pressable onLongPress={() => handlePopHiddenMenu()}
+                                           style={{
+                                               flexDirection: 'row',
+                                               alignItems: 'flex-start',
+                                               gap: 2,
+                                               marginBottom: 10
+                                           }}>
+                                    <Text marginTop="$3" fontSize="$9"
+                                          color="$gray10Dark">{currency.symbol}</Text>
+                                    {
+                                        tab === 'total' &&
+                                        <Text
+                                            fontSize="$12">{formatByThousands(String(currentTransaction.amount))}</Text>
+                                    }
+                                    {
+                                        tab === 'visible' && <Text
+                                            fontSize="$12">{formatByThousands(String(currentTransaction.hidden_amount))}</Text>
+                                    }
+                                </Pressable>
+                                <TouchableOpacity
+                                    onPress={() => setOpenCurrenciesSheet(true)}
+                                    style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100, flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                                    <Text fontSize={12}>{t('COMMON.CURRENCY')} ({currency.code})</Text>
+                                    <FontAwesome6 name="arrows-rotate" size={18} color="black" />
+                                </TouchableOpacity>
+                            </>
                         }
                     </View>
                     {/*{*/}
@@ -356,10 +411,11 @@ export default function Screen() {
                                     padding: 10,
                                     borderRadius: 100
                                 }
-                            ]}  accessible={true} accessibilityLabel={`Category selection`}
+                            ]} accessible={true} accessibilityLabel={`Category selection`}
                                               accessibilityHint={`Select a category for the transaction, current category is: ${selectedCategory?.title ?? 'None'}`}
                                               onPress={() => setOpenCategoriesSheet(true)}>
-                                <View flexDirection="row" alignItems="center" justifyContent="space-between" flex={1} gap={5}>
+                                <View flexDirection="row" alignItems="center" justifyContent="space-between" flex={1}
+                                      gap={5}>
                                     {
                                         selectedCategory.id > 0 &&
                                         <XStack alignItems="center" gap={10}>
@@ -369,17 +425,19 @@ export default function Screen() {
                                     }
                                     {
                                         selectedCategory.id < 1 &&
-                                        <Text fontSize={16}>{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
+                                        <Text ml={10} fontSize={16}>{t('REPORTS_SHEET.SELECT_CATEGORY')}</Text>
                                     }
-                                    <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
+                                    <Entypo name="select-arrows" size={18}
+                                            color={scheme === 'light' ? 'black' : 'white'}/>
                                 </View>
                             </TouchableOpacity>
-                            <Button accesible={true} accessibilityLabel="Save transaction changes"
+                            <Button backgroundColor="$color10" accesible={true}
+                                    accessibilityLabel="Save transaction changes"
                                     accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting."
                                     flex={0.6} onPress={handleCreateOrEditTransaction} borderRadius="$12"
                                     paddingHorizontal={0}
                                     height={45} justifyContent='center' alignItems='center'>
-                                <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                                <Text color="$color1" fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
                             </Button>
                         </View>
                         {/*{*/}
@@ -440,6 +498,10 @@ export default function Screen() {
                     <TransactionsSettingsSheet open={openConfigSheet} setOpen={setOpenConfigSheet}
                                                fn={handleDeleteItem}/>
                     <RecurringSelectorSheet open={openRecurrencySheet} setOpen={setOpenRecurrencySheet}/>
+                     <CurrenciesSheet open={openCurrenciesSheet} setOpen={setOpenCurrenciesSheet} currentCode={currency.code} locales={locales} onSelect={(code, symbol) => {
+                         dispatch(updateCurrency({code, symbol}))
+                         setOpenCurrenciesSheet(false);
+                     }} />
                 </>
             }
         </>

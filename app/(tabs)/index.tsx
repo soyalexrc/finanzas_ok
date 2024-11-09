@@ -19,7 +19,10 @@ import {FullTransaction} from "@/lib/types/Transaction";
 import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import {useRouter} from "expo-router";
-import {getCustomMonth} from "@/lib/helpers/date";
+import {formatDate, getCustomMonth} from "@/lib/helpers/date";
+import {format} from "date-fns";
+import {enUS, es} from "date-fns/locale";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 
 export default function HomeScreen() {
@@ -32,8 +35,7 @@ export default function HomeScreen() {
     const [transactionSelectionOpen, setTransactionSelectionOpen] = useState<boolean>(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
     const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
-    const {t} = useTranslation()
+    const { selectedLanguage } = useAppSelector(selectSettings);
     const theme = useTheme();
     const scheme = useColorScheme();
 
@@ -95,7 +97,9 @@ export default function HomeScreen() {
                               borderRadius: 100
                           }}>
                         <Text
-                            fontSize={16}>November</Text>
+                            fontSize={16}>
+                            {format(formatDate(new Date()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
+                        </Text>
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
                     <TouchableOpacity

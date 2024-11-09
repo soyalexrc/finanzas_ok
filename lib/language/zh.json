@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "CURRENCY": "货币",
       "CANCEL": "取消",
       "BACK": "返回",
       "WARNING": "警告",

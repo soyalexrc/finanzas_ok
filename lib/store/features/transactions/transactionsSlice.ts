@@ -8,6 +8,7 @@ export interface TransactionsState {
     transactionsGroupedByDate: TransactionsGroupedByDate[];
     homeViewTypeFilter: HomeViewTypeFilter,
     currentBalance: number;
+    currency: { symbol: string; code: string };
 }
 
 function setInitialDate() {
@@ -17,6 +18,7 @@ function setInitialDate() {
 }
 
 const initialState: TransactionsState = {
+    currency: { symbol: '$', code: 'USD' },
     currentTransaction: {
         amount: "0",
         category_icon: '',
@@ -70,6 +72,9 @@ export const transactionsSlice = createSlice({
         },
         updateCurrentBalance: (state, action: PayloadAction<number>) => {
             state.currentBalance = action.payload;
+        },
+        updateCurrency: (state, action: PayloadAction<{ code: string, symbol: string }>) => {
+            state.currency = action.payload;
         },
         resetCurrentTransaction: (state) => {
             state.currentTransaction = {
@@ -137,10 +142,12 @@ export const {
     updateHiddenFlag,
     resetTransactionsSlice,
     addTransactionInHomeList,
-    onChangeHiddenAmount
+    onChangeHiddenAmount,
+    updateCurrency,
 } = transactionsSlice.actions;
 
 export const selectCurrentTransaction = (state: RootState) => state.transactions.currentTransaction
+export const selectCurrency = (state: RootState) => state.transactions.currency;
 export const selectTransactionsGroupedByDate = (state: RootState) => state.transactions.transactionsGroupedByDate
 export const selectHomeViewTypeFilter = (state: RootState) => state.transactions.homeViewTypeFilter
 export const selectCurrentBalance = (state: RootState) => state.transactions.currentBalance;

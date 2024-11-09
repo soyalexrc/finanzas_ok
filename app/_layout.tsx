@@ -23,7 +23,7 @@ import {
 } from "@/lib/store/features/transactions/reportSlice";
 import {selectSelectedAccountGlobal, updateAccountsList} from "@/lib/store/features/accounts/accountsSlice";
 import {
-    selectHomeViewTypeFilter,
+    selectHomeViewTypeFilter, updateCurrency,
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
@@ -33,7 +33,7 @@ import {
     getAllCategories,
     getSettings,
     getTransactions,
-    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2, updateSettingByKey
 } from "@/lib/db";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
@@ -53,6 +53,7 @@ const InitialLayout = () => {
     const appearance = useAppSelector(selectSettings).appearance;
     const router = useRouter();
     const colorScheme = useColorScheme();
+    const {languageCode, currencyCode, currencySymbol} = getLocales()[0]
     const networkState = useAppSelector(selectNetworkState);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
@@ -73,6 +74,7 @@ const InitialLayout = () => {
             const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
+            dispatch(updateCurrency({symbol: currencySymbol ?? '$', code: currencyCode ?? 'USD'}));
 
             // dispatch(selectCategory(categories[0]));
             dispatch(updateTransactionsGroupedByDate(transactions));
@@ -146,9 +148,9 @@ const InitialLayout = () => {
     }
 
     async function validateSettingsFromStorage() {
-        const {languageCode} = getLocales()[0]
 
         const settings = getSettings(db);
+
         dispatch(changeCurrentTheme(settings?.custom_theme as CustomTheme ?? 'green'));
         dispatch(updateAppearance(settings?.appearance as 'system' | 'light' | 'dark' ?? 'system'));
         dispatch(updateOnboardingState(settings?.is_onboarding_shown ? JSON.parse(settings?.is_onboarding_shown) : false));
@@ -157,6 +159,11 @@ const InitialLayout = () => {
         if (!settings?.is_onboarding_shown || settings?.is_onboarding_shown === 'false') {
             router.replace('/onboarding')
         }
+
+        if (!settings?.selected_language) {
+            updateSettingByKey(db, 'selected_language', languageCode ?? 'en');
+        }
+
         await i18next.changeLanguage(settings?.selected_language ? settings.selected_language : languageCode ?? 'en');
 
         const notifications_scheduling: any = await load('notifications_scheduling') ?? {
