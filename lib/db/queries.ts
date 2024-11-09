@@ -1075,10 +1075,10 @@ export async function getCurrentBalance(db: SQLiteDatabase): Promise<number> {
     }
 }
 
-export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId: number): number {
+export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountName: string): number {
     const result: {
         count: number
-    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
+    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account = ?', [accountName]);
     return result?.count ?? 0;
 }
 

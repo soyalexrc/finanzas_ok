@@ -117,6 +117,8 @@ export default function Screen() {
             setOpen(true);
     }
 
+    console.log(accounts);
+
     return (
         <View flex={1}>
             <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}
@@ -143,7 +145,7 @@ export default function Screen() {
                                                 <YStack gap={4}>
                                                     <Text fontSize={18} fontWeight="bold">{account.title}</Text>
                                                     <Text
-                                                        color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                                        color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.title)} {t('COMMON.TRANSACTIONS')}</Text>
                                                 </YStack>
                                                 <Text
                                                     fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toFixed(2))} {account.currency_code}</Text>
