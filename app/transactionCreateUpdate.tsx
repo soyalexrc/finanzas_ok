@@ -190,16 +190,16 @@ export default function Screen() {
             {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     await deleteTransaction(db, currentTransaction.id)
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {
-                        amountsGroupedByDate,
-                        transactionsGroupedByCategory
-                    } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    // const {
+                    //     amountsGroupedByDate,
+                    //     transactionsGroupedByCategory
+                    // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                     const accounts = getAllAccounts(db);
                     dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
+                    // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                    // dispatch(updateChartPoints(amountsGroupedByDate))
                     router.back()
                 }
             },

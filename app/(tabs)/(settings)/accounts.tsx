@@ -13,7 +13,7 @@ import {
     deleteAccount,
     getAllAccounts,
     getAmountOfTransactionsByAccountId, getTransactions,
-    getTransactionsGroupedAndFiltered
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
@@ -83,27 +83,27 @@ export default function Screen() {
                     }
                     if (globalAccount.id === accountId) {
                         dispatch(selectAccountGlobally(accounts[0]))
-                        transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, accounts[0].id);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     } else {
-                        transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     }
                     if (selectedAccountFilter.id === accountId) {
                         dispatch(updateAccountFilter(accounts[0]))
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     } else {
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     }
 
                 }

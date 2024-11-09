@@ -7,7 +7,7 @@ import {
     getAllAccounts,
     getAllCategories,
     getAllTransactions, getSettings, getSettingsRaw,
-    getTransactions, getTransactionsGroupedAndFiltered, importSheetToDB,
+    getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, importSheetToDB,
     wipeData
 } from "@/lib/db";
 import {useTranslation} from "react-i18next";
@@ -98,18 +98,18 @@ export default function Screen() {
         const accounts = getAllAccounts(db);
         const categories = getAllCategories(db);
         const {start, end} = getCurrentWeek();
-        const {
-            amountsGroupedByDate,
-            transactionsGroupedByCategory
-        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0]?.id, selectedCategoryFilter?.id);
-        const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount?.id);
+        // const {
+        //     amountsGroupedByDate,
+        //     transactionsGroupedByCategory
+        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0]?.id, selectedCategoryFilter?.id);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
         dispatch(updateAccountsList(accounts))
         dispatch(updateCategoriesList(categories));
 
         dispatch(selectCategory(categories[0]));
         dispatch(updateTransactionsGroupedByDate(transactions));
-        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-        dispatch(updateChartPoints(amountsGroupedByDate))
+        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+        // dispatch(updateChartPoints(amountsGroupedByDate))
         dispatch(updateAccountFilter(accounts[0]));
 
         Alert.alert(t('COMMON.DONE'), 'Se ha importado la información correctamente')

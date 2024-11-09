@@ -9,7 +9,7 @@ import {
     deleteTransaction,
     getAllAccounts,
     getTransactions,
-    getTransactionsGroupedAndFiltered, stopRecurringInTransaction
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, stopRecurringInTransaction
 } from "@/lib/db";
 import {
     addTransactionInHomeList,
@@ -66,13 +66,13 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
                     resetData()
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                     const accounts = getAllAccounts(db);
                     dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
-                    dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                    dispatch(updateChartPoints(amountsGroupedByDate))
+                    // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                    // dispatch(updateChartPoints(amountsGroupedByDate))
                 }
             },
         ])
@@ -85,11 +85,11 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
             setOpen(false)
             resetData()
             dispatch(addTransactionInHomeList(newTransaction as FullTransaction))
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+            // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
             dispatch(updateTransactionsGroupedByDate(transactions));
-            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-            dispatch(updateChartPoints(amountsGroupedByDate))
+            // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+            // dispatch(updateChartPoints(amountsGroupedByDate))
         }
     }
 
@@ -99,7 +99,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
         if (updatedTransaction) {
             setOpen(false)
             resetData()
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
     }

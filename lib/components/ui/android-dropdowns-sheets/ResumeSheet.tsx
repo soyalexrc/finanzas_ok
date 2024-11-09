@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     selectSelectedAccountGlobal
 } from "@/lib/store/features/accounts/accountsSlice";
-import {getCurrentBalance, getTransactionsGroupedAndFiltered} from "@/lib/db";
+import {getCurrentBalance, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2} from "@/lib/db";
 import {
     selectHomeViewTypeFilter, updateCurrentBalance, updateHomeViewTypeFilter,
     updateTransactionsGroupedByDate
@@ -34,7 +34,7 @@ export default function ResumeSheet({open, setOpen} : Props) {
         dispatch(updateHomeViewTypeFilter({type, date}))
         if (type !== 'Balance') {
             const {start, end} = date === 'week' ? getCurrentWeek() : getCurrentMonth();
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), type, selectedAccount.id);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type);
             dispatch(updateTransactionsGroupedByDate(transactions));
         } else {
             const currentBalance = await getCurrentBalance(db);

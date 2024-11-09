@@ -104,23 +104,23 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     }
 
     async function duplicateTransaction(transaction: FullTransaction) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
-        const newTransaction = await createTransaction(db, { ...transaction, category_id: transaction.category.id, account_id: transaction.account.id })
-        if (newTransaction) {
-            dispatch(addTransactionInHomeList(newTransaction as FullTransaction))
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-            const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-            dispatch(updateTransactionsGroupedByDate(transactions));
-            dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-            dispatch(updateChartPoints(amountsGroupedByDate))
-        }
+        // const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        // const newTransaction = await createTransaction(db, { ...transaction, category_id: transaction.category.id, account_id: transaction.account.id })
+        // if (newTransaction) {
+        //     dispatch(addTransactionInHomeList(newTransaction as FullTransaction))
+        //     const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+        //     const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+        //     dispatch(updateTransactionsGroupedByDate(transactions));
+        //     dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+        //     dispatch(updateChartPoints(amountsGroupedByDate))
+        // }
     }
 
     async function stopRecurrent(transactionId: number) {
         const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount.id);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
     }

@@ -10,7 +10,7 @@ import {
     deleteCategory,
     getAllCategories,
     getAmountOfTransactionsByCategoryId, getTransactions,
-    getTransactionsGroupedAndFiltered
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
@@ -81,23 +81,23 @@ export default function Screen() {
                         dispatch(selectCategory(categories[0]))
                     }
 
-                    transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                    transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                     dispatch(updateTransactionsGroupedByDate(transactions));
                     if (selectedCategoryFilter.id === categoryId) {
                         dispatch(updateCategoryFilter({ id: 0, icon: '', type: '', title: '' }))
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, 0);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, 0);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     } else {
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     }
 
                 }
