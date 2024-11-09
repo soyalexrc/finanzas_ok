@@ -56,6 +56,9 @@ export default function TabLayout() {
                 name="scheduledTransactions"
                 options={{
                     title: '',
+                    tabBarItemStyle: {
+                        display: 'none'
+                    },
                     tabBarIcon: ({color}) => (
                         <FontAwesome6 style={{ transform: 'rotate(280deg)' }} name="arrow-rotate-right" size={28} color={color}/>
                     )
@@ -88,10 +91,19 @@ export default function TabLayout() {
                 options={{
                     headerShown: false,
                     title: '',
+                    tabBarItemStyle: {
+                        display: 'none'
+                    },
                     tabBarIcon: ({color, focused}) => (
                         <Feather name="bar-chart" size={28} color={color}/>
                     ),
                 }}
+                listeners={() => ({
+                    tabPress: e => {
+                        e.preventDefault();
+                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.SCREEN_UNDER_DEVELOPMENT'))
+                    }
+                })}
             />
             <Tabs.Screen
                 name="(settings)"

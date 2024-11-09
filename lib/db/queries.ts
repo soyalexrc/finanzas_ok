@@ -21,6 +21,11 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
                           FROM accounts ORDER BY title`);
 }
 
+export function getSettingsRaw(db: SQLiteDatabase): {key: string, value: string}[] {
+    return  db.getAllSync(`SELECT * FROM settings`);
+}
+
+
 export function getSettings(db: SQLiteDatabase): {[key: string]: string} {
     const data =  db.getAllSync(`SELECT * FROM settings`);
 
@@ -48,6 +53,8 @@ export function updateSettingByKey(db: SQLiteDatabase, key: string, value: strin
 }
 
 export function insertMultipleCategories(db: SQLiteDatabase, categories: { type: string, title: string, icon: string, id: number }[]): void {
+    const filteredCategories = [...categories];
+
     try {
         for (const category of categories) {
             const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
@@ -91,15 +98,125 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         // await db.runAsync('DELETE FROM transactions')
         // await db.runAsync('DELETE FROM categories')
         //
-        await db.runAsync('DROP TABLE migrations')
+        // await db.runAsync('DROP TABLE migrations')
         // await db.runAsync('DROP TABLE accounts')
         // await db.runAsync('DROP TABLE categories')
+        // await db.runAsync('DROP TABLE transactions')
+
+        await db.runAsync(`DROP TRIGGER IF EXISTS delete_account_balance`)
+        await db.runAsync(`DROP TRIGGER IF EXISTS insert_account_balance`)
+
+        await db.runAsync('DROP TABLE migrations')
+        await db.runAsync('DROP TABLE accounts')
+        await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
 
         await migrateDbIfNeeded(db)
     } catch (e) {
         console.error(e)
     }
+}
+
+export async function importSheetToDB(db: SQLiteDatabase, transactions: Transaction[], accounts: Account[], categories: Category[], settings: {key: string, value: string}[]) {
+    try {
+        // insert transaction, account, category and setting into Sqlite db
+        for (const account of accounts) {
+            await createAccount(db, account);
+        }
+
+        for (const category of categories) {
+            await createCategory(db, category);
+        }
+
+        for (const transaction of transactions) {
+            createTransactionV2(db, transaction);
+        }
+
+        for (const setting of settings) {
+            updateSettingByKey(db, setting.key, setting.value);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getAllTransactions(db: SQLiteDatabase) {
+    return await db.getAllAsync('SELECT * FROM transactions');
+}
+
+export async function getTransactionsV2(db: SQLiteDatabase, dateFrom: string, dateTo: string): Promise<{
+    amountsGroupedByDate: ChartPoints[],
+    transactionsGroupedByCategory: TransactionsGroupedByCategory[]
+}>  {
+    let amountsGroupedByDate: ChartPoints[] = [];
+    let transactionsGroupedByCategory: TransactionsGroupedByCategory[] = [];
+
+    amountsGroupedByDate = await db.getAllAsync(`
+            SELECT strftime('%Y-%m-%d', date) AS date,
+            ROUND(SUM(amount), 2) AS total,
+            ROUND(SUM(hidden_amount), 2) AS total_hidden,
+            ROUND(SUM(CASE WHEN category_type = 'income' THEN amount ELSE 0 END), 2) AS total_income,
+            ROUND(SUM(CASE WHEN category_type = 'expense' THEN amount ELSE 0 END), 2) AS total_expense,
+            ROUND(SUM(CASE WHEN category_type = 'income' THEN hidden_amount ELSE 0 END), 2) AS total_income_hidden,
+            ROUND(SUM(CASE WHEN category_type = 'expense' THEN hidden_amount ELSE 0 END), 2) AS total_expense_hidden,
+            category_type,
+            category_icon,
+            currency_symbol_t,
+            currency_code_t
+            FROM transactions t
+            WHERE
+                date BETWEEN ?
+              and ?
+            GROUP BY date
+        `, [dateFrom, dateTo]);
+
+
+    transactionsGroupedByCategory = await db.getAllAsync(`
+            SELECT category,
+                   category_icon,
+                   category_type,
+                    currency_symbol_t,
+                    currency_code_t,
+                   json_group_array(json_object(
+                           'id', t.id,
+                           'amount', t.amount,
+                           'hidden_amount', t.hidden_amount,
+                           'recurrentDate', t.recurrentDate,
+                           'date', t.date,
+                           'notes', t.notes,
+                           'account', t.account,
+                           'category', t.category
+                                    )) AS transactions
+            FROM transactions t
+            WHERE
+                date BETWEEN ?
+              and ?
+            GROUP BY category
+        `, [dateFrom, dateTo]);
+
+
+    return {
+        amountsGroupedByDate,
+        transactionsGroupedByCategory: transactionsGroupedByCategory.map((group: any) => ({
+            category: {
+                title: group.category,
+                icon: group.category_icon,
+                id: 0,
+                type: group.category_type,
+            },
+            account: {
+                id: 0,
+                title: group.account,
+                currency_code: group.currency_code_t,
+                currency_symbol: group.currency_symbol_t,
+            },
+            transactions: JSON.parse(group.transactions)?.map((t: any) => ({
+                ...t,
+                account_symbol: group.currency_symbol_t
+            }))
+        }))
+    };
 }
 
 export async function getTransactions(db: SQLiteDatabase, dateFrom: string, dateTo: string, accountId: number, categoryId: number): Promise<{
@@ -349,6 +466,99 @@ type GroupRaw = {
     currency_symbol: string;
 }
 
+export async function getTransactionsGroupedAndFilteredV2(db: SQLiteDatabase, startDate: string, endDate: string, type: 'Spent' | 'Revenue'): Promise<any[]> {
+    try {
+        let groups: GroupRaw[] = [];
+        let transactions: FullTransactionRaw[] = [];
+
+        groups = await db.getAllAsync(`
+                SELECT strftime('%Y-%m-%d', t.date) AS formatted_date,
+                       ROUND(SUM(t.amount), 2)      AS total,
+                       ROUND(SUM(t.hidden_amount), 2)      AS total_hidden,
+                       t.category_type,
+                       t.account,
+                       t.currency_symbol_t            AS currency_symbol
+                FROM transactions t
+                WHERE date BETWEEN ?
+                  and ?
+                  AND category_type = ?
+                GROUP BY formatted_date, currency_symbol
+                ORDER BY date DESC;
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
+
+
+        transactions = await db.getAllAsync(`
+                SELECT t.id,
+                       t.amount,
+                       t.hidden_amount,
+                       t.recurrentDate,
+                       strftime('%Y-%m-%d', t.date) AS date,
+            t.notes,
+            t.category AS category_title,
+            t.category_icon,
+            t.category_type,
+            t.account AS account_title,
+            t.currency_code_t AS account_currency_code,
+            t.currency_symbol_t AS account_currency_symbol
+                FROM transactions t
+                WHERE t.date BETWEEN ?
+                  and ?
+                  AND t.category_type = ?
+            `, [startDate, endDate, type === 'Revenue' ? 'income' : 'expense']);
+
+        const formattedTransactions = transactions.map(t => ({
+            id: t.id,
+            date: t.date,
+            notes: t.notes,
+            amount: String(t.amount),
+            hidden_amount: String(t.hidden_amount),
+            recurrentDate: t.recurrentDate,
+            category: {
+                icon: t.category_icon,
+                title: t.category_title,
+                type: t.category_type
+            },
+            account: {
+                icon: t.account_icon,
+                title: t.account_title,
+                currency_code: t.account_currency_code,
+                currency_symbol: t.account_currency_symbol,
+            }
+        }));
+
+
+
+        const groupedData = groups.reduce((acc: any[], curr: any) => {
+            const dateGroup = acc.find(group => group.formatted_date === curr.formatted_date);
+            const totalObj = {amount: curr.total, symbol: curr.currency_symbol, hidden_amount: curr.total_hidden};
+
+            if (dateGroup) {
+                dateGroup.totals.push(totalObj);
+            } else {
+                acc.push({
+                    formatted_date: curr.formatted_date,
+                    totals: [totalObj]
+                });
+            }
+
+            return acc;
+        }, []);
+
+        // console.log('groupedData', JSON.stringify(groupedData, null, 2));
+
+        return groupedData.map((g, i) => ({
+            id: i + 1,
+            date: g.formatted_date,
+            totals: g.totals,
+            items: formattedTransactions.filter(t => t.date === g.formatted_date),
+        }))
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+}
+
+
 export async function getTransactionsGroupedAndFiltered(db: SQLiteDatabase, startDate: string, endDate: string, type: 'Spent' | 'Revenue' | 'Balance', accountId = 0): Promise<TransactionsGroupedByDate[]> {
     try {
         let groups: GroupRaw[] = [];
@@ -596,6 +806,29 @@ export async function deleteTransaction(db: SQLiteDatabase, transactionId: numbe
     }
 }
 
+export function createTransactionV2(db: SQLiteDatabase, transaction: Transaction): FullTransactionRaw | {} {
+    try {
+        const data = db.runSync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account, category, category_icon, category_type, hidden_amount, dateTime, currency_symbol_t, currency_code_t) VALUES ($amount, $recurrentDate, $date, $notes, $account, $category, $category_icon, $category_type, $hidden_amount, $dateTime, $currency_symbol_t, $currency_code_t)`, {
+            $amount: Number(transaction.amount),
+            $recurrentDate: transaction.recurrentDate,
+            $date: transaction.date,
+            $notes: transaction.notes,
+            $account: transaction.account ?? '',
+            $category: transaction.category,
+            $category_icon: transaction.category_icon,
+            $category_type: transaction.category_type,
+            $hidden_amount: Number(transaction.hidden_amount),
+            $dateTime: transaction.dateTime,
+            $currency_symbol_t: transaction.currency_symbol_t,
+            $currency_code_t: transaction.currency_code_t
+        });
+
+        return {};
+    } catch (err) {
+        console.error(err);
+        return {};
+    }
+}
 export async function createTransaction(db: SQLiteDatabase, transaction: Transaction): Promise<FullTransaction | {}> {
     const statement = await db.prepareAsync(`INSERT INTO transactions (amount, recurrentDate, date, notes, account_id, category_id, is_hidden_transaction, hidden_amount)
                                              VALUES ($amount, $recurrentDate, $date, $notes, $account_id, $category_id, $is_hidden_transaction, $hidden_amount)`);
@@ -605,9 +838,9 @@ export async function createTransaction(db: SQLiteDatabase, transaction: Transac
             $recurrentDate: transaction.recurrentDate,
             $date: transaction.date,
             $notes: transaction.notes,
-            $account_id: transaction.account_id,
-            $category_id: transaction.category_id,
-            $is_hidden_transaction: transaction.is_hidden_transaction,
+            $account_id: 0,
+            $category_id: 0,
+            $is_hidden_transaction: 0,
             $hidden_amount: transaction.hidden_amount,
         });
 
@@ -842,10 +1075,10 @@ export async function getCurrentBalance(db: SQLiteDatabase): Promise<number> {
     }
 }
 
-export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountId: number): number {
+export function getAmountOfTransactionsByAccountId(db: SQLiteDatabase, accountName: string): number {
     const result: {
         count: number
-    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account_id = ?', [accountId]);
+    } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE account = ?', [accountName]);
     return result?.count ?? 0;
 }
 

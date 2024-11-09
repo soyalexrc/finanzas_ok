@@ -62,7 +62,7 @@ export default function NotesBottomSheet({open, setOpen}: Props) {
                 {/*    editMode &&*/}
                     <TextArea
                         accessible={true}
-                        accessibilityLabel="Tap me!"
+                        accessibilityLabel="Comments about transaction"
                         accessibilityHint="Write some comments about the transaction being registered"
                         accessibilityLabelledBy="notesLabel"
                         size='$4'

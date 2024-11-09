@@ -13,7 +13,7 @@ import {
     deleteAccount,
     getAllAccounts,
     getAmountOfTransactionsByAccountId, getTransactions,
-    getTransactionsGroupedAndFiltered
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
@@ -60,7 +60,7 @@ export default function Screen() {
     }
 
     async function onPressDeleteAccount(accountId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
         Alert.alert(t('SETTINGS.ACCOUNTS.DELETE.TITLE'), t('SETTINGS.ACCOUNTS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
@@ -83,27 +83,27 @@ export default function Screen() {
                     }
                     if (globalAccount.id === accountId) {
                         dispatch(selectAccountGlobally(accounts[0]))
-                        transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, accounts[0].id);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     } else {
-                        transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     }
                     if (selectedAccountFilter.id === accountId) {
                         dispatch(updateAccountFilter(accounts[0]))
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0].id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     } else {
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     }
 
                 }
@@ -116,6 +116,8 @@ export default function Screen() {
             setSelectAccountId(accountId);
             setOpen(true);
     }
+
+    console.log(accounts);
 
     return (
         <View flex={1}>
@@ -143,7 +145,7 @@ export default function Screen() {
                                                 <YStack gap={4}>
                                                     <Text fontSize={18} fontWeight="bold">{account.title}</Text>
                                                     <Text
-                                                        color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                                        color="$gray10Dark">{getAmountOfTransactionsByAccountId(db, account.title)} {t('COMMON.TRANSACTIONS')}</Text>
                                                 </YStack>
                                                 <Text
                                                     fontSize={18}>{account.currency_symbol} {formatByThousands(account.balance.toFixed(2))} {account.currency_code}</Text>

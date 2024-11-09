@@ -12,7 +12,7 @@ import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 import {
     createCategory,
     getAllCategories,
-    getTransactions, getTransactionsGroupedAndFiltered,
+    getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2,
     updateCategory
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
@@ -60,7 +60,7 @@ export default function Screen() {
     }, []);
 
     async function manageCreateAccount() {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
 
         if (!categoryTitle) return;
 
@@ -94,15 +94,15 @@ export default function Screen() {
             }
         }
 
-        const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString());
         dispatch(updateTransactionsGroupedByDate(transactions));
 
-        const {
-            amountsGroupedByDate,
-            transactionsGroupedByCategory
-        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-        dispatch(updateChartPoints(amountsGroupedByDate))
+        // const {
+        //     amountsGroupedByDate,
+        //     transactionsGroupedByCategory
+        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+        // dispatch(updateChartPoints(amountsGroupedByDate))
 
 
     }

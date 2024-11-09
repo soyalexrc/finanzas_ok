@@ -12,7 +12,7 @@ import {
 import {es, enUS} from 'date-fns/locale'
 import {fromZonedTime} from "date-fns-tz";
 
-export function getCurrentWeek(): {start: Date, end: Date} {
+export function getCurrentWeek(): { start: Date, end: Date } {
     const today = new Date();
     return {
         start: startOfWeek(today, {weekStartsOn: 1}),
@@ -20,8 +20,18 @@ export function getCurrentWeek(): {start: Date, end: Date} {
     }
 }
 
-export function getCurrentMonth(): {start: Date, end: Date} {
+export function getCurrentMonth(): { start: Date, end: Date } {
     const today = new Date();
+    return {
+        start: startOfMonth(today),
+        end: endOfMonth(today),
+    }
+}
+
+export function getCustomMonth(month: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12): { start: Date, end: Date } {
+    // based on the month (1 - 12), get the start and end of the month
+    const today = new Date();
+    today.setMonth(month - 1);
     return {
         start: startOfMonth(today),
         end: endOfMonth(today),
@@ -39,7 +49,7 @@ export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
         return format(localDate, 'EEEE', {locale: locale === 'es' ? es : enUS}); // e.g., Monday, Tuesday
     } else {
         // For dates beyond a week, use formatDistanceToNow
-        return formatDistanceToNow(date, { addSuffix: true, locale: locale === 'es' ? es : enUS });
+        return formatDistanceToNow(date, {addSuffix: true, locale: locale === 'es' ? es : enUS});
     }
 };
 
@@ -47,7 +57,7 @@ export function formatDate(date: string | Date | number) {
     return fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
 }
 
-export function getDateRangeBetweenGapDaysAndToday(gap: number): {start: Date, end: Date} {
+export function getDateRangeBetweenGapDaysAndToday(gap: number): { start: Date, end: Date } {
     const today = new Date();
     today.setHours(19);
     const start = new Date(today);
@@ -59,7 +69,7 @@ export function getDateRangeBetweenGapDaysAndToday(gap: number): {start: Date, e
     }
 }
 
-export function getDateRangeAlongTimeAgo(): {start: Date, end: Date} {
+export function getDateRangeAlongTimeAgo(): { start: Date, end: Date } {
     const today = new Date();
     const start = new Date(today);
     start.setFullYear(today.getFullYear() - 1);

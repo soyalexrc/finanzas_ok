@@ -82,6 +82,7 @@
     "react-redux": "^9.1.2",
     "tamagui": "^1.108.2",
     "victory-native": "^41.0.2",
+    "xlsx": "^0.18.5",
     "zeego": "^1.10.0"
   },
   "devDependencies": {
