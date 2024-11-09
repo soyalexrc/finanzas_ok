@@ -1,13 +1,17 @@
 export type Transaction = {
     id: number;
     recurrentDate: string;
-    is_hidden_transaction: number;
     hidden_amount: string;
     date: string;
+    dateTime: Date | string;
     amount: string;
     notes: string;
-    account_id: number;
-    category_id: number;
+    account?: string;
+    category: string;
+    category_type: string;
+    category_icon: string;
+    currency_symbol_t: string;
+    currency_code_t: string;
 }
 
 export type FullTransactionRaw = {
@@ -52,7 +56,7 @@ export type TransactionsGroupedByDate = {
 
 export type HomeViewTypeFilter = {
     date: 'week' | 'month' | 'none';
-    type: 'Spent' | 'Revenue' | 'Balance';
+    type: 'Spent' | 'Revenue';
 }
 
 export type GroupItem = {

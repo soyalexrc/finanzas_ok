@@ -33,7 +33,7 @@ import {
     getAllCategories,
     getSettings,
     getTransactions,
-    getTransactionsGroupedAndFiltered
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2
 } from "@/lib/db";
 import {getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
@@ -66,8 +66,8 @@ const InitialLayout = () => {
             const {
                 amountsGroupedByDate,
                 transactionsGroupedByCategory
-            } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0]?.id, selectedCategoryFilter?.id);
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, selectedAccount?.id);
+            } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
 

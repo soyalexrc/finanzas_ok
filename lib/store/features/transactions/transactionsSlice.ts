@@ -18,13 +18,17 @@ function setInitialDate() {
 
 const initialState: TransactionsState = {
     currentTransaction: {
-        account_id: -1,
         amount: "0",
-        category_id: -1,
+        category_icon: '',
+        category: '',
+        category_type: '',
+        currency_code_t: 'USD',
+        currency_symbol_t: '$',
+        account: '',
+        dateTime: new Date().toDateString(),
         date: setInitialDate(),
         notes: '',
         hidden_amount: "0",
-        is_hidden_transaction: 0,
         recurrentDate: 'none',
         id: -1
     },
@@ -53,7 +57,7 @@ export const transactionsSlice = createSlice({
             state.currentTransaction.hidden_amount = action.payload;
         },
         updateHiddenFlag: (state, action: PayloadAction<number>) => {
-            state.currentTransaction.is_hidden_transaction = action.payload;
+            // state.currentTransaction.is_hidden_transaction = action.payload;
         },
         onRecurrentSettingChange: (state, action: PayloadAction<string>) => {
             state.currentTransaction.recurrentDate = action.payload;
@@ -69,11 +73,15 @@ export const transactionsSlice = createSlice({
         },
         resetCurrentTransaction: (state) => {
             state.currentTransaction = {
-                account_id: -1,
                 amount: "0",
                 hidden_amount: "0",
-                is_hidden_transaction: 0,
-                category_id: -1,
+                dateTime: new Date().toISOString(),
+                currency_symbol_t: '$',
+                currency_code_t: 'USD',
+                account: '',
+                category_type: '',
+                category: '',
+                category_icon: '',
                 date: new Date().toISOString(),
                 notes: '',
                 recurrentDate: 'none',

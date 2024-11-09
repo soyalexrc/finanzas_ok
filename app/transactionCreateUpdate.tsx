@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     useColorScheme
 } from "react-native";
-import {View, Text, Button, useTheme, useWindowDimensions} from 'tamagui';
+import {View, Text, Button, useTheme, useWindowDimensions, XStack} from 'tamagui';
 import {useRouter} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Entypo, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -27,14 +27,13 @@ import {
     selectCurrentTransaction, selectHomeViewTypeFilter, updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
-    createTransaction, deleteTransaction,
+    createTransactionV2, deleteTransaction,
     getAllAccounts,
     getTransactions,
-    getTransactionsGroupedAndFiltered,
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import sleep from "@/lib/helpers/sleep";
 import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
 import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboard";
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
@@ -105,11 +104,11 @@ export default function Screen() {
             Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_CATEGORY'))
             return;
         }
-        if (selectedAccount.id < 1) {
-            Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_ACCOUNT'))
-            return;
-        }
 
+        // if (selectedAccount.id < 1) {
+        //     Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_ACCOUNT'))
+        //     return;
+        // }
         if (currentTransaction.id > 0) {
             await deleteTransaction(db, currentTransaction.id);
             // transaction = await updateTransaction(db, {
@@ -122,33 +121,37 @@ export default function Screen() {
             //     notes: currentTransaction.notes
             // });
         }
-        const transaction: any = await createTransaction(db, {
+        const transaction: any = createTransactionV2(db, {
             id: -1,
-            account_id: selectedAccount.id,
-            category_id: selectedCategory.id,
+            account: selectedAccount?.title ?? '',
+            currency_code_t: 'EUR',
+            currency_symbol_t: 'E',
+            dateTime: new Date().toISOString(),
+            category: selectedCategory.title,
+            category_icon: selectedCategory.icon,
+            category_type: selectedCategory.type,
             recurrentDate: currentTransaction.recurrentDate,
             amount: currentTransaction.amount,
             date: currentTransaction.date,
             notes: currentTransaction.notes,
-            is_hidden_transaction: currentTransaction.is_hidden_transaction,
             hidden_amount: currentTransaction.hidden_amount,
         });
 
         // update category in redux
-        dispatch(updateAccountInList(transaction.account));
-        const accounts = getAllAccounts(db);
-        dispatch(updateAccountsList(accounts))
+        // dispatch(updateAccountInList(transaction.account));
+        // const accounts = getAllAccounts(db);
+        // dispatch(updateAccountsList(accounts))
 
-        const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
         const {
             amountsGroupedByDate,
             transactionsGroupedByCategory
-        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+        } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
         dispatch(updateTransactionsGroupedByDate(transactions));
         dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
         dispatch(updateChartPoints(amountsGroupedByDate))
 
-        await sleep(100);
+        // await sleep(100);
         router.back()
     }
 
@@ -339,45 +342,50 @@ export default function Screen() {
                     <View flex={isSmallPhone ? 0.55 : isMediumPhone ? 0.5 : 0.45}>
                         <View flexDirection="row" gap={5} alignItems="center"
                               paddingHorizontal={5}>
-                            <TouchableOpacity accessible={true} accessibilityLabel={`Account selection`}
-                                              accessibilityHint={`Select an account for the transaction, current account is: ${selectedAccount?.title ?? 'None'}`}
-                                              style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>
-                                <View flexDirection="row" alignItems="center" gap={5}>
-                                    <Text fontSize={16}>{selectedAccount?.icon}</Text>
-                                    <Text
-                                        fontSize={16}>{textShortener(selectedAccount?.title, 13) ?? 'Select account'}</Text>
-                                </View>
-                            </TouchableOpacity>
-                            <AntDesign name="arrowright" size={24} color="gray"/>
-                            <TouchableOpacity accessible={true} accessibilityLabel={`Category selection`}
+                            {/*<TouchableOpacity accessible={true} accessibilityLabel={`Account selection`}*/}
+                            {/*                  accessibilityHint={`Select an account for the transaction, current account is: ${selectedAccount?.title ?? 'None'}`}*/}
+                            {/*                  style={styles.accountsWrapper} onPress={() => setOpenAccountsSheet(true)}>*/}
+                            {/*    <View flexDirection="row" alignItems="center" gap={5}>*/}
+                            {/*        <Text fontSize={16}>{selectedAccount?.icon}</Text>*/}
+                            {/*        <Text*/}
+                            {/*            fontSize={16}>{textShortener(selectedAccount?.title, 13) ?? 'Select account'}</Text>*/}
+                            {/*    </View>*/}
+                            {/*</TouchableOpacity>*/}
+                            {/*<AntDesign name="arrowright" size={24} color="gray"/>*/}
+                            <TouchableOpacity style={[
+                                styles.categoriesWrapper, {
+                                    backgroundColor: theme.color2?.val,
+                                    padding: 10,
+                                    borderRadius: 100
+                                }
+                            ]}  accessible={true} accessibilityLabel={`Category selection`}
                                               accessibilityHint={`Select a category for the transaction, current category is: ${selectedCategory?.title ?? 'None'}`}
-                                              onPress={() => setOpenCategoriesSheet(true)}
-                                              style={styles.categoriesWrapper}>
-                                <View flexDirection="row" alignItems="center" gap={5}>
-                                    <Text fontSize={16}>{selectedCategory?.icon}</Text>
-                                    <Text fontSize={16}>{textShortener(selectedCategory?.title, 11)}</Text>
+                                              onPress={() => setOpenCategoriesSheet(true)}>
+                                <View flexDirection="row" alignItems="center" justifyContent="space-between" flex={1} gap={5}>
+                                    <XStack alignItems="center" gap={10}>
+                                        <Text fontSize={16}>{selectedCategory?.icon}</Text>
+                                        <Text fontSize={16}>{textShortener(selectedCategory?.title, 20)}</Text>
+                                    </XStack>
+                                    <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                                 </View>
                             </TouchableOpacity>
-                            {
-                                width > 375 &&
-                                <Button accesible={true} accessibilityLabel="Save transaction changes"
-                                        accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting."
-                                        flex={0.7} onPress={handleCreateOrEditTransaction} borderRadius="$4"
-                                        paddingHorizontal={0}
-                                        height={35} justifyContent='center' alignItems='center'>
-                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
-                                </Button>
-                            }
+                            <Button accesible={true} accessibilityLabel="Save transaction changes"
+                                    accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting."
+                                    flex={0.6} onPress={handleCreateOrEditTransaction} borderRadius="$12"
+                                    paddingHorizontal={0}
+                                    height={45} justifyContent='center' alignItems='center'>
+                                <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
+                            </Button>
                         </View>
-                        {
-                            width <= 375 &&
-                            <View flexDirection="row">
-                                <Button accesible={true} accessibilityLabel="Save transaction changes" accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting." flex={1} mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}
-                                        height={35} justifyContent='center' alignItems='center'>
-                                    <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>
-                                </Button>
-                            </View>
-                        }
+                        {/*{*/}
+                        {/*    width <= 375 &&*/}
+                        {/*    <View flexDirection="row">*/}
+                        {/*        <Button accesible={true} accessibilityLabel="Save transaction changes" accessibilityHint="This will save the new transaction or edit one if you are editing one exisisting." flex={1} mx={10} onPress={handleCreateOrEditTransaction} borderRadius="$4" paddingHorizontal={0}*/}
+                        {/*                height={35} justifyContent='center' alignItems='center'>*/}
+                        {/*            <Text fontSize={16}>{t('CREATE_TRANSACTION.SAVE')}</Text>*/}
+                        {/*        </Button>*/}
+                        {/*    </View>*/}
+                        {/*}*/}
                         <TransactionKeyboard tab={tab}/>
                     </View>
                 </View>

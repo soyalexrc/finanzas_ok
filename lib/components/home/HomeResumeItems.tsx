@@ -22,7 +22,7 @@ import {formatDateHomeItemGroups, getCurrentMonth, getCurrentWeek} from "@/lib/h
 import {
     createTransaction,
     deleteTransaction, getAllAccounts, getTransactions,
-    getTransactionsGroupedAndFiltered,
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
     stopRecurringInTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
@@ -59,12 +59,22 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     async function handlePress(t: FullTransaction) {
         await Haptics.selectionAsync();
         dispatch(updateCurrentTransaction({
-            ...t,
-            account_id: t.account.id,
-            category_id: t.category.id,
+            dateTime: new Date().toISOString(),
+            category_icon: t.category.icon,
+            date: t.date,
+            category: t.category.title,
+            currency_symbol_t: t.account.currency_symbol,
+            currency_code_t: t.account.currency_code,
+            amount: t.amount,
+            hidden_amount: t.hidden_amount,
+            id: t.id,
+            account: t.account.title,
+            category_type: t.category.type,
+            notes: t.notes,
+            recurrentDate: t.recurrentDate
         }));
         dispatch(selectCategory(t.category));
-        dispatch(selectAccountForm(t.account));
+        // dispatch(selectAccountForm(t.account));
         router.push('/transactionCreateUpdate')
     }
 
@@ -81,10 +91,10 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
-                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                    const accounts = getAllAccounts(db);
-                    dispatch(updateAccountsList(accounts))
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
+                    // const accounts = getAllAccounts(db);
+                    // dispatch(updateAccountsList(accounts))
                     dispatch(updateTransactionsGroupedByDate(transactions));
                     dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
                     dispatch(updateChartPoints(amountsGroupedByDate))

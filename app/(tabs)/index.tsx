@@ -68,16 +68,17 @@ export default function HomeScreen() {
             >
 
                 <CustomHeader style={{paddingTop: insets.top}}>
-                    {isIos && <AccountSelectDropdown/>}
-                    {
-                        !isIos &&
-                        <TouchableOpacity onPress={handleTouchAccountsSelector}
-                                          style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
-                            <Text
-                                fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>
-                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
-                        </TouchableOpacity>
-                    }
+                    <></>
+                    {/*{isIos && <AccountSelectDropdown/>}*/}
+                    {/*{*/}
+                    {/*    !isIos &&*/}
+                    {/*    <TouchableOpacity onPress={handleTouchAccountsSelector}*/}
+                    {/*                      style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>*/}
+                    {/*        <Text*/}
+                    {/*            fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>*/}
+                    {/*        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>*/}
+                    {/*    </TouchableOpacity>*/}
+                    {/*}*/}
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                     <ResumeDropDown fn={handleTouchResume}/>
