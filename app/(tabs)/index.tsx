@@ -19,6 +19,7 @@ import {FullTransaction} from "@/lib/types/Transaction";
 import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import {useRouter} from "expo-router";
+import {getCustomMonth} from "@/lib/helpers/date";
 
 
 export default function HomeScreen() {
@@ -83,6 +84,10 @@ export default function HomeScreen() {
                     {/*    </TouchableOpacity>*/}
                     {/*}*/}
                     <TouchableOpacity
+                        onPress={() => {
+                            const {start, end} = getCustomMonth(2);
+                            console.log({ start, end })
+                        }}
                           style={{
                               flexDirection: 'row', alignItems: 'center', gap: 5,
                               backgroundColor: theme.color2?.val,
