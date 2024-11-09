@@ -1,4 +1,4 @@
-import {TouchableOpacity, StyleSheet, Platform, useColorScheme} from "react-native";
+import {TouchableOpacity, StyleSheet, Platform, useColorScheme, FlatList} from "react-native";
 import {View, Text, XStack, ToggleGroup} from 'tamagui';
 import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -68,7 +68,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={[80]}
+            snapPoints={[90]}
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
@@ -82,8 +82,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
 
             <Sheet.Handle/>
 
-            <Sheet.ScrollView stickyHeaderIndices={[0]} backgroundColor="$background"
-                              showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
+            <Sheet.Frame  backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
                 <View backgroundColor="$color1">
                     <ToggleGroup
                         margin={10}
@@ -101,33 +100,31 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                         </ToggleGroup.Item>
                     </ToggleGroup>
                 </View>
-                <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
-                    {categories.filter(c => c.type === categoryType)?.map(item => (
-                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
+                <FlatList
+                    data={categories.filter(c => c.type === categoryType)}
+                    numColumns={4}
+                    showsVerticalScrollIndicator={false}
+                    columnWrapperStyle={{
+                        justifyContent: 'space-between'
+                    }}
+                    renderItem={({item}) => (
+                        <TouchableOpacity onPress={() => handlePressCategory(item)}
                                           style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
                             <Text style={{fontSize: 40}}>{item.icon}</Text>
                             <Text>{textShortener(item.title)}</Text>
                         </TouchableOpacity>
-                    ))}
-                </View>
-                {/*{*/}
-                {/*    categoryType === 'account' &&*/}
-                {/*    <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>*/}
-                {/*        {accounts.map(item => (*/}
-                {/*            <TouchableOpacity onPress={() => {*/}
-                {/*            }} key={item.id}*/}
-                {/*                              style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>*/}
-                {/*                <Text style={{fontSize: 40}}>{item.icon}</Text>*/}
-                {/*                <Text>{textShortener(item.title, 15)}</Text>*/}
-                {/*            </TouchableOpacity>*/}
-                {/*        ))}*/}
-                {/*        <TouchableOpacity style={[localStyles.item]} onPress={goToCreateAccount}>*/}
-                {/*            <Text style={{fontSize: 40}}>+</Text>*/}
-                {/*            <Text>{t('COMMON.NEW')}</Text>*/}
+                    )}
+                />
+                {/*<View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>*/}
+                {/*    {categories.filter(c => c.type === categoryType)?.map(item => (*/}
+                {/*        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}*/}
+                {/*                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>*/}
+                {/*            <Text style={{fontSize: 40}}>{item.icon}</Text>*/}
+                {/*            <Text>{textShortener(item.title)}</Text>*/}
                 {/*        </TouchableOpacity>*/}
-                {/*    </View>*/}
-                {/*}*/}
-                <View style={{height: 50}}/>
+                {/*    ))}*/}
+                {/*</View>*/}
+                <View style={{height: 10}}/>
                 <TouchableOpacity onPress={goToCreateCategory} style={{
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -141,8 +138,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                     <Entypo name="plus" size={24} color={ scheme === 'light' ? 'black' : 'white'} />
                     <Text>{t('COMMON.NEW')}</Text>
                 </TouchableOpacity>
-                <View style={{height: 50}}/>
-            </Sheet.ScrollView>
+            </Sheet.Frame>
         </Sheet>
     )
 
