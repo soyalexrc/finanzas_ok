@@ -138,6 +138,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                     <Entypo name="plus" size={24} color={ scheme === 'light' ? 'black' : 'white'} />
                     <Text>{t('SETTINGS.CATEGORIES.PLACE_HOLDER')}</Text>
                 </TouchableOpacity>
+                {isIos && <View style={{height: 10}}/>}
             </Sheet.Frame>
         </Sheet>
     )
