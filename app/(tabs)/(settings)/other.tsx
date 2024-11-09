@@ -6,15 +6,23 @@ import {useTranslation} from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
 import {useRouter} from "expo-router";
+import {updateSettingByKey} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
+import {useDispatch} from "react-redux";
+import {selectSettings, updateOnboardingState} from "@/lib/store/features/settings/settingsSlice";
+import {useAppSelector} from "@/lib/store/hooks";
 
 
 export default function Screen() {
     const headerHeight = useHeaderHeight()
+    const db = useSQLiteContext()
     const isIos = Platform.OS === 'ios';
+    const dispatch = useDispatch()
     const {t} = useTranslation();
     const {authenticate} = useBiometricAuth()
     const router = useRouter();
-    //
+    const { isOnboardingShown } = useAppSelector(selectSettings)
+
     // async function handleChangeSetting(value: boolean) {
     //         const result = updateSettingByKey(db, 'is_onboarding_shown', String(value))
     //         if (result) {

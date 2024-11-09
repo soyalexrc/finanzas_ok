@@ -7,7 +7,7 @@ import CustomHeader from "@/lib/components/ui/CustomHeader";
 import {formatByThousands} from "@/lib/helpers/string";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import ReportsSheet from "@/lib/components/reports/FiltersSheet";
-import {getTransactions} from "@/lib/db";
+import {getTransactions, getTransactionsV2} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -74,7 +74,7 @@ export default function ReportScreen() {
             const {
                 amountsGroupedByDate,
                 transactionsGroupedByCategory
-            } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccount.id, selectedCategory.id);
+            } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
             setRefreshing(false)
@@ -96,7 +96,7 @@ export default function ReportScreen() {
             const {
                 amountsGroupedByDate,
                 transactionsGroupedByCategory
-            } = await getTransactions(db, start.toISOString(), end.toISOString(), selectedAccount.id, selectedCategory.id);
+            } = await getTransactionsV2(db, start.toISOString(), end.toISOString());
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
         } else {
@@ -107,7 +107,7 @@ export default function ReportScreen() {
             const {
                 amountsGroupedByDate,
                 transactionsGroupedByCategory
-            } = await getTransactions(db, start.toISOString(), end.toISOString(), selectedAccount.id, selectedCategory.id);
+            } = await getTransactionsV2(db, start.toISOString(), end.toISOString());
             dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
             dispatch(updateChartPoints(amountsGroupedByDate))
         }
@@ -135,20 +135,20 @@ export default function ReportScreen() {
                         <FontAwesome name="filter" size={20} color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </Button>
                 </CustomHeader>
-                {
-                    transactions.length < 1 &&
-                    <View flex={1} justifyContent="center" alignItems="center">
-                        <Image
-                            source={require('@/assets/images/transactions/empty-list.png')}
-                            width={200}
-                            height={200}
-                        />
-                        <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>
-                        <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>
-                            {t('COMMON.CREATE_TRANSACTION')}
-                        </Button>
-                    </View>
-                }
+                {/*{*/}
+                {/*    transactions.length < 1 &&*/}
+                {/*    <View flex={1} justifyContent="center" alignItems="center">*/}
+                {/*        <Image*/}
+                {/*            source={require('@/assets/images/transactions/empty-list.png')}*/}
+                {/*            width={200}*/}
+                {/*            height={200}*/}
+                {/*        />*/}
+                {/*        <Text fontSize={18}>{t('COMMON.NO_DATA')}</Text>*/}
+                {/*        <Button marginVertical={20} onPress={() => router.push('/transactionCreateUpdate')}>*/}
+                {/*            {t('COMMON.CREATE_TRANSACTION')}*/}
+                {/*        </Button>*/}
+                {/*    </View>*/}
+                {/*}*/}
                 {
                     transactions.length > 0 &&
                     <ScrollView
@@ -198,10 +198,10 @@ export default function ReportScreen() {
                                         <>
                                             <Line points={hidden_feature_flag ? points.total_expense_hidden : points.total_expense}
                                                   color='red' strokeWidth={3}
-                                                  curveType="cardinal50"/>
+                                                  curveType="linear"/>
                                             <Line points={hidden_feature_flag ? points.total_income_hidden : points.total_income}
                                                   color={theme.green10Dark?.val} strokeWidth={3}
-                                                  curveType="cardinal50"/>
+                                                  curveType="linear"/>
                                         </>
                                     )}
 

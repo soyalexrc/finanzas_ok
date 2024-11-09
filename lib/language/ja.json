@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "CURRENCY": "通貨",
       "CANCEL": "キャンセル",
       "NEXT": "次",
       "BACK": "戻る",

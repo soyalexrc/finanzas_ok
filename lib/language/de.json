@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "CURRENCY": "Währung",
       "CANCEL": "Abbrechen",
       "BACK": "Zurück",
       "NEXT": "Nächste",

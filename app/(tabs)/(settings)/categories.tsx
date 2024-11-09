@@ -9,8 +9,8 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     deleteCategory,
     getAllCategories,
-    getAmountOfTransactionsByCategoryId, getTransactions,
-    getTransactionsGroupedAndFiltered
+    getAmountOfTransactionsByCategoryId, getAmountOfTransactionsByCategoryTitle, getTransactions,
+    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
@@ -45,11 +45,8 @@ export default function Screen() {
     const router = useRouter();
     const theme = useTheme();
     const filterType = useAppSelector(selectHomeViewTypeFilter);
-    const selectedAccountFilter = useAppSelector(selectAccountFilter);
     const selectedCategoryForm = useAppSelector(selectSelectedCategory);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
@@ -63,7 +60,7 @@ export default function Screen() {
     }
 
     async function onPressDeleteCategory(categoryId: number) {
-        const {start, end} = filterType.date === 'week' ? getCurrentWeek() : getCurrentMonth()
+        const {start, end} = getCurrentMonth()
         let transactions: TransactionsGroupedByDate[];
         Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), t('SETTINGS.CATEGORIES.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
@@ -81,23 +78,23 @@ export default function Screen() {
                         dispatch(selectCategory(categories[0]))
                     }
 
-                    transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), filterType.type, globalAccount.id);
+                    transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
                     dispatch(updateTransactionsGroupedByDate(transactions));
                     if (selectedCategoryFilter.id === categoryId) {
                         dispatch(updateCategoryFilter({ id: 0, icon: '', type: '', title: '' }))
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, 0);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, 0);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     } else {
-                        const {
-                            amountsGroupedByDate,
-                            transactionsGroupedByCategory
-                        } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
-                        dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
-                        dispatch(updateChartPoints(amountsGroupedByDate))
+                        // const {
+                        //     amountsGroupedByDate,
+                        //     transactionsGroupedByCategory
+                        // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
+                        // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
+                        // dispatch(updateChartPoints(amountsGroupedByDate))
                     }
 
                 }
@@ -114,7 +111,7 @@ export default function Screen() {
 
     return (
         <View flex={1}>
-            <XStack backgroundColor="$color1" justifyContent="center"  paddingTop={isIos ? headerHeight + 20 : 20}>
+            <View backgroundColor="$color1" paddingHorizontal={10} paddingTop={isIos ? headerHeight + 20 : 20}>
                 <ToggleGroup
                     marginBottom={10}
                     value={categoryType}
@@ -122,14 +119,14 @@ export default function Screen() {
                     orientation="horizontal"
                     type="single"
                 >
-                    <ToggleGroup.Item value="expense" aria-label="Categories of type expense filter">
+                    <ToggleGroup.Item flex={1} value="expense" aria-label="Categories of type expense filter">
                         <Text>{t('COMMON.EXPENSE')}</Text>
                     </ToggleGroup.Item>
-                    <ToggleGroup.Item value="income" aria-label="Categories of type income filter">
+                    <ToggleGroup.Item flex={1} value="income" aria-label="Categories of type income filter">
                         <Text>{t('COMMON.INCOME')}</Text>
                     </ToggleGroup.Item>
                 </ToggleGroup>
-            </XStack>
+            </View>
             <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}>
                 {
                     categories.filter(c => c.type === categoryType).map(category => {
@@ -188,7 +185,7 @@ export default function Screen() {
                                         <YStack>
                                             <Text fontSize={18}>{category.title}</Text>
                                             <Text
-                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryId(db, category.id)} {t('COMMON.TRANSACTIONS')}</Text>
+                                                color="$gray10Dark">{getAmountOfTransactionsByCategoryTitle(db, category.title)} {t('COMMON.TRANSACTIONS')}</Text>
                                         </YStack>
                                     </View>
                                 </TouchableOpacity>                            )

@@ -7,9 +7,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
 
     // Clear table
 
-    // await db.runAsync(`DROP TRIGGER update_account_balance`)
-    // await db.runAsync(`DROP TRIGGER delete_account_balance`)
-    // await db.runAsync(`DROP TRIGGER insert_account_balance`)
+    // await db.runAsync(`DROP TRIGGER IF EXISTS delete_account_balance`)
+    // await db.runAsync(`DROP TRIGGER IF EXISTS insert_account_balance`)
     // await db.runAsync('DELETE FROM accounts')
     // await db.runAsync('DELETE FROM migrations')
     // await db.runAsync('DELETE FROM transactions')
@@ -53,7 +52,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         }
 
         // const r = await db.getAllAsync(`select * from sqlite_master where type = 'trigger'`)
-
+        //
         // console.log('triggers', r);
 
 
@@ -72,7 +71,6 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     } catch (err) {
         console.error('Ocurrio un error corriendo las migraciones... ', err)
     }
-
 }
 
 const migrations = [
@@ -109,95 +107,76 @@ const migrations = [
                     recurrentDate TEXT,
                     amount INTEGER NOT NULL,
                     notes TEXT,
-                    category_id INTEGER NOT NULL,
-                    account_id INTEGER NOT NULL,
-                    FOREIGN KEY (category_id) REFERENCES categories(id),
-                    FOREIGN KEY (account_id) REFERENCES accounts(id)
+                    hidden_amount INTEGER DEFAULT 0,
+                    dateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    category TEXT,
+                    account TEXT,
+                    currency_symbol_t TEXT,
+                    currency_code_t TEXT,
+                    category_type TEXT NOT NULL,
+                    category_icon TEXT NOT NULL
                 )
             `);
+
+                await db.execAsync(`
+                CREATE TABLE IF NOT EXISTS settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    key TEXT NOT NULL,
+                    value INTEGER NOT NULL
+                )
+            `)
 
             } catch (err) {
                 console.error('Ocurrio un error corriendo las migraciones... ', err)
             }
         }
     },
-    {
-        version: 1.1,
-        name: 'Triggers for deleting and inserting transactions update balance',
-        migrate: async (db: SQLiteDatabase) => {
-            await db.execAsync(`
-                CREATE TRIGGER IF NOT EXISTS insert_account_balance
-                AFTER INSERT
-                ON transactions
-                BEGIN
-                    UPDATE accounts
-                    SET balance = balance + CASE
-                        WHEN (SELECT type FROM categories WHERE id = NEW.category_id) = 'income' THEN NEW.amount
-                        ELSE -NEW.amount
-                    END
-                    
-                    WHERE id = NEW.account_id;
-                    
-                    UPDATE accounts
-                    SET positive_state = CASE
-                        WHEN balance > 0 THEN 1
-                        ELSE 0
-                    END
-                    
-                    WHERE id = NEW.account_id;
-                END;    
-                
-                CREATE TRIGGER IF NOT EXISTS delete_account_balance
-                AFTER DELETE
-                ON transactions
-                BEGIN
-                    UPDATE accounts
-                    SET balance = balance + CASE
-                        WHEN (SELECT type FROM categories WHERE id = OLD.category_id) = 'expense' THEN OLD.amount
-                        ELSE -OLD.amount
-                    END
-                    WHERE id = OLD.account_id;
-                    
-                    UPDATE accounts
-                    SET positive_state = CASE
-                        WHEN balance > 0 THEN 1
-                        ELSE 0
-                    END
-                    
-                    WHERE id = OLD.account_id;
-                END;
-            `)
-        }
-    },
-    {
-        version: 1.2,
-        name: 'alter transactions table for introducing hide amount concept',
-        migrate: async (db: SQLiteDatabase) => {
-            await db.execAsync(`
-                ALTER TABLE transactions ADD COLUMN hidden_amount INTEGER NOT NULL DEFAULT 0;
-            `)
-        }
-    },
-    {
-        version: 1.3,
-        name: 'alter transactions table for introducing hide amount concept',
-        migrate: async (db: SQLiteDatabase) => {
-            await db.execAsync(`
-                ALTER TABLE transactions ADD COLUMN is_hidden_transaction BOOLEAN NOT NULL DEFAULT FALSE;
-            `)
-        }
-    },
-    {
-        version: 1.4,
-        name: 'create new table settings for key value data',
-        migrate: async (db: SQLiteDatabase) => {
-            await db.execAsync(`
-                CREATE TABLE IF NOT EXISTS settings (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        key TEXT NOT NULL,
-                        value INTEGER NOT NULL
-                    )
-            `)
-        }
-    }
+    // {
+    //     version: 1.1,
+    //     name: 'Triggers for deleting and inserting transactions update balance',
+    //     migrate: async (db: SQLiteDatabase) => {
+    //         await db.execAsync(`
+    //             CREATE TRIGGER IF NOT EXISTS insert_account_balance
+    //             AFTER INSERT
+    //             ON transactions
+    //             BEGIN
+    //                 UPDATE accounts
+    //                 SET balance = balance + CASE
+    //                     WHEN (SELECT type FROM categories WHERE id = NEW.category_id) = 'income' THEN NEW.amount
+    //                     ELSE -NEW.amount
+    //                 END
+    //
+    //                 WHERE id = NEW.account_id;
+    //
+    //                 UPDATE accounts
+    //                 SET positive_state = CASE
+    //                     WHEN balance > 0 THEN 1
+    //                     ELSE 0
+    //                 END
+    //
+    //                 WHERE id = NEW.account_id;
+    //             END;
+    //
+    //             CREATE TRIGGER IF NOT EXISTS delete_account_balance
+    //             AFTER DELETE
+    //             ON transactions
+    //             BEGIN
+    //                 UPDATE accounts
+    //                 SET balance = balance + CASE
+    //                     WHEN (SELECT type FROM categories WHERE id = OLD.category_id) = 'expense' THEN OLD.amount
+    //                     ELSE -OLD.amount
+    //                 END
+    //                 WHERE id = OLD.account_id;
+    //
+    //                 UPDATE accounts
+    //                 SET positive_state = CASE
+    //                     WHEN balance > 0 THEN 1
+    //                     ELSE 0
+    //                 END
+    //
+    //                 WHERE id = OLD.account_id;
+    //             END;
+    //         `)
+    //     }
+    // },
 ];

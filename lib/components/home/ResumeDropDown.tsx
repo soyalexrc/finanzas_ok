@@ -8,7 +8,7 @@ import {
     updateTransactionsGroupedByDate, updateCurrentBalance
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
-import {getCurrentBalance, getTransactionsGroupedAndFiltered} from "@/lib/db";
+import {getCurrentBalance, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2} from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
 import {calculateTotal, formatByThousands, formatTitleOption, formatWithDecimals} from "@/lib/helpers/string";
 import {selectAccounts, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
@@ -28,16 +28,20 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
     const {t} = useTranslation();
     const isIos = Platform.OS === 'ios';
 
-    async function handleSelectOption(type: 'Spent' | 'Revenue' | 'Balance', date: 'week' | 'month' | 'none') {
+    async function handleSelectOption(type: 'Spent' | 'Revenue', date: 'month' | 'none') {
         dispatch(updateHomeViewTypeFilter({type, date}))
-        if (type !== 'Balance') {
-            const {start, end} = date === 'week' ? getCurrentWeek() : getCurrentMonth();
-            const transactions = await getTransactionsGroupedAndFiltered(db, start.toISOString(), end.toISOString(), type, selectedAccount.id);
+            const {start, end} = getCurrentMonth();
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type);
             dispatch(updateTransactionsGroupedByDate(transactions));
-        } else {
-            const currentBalance = await getCurrentBalance(db);
-            dispatch(updateCurrentBalance(currentBalance));
-        }
+
+        // if (type !== 'Balance') {
+        //     const {start, end} = date === 'week' ? getCurrentWeek() : getCurrentMonth();
+        //     const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type, selectedAccount.id);
+        //     dispatch(updateTransactionsGroupedByDate(transactions));
+        // } else {
+        //     const currentBalance = await getCurrentBalance(db);
+        //     dispatch(updateCurrentBalance(currentBalance));
+        // }
     }
 
     return (
@@ -49,26 +53,28 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                         <View style={{alignItems: 'center'}}>
                             <Text
                                 fontSize="$6">{
-                                filterType.type === 'Balance'
-                                    ? t('HOME_RESUME_DROPDOWN.BALANCE')
-                                    : filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
-                                        : filterType.type === 'Spent' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')
-                                            : filterType.type === 'Revenue' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')
+                                // filterType.type === 'Balance'
+                                //     ? t('HOME_RESUME_DROPDOWN.BALANCE')
+                                //     :
+                                //     filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
+                                //         :
+                                        filterType.type === 'Spent' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')
+                                            // : filterType.type === 'Revenue' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')
                                                 : filterType.type === 'Revenue' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')
                                                     : ''
                             }
                             </Text>
-                            {
-                                filterType.type === 'Balance' &&
-                                <XStack mb={4}>
-                                    <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
-                                    <Text mt={-12}
-                                          fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
-                                </XStack>
-                            }
-                            {
-                                filterType.type !== 'Balance' &&
-                                <>
+                            {/*{*/}
+                            {/*    filterType.type === 'Balance' &&*/}
+                            {/*    <XStack mb={4}>*/}
+                            {/*        <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>*/}
+                            {/*        <Text mt={-12}*/}
+                            {/*              fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>*/}
+                            {/*    </XStack>*/}
+                            {/*}*/}
+                            {/*{*/}
+                            {/*    filterType.type !== 'Balance' &&*/}
+                            {/*    <>*/}
                                     {
                                         transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                                             <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
@@ -91,19 +97,19 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                                             <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
                                         </XStack>
                                     }
-                                </>
-                            }
+                            {/*    </>*/}
+                            {/*}*/}
                         </View>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content loop={false} side='bottom' sideOffset={0} align='center' alignOffset={0}
                                           collisionPadding={0} avoidCollisions={true}>
                         <DropdownMenu.Group key="Spent">
-                            <DropdownMenu.CheckboxItem key="spent-week"
-                                                       value={(filterType.type === 'Spent' && filterType.date === "week") ? 'on' : 'off'}
-                                                       onValueChange={() => handleSelectOption('Spent', 'week')}>
-                                <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')}</DropdownMenu.ItemTitle>
-                                <DropdownMenu.ItemIndicator/>
-                            </DropdownMenu.CheckboxItem>
+                            {/*<DropdownMenu.CheckboxItem key="spent-week"*/}
+                            {/*                           value={(filterType.type === 'Spent' && filterType.date === "week") ? 'on' : 'off'}*/}
+                            {/*                           onValueChange={() => handleSelectOption('Spent', 'week')}>*/}
+                            {/*    <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')}</DropdownMenu.ItemTitle>*/}
+                            {/*    <DropdownMenu.ItemIndicator/>*/}
+                            {/*</DropdownMenu.CheckboxItem>*/}
                             <DropdownMenu.CheckboxItem key="spent-month"
                                                        value={(filterType.type === 'Spent' && filterType.date === "month") ? 'on' : 'off'}
                                                        onValueChange={() => handleSelectOption('Spent', 'month')}>
@@ -112,12 +118,12 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                             </DropdownMenu.CheckboxItem>
                         </DropdownMenu.Group>
                         <DropdownMenu.Group key="Revenue">
-                            <DropdownMenu.CheckboxItem key="revenue-week"
-                                                       value={(filterType.type === 'Revenue' && filterType.date === "week") ? 'on' : 'off'}
-                                                       onValueChange={() => handleSelectOption('Revenue', 'week')}>
-                                <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')}</DropdownMenu.ItemTitle>
-                                <DropdownMenu.ItemIndicator/>
-                            </DropdownMenu.CheckboxItem>
+                            {/*<DropdownMenu.CheckboxItem key="revenue-week"*/}
+                            {/*                           value={(filterType.type === 'Revenue' && filterType.date === "week") ? 'on' : 'off'}*/}
+                            {/*                           onValueChange={() => handleSelectOption('Revenue', 'week')}>*/}
+                            {/*    <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')}</DropdownMenu.ItemTitle>*/}
+                            {/*    <DropdownMenu.ItemIndicator/>*/}
+                            {/*</DropdownMenu.CheckboxItem>*/}
                             <DropdownMenu.CheckboxItem key="revenue-month"
                                                        value={(filterType.type === 'Revenue' && filterType.date === "month") ? 'on' : 'off'}
                                                        onValueChange={() => handleSelectOption('Revenue', 'month')}>
@@ -125,14 +131,14 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                                 <DropdownMenu.ItemIndicator/>
                             </DropdownMenu.CheckboxItem>
                         </DropdownMenu.Group>
-                        <DropdownMenu.Group key="Balance">
-                            <DropdownMenu.CheckboxItem key="current"
-                                                       value={(filterType.type === 'Balance' && filterType.date === "none") ? 'on' : 'off'}
-                                                       onValueChange={() => handleSelectOption('Balance', 'none')}>
-                                <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.BALANCE')}</DropdownMenu.ItemTitle>
-                                <DropdownMenu.ItemIndicator/>
-                            </DropdownMenu.CheckboxItem>
-                        </DropdownMenu.Group>
+                        {/*<DropdownMenu.Group key="Balance">*/}
+                        {/*    <DropdownMenu.CheckboxItem key="current"*/}
+                        {/*                               value={(filterType.type === 'Balance' && filterType.date === "none") ? 'on' : 'off'}*/}
+                        {/*                               onValueChange={() => handleSelectOption('Balance', 'none')}>*/}
+                        {/*        <DropdownMenu.ItemTitle>{t('HOME_RESUME_DROPDOWN.BALANCE')}</DropdownMenu.ItemTitle>*/}
+                        {/*        <DropdownMenu.ItemIndicator/>*/}
+                        {/*    </DropdownMenu.CheckboxItem>*/}
+                        {/*</DropdownMenu.Group>*/}
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
             }
@@ -141,27 +147,28 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                 <Pressable onPress={fn} style={{alignItems: 'center'}}>
                     <Text
                         fontSize="$6">{
-                        filterType.type === 'Balance'
-                            ? t('HOME_RESUME_DROPDOWN.BALANCE')
-                            : filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
+                        // filterType.type === 'Balance'
+                        //     ? t('HOME_RESUME_DROPDOWN.BALANCE')
+                        //     :
+                            filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
                                 : filterType.type === 'Spent' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')
                                     : filterType.type === 'Revenue' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')
                                         : filterType.type === 'Revenue' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')
                                             : ''
                     }
                     </Text>
-                    {
-                        filterType.type === 'Balance' &&
-                        <XStack mb={4}>
-                            <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>
-                            <Text mt={-12}
-                                  fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>
-                            <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
-                        </XStack>
-                    }
-                    {
-                        filterType.type !== 'Balance' &&
-                        <>
+                    {/*{*/}
+                    {/*    filterType.type === 'Balance' &&*/}
+                    {/*    <XStack mb={4}>*/}
+                    {/*        <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>*/}
+                    {/*        <Text mt={-12}*/}
+                    {/*              fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>*/}
+                    {/*        <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>*/}
+                    {/*    </XStack>*/}
+                    {/*}*/}
+                    {/*{*/}
+                    {/*    filterType.type !== 'Balance' &&*/}
+                    {/*    <>*/}
                             {
                                 transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                                     <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
@@ -184,8 +191,8 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                                     <Text fontSize="$9">.00</Text>
                                 </XStack>
                             }
-                        </>
-                    }
+                        {/*</>*/}
+                    {/*}*/}
                 </Pressable>
             }
         </View>

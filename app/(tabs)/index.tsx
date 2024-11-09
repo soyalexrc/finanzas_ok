@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Animated, Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme} from "react-native";
-import {View, ScrollView, Text} from 'tamagui';
+import {View, ScrollView, Text, useTheme} from 'tamagui';
 import {Entypo} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useAppSelector} from "@/lib/store/hooks";
@@ -17,9 +17,16 @@ import TransactionSelectionOptionsSheet
     from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
 import {FullTransaction} from "@/lib/types/Transaction";
 import * as Haptics from "expo-haptics";
+import Feather from "@expo/vector-icons/Feather";
+import {useRouter} from "expo-router";
+import {formatDate, getCustomMonth} from "@/lib/helpers/date";
+import {format} from "date-fns";
+import {enUS, es} from "date-fns/locale";
+import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 
 
 export default function HomeScreen() {
+    const router = useRouter();
     const isIos = Platform.OS === 'ios';
     const insets = useSafeAreaInsets();
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -28,8 +35,8 @@ export default function HomeScreen() {
     const [transactionSelectionOpen, setTransactionSelectionOpen] = useState<boolean>(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
     const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
-    const {t} = useTranslation()
+    const { selectedLanguage } = useAppSelector(selectSettings);
+    const theme = useTheme();
     const scheme = useColorScheme();
 
     useEffect(() => {
@@ -68,16 +75,43 @@ export default function HomeScreen() {
             >
 
                 <CustomHeader style={{paddingTop: insets.top}}>
-                    {isIos && <AccountSelectDropdown/>}
-                    {
-                        !isIos &&
-                        <TouchableOpacity onPress={handleTouchAccountsSelector}
-                                          style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
-                            <Text
-                                fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>
-                            <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
-                        </TouchableOpacity>
-                    }
+                    {/*{isIos && <AccountSelectDropdown/>}*/}
+                    {/*{*/}
+                    {/*    !isIos &&*/}
+                    {/*    <TouchableOpacity onPress={handleTouchAccountsSelector}*/}
+                    {/*                      style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>*/}
+                    {/*        <Text*/}
+                    {/*            fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>*/}
+                    {/*        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>*/}
+                    {/*    </TouchableOpacity>*/}
+                    {/*}*/}
+                    <TouchableOpacity
+                        onPress={() => {
+                            const {start, end} = getCustomMonth(2);
+                            console.log({ start, end })
+                        }}
+                          style={{
+                              flexDirection: 'row', alignItems: 'center', gap: 5,
+                              backgroundColor: theme.color2?.val,
+                              padding: 10,
+                              borderRadius: 100
+                          }}>
+                        <Text
+                            fontSize={16}>
+                            {format(formatDate(new Date()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
+                        </Text>
+                        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        // onPress={() => router.push('/search')}
+                        style={{
+                            flexDirection: 'row', alignItems: 'center', gap: 5,
+                            backgroundColor: theme.color2?.val,
+                            padding: 10,
+                            borderRadius: 100
+                        }}>
+                        <Feather name="search" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
+                    </TouchableOpacity>
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                     <ResumeDropDown fn={handleTouchResume}/>

@@ -8,6 +8,7 @@ export interface TransactionsState {
     transactionsGroupedByDate: TransactionsGroupedByDate[];
     homeViewTypeFilter: HomeViewTypeFilter,
     currentBalance: number;
+    currency: { symbol: string; code: string };
 }
 
 function setInitialDate() {
@@ -17,14 +18,19 @@ function setInitialDate() {
 }
 
 const initialState: TransactionsState = {
+    currency: { symbol: '$', code: 'USD' },
     currentTransaction: {
-        account_id: -1,
         amount: "0",
-        category_id: -1,
+        category_icon: '',
+        category: '',
+        category_type: '',
+        currency_code_t: 'USD',
+        currency_symbol_t: '$',
+        account: '',
+        dateTime: new Date().toDateString(),
         date: setInitialDate(),
         notes: '',
         hidden_amount: "0",
-        is_hidden_transaction: 0,
         recurrentDate: 'none',
         id: -1
     },
@@ -32,7 +38,7 @@ const initialState: TransactionsState = {
     currentBalance: 0,
     homeViewTypeFilter: {
         type: 'Spent',
-        date: 'week'
+        date: 'month'
     }
 }
 
@@ -53,7 +59,7 @@ export const transactionsSlice = createSlice({
             state.currentTransaction.hidden_amount = action.payload;
         },
         updateHiddenFlag: (state, action: PayloadAction<number>) => {
-            state.currentTransaction.is_hidden_transaction = action.payload;
+            // state.currentTransaction.is_hidden_transaction = action.payload;
         },
         onRecurrentSettingChange: (state, action: PayloadAction<string>) => {
             state.currentTransaction.recurrentDate = action.payload;
@@ -67,13 +73,20 @@ export const transactionsSlice = createSlice({
         updateCurrentBalance: (state, action: PayloadAction<number>) => {
             state.currentBalance = action.payload;
         },
+        updateCurrency: (state, action: PayloadAction<{ code: string, symbol: string }>) => {
+            state.currency = action.payload;
+        },
         resetCurrentTransaction: (state) => {
             state.currentTransaction = {
-                account_id: -1,
                 amount: "0",
                 hidden_amount: "0",
-                is_hidden_transaction: 0,
-                category_id: -1,
+                dateTime: new Date().toISOString(),
+                currency_symbol_t: '$',
+                currency_code_t: 'USD',
+                account: '',
+                category_type: '',
+                category: '',
+                category_icon: '',
                 date: new Date().toISOString(),
                 notes: '',
                 recurrentDate: 'none',
@@ -129,10 +142,12 @@ export const {
     updateHiddenFlag,
     resetTransactionsSlice,
     addTransactionInHomeList,
-    onChangeHiddenAmount
+    onChangeHiddenAmount,
+    updateCurrency,
 } = transactionsSlice.actions;
 
 export const selectCurrentTransaction = (state: RootState) => state.transactions.currentTransaction
+export const selectCurrency = (state: RootState) => state.transactions.currency;
 export const selectTransactionsGroupedByDate = (state: RootState) => state.transactions.transactionsGroupedByDate
 export const selectHomeViewTypeFilter = (state: RootState) => state.transactions.homeViewTypeFilter
 export const selectCurrentBalance = (state: RootState) => state.transactions.currentBalance;

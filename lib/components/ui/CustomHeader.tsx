@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        height: 80,
+        height: 90,
         paddingHorizontal: 15,
         paddingBottom: 10,
     },
