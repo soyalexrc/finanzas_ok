@@ -42,9 +42,6 @@ export default function Screen() {
     const headerHeight = useHeaderHeight();
     const {t} = useTranslation();
     const dispatch = useAppDispatch();
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
 
     function handleWipeData() {

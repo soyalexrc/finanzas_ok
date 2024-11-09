@@ -1,4 +1,4 @@
-import {TouchableOpacity, StyleSheet} from "react-native";
+import {TouchableOpacity, StyleSheet, Platform, useColorScheme} from "react-native";
 import {View, Text, XStack, ToggleGroup} from 'tamagui';
 import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -18,6 +18,7 @@ import {Sheet} from "tamagui";
 import {useTranslation} from "react-i18next";
 import {useRouter} from "expo-router";
 import * as Haptics from "expo-haptics";
+import Entypo from '@expo/vector-icons/Entypo';
 
 type Props = {
     open: boolean
@@ -26,8 +27,10 @@ type Props = {
 
 export default function CategoriesBottomSheet({open, setOpen}: Props) {
     const dispatch = useAppDispatch();
+    const scheme = useColorScheme()
     const categories = useAppSelector(selectCategories);
     const accounts = useAppSelector(selectAccounts);
+    const isIos = Platform.OS === 'ios';
     const selectedCategory = useAppSelector(selectSelectedCategory);
     const selectedAccount = useAppSelector(selectSelectedAccountForm);
     const [position, setPosition] = useState(0);
@@ -43,14 +46,18 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
     async function goToCreateCategory() {
         await Haptics.selectionAsync();
         dispatch(resetCategoryCreateUpdate());
-        router.push('/(tabs)/(settings)')
+        router.replace('/');
+        router.push('/(tabs)/(settings)');
+        setTimeout(() => {
+            router.push('/(tabs)/(settings)/categories');
+        }, 300)
     }
 
-    async function goToCreateAccount() {
-        await Haptics.selectionAsync();
-        dispatch(resetCategoryCreateUpdate());
-        router.push('/(tabs)/(settings)/createEditAccount')
-    }
+    // async function goToCreateAccount() {
+    //     await Haptics.selectionAsync();
+    //     dispatch(resetCategoryCreateUpdate());
+    //     router.push('/(tabs)/(settings)/createEditAccount')
+    // }
 
     return (
         <Sheet
@@ -61,7 +68,7 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={[60]}
+            snapPoints={[80]}
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
@@ -69,62 +76,72 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
         >
             <Sheet.Overlay
                 animation="quick"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
+                enterStyle={{opacity: 0}}
+                exitStyle={{opacity: 0}}
             />
 
-            <Sheet.Handle />
+            <Sheet.Handle/>
 
-            <Sheet.ScrollView stickyHeaderIndices={[0]} backgroundColor="$background" showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
-                <XStack backgroundColor='$color1' justifyContent="center">
+            <Sheet.ScrollView stickyHeaderIndices={[0]} backgroundColor="$background"
+                              showsVerticalScrollIndicator={false} borderTopLeftRadius={12} borderTopRightRadius={12}>
+                <View backgroundColor="$color1">
                     <ToggleGroup
                         margin={10}
                         value={categoryType}
                         onValueChange={setCategoryType}
-                        height={50}
+                        height={isIos ? 41 : 50}
                         orientation="horizontal"
                         type="single"
                     >
-                        <ToggleGroup.Item value="expense" aria-label="expese categories tab filter">
+                        <ToggleGroup.Item flex={1} value="expense" aria-label="expese categories tab filter">
                             <Text>{t('COMMON.EXPENSE')}</Text>
                         </ToggleGroup.Item>
-                        <ToggleGroup.Item value="income" aria-label="income categories tab filter">
+                        <ToggleGroup.Item flex={1} value="income" aria-label="income categories tab filter">
                             <Text>{t('COMMON.INCOME')}</Text>
                         </ToggleGroup.Item>
                     </ToggleGroup>
-                </XStack>
+                </View>
                 <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
                     {categories.filter(c => c.type === categoryType)?.map(item => (
-                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id} style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
+                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
+                                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
                             <Text style={{fontSize: 40}}>{item.icon}</Text>
                             <Text>{textShortener(item.title)}</Text>
                         </TouchableOpacity>
                     ))}
-                    {
-                        categoryType !== 'account' &&
-                        <TouchableOpacity onPress={goToCreateCategory} style={[localStyles.item]}>
-                            <Text style={{fontSize: 40}}>+</Text>
-                            <Text>{t('COMMON.NEW')}</Text>
-                        </TouchableOpacity>
-                    }
                 </View>
-                {
-                    categoryType === 'account' &&
-                    <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>
-                        {accounts.map(item => (
-                            <TouchableOpacity onPress={() => {
-                            }} key={item.id} style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>
-                                <Text style={{fontSize: 40}}>{item.icon}</Text>
-                                <Text>{textShortener(item.title, 15)}</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity style={[localStyles.item]} onPress={goToCreateAccount}>
-                            <Text style={{fontSize: 40}}>+</Text>
-                            <Text>{t('COMMON.NEW')}</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-                <View style={{height: 100}}/>
+                {/*{*/}
+                {/*    categoryType === 'account' &&*/}
+                {/*    <View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>*/}
+                {/*        {accounts.map(item => (*/}
+                {/*            <TouchableOpacity onPress={() => {*/}
+                {/*            }} key={item.id}*/}
+                {/*                              style={[localStyles.item, selectedAccount.id === item.id && localStyles.selectedItem]}>*/}
+                {/*                <Text style={{fontSize: 40}}>{item.icon}</Text>*/}
+                {/*                <Text>{textShortener(item.title, 15)}</Text>*/}
+                {/*            </TouchableOpacity>*/}
+                {/*        ))}*/}
+                {/*        <TouchableOpacity style={[localStyles.item]} onPress={goToCreateAccount}>*/}
+                {/*            <Text style={{fontSize: 40}}>+</Text>*/}
+                {/*            <Text>{t('COMMON.NEW')}</Text>*/}
+                {/*        </TouchableOpacity>*/}
+                {/*    </View>*/}
+                {/*}*/}
+                <View style={{height: 50}}/>
+                <TouchableOpacity onPress={goToCreateCategory} style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    marginBottom: 20,
+                    backgroundColor: 'black',
+                    marginHorizontal: 20,
+                    height: 50,
+                    borderRadius: 10,
+                }}>
+                    <Entypo name="plus" size={24} color={ scheme === 'light' ? 'black' : 'white'} />
+                    <Text>{t('COMMON.NEW')}</Text>
+                </TouchableOpacity>
+                <View style={{height: 50}}/>
             </Sheet.ScrollView>
         </Sheet>
     )
@@ -137,7 +154,5 @@ const localStyles = StyleSheet.create({
         width: '23%',
         alignItems: 'center'
     },
-    selectedItem: {
-
-    }
+    selectedItem: {}
 })

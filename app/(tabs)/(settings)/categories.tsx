@@ -114,7 +114,7 @@ export default function Screen() {
 
     return (
         <View flex={1}>
-            <XStack backgroundColor="$color1" justifyContent="center"  paddingTop={isIos ? headerHeight + 20 : 20}>
+            <View backgroundColor="$color1" paddingHorizontal={10} paddingTop={isIos ? headerHeight + 20 : 20}>
                 <ToggleGroup
                     marginBottom={10}
                     value={categoryType}
@@ -122,14 +122,14 @@ export default function Screen() {
                     orientation="horizontal"
                     type="single"
                 >
-                    <ToggleGroup.Item value="expense" aria-label="Categories of type expense filter">
+                    <ToggleGroup.Item flex={1} value="expense" aria-label="Categories of type expense filter">
                         <Text>{t('COMMON.EXPENSE')}</Text>
                     </ToggleGroup.Item>
-                    <ToggleGroup.Item value="income" aria-label="Categories of type income filter">
+                    <ToggleGroup.Item flex={1} value="income" aria-label="Categories of type income filter">
                         <Text>{t('COMMON.INCOME')}</Text>
                     </ToggleGroup.Item>
                 </ToggleGroup>
-            </XStack>
+            </View>
             <ScrollView flex={1} backgroundColor="$color1" showsVerticalScrollIndicator={false}>
                 {
                     categories.filter(c => c.type === categoryType).map(category => {

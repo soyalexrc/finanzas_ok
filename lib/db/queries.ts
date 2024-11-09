@@ -129,7 +129,7 @@ export async function importSheetToDB(db: SQLiteDatabase, transactions: Transact
         }
 
         for (const transaction of transactions) {
-            await createTransaction(db, transaction);
+            createTransactionV2(db, transaction);
         }
 
         for (const setting of settings) {
