@@ -23,6 +23,7 @@ import {formatDate, getCustomMonth} from "@/lib/helpers/date";
 import {format} from "date-fns";
 import {enUS, es} from "date-fns/locale";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import HomeFiltersSheet from "@/lib/components/home/HomeFiltersSheet";
 
 
 export default function HomeScreen() {
@@ -31,6 +32,7 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const [accountsSheetOpen, setAccountsSheetOpen] = useState<boolean>(false);
+    const [homeFiltersSheetOpen, setHomeFiltersSheetOpen] = useState<boolean>(false);
     const [resumeSheetOpen, setResumeSheetOpen] = useState<boolean>(false);
     const [transactionSelectionOpen, setTransactionSelectionOpen] = useState<boolean>(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
@@ -86,9 +88,11 @@ export default function HomeScreen() {
                     {/*    </TouchableOpacity>*/}
                     {/*}*/}
                     <TouchableOpacity
-                        onPress={() => {
+                        onPress={async () => {
+                            await Haptics.selectionAsync();
                             const {start, end} = getCustomMonth(2);
                             console.log({ start, end })
+                            setHomeFiltersSheetOpen(true);
                         }}
                           style={{
                               flexDirection: 'row', alignItems: 'center', gap: 5,
@@ -98,7 +102,7 @@ export default function HomeScreen() {
                           }}>
                         <Text
                             fontSize={16}>
-                            {format(formatDate(new Date()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
+                            {format(formatDate(new Date().toISOString()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
                         </Text>
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
@@ -120,6 +124,7 @@ export default function HomeScreen() {
                     <HomeResumeItems fn={(t, groupId) => onSelectTransaction(t, groupId)}/>
                     <View style={{height: 200}}/>
                 </ScrollView>
+                <HomeFiltersSheet open={homeFiltersSheetOpen} setOpen={setHomeFiltersSheetOpen} />
                 {!isIos && <AccountSelectSheet setOpen={setAccountsSheetOpen} open={accountsSheetOpen}/>}
                 {!isIos && <ResumeSheet open={resumeSheetOpen} setOpen={setResumeSheetOpen}/>}
                 {!isIos && <TransactionSelectionOptionsSheet open={transactionSelectionOpen}
