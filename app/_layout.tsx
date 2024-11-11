@@ -9,7 +9,6 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState, selectNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, Platform, StatusBar, useColorScheme} from "react-native";
-import * as Updates from 'expo-updates';
 import {
     selectSettings,
     updateAppearance,
@@ -111,9 +110,6 @@ const InitialLayout = () => {
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(
             state => {
-                if (state.isConnected) {
-                    onFetchUpdateAsync()
-                }
                 dispatch(changeNetworkState(state))
             }
         )
@@ -131,20 +127,6 @@ const InitialLayout = () => {
 
     if (!loaded) {
         return <Slot/>;
-    }
-
-    async function onFetchUpdateAsync() {
-        try {
-            const update = await Updates.checkForUpdateAsync();
-
-            if (update.isAvailable) {
-                await Updates.fetchUpdateAsync();
-                await Updates.reloadAsync();
-            }
-        } catch (error) {
-            // You can also add an alert() to see the error message in case of an error when fetching updates.
-            console.log(`Error fetching latest Expo update: ${error}`);
-        }
     }
 
     async function validateSettingsFromStorage() {
