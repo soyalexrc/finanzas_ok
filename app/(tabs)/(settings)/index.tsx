@@ -222,18 +222,18 @@ export default function Screen() {
 
                     <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}
                             separator={<Separator/>}>
-                        <YGroup.Item>
-                            <ListItem
-                                hoverTheme
-                                pressTheme
-                                title={t('SETTINGS.ACCOUNTS.TITLE')}
-                                onPress={() => router.push('/accounts')}
-                                icon={<IconWrapper bgColor="$blue11Light"
-                                                   icon={<MaterialIcons name='account-balance-wallet' size={20}
-                                                                        color="white"/>}/>}
-                                iconAfter={<Entypo name="chevron-small-right" size={24}/>}
-                            />
-                        </YGroup.Item>
+                        {/*<YGroup.Item>*/}
+                        {/*    <ListItem*/}
+                        {/*        hoverTheme*/}
+                        {/*        pressTheme*/}
+                        {/*        title={t('SETTINGS.ACCOUNTS.TITLE')}*/}
+                        {/*        onPress={() => router.push('/accounts')}*/}
+                        {/*        icon={<IconWrapper bgColor="$blue11Light"*/}
+                        {/*                           icon={<MaterialIcons name='account-balance-wallet' size={20}*/}
+                        {/*                                                color="white"/>}/>}*/}
+                        {/*        iconAfter={<Entypo name="chevron-small-right" size={24}/>}*/}
+                        {/*    />*/}
+                        {/*</YGroup.Item>*/}
                         <YGroup.Item>
                             <ListItem
                                 hoverTheme
