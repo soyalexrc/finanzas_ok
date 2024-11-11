@@ -53,10 +53,6 @@ const InitialLayout = () => {
     const router = useRouter();
     const colorScheme = useColorScheme();
     const {languageCode, currencyCode, currencySymbol} = getLocales()[0]
-    const networkState = useAppSelector(selectNetworkState);
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const db = useSQLiteContext();
 
