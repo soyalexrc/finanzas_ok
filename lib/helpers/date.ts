@@ -2,8 +2,8 @@ import {
     endOfMonth,
     endOfWeek,
     format,
-    formatDistanceToNow,
-    isSameWeek,
+    formatDistanceToNow, isSameMonth,
+    isSameWeek, isThisMonth,
     isToday,
     isYesterday,
     startOfMonth,
@@ -38,6 +38,38 @@ export function getCustomMonth(month: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 1
     }
 }
 
+export function getCustomMonthRange(month1: number, month2: number): { start: Date, end: Date } {
+    const today = new Date();
+    today.setMonth(month1 - 1);
+    const end = new Date(today);
+    end.setMonth(month2 - 1);
+    return {
+        start: startOfMonth(today),
+        end: endOfMonth(end),
+    }
+}
+
+export function getCustomMonthRangeWithYear(month1: number, month2: number, year: number): { start: Date, end: Date } {
+    const today = new Date();
+    today.setMonth(month1 - 1);
+    today.setFullYear(year);
+    const end = new Date(today);
+    end.setMonth(month2 - 1);
+    return {
+        start: startOfMonth(today),
+        end: endOfMonth(end),
+    }
+}
+export function getCustomMonthAndYear(month: number, year: number): { start: Date, end: Date } {
+    const today = new Date();
+    today.setMonth(month - 1);
+    today.setFullYear(year);
+    return {
+        start: startOfMonth(today),
+        end: endOfMonth(today),
+    }
+}
+
 export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
     const now = new Date();
     const localDate = fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -47,9 +79,12 @@ export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
         return locale === 'es' ? 'Ayer' : 'Yesterday';
     } else if (isSameWeek(localDate, now)) {
         return format(localDate, 'EEEE', {locale: locale === 'es' ? es : enUS}); // e.g., Monday, Tuesday
-    } else {
-        // For dates beyond a week, use formatDistanceToNow
+    } else if (isSameMonth(localDate, now)) {
         return formatDistanceToNow(date, {addSuffix: true, locale: locale === 'es' ? es : enUS});
+    }
+    else {
+        // For dates beyond a week, use formatDistanceToNow
+        return format(localDate, 'dd/MM/yyyy', {locale: locale === 'es' ? es : enUS}); // e.g., 10/11/2021
     }
 };
 
