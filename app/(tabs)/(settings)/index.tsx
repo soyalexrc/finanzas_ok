@@ -81,14 +81,17 @@ export default function Screen() {
 
         switch (paywallResult) {
             case PAYWALL_RESULT.PURCHASED:
+                // TODO add message modal to user to thank him
                 console.log('tip purchased!')
                 break;
             case PAYWALL_RESULT.CANCELLED:
+                // TODO add message modal to user to explain nothing was charged
                 console.log('tip cancelled')
                 break;
 
             case PAYWALL_RESULT.ERROR:
                 console.log('tip failed')
+                // TODO add message modal to user to show an error occurred
                 break;
 
             case PAYWALL_RESULT.NOT_PRESENTED:
