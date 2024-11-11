@@ -24,6 +24,7 @@ import {useAuth, useUser} from "@clerk/clerk-expo";
 import * as Application from 'expo-application';
 import * as Haptics from "expo-haptics";
 import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
+import * as Sharing from 'expo-sharing';
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
@@ -102,11 +103,22 @@ export default function Screen() {
     }
 
     function redirectToReview() {
-        if (Platform.OS === 'ios') { //{https://apps.apple.com/app/finanzas-ok/
+        if (Platform.OS === 'ios') {
             Linking.openURL('https://apps.apple.com/app/id6737455994?action=write-review')
         } else {
-            https://play.google.com/store/apps/details?id=${androidPackageName}&showAllReviews=true
             Linking.openURL('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok&showAllReviews=true')
+        }
+    }
+
+    async function shareToFriends() {
+        try {
+            if (Platform.OS === 'ios') {
+                await Sharing.shareAsync('https://apps.apple.com/app/id6737455994');
+            } else {
+                await Sharing.shareAsync('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok');
+            }
+        } catch (error) {
+            console.error('Error sharing', error)
         }
     }
 
@@ -276,7 +288,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
+                                onPress={shareToFriends}
                                 title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                                 icon={<IconWrapper bgColor="$blue10Light"
                                                    icon={<FontAwesome6 name='share' size={20} color="white"/>}/>}
