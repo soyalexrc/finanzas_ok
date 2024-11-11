@@ -101,6 +101,15 @@ export default function Screen() {
         }
     }
 
+    function redirectToReview() {
+        if (Platform.OS === 'ios') { //{https://apps.apple.com/app/finanzas-ok/
+            Linking.openURL('https://apps.apple.com/app/id6737455994?action=write-review')
+        } else {
+            https://play.google.com/store/apps/details?id=${androidPackageName}&showAllReviews=true
+            Linking.openURL('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok&showAllReviews=true')
+        }
+    }
+
     return (
         <View backgroundColor="$color1" flex={1}>
             {/*<CustomHeader style={{paddingTop: isIos ? insets.top + 20 : insets.top}} centered={true}>*/}
@@ -256,7 +265,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
+                                onPress={redirectToReview}
                                 title={t('SETTINGS.RATE_ON_STORE.TITLE')}
                                 icon={<IconWrapper bgColor="$orange9Light"
                                                    icon={<MaterialIcons name='star' size={20} color="white"/>}/>}
