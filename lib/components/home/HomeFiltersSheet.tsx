@@ -14,18 +14,18 @@ type Props = {
 }
 
 const DATA = [
-    {x: 'jan', y: 12},
-    {x: 'feb', y: 90},
-    {x: 'mar', y: 45.2},
-    {x: 'apr', y: 65.21},
-    {x: 'may', y: 10},
-    {x: 'jun', y: 0},
-    {x: 'jul', y: 2.5},
-    {x: 'aug', y: 35.65},
-    {x: 'sep', y: 78.12},
-    {x: 'oct', y: 50.43},
-    {x: 'nov', y: 20.12},
-    {x: 'dec', y: 17.54}
+    {x: 'JAN', y: 12},
+    {x: 'FEB', y: 90},
+    {x: 'MAR', y: 45.2},
+    {x: 'APR', y: 65.21},
+    {x: 'MAY', y: 10},
+    {x: 'JUN', y: 0},
+    {x: 'JUL', y: 2.5},
+    {x: 'AUG', y: 35.65},
+    {x: 'SEP', y: 78.12},
+    {x: 'OCT', y: 50.43},
+    {x: 'NOV', y: 20.12},
+    {x: 'DEC', y: 17.54}
 ]
 
 export default function HomeFiltersSheet({setOpen, open} : Props) {
@@ -105,7 +105,11 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                     </TouchableOpacity>
                                 ))
                             }
-
+                        </XStack>
+                        <XStack justifyContent="space-between" gap={5} alignItems="flex-end" px={5} mt={-15}>
+                            {
+                                DATA.map(item => <Text key={item.x}>{item.x.substring(0, 1)}</Text>)
+                            }
                         </XStack>
                         <YGroup alignSelf="center" bordered
                                 separator={<Separator/>}>
