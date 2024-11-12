@@ -9,7 +9,6 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState, selectNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
 import {Appearance, Platform, StatusBar, useColorScheme} from "react-native";
-import * as Updates from 'expo-updates';
 import {
     selectSettings,
     updateAppearance,
@@ -30,18 +29,26 @@ import {useSQLiteContext} from "expo-sqlite";
 import {getLocales} from "expo-localization";
 import {
     getAllAccounts,
-    getAllCategories,
-    getSettings,
+    getAllCategories, getSettingByKey,
+    getSettings, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2, updateSettingByKey
 } from "@/lib/db";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import '@/lib/language';
 import i18next from "i18next";
 import {changeCurrentTheme, CustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as net from "node:net";
 import {useTranslation} from "react-i18next";
+import {
+    updateLimit,
+    updateMonth,
+    updateTotalByMonth,
+    updateTotalsInYear
+} from "@/lib/store/features/transactions/filterSlice";
+import {format} from "date-fns";
+import {enUS, es} from "date-fns/locale";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -54,10 +61,6 @@ const InitialLayout = () => {
     const router = useRouter();
     const colorScheme = useColorScheme();
     const {languageCode, currencyCode, currencySymbol} = getLocales()[0]
-    const networkState = useAppSelector(selectNetworkState);
-    const selectedDateRange = useAppSelector(selectDateRangeFilter);
-    const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
     const db = useSQLiteContext();
 
@@ -66,7 +69,13 @@ const InitialLayout = () => {
             await validateSettingsFromStorage();
             const accounts = getAllAccounts(db);
             const categories = getAllCategories(db);
+            const settingLanguage = getSettingByKey(db, 'selected_language')
+            const filterLimit = getSettingByKey(db, 'filter_limit')
             const {start, end} = getCurrentMonth();
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), Number(filterLimit?.value));
+            const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+            const currentMonthNumber = new Date().getMonth() + 1;
+
             // const {
             //     amountsGroupedByDate,
             //     transactionsGroupedByCategory
@@ -75,7 +84,11 @@ const InitialLayout = () => {
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
             dispatch(updateCurrency({symbol: currencySymbol ?? '$', code: currencyCode ?? 'USD'}));
-
+            dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+            dispatch(updateTotalsInYear(totalSpentByYear));
+            dispatch(updateLimit(filterLimit?.value ? Number(filterLimit.value) : 2500));
+            dispatch(updateMonth({ number: currentMonthNumber, text: format(formatDate(new Date().toISOString()), 'MMMM', { locale: settingLanguage?.value && settingLanguage.value === 'es' ? es : enUS }) }))
+            // {format(formatDate(new Date().toISOString()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
             // dispatch(selectCategory(categories[0]));
             dispatch(updateTransactionsGroupedByDate(transactions));
             // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
@@ -111,9 +124,6 @@ const InitialLayout = () => {
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(
             state => {
-                if (state.isConnected) {
-                    onFetchUpdateAsync()
-                }
                 dispatch(changeNetworkState(state))
             }
         )
@@ -133,20 +143,6 @@ const InitialLayout = () => {
         return <Slot/>;
     }
 
-    async function onFetchUpdateAsync() {
-        try {
-            const update = await Updates.checkForUpdateAsync();
-
-            if (update.isAvailable) {
-                await Updates.fetchUpdateAsync();
-                await Updates.reloadAsync();
-            }
-        } catch (error) {
-            // You can also add an alert() to see the error message in case of an error when fetching updates.
-            console.log(`Error fetching latest Expo update: ${error}`);
-        }
-    }
-
     async function validateSettingsFromStorage() {
 
         const settings = getSettings(db);
@@ -162,6 +158,10 @@ const InitialLayout = () => {
 
         if (!settings?.selected_language) {
             updateSettingByKey(db, 'selected_language', languageCode ?? 'en');
+        }
+
+        if (!settings?.filter_limit) {
+            updateSettingByKey(db, 'filter_limit', '2500');
         }
 
         await i18next.changeLanguage(settings?.selected_language ? settings.selected_language : languageCode ?? 'en');
@@ -189,16 +189,15 @@ const InitialLayout = () => {
                 <Stack.Screen name="emojiSelection"
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
                 <Stack.Screen name="search"
-
                               options={{
                                   animation: "slide_from_right",
-                                  title: 'Search',
+                                  title: '',
                                   headerBlurEffect: 'prominent',
                                   headerBackTitle: t('COMMON.BACK'),
                                   headerTransparent: isIos,
-                                  headerTintColor: theme.color12.val,
+                                  headerTintColor: theme.color12?.val,
                                   headerStyle: {
-                                      backgroundColor: theme.color1.val,
+                                      backgroundColor: theme.color1?.val,
                                   },
                               }}/>
                 <Stack.Screen name="auth" options={{

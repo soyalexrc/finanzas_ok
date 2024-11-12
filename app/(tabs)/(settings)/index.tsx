@@ -24,6 +24,7 @@ import {useAuth, useUser} from "@clerk/clerk-expo";
 import * as Application from 'expo-application';
 import * as Haptics from "expo-haptics";
 import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
+import * as Sharing from 'expo-sharing';
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
@@ -81,20 +82,43 @@ export default function Screen() {
 
         switch (paywallResult) {
             case PAYWALL_RESULT.PURCHASED:
+                // TODO add message modal to user to thank him
                 console.log('tip purchased!')
                 break;
             case PAYWALL_RESULT.CANCELLED:
+                // TODO add message modal to user to explain nothing was charged
                 console.log('tip cancelled')
                 break;
 
             case PAYWALL_RESULT.ERROR:
                 console.log('tip failed')
+                // TODO add message modal to user to show an error occurred
                 break;
 
             case PAYWALL_RESULT.NOT_PRESENTED:
                 console.log('paywall not presented');
                 break;
 
+        }
+    }
+
+    function redirectToReview() {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('https://apps.apple.com/app/id6737455994?action=write-review')
+        } else {
+            Linking.openURL('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok&showAllReviews=true')
+        }
+    }
+
+    async function shareToFriends() {
+        try {
+            if (Platform.OS === 'ios') {
+                await Sharing.shareAsync('https://apps.apple.com/app/id6737455994');
+            } else {
+                await Sharing.shareAsync('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok');
+            }
+        } catch (error) {
+            console.error('Error sharing', error)
         }
     }
 
@@ -198,18 +222,18 @@ export default function Screen() {
 
                     <YGroup alignSelf="center" bordered marginHorizontal={16} marginBottom={40}
                             separator={<Separator/>}>
-                        <YGroup.Item>
-                            <ListItem
-                                hoverTheme
-                                pressTheme
-                                title={t('SETTINGS.ACCOUNTS.TITLE')}
-                                onPress={() => router.push('/accounts')}
-                                icon={<IconWrapper bgColor="$blue11Light"
-                                                   icon={<MaterialIcons name='account-balance-wallet' size={20}
-                                                                        color="white"/>}/>}
-                                iconAfter={<Entypo name="chevron-small-right" size={24}/>}
-                            />
-                        </YGroup.Item>
+                        {/*<YGroup.Item>*/}
+                        {/*    <ListItem*/}
+                        {/*        hoverTheme*/}
+                        {/*        pressTheme*/}
+                        {/*        title={t('SETTINGS.ACCOUNTS.TITLE')}*/}
+                        {/*        onPress={() => router.push('/accounts')}*/}
+                        {/*        icon={<IconWrapper bgColor="$blue11Light"*/}
+                        {/*                           icon={<MaterialIcons name='account-balance-wallet' size={20}*/}
+                        {/*                                                color="white"/>}/>}*/}
+                        {/*        iconAfter={<Entypo name="chevron-small-right" size={24}/>}*/}
+                        {/*    />*/}
+                        {/*</YGroup.Item>*/}
                         <YGroup.Item>
                             <ListItem
                                 hoverTheme
@@ -253,7 +277,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
+                                onPress={redirectToReview}
                                 title={t('SETTINGS.RATE_ON_STORE.TITLE')}
                                 icon={<IconWrapper bgColor="$orange9Light"
                                                    icon={<MaterialIcons name='star' size={20} color="white"/>}/>}
@@ -264,7 +288,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled
+                                onPress={shareToFriends}
                                 title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                                 icon={<IconWrapper bgColor="$blue10Light"
                                                    icon={<FontAwesome6 name='share' size={20} color="white"/>}/>}

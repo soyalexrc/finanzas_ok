@@ -7,6 +7,7 @@ import transactionsReducer from './features/transactions/transactionsSlice'
 import reportReducer from './features/transactions/reportSlice';
 import settingsReducer from './features/settings/settingsSlice';
 import uiReducer from './features/ui/uiSlice';
+import filterReducer from './features/transactions/filterSlice';
 
 export const store = configureStore({
     reducer: {
@@ -17,7 +18,8 @@ export const store = configureStore({
         categories: categoriesReducer,
         report: reportReducer,
         settings: settingsReducer,
-        ui: uiReducer
+        ui: uiReducer,
+        filter: filterReducer
     }
 })
 

@@ -1,8 +1,11 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "All",
       "CURRENCY": "Currency",
       "CANCEL": "Cancel",
+      "SPENT_IN": "Spent in",
+      "INCOME_IN": "Income in",
       "BACK": "Back",
       "NEXT": "Next",
       "WELCOME": "Welcome",
@@ -116,14 +119,26 @@
       }
     },
     "SETTINGS": {
+      "FILTERS": {
+        "TITLE": "Filters",
+        "OPTIONS": {
+          "YEAR": "Year",
+          "TYPE": "Type",
+          "SPENT_THIS_YEAR": "Spent this year",
+          "SPENT_IN": "Spent in"
+        },
+        "LABELS": {
+          "LIMIT": "Visible limit in filters section"
+        }
+      },
       "COLORS": {
         "CHANGE_COLOR_MESSAGE": "The app will restart to apply the changes",
         "GREEN": "Green",
-        "RED":  "Red",
+        "RED": "Red",
         "BLUE": "Blue",
         "YELLOW": "Yellow",
-        "PURPLE":  "Purple",
-        "BLACK":  "Black"
+        "PURPLE": "Purple",
+        "BLACK": "Black"
       },
       "TITLE": "Settings",
       "PRIVACY": {
@@ -202,7 +217,6 @@
           "EXPORT": "Export",
           "WIPE": "Wipe (reset data)",
           "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories."
-
         }
       },
       "CONTACT_DEV": {

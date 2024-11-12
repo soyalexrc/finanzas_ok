@@ -1,8 +1,11 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "所有",
       "CURRENCY": "货币",
       "CANCEL": "取消",
+      "SPENT_IN": "花费在",
+      "INCOME_IN": "收入在",
       "BACK": "返回",
       "WARNING": "警告",
       "ACCEPT": "接受",
@@ -116,6 +119,18 @@
       }
     },
     "SETTINGS": {
+      "FILTERS": {
+        "TITLE": "过滤器",
+        "OPTIONS": {
+          "YEAR": "年",
+          "TYPE": "类型",
+          "SPENT_THIS_YEAR": "今年花费",
+          "SPENT_IN": "花费在"
+        },
+        "LABELS": {
+          "LIMIT": "过滤器部分的可见限制"
+        }
+      },
       "COLORS": {
         "CHANGE_COLOR_MESSAGE": "应用程序将重新启动以应用更改",
         "GREEN": "绿色",
