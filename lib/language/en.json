@@ -2,6 +2,7 @@
   "translation": {
     "COMMON": {
       "ALL": "All",
+      "SEARCH": "Search",
       "CURRENCY": "Currency",
       "CANCEL": "Cancel",
       "SPENT_IN": "Spent in",

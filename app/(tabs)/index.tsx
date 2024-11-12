@@ -114,7 +114,7 @@ export default function HomeScreen() {
                             flexDirection: 'row', alignItems: 'center', gap: 5,
                             backgroundColor: theme.color2?.val,
                             padding: 10,
-                            borderRadius: 10
+                            borderRadius: 100
                         }}>
                         <Feather name="search" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
