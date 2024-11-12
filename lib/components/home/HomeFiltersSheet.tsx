@@ -6,13 +6,30 @@ import {useTranslation} from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as Haptics from 'expo-haptics';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {selectHomeViewTypeFilter, updateHomeViewTypeFilter} from "@/lib/store/features/transactions/transactionsSlice";
-import {updateFilterType, updateMonth} from "@/lib/store/features/transactions/filterSlice";
+import {
+    selectHomeViewTypeFilter,
+    updateHomeViewTypeFilter,
+    updateTransactionsGroupedByDate
+} from "@/lib/store/features/transactions/transactionsSlice";
+import {
+    updateFilterType,
+    updateMonth,
+    updateTotalByMonth, updateTotalsInYear,
+    updateYear
+} from "@/lib/store/features/transactions/filterSlice";
 import {formatByThousands} from "@/lib/helpers/string";
 import {format} from "date-fns";
-import {formatDate} from "@/lib/helpers/date";
+import {formatDate, getCustomMonthAndYear} from "@/lib/helpers/date";
 import {enUS, es} from "date-fns/locale";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
+import {
+    getTotalIncomeByYear,
+    getTotalsOnEveryMonthByYear,
+    getTotalSpentByYear,
+    getTransactionsGroupedAndFilteredV2
+} from "@/lib/db";
+import {useSQLiteContext} from "expo-sqlite";
+import {convertNumberToK} from "@/lib/helpers/operations";
 
 type Props = {
     open: boolean;
@@ -20,18 +37,20 @@ type Props = {
 }
 
 export default function HomeFiltersSheet({setOpen, open} : Props) {
+    const db = useSQLiteContext();
     const [position, setPosition] = useState(0);
+    const dispatch = useAppDispatch();
     const scheme = useColorScheme()
     const { t } = useTranslation()
     const theme = useTheme();
     const {selectedLanguage} = useAppSelector(selectSettings);
-    const dispatch = useAppDispatch();
     const {
         month,
         type,
         year,
         totalByMonth,
-        totalInYear
+        totalInYear,
+        limit
     } = useAppSelector(state => state.filter);
 
     async function handleSelectMonth(month: number) {
@@ -42,7 +61,35 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
         dispatch(updateMonth({
             text: format(formatDate(new Date(new Date().setMonth(month - 1)).toISOString()), 'MMMM', { locale: selectedLanguage === 'es' ? es : enUS }),
             number: month
-        }));    }
+        }));
+
+        const {start, end} = getCustomMonthAndYear(month, year);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
+        dispatch(updateTransactionsGroupedByDate(transactions));
+    }
+
+    async function onTypeChange(t: 'income' | 'expense') {
+        dispatch(updateFilterType(t));
+        const {start, end} = getCustomMonthAndYear(month.number, year);
+        const totalResultByYear = t === 'expense' ? getTotalSpentByYear(db, year) : getTotalIncomeByYear(db, year);
+        dispatch(updateTotalsInYear(totalResultByYear));
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), t === 'expense' ? 'Spent' : 'Revenue');
+        dispatch(updateTransactionsGroupedByDate(transactions));
+    }
+
+    async function onYearChange(operation: 'add' | 'subtract') {
+        const newYear = operation === 'add' ? year + 1 : year - 1;
+        dispatch(updateYear(newYear));
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, newYear, limit);
+        const totalSpentByYear = getTotalSpentByYear(db, newYear);
+
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+        dispatch(updateTotalsInYear(totalSpentByYear));
+
+        const {start, end} = getCustomMonthAndYear(month.number, newYear);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
+        dispatch(updateTransactionsGroupedByDate(transactions));
+    }
 
     return (
         <Sheet
@@ -69,8 +116,10 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                 <YStack justifyContent="space-between" flex={1}>
                     <YStack gap={20}>
                         <XStack justifyContent="space-between" p={10}>
-                            <YStack>
-                                <Text color="$gray9Dark">Spent this year</Text>
+                            <YStack minHeight={88}>
+                                <Text color="$gray9Dark">
+                                    {new Date().getFullYear() === year ? t('SETTINGS.FILTERS.OPTIONS.SPENT_THIS_YEAR'): t('SETTINGS.FILTERS.OPTIONS.SPENT_IN') + ' ' + year}
+                                </Text>
                                 {
                                     totalInYear && totalInYear.length > 0 &&
                                     <Text fontSize={40}>{totalInYear[0].symbol} {formatByThousands(String(totalInYear[0].amount))}</Text>
@@ -82,12 +131,12 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                 {/*<Text fontSize={18}>S/ 90,928.12 - Bs.S 450,120.23</Text>*/}
                             </YStack>
 
-                            <Button borderRadius={100} height={40} width={60} onPress={() => setOpen(false)}>
-                                <AntDesign name="close" size={20} color={scheme === 'light' ? 'black' : 'white'}/>
-                            </Button>
+                                <Button borderRadius={100} height={40} width={60} onPress={() => setOpen(false)}>
+                                    <AntDesign name="close" size={20} color={scheme === 'light' ? 'black' : 'white'}/>
+                                </Button>
                         </XStack>
                         <XStack position="relative" height={200} justifyContent="space-between" gap={5} alignItems="flex-end" px={5}>
-                            <Text position="absolute" top={-20} right={10}>1k</Text>
+                            <Text position="absolute" fontSize={20} top={-25} right={10}>{convertNumberToK(limit)}</Text>
                             <View height={1} position="absolute" borderWidth={1} borderColor={theme.color12?.val} width="100%" top={0} borderStyle="dashed" />
                             {
                                 totalByMonth.map(item => (
@@ -126,17 +175,17 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                 <ListItem
                                     title="Year"
                                     iconAfter={
-                                        <XStack gap={5} alignItems="center" gap={10}>
-                                            <TouchableOpacity disabled style={{
-                                                backgroundColor: theme.color3?.val,
+                                        <XStack alignItems="center" gap={10}>
+                                            <TouchableOpacity onPress={() => onYearChange("subtract")} disabled={year <= new Date().getFullYear() - 1} style={{
+                                                backgroundColor: year <= new Date().getFullYear() - 1 ? theme?.color3?.val : theme.color5?.val,
                                                 padding: 3,
                                                 borderRadius: 100
                                             }}>
                                                 <Entypo name="chevron-left" size={18} color={scheme === 'light' ? 'black' : 'white'} />
                                             </TouchableOpacity>
                                             <Text>{year}</Text>
-                                            <TouchableOpacity disabled style={{
-                                                backgroundColor: theme.color3?.val,
+                                            <TouchableOpacity onPress={() => onYearChange('add')} disabled={year === new Date().getFullYear()} style={{
+                                                backgroundColor: year === new Date().getFullYear() ? theme.color3?.val : theme.color5?.val,
                                                 padding: 3,
                                                 borderRadius: 100
                                             }}>
@@ -151,7 +200,7 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                     hoverTheme
                                     pressTheme
                                     title="Type"
-                                    onPress={() => dispatch(updateFilterType(type === 'income' ? 'expense' : 'income'))}
+                                    onPress={() => onTypeChange(type === 'income' ? 'expense' : 'income')}
                                     iconAfter={
                                         <XStack gap={5}>
                                             <Text>{type === 'income' ? t('COMMON.INCOME') : t('COMMON.EXPENSE')}</Text>

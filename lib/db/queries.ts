@@ -1100,10 +1100,16 @@ export function getAmountOfTransactionsByCategoryTitle(db: SQLiteDatabase, categ
 
 export function getTotalSpentByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
     const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
-    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? GROUP BY symbol', [start.toISOString(), end.toISOString()]);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'expense']);
 }
 
-export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number): { month: string, percentage: number, monthNumber: number }[] {
+
+export function getTotalIncomeByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
+    const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'income']);
+}
+
+export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, limit: number): { month: string, percentage: number, monthNumber: number }[] {
     const janDateFilter = getCustomMonthRangeWithYear(1, 1, year);
     const febDateFilter = getCustomMonthRangeWithYear(2, 2, year);
     const marDateFilter = getCustomMonthRangeWithYear(3, 3, year);
@@ -1168,18 +1174,18 @@ export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number): {
     `, [decDateFilter.start.toISOString(), decDateFilter.end.toISOString()]);
 
     return [
-            { month: 'JAN', percentage: calculatePercentageOfTotal(jan[0]?.total, 1000), monthNumber: 1 },
-            { month: 'FEB', percentage: calculatePercentageOfTotal(feb[0]?.total, 1000), monthNumber: 2 },
-            { month: 'MAR', percentage: calculatePercentageOfTotal(mar[0]?.total, 1000), monthNumber: 3 },
-            { month: 'APR', percentage: calculatePercentageOfTotal(apr[0]?.total, 1000), monthNumber: 4 },
-            { month: 'MAY', percentage: calculatePercentageOfTotal(may[0]?.total, 1000), monthNumber: 5 },
-            { month: 'JUN', percentage: calculatePercentageOfTotal(jun[0]?.total, 1000), monthNumber: 6 },
-            { month: 'JUL', percentage: calculatePercentageOfTotal(jul[0]?.total, 1000), monthNumber: 7 },
-            { month: 'AUG', percentage: calculatePercentageOfTotal(aug[0]?.total, 1000), monthNumber: 8 },
-            { month: 'SEP', percentage: calculatePercentageOfTotal(sep[0]?.total, 1000), monthNumber: 9 },
-            { month: 'OCT', percentage: calculatePercentageOfTotal(oct[0]?.total, 1000), monthNumber: 10 },
-            { month: 'NOV', percentage: calculatePercentageOfTotal(nov[0]?.total, 1000), monthNumber: 11 },
-            { month: 'DIC', percentage: calculatePercentageOfTotal(dec[0]?.total, 1000), monthNumber: 12 },
+            { month: 'JAN', percentage: calculatePercentageOfTotal(jan[0]?.total, limit), monthNumber: 1 },
+            { month: 'FEB', percentage: calculatePercentageOfTotal(feb[0]?.total, limit), monthNumber: 2 },
+            { month: 'MAR', percentage: calculatePercentageOfTotal(mar[0]?.total, limit), monthNumber: 3 },
+            { month: 'APR', percentage: calculatePercentageOfTotal(apr[0]?.total, limit), monthNumber: 4 },
+            { month: 'MAY', percentage: calculatePercentageOfTotal(may[0]?.total, limit), monthNumber: 5 },
+            { month: 'JUN', percentage: calculatePercentageOfTotal(jun[0]?.total, limit), monthNumber: 6 },
+            { month: 'JUL', percentage: calculatePercentageOfTotal(jul[0]?.total, limit), monthNumber: 7 },
+            { month: 'AUG', percentage: calculatePercentageOfTotal(aug[0]?.total, limit), monthNumber: 8 },
+            { month: 'SEP', percentage: calculatePercentageOfTotal(sep[0]?.total, limit), monthNumber: 9 },
+            { month: 'OCT', percentage: calculatePercentageOfTotal(oct[0]?.total, limit), monthNumber: 10 },
+            { month: 'NOV', percentage: calculatePercentageOfTotal(nov[0]?.total, limit), monthNumber: 11 },
+            { month: 'DIC', percentage: calculatePercentageOfTotal(dec[0]?.total, limit), monthNumber: 12 },
     ];
 }
 

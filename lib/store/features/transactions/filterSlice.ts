@@ -7,6 +7,7 @@ interface FilterState {
     type: 'expense' | 'income';
     totalInYear: { symbol: string, amount: number }[];
     totalByMonth: { month: string, percentage: number, monthNumber: number }[];
+    limit: number;
 }
 
 const initialState: FilterState = {
@@ -27,7 +28,8 @@ const initialState: FilterState = {
         {month: 'OCT', percentage: 0, monthNumber: 10},
         {month: 'NOV', percentage: 0, monthNumber: 11},
         {month: 'DEC', percentage: 0, monthNumber: 12}
-    ]
+    ],
+    limit: 2500
 }
 
 const filterSlice = createSlice({
@@ -48,6 +50,9 @@ const filterSlice = createSlice({
         },
         updateTotalByMonth(state, action: PayloadAction<{ month: string, percentage: number, monthNumber: number }[]>) {
             state.totalByMonth = action.payload;
+        },
+        updateLimit(state, action: PayloadAction<number>) {
+            state.limit = action.payload
         }
     }
 })
@@ -57,13 +62,15 @@ export const {
     updateFilterType,
     updateYear,
     updateMonth,
-    updateTotalByMonth
+    updateTotalByMonth,
+    updateLimit
 } = filterSlice.actions;
 
 export const selectTotalsInYear = (state: RootState) => state.filter.totalInYear;
 export const selectMonth = (state: RootState) => state.filter.month;
 export const selectYear = (state: RootState) => state.filter.year;
 export const selectType = (state: RootState) => state.filter.type;
+export const selectLimit = (state: RootState) => state.filter.limit;
 export const selectTotalByMonth = (state: RootState) => state.filter.totalByMonth;
 
 export default filterSlice.reducer;

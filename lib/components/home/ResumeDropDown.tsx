@@ -14,63 +14,31 @@ import {calculateTotal, formatByThousands, formatTitleOption, formatWithDecimals
 import {selectAccounts, selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
+import {selectMonth, selectType, selectYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function ResumeDropDown({fn}: { fn: () => void }) {
-    const db = useSQLiteContext();
     const theme = useTheme();
-    const dispatch = useAppDispatch();
-    const accounts = useAppSelector(selectAccounts);
     const {hidden_feature_flag} = useAppSelector(selectSettings);
-    const filterType = useAppSelector(selectHomeViewTypeFilter)
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal)
     const transactionsInView = useAppSelector(selectTransactionsGroupedByDate);
     const currentBalance = useAppSelector(selectCurrentBalance);
     const {t} = useTranslation();
-    const isIos = Platform.OS === 'ios';
-
-    async function handleSelectOption(type: 'Spent' | 'Revenue', date: 'month' | 'none') {
-        dispatch(updateHomeViewTypeFilter({type, date}))
-            const {start, end} = getCurrentMonth();
-            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type);
-            dispatch(updateTransactionsGroupedByDate(transactions));
-
-        // if (type !== 'Balance') {
-        //     const {start, end} = date === 'week' ? getCurrentWeek() : getCurrentMonth();
-        //     const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type, selectedAccount.id);
-        //     dispatch(updateTransactionsGroupedByDate(transactions));
-        // } else {
-        //     const currentBalance = await getCurrentBalance(db);
-        //     dispatch(updateCurrentBalance(currentBalance));
-        // }
-    }
+    const type = useAppSelector(selectType);
+    const month = useAppSelector(selectMonth);
+    const year = useAppSelector(selectYear);
 
     return (
         <View style={styles.container}>
             <View style={{alignItems: 'center'}}>
-                <Text
-                    fontSize="$6">{
-                    // filterType.type === 'Balance'
-                    //     ? t('HOME_RESUME_DROPDOWN.BALANCE')
-                    //     :
-                    //     filterType.type === 'Spent' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_WEEK')
-                    //         :
-                    filterType.type === 'Spent' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.SPENT_THIS_MONTH')
-                        // : filterType.type === 'Revenue' && filterType.date === 'week' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_WEEK')
-                        : filterType.type === 'Revenue' && filterType.date === 'month' ? t('HOME_RESUME_DROPDOWN.REVENUE_THIS_MONTH')
-                            : ''
-                }
+
+                <Text fontSize="$6">
+                    {`${type === 'expense' ? t('COMMON.SPENT_IN') : t('COMMON.INCOME_IN')}`} {month.text} {year !== new Date().getFullYear() && year}
                 </Text>
-                {/*{*/}
-                {/*    filterType.type === 'Balance' &&*/}
-                {/*    <XStack mb={4}>*/}
-                {/*        <Text fontSize="$9">{selectedAccount.currency_symbol}</Text>*/}
-                {/*        <Text mt={-12}*/}
-                {/*              fontSize="$12">{formatByThousands(formatWithDecimals(currentBalance).amount)}</Text>*/}
-                {/*    </XStack>*/}
+                {/*<Text*/}
+                {/*    fontSize="$6">{*/}
+                {/*    type === 'expense' ? t('COMMON.SPENT_IN') + ' ' + month.text : t('COMMON.INCOME_IN') + ' ' + month.text*/}
                 {/*}*/}
-                {/*{*/}
-                {/*    filterType.type !== 'Balance' &&*/}
-                {/*    <>*/}
+                {/*</Text>*/}
                 {
                     transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                         <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>
@@ -93,8 +61,6 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                         <Text fontSize="$9">.{formatWithDecimals(currentBalance).decimals}</Text>
                     </XStack>
                 }
-                {/*    </>*/}
-                {/*}*/}
             </View>
         </View>
 

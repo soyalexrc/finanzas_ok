@@ -2,6 +2,8 @@
   "translation": {
     "COMMON": {
       "CURRENCY": "通貨",
+      "SPENT_IN": "で支払われた",
+      "INCOME_IN": "で収入",
       "CANCEL": "キャンセル",
       "NEXT": "次",
       "BACK": "戻る",
@@ -116,6 +118,18 @@
       }
     },
     "SETTINGS": {
+      "FILTERS": {
+        "TITLE": "フィルター",
+        "OPTIONS": {
+          "YEAR": "年",
+          "TYPE": "タイプ",
+          "SPENT_THIS_YEAR": "今年使った",
+          "SPENT_IN": "使った"
+        },
+        "LABELS": {
+          "LIMIT": "フィルターセクションの表示制限"
+        }
+      },
       "COLORS": {
         "CHANGE_COLOR_MESSAGE": "変更を適用するためにアプリを再起動します",
         "GREEN": "緑",

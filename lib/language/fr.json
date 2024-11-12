@@ -4,6 +4,8 @@
       "CURRENCY": "Devise",
       "CANCEL": "Annuler",
       "BACK": "Retour",
+      "SPENT_IN": "Dépensé en",
+      "INCOME_IN": "Revenu en",
       "WELCOME": "Bienvenue",
       "NEXT": "Suivant",
       "ACTIVATE": "Activer",
@@ -116,6 +118,18 @@
       }
     },
     "SETTINGS": {
+      "FILTERS": {
+        "TITLE": "Filtres",
+        "OPTIONS": {
+          "YEAR": "Année",
+          "TYPE": "Type",
+          "SPENT_THIS_YEAR": "Dépensé cette année",
+          "SPENT_IN": "Dépensé en"
+        },
+        "LABELS": {
+          "LIMIT": "Limite visible dans la section des filtres"
+        }
+      },
       "COLORS": {
         "CHANGE_COLOR_MESSAGE": "L'application redémarrera pour appliquer les modifications",
         "GREEN": "Vert",
