@@ -3,7 +3,7 @@
     "name": "Finanzas Ok",
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
@@ -131,7 +131,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/f3f3f3a8-d2ec-4088-ae83-cc81c8c47638",
-      "checkAutomatically": "ON_ERROR_RECOVERY"
+      "fallbackToCacheTimeout": 1
     }
   }
 }

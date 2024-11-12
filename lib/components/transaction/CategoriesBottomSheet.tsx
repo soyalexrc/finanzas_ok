@@ -19,6 +19,7 @@ import {useTranslation} from "react-i18next";
 import {useRouter} from "expo-router";
 import * as Haptics from "expo-haptics";
 import Entypo from '@expo/vector-icons/Entypo';
+import {AntDesign} from "@expo/vector-icons";
 
 type Props = {
     open: boolean
@@ -67,22 +68,33 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={[90]}
+            snapPoints={[80]}
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
-            animation="quick"
         >
             <Sheet.Overlay
-                animation="quick"
                 enterStyle={{opacity: 0}}
                 exitStyle={{opacity: 0}}
             />
 
-            <Sheet.Handle/>
 
-            <Sheet.Frame  backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
+            <Sheet.ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]}
+                              backgroundColor="$background" borderTopLeftRadius={12} borderTopRightRadius={12}>
                 <View backgroundColor="$color1">
+                    <XStack justifyContent="flex-end" gap={5} px={10} pt={10}>
+                        <TouchableOpacity style={{
+                            backgroundColor: scheme === 'light' ? '#ffe5e5' : '#9f0101',
+                            padding: 10,
+                            borderRadius: 100,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 5,
+                        }} onPress={() => setOpen(false)}>
+                            <AntDesign name="close" size={20} color={scheme === 'light' ? 'black' : 'white'}/>
+                            <Text>{t('COMMON.CANCEL')}</Text>
+                        </TouchableOpacity>
+                    </XStack>
                     <ToggleGroup
                         margin={10}
                         value={categoryType}
@@ -92,28 +104,46 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                         type="single"
                     >
                         <ToggleGroup.Item flex={1} value="expense" aria-label="expese categories tab filter">
-                            <Text>{t('COMMON.EXPENSE')}</Text>
+                            <Text fontSize={16}>{t('COMMON.EXPENSE')}</Text>
                         </ToggleGroup.Item>
                         <ToggleGroup.Item flex={1} value="income" aria-label="income categories tab filter">
-                            <Text>{t('COMMON.INCOME')}</Text>
+                            <Text fontSize={16}>{t('COMMON.INCOME')}</Text>
                         </ToggleGroup.Item>
                     </ToggleGroup>
                 </View>
-                <FlatList
-                    data={categories.filter(c => c.type === categoryType)}
-                    numColumns={4}
-                    showsVerticalScrollIndicator={false}
-                    columnWrapperStyle={{
-                        justifyContent: 'space-between'
-                    }}
-                    renderItem={({item}) => (
-                        <TouchableOpacity onPress={() => handlePressCategory(item)}
-                                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>
+                {
+                    categories.filter(c => c.type === categoryType).map(item => (
+                        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}
+                                          style={[{
+                                              flexDirection: 'row',
+                                              alignItems: 'center',
+                                              gap: 10,
+                                              paddingHorizontal: 10,
+                                              marginVertical: 2,
+                                              marginHorizontal: 10,
+                                              borderRadius: 10,
+                                          }, selectedCategory.id === item.id && {backgroundColor: theme.color5?.val}]}>
                             <Text style={{fontSize: 40}}>{item.icon}</Text>
-                            <Text>{textShortener(item.title)}</Text>
+                            <Text fontSize={18}>{item.title}</Text>
                         </TouchableOpacity>
-                    )}
-                />
+                    ))
+                }
+
+                {/*<FlatList*/}
+                {/*    data={categories.filter(c => c.type === categoryType)}*/}
+                {/*    numColumns={4}*/}
+                {/*    showsVerticalScrollIndicator={false}*/}
+                {/*    columnWrapperStyle={{*/}
+                {/*        justifyContent: 'space-between'*/}
+                {/*    }}*/}
+                {/*    renderItem={({item}) => (*/}
+                {/*        <TouchableOpacity onPress={() => handlePressCategory(item)}*/}
+                {/*                          style={[localStyles.item, selectedCategory.id === item.id && localStyles.selectedItem]}>*/}
+                {/*            <Text style={{fontSize: 40}}>{item.icon}</Text>*/}
+                {/*            <Text>{textShortener(item.title)}</Text>*/}
+                {/*        </TouchableOpacity>*/}
+                {/*    )}*/}
+                {/*/>*/}
                 {/*<View flexDirection="row" flexWrap="wrap" rowGap={20} columnGap={10}>*/}
                 {/*    {categories.filter(c => c.type === categoryType)?.map(item => (*/}
                 {/*        <TouchableOpacity onPress={() => handlePressCategory(item)} key={item.id}*/}
@@ -135,11 +165,11 @@ export default function CategoriesBottomSheet({open, setOpen}: Props) {
                     gap: 5,
                     borderRadius: 10,
                 }}>
-                    <Entypo name="plus" size={24} color={ scheme === 'light' ? 'black' : 'white'} />
+                    <Entypo name="plus" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                     <Text>{t('SETTINGS.CATEGORIES.PLACE_HOLDER')}</Text>
                 </TouchableOpacity>
                 {isIos && <View style={{height: 10}}/>}
-            </Sheet.Frame>
+            </Sheet.ScrollView>
         </Sheet>
     )
 

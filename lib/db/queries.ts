@@ -13,6 +13,8 @@ import {
     TransactionsGroupedByDate
 } from "@/lib/types/Transaction";
 import {migrateDbIfNeeded} from "@/lib/db/migrations";
+import {getCustomMonthRangeWithYear} from "@/lib/helpers/date";
+import {calculatePercentageOfTotal} from "@/lib/helpers/operations";
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
@@ -1094,6 +1096,147 @@ export function getAmountOfTransactionsByCategoryTitle(db: SQLiteDatabase, categ
         count: number
     } | null = db.getFirstSync('SELECT COUNT(*) AS count FROM transactions WHERE category = ?', [categoryTitle]);
     return result?.count ?? 0;
+}
+
+export function getTotalSpentByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
+    const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'expense']);
+}
+
+
+export function getTotalIncomeByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
+    const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'income']);
+}
+
+export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, limit: number): { month: string, percentage: number, monthNumber: number }[] {
+    const janDateFilter = getCustomMonthRangeWithYear(1, 1, year);
+    const febDateFilter = getCustomMonthRangeWithYear(2, 2, year);
+    const marDateFilter = getCustomMonthRangeWithYear(3, 3, year);
+    const aprDateFilter = getCustomMonthRangeWithYear(4, 4, year);
+    const mayDateFilter = getCustomMonthRangeWithYear(5, 5, year);
+    const junDateFilter = getCustomMonthRangeWithYear(6, 6, year);
+    const julDateFilter = getCustomMonthRangeWithYear(7, 7, year);
+    const augDateFilter = getCustomMonthRangeWithYear(8, 8, year);
+    const sepDateFilter = getCustomMonthRangeWithYear(9, 9, year);
+    const octDateFilter = getCustomMonthRangeWithYear(10, 10, year);
+    const novDateFilter = getCustomMonthRangeWithYear(11, 11, year);
+    const decDateFilter = getCustomMonthRangeWithYear(12, 12, year);
+
+    const jan: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t  AS currency FROM transactions WHERE date BETWEEN ? AND ?
+    `, [janDateFilter.start.toISOString(), janDateFilter.end.toISOString()]);
+
+    // Do the same for feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec
+
+    const feb: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [febDateFilter.start.toISOString(), febDateFilter.end.toISOString()]);
+
+    const mar: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [marDateFilter.start.toISOString(), marDateFilter.end.toISOString()]);
+
+    const apr: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [aprDateFilter.start.toISOString(), aprDateFilter.end.toISOString()]);
+
+    const may: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [mayDateFilter.start.toISOString(), mayDateFilter.end.toISOString()]);
+
+    const jun: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [junDateFilter.start.toISOString(), junDateFilter.end.toISOString()]);
+
+    const jul: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [julDateFilter.start.toISOString(), julDateFilter.end.toISOString()]);
+
+    const aug: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [augDateFilter.start.toISOString(), augDateFilter.end.toISOString()]);
+
+    const sep: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [sepDateFilter.start.toISOString(), sepDateFilter.end.toISOString()]);
+
+    const oct: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [octDateFilter.start.toISOString(), octDateFilter.end.toISOString()]);
+
+    const nov: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [novDateFilter.start.toISOString(), novDateFilter.end.toISOString()]);
+
+    const dec: any = db.getAllSync(`
+        SELECT ROUND(SUM(amount), 2) AS total FROM transactions WHERE date BETWEEN ? AND ?
+    `, [decDateFilter.start.toISOString(), decDateFilter.end.toISOString()]);
+
+    return [
+            { month: 'JAN', percentage: calculatePercentageOfTotal(jan[0]?.total, limit), monthNumber: 1 },
+            { month: 'FEB', percentage: calculatePercentageOfTotal(feb[0]?.total, limit), monthNumber: 2 },
+            { month: 'MAR', percentage: calculatePercentageOfTotal(mar[0]?.total, limit), monthNumber: 3 },
+            { month: 'APR', percentage: calculatePercentageOfTotal(apr[0]?.total, limit), monthNumber: 4 },
+            { month: 'MAY', percentage: calculatePercentageOfTotal(may[0]?.total, limit), monthNumber: 5 },
+            { month: 'JUN', percentage: calculatePercentageOfTotal(jun[0]?.total, limit), monthNumber: 6 },
+            { month: 'JUL', percentage: calculatePercentageOfTotal(jul[0]?.total, limit), monthNumber: 7 },
+            { month: 'AUG', percentage: calculatePercentageOfTotal(aug[0]?.total, limit), monthNumber: 8 },
+            { month: 'SEP', percentage: calculatePercentageOfTotal(sep[0]?.total, limit), monthNumber: 9 },
+            { month: 'OCT', percentage: calculatePercentageOfTotal(oct[0]?.total, limit), monthNumber: 10 },
+            { month: 'NOV', percentage: calculatePercentageOfTotal(nov[0]?.total, limit), monthNumber: 11 },
+            { month: 'DIC', percentage: calculatePercentageOfTotal(dec[0]?.total, limit), monthNumber: 12 },
+    ];
+}
+
+export function searchTransactions(db: SQLiteDatabase, query: string, type: 'all' | 'expense' | 'income'): Transaction[] {
+    let transactions: Transaction[] = [];
+
+    if (query === '') {
+        return [];
+    }
+
+    if (type === 'all') {
+        transactions= db.getAllSync(`
+        SELECT id,
+               amount,
+               recurrentDate,
+               strftime('%Y-%m-%d', date) AS date,
+               category,
+               category_icon,
+               category_type,
+               account,
+               notes,
+                currency_code_t,
+                currency_symbol_t,
+                hidden_amount
+        FROM transactions 
+        WHERE notes LIKE ? OR category LIKE ?
+    `, [`%${query}%`, `%${query}%`]);
+    }
+
+    if (type !== 'all') {
+        transactions = db.getAllSync(`
+        SELECT id,
+               amount,
+               recurrentDate,
+               strftime('%Y-%m-%d', date) AS date,
+               category,
+               category_icon,
+               category_type,
+               account,
+               notes,
+                currency_code_t,
+                currency_symbol_t,
+                hidden_amount
+        FROM transactions
+        WHERE (notes LIKE ? OR category LIKE ?) AND category_type = ?
+        `, [`%${query}%`, `%${query}%`, type]);
+    }
+
+
+
+    return transactions;
 }
 
 export async function deleteAccount(db: SQLiteDatabase, accountId: number) {

@@ -1,8 +1,11 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "Alle",
       "CURRENCY": "Währung",
       "CANCEL": "Abbrechen",
+      "SPENT_IN": "Ausgegeben in",
+      "INCOME_IN": "Einkommen in",
       "BACK": "Zurück",
       "NEXT": "Nächste",
       "WELCOME": "Willkommen",
@@ -116,6 +119,18 @@
       }
     },
     "SETTINGS": {
+      "FILTERS": {
+        "TITLE": "Filter",
+        "OPTIONS": {
+          "YEAR": "Jahr",
+          "TYPE": "Typ",
+          "SPENT_THIS_YEAR": "Dieses Jahr ausgegeben",
+          "SPENT_IN": "Ausgegeben in"
+        },
+        "LABELS": {
+          "LIMIT": "Sichtbare Grenze im Filterbereich"
+        }
+      },
       "COLORS": {
         "CHANGE_COLOR_MESSAGE": "Die App wird neu gestartet, um die Änderungen anzuwenden",
         "GREEN": "Grün",

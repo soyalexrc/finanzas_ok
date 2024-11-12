@@ -21,9 +21,9 @@ export default [
     { code: "ECU", symbol: "$" }, // Ecuador
     { code: "GYD", symbol: "$" }, // Guyana
     { code: "PYG", symbol: "₲" }, // Paraguay
-    { code: "PEN", symbol: "S/." }, // Peru
+    { code: "PEN", symbol: "S/" }, // Peru
     { code: "SUR", symbol: "SRD" }, // Suriname
     { code: "UYU", symbol: "$U" }, // Uruguay
-    { code: "VES", symbol: "Bs.S." }, // Venezuela
+    { code: "VES", symbol: "Bs.S" }, // Venezuela
 
 ];
