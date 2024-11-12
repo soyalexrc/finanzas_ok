@@ -29,18 +29,21 @@ import {useSQLiteContext} from "expo-sqlite";
 import {getLocales} from "expo-localization";
 import {
     getAllAccounts,
-    getAllCategories,
-    getSettings,
+    getAllCategories, getSettingByKey,
+    getSettings, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2, updateSettingByKey
 } from "@/lib/db";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import '@/lib/language';
 import i18next from "i18next";
 import {changeCurrentTheme, CustomTheme} from "@/lib/store/features/ui/uiSlice";
 import * as net from "node:net";
 import {useTranslation} from "react-i18next";
+import {updateMonth, updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
+import {format} from "date-fns";
+import {enUS, es} from "date-fns/locale";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -61,7 +64,13 @@ const InitialLayout = () => {
             await validateSettingsFromStorage();
             const accounts = getAllAccounts(db);
             const categories = getAllCategories(db);
+            const settingLanguage = getSettingByKey(db, 'selected_language')
             const {start, end} = getCurrentMonth();
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear());
+            const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+            const currentMonthNumber = new Date().getMonth() + 1;
+            console.log(currentMonthNumber)
+
             // const {
             //     amountsGroupedByDate,
             //     transactionsGroupedByCategory
@@ -70,7 +79,10 @@ const InitialLayout = () => {
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
             dispatch(updateCurrency({symbol: currencySymbol ?? '$', code: currencyCode ?? 'USD'}));
-
+            dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+            dispatch(updateTotalsInYear(totalSpentByYear));
+            dispatch(updateMonth({ number: currentMonthNumber, text: format(formatDate(new Date().toISOString()), 'MMMM', { locale: settingLanguage?.value && settingLanguage.value === 'es' ? es : enUS }) }))
+            // {format(formatDate(new Date().toISOString()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
             // dispatch(selectCategory(categories[0]));
             dispatch(updateTransactionsGroupedByDate(transactions));
             // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
@@ -167,16 +179,15 @@ const InitialLayout = () => {
                 <Stack.Screen name="emojiSelection"
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
                 <Stack.Screen name="search"
-
                               options={{
                                   animation: "slide_from_right",
-                                  title: 'Search',
+                                  title: '',
                                   headerBlurEffect: 'prominent',
                                   headerBackTitle: t('COMMON.BACK'),
                                   headerTransparent: isIos,
-                                  headerTintColor: theme.color12.val,
+                                  headerTintColor: theme.color12?.val,
                                   headerStyle: {
-                                      backgroundColor: theme.color1.val,
+                                      backgroundColor: theme.color1?.val,
                                   },
                               }}/>
                 <Stack.Screen name="auth" options={{

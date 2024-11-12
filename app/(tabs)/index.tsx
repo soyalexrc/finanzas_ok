@@ -24,6 +24,7 @@ import {format} from "date-fns";
 import {enUS, es} from "date-fns/locale";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import HomeFiltersSheet from "@/lib/components/home/HomeFiltersSheet";
+import {selectMonth} from "@/lib/store/features/transactions/filterSlice";
 
 
 export default function HomeScreen() {
@@ -40,6 +41,7 @@ export default function HomeScreen() {
     const { selectedLanguage } = useAppSelector(selectSettings);
     const theme = useTheme();
     const scheme = useColorScheme();
+    const selectedMonth = useAppSelector(selectMonth)
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -102,7 +104,7 @@ export default function HomeScreen() {
                           }}>
                         <Text
                             fontSize={16}>
-                            {format(formatDate(new Date().toISOString()), 'MMMM', {locale: selectedLanguage === 'es' ? es : enUS})}
+                            {selectedMonth.text}
                         </Text>
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
@@ -112,7 +114,7 @@ export default function HomeScreen() {
                             flexDirection: 'row', alignItems: 'center', gap: 5,
                             backgroundColor: theme.color2?.val,
                             padding: 10,
-                            borderRadius: 100
+                            borderRadius: 10
                         }}>
                         <Feather name="search" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
