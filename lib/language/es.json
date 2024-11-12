@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "Todos",
       "CURRENCY": "Moneda",
       "NEXT": "Siguiente",
       "SPENT_IN": "Gastado en",

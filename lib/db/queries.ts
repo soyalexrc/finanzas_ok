@@ -1189,6 +1189,56 @@ export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, li
     ];
 }
 
+export function searchTransactions(db: SQLiteDatabase, query: string, type: 'all' | 'expense' | 'income'): Transaction[] {
+    let transactions: Transaction[] = [];
+
+    if (query === '') {
+        return [];
+    }
+
+    if (type === 'all') {
+        transactions= db.getAllSync(`
+        SELECT id,
+               amount,
+               recurrentDate,
+               strftime('%Y-%m-%d', date) AS date,
+               category,
+               category_icon,
+               category_type,
+               account,
+               notes,
+                currency_code_t,
+                currency_symbol_t,
+                hidden_amount
+        FROM transactions 
+        WHERE notes LIKE ? OR category LIKE ?
+    `, [`%${query}%`, `%${query}%`]);
+    }
+
+    if (type !== 'all') {
+        transactions = db.getAllSync(`
+        SELECT id,
+               amount,
+               recurrentDate,
+               strftime('%Y-%m-%d', date) AS date,
+               category,
+               category_icon,
+               category_type,
+               account,
+               notes,
+                currency_code_t,
+                currency_symbol_t,
+                hidden_amount
+        FROM transactions
+        WHERE (notes LIKE ? OR category LIKE ?) AND category_type = ?
+        `, [`%${query}%`, `%${query}%`, type]);
+    }
+
+
+
+    return transactions;
+}
+
 export async function deleteAccount(db: SQLiteDatabase, accountId: number) {
     await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
     await db.runAsync('DELETE FROM accounts WHERE id = ?', [accountId]);

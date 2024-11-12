@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "すべて",
       "CURRENCY": "通貨",
       "SPENT_IN": "で支払われた",
       "INCOME_IN": "で収入",

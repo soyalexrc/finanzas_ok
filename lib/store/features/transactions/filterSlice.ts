@@ -53,6 +53,9 @@ const filterSlice = createSlice({
         },
         updateLimit(state, action: PayloadAction<number>) {
             state.limit = action.payload
+        },
+        updateSearch(state, action: PayloadAction<{ type: 'expense' | 'income' | 'all', date: string, query: string }>) {
+            state.search = action.payload;
         }
     }
 })
@@ -63,7 +66,7 @@ export const {
     updateYear,
     updateMonth,
     updateTotalByMonth,
-    updateLimit
+    updateLimit,
 } = filterSlice.actions;
 
 export const selectTotalsInYear = (state: RootState) => state.filter.totalInYear;

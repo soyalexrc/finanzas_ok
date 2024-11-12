@@ -54,7 +54,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     async function handlePress(t: FullTransaction) {
         await Haptics.selectionAsync();
         dispatch(updateCurrentTransaction({
-            dateTime: new Date().toISOString(),
+            dateTime: t.date,
             category_icon: t.category.icon,
             date: t.date,
             category: t.category.title,

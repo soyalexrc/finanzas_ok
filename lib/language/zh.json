@@ -1,6 +1,7 @@
 {
   "translation": {
     "COMMON": {
+      "ALL": "所有",
       "CURRENCY": "货币",
       "CANCEL": "取消",
       "SPENT_IN": "花费在",
