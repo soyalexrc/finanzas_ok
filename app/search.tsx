@@ -83,25 +83,25 @@ export default function Screen() {
                         <Entypo name="select-arrows" size={18}
                                 color={schemeColor === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{
-                        flexDirection: 'row',
-                        gap: 5,
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: theme.color2?.val,
-                        borderRadius: 100
-                    }}>
-                        <Text>Date</Text>
-                        <Entypo name="select-arrows" size={18}
-                                color={schemeColor === 'light' ? 'black' : 'white'}/>
-                    </TouchableOpacity>
+                    {/*<TouchableOpacity style={{*/}
+                    {/*    flexDirection: 'row',*/}
+                    {/*    gap: 5,*/}
+                    {/*    paddingVertical: 10,*/}
+                    {/*    paddingHorizontal: 20,*/}
+                    {/*    backgroundColor: theme.color2?.val,*/}
+                    {/*    borderRadius: 100*/}
+                    {/*}}>*/}
+                    {/*    <Text>Date</Text>*/}
+                    {/*    <Entypo name="select-arrows" size={18}*/}
+                    {/*            color={schemeColor === 'light' ? 'black' : 'white'}/>*/}
+                    {/*</TouchableOpacity>*/}
                 </XStack>
                <View position="relative">
                    <Feather style={{ position: 'absolute', top: '35%', left: 15, zIndex: 99 }} name="search" size={24} color={schemeColor === 'light' ? 'black' : 'white'}/>
                    <Input flex={1} onChangeText={handleInputChange} placeholder={`Search`} my={20} style={{ paddingLeft: 50 }} />
                </View>
             </YStack>
-            <YStack px={10} pt={20}>
+            <YStack px={10} pt={20} gap={10}>
                 {transactions.map((transaction, index) => (
                     <TouchableOpacity
                         onPress={() => handlePress(transaction)}
