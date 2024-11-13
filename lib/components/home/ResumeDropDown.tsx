@@ -16,7 +16,7 @@ import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {useTranslation} from "react-i18next";
 import {selectMonth, selectType, selectYear} from "@/lib/store/features/transactions/filterSlice";
 
-export default function ResumeDropDown({fn}: { fn: () => void }) {
+export default function ResumeDropDown() {
     const theme = useTheme();
     const {hidden_feature_flag} = useAppSelector(selectSettings);
     const selectedAccount = useAppSelector(selectSelectedAccountGlobal)
@@ -34,11 +34,6 @@ export default function ResumeDropDown({fn}: { fn: () => void }) {
                 <Text fontSize="$6">
                     {`${type === 'expense' ? t('COMMON.SPENT_IN') : t('COMMON.INCOME_IN')}`} {month.text} {year !== new Date().getFullYear() && year}
                 </Text>
-                {/*<Text*/}
-                {/*    fontSize="$6">{*/}
-                {/*    type === 'expense' ? t('COMMON.SPENT_IN') + ' ' + month.text : t('COMMON.INCOME_IN') + ' ' + month.text*/}
-                {/*}*/}
-                {/*</Text>*/}
                 {
                     transactionsInView.length > 0 && calculateTotal(transactionsInView, hidden_feature_flag).map((total, index) => (
                         <XStack key={total.amount + index} mb={4} mt={index === 0 ? 10 : 0}>

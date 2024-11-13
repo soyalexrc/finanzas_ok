@@ -126,6 +126,8 @@
           "YEAR": "Jahr",
           "TYPE": "Typ",
           "SPENT_THIS_YEAR": "Dieses Jahr ausgegeben",
+          "INCOME_THIS_YEAR": "Einkommen dieses Jahr",
+          "INCOME_IN": "Einkommen in",
           "SPENT_IN": "Ausgegeben in"
         },
         "LABELS": {

@@ -51,6 +51,7 @@ export default function Screen() {
     const {t} = useTranslation()
     const [selectedAccountId, setSelectAccountId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
+    const { month, type, limit, year } = useAppSelector(state => state.filter);
 
     async function onPressAccount(account: Account) {
         await Haptics.selectionAsync();
@@ -83,10 +84,10 @@ export default function Screen() {
                     }
                     if (globalAccount.id === accountId) {
                         dispatch(selectAccountGlobally(accounts[0]))
-                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     } else {
-                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                        transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                         dispatch(updateTransactionsGroupedByDate(transactions));
                     }
                     if (selectedAccountFilter.id === accountId) {

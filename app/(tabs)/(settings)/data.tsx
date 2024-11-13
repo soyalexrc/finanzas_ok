@@ -6,7 +6,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     getAllAccounts,
     getAllCategories,
-    getAllTransactions, getSettings, getSettingsRaw,
+    getAllTransactions, getSettings, getSettingsRaw, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, importSheetToDB,
     wipeData
 } from "@/lib/db";
@@ -34,7 +34,8 @@ import {
     selectSelectedAccountGlobal,
     updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek, getCustomMonthAndYear} from "@/lib/helpers/date";
+import {resetFilter, updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const db = useSQLiteContext()
@@ -42,7 +43,7 @@ export default function Screen() {
     const headerHeight = useHeaderHeight();
     const {t} = useTranslation();
     const dispatch = useAppDispatch();
-    const filterType = useAppSelector(selectHomeViewTypeFilter)
+    const {type, month, year, limit} = useAppSelector(state => state.filter);
 
     function handleWipeData() {
         Alert.alert(t('COMMON.WARNING'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.POPUP_MESSAGE'), [
@@ -56,6 +57,7 @@ export default function Screen() {
                     dispatch(resetTransactionsSlice());
                     dispatch(resetCategoriesSlice())
                     dispatch(resetAccountsSlice())
+                    dispatch(resetFilter())
                     Alert.alert(t('COMMON.DONE'), 'Se ha eliminado toda la información de la aplicación')
                 }
             }
@@ -91,18 +93,22 @@ export default function Screen() {
         dispatch(resetTransactionsSlice());
         dispatch(resetCategoriesSlice())
         dispatch(resetAccountsSlice())
+        dispatch(resetFilter())
 
         const accounts = getAllAccounts(db);
         const categories = getAllCategories(db);
-        const {start, end} = getCurrentMonth();
+        const {start, end} = getCustomMonthAndYear(month.number, year);
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
         // const {
         //     amountsGroupedByDate,
         //     transactionsGroupedByCategory
         // } = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, accounts[0]?.id, selectedCategoryFilter?.id);
-        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
         dispatch(updateAccountsList(accounts))
         dispatch(updateCategoriesList(categories));
-
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+        dispatch(updateTotalsInYear(totalSpentByYear));
         dispatch(selectCategory(categories[0]));
         dispatch(updateTransactionsGroupedByDate(transactions));
         // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
