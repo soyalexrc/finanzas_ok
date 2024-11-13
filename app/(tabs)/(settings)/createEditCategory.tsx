@@ -11,7 +11,7 @@ import {useEffect, useState} from "react";
 import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 import {
     createCategory,
-    getAllCategories,
+    getAllCategories, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2,
     updateCategory
 } from "@/lib/db";
@@ -30,10 +30,11 @@ import {
     selectHomeViewTypeFilter,
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek, getCustomMonthAndYear} from "@/lib/helpers/date";
 import {useTranslation} from "react-i18next";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
+import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -48,6 +49,7 @@ export default function Screen() {
     const {t} = useTranslation()
     const filterType = useAppSelector(selectHomeViewTypeFilter);
     const insets = useSafeAreaInsets();
+    const {type, month, year, limit} = useAppSelector(state => state.filter);
     // TODO add support for multi currency per account (for example, a savings account in USD, credit card in PEN) with name and icons (coins api), and manage exchange rates from api. Rememeber to make the exchange rate between the coin of the account and the coin of the transaction (this is the global currency selected)
 
     useEffect(() => {
@@ -55,8 +57,8 @@ export default function Screen() {
         setCategoryType(categoryCreateUpdate.type === 'expense' ? 'Expense' : 'Income');
     }, []);
 
-    async function manageCreateAccount() {
-        const {start, end} = getCurrentMonth()
+    async function manageCreateCategory() {
+        const {start, end} = getCustomMonthAndYear(month.number, year);
 
         if (!categoryTitle) return;
 
@@ -89,8 +91,12 @@ export default function Screen() {
                 handleGoBack()
             }
         }
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+        dispatch(updateTotalsInYear(totalSpentByYear));
 
-        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense'  ? 'Spent' : 'Revenue');
         dispatch(updateTransactionsGroupedByDate(transactions));
 
         // const {
@@ -119,7 +125,7 @@ export default function Screen() {
                         <Text>{t('COMMON.CANCEL')}</Text>
                     </TouchableOpacity>
                     <Text fontSize={20}>{t('COMMON.CATEGORY')}</Text>
-                    <Button onPress={manageCreateAccount}>{t('COMMON.DONE')}</Button>
+                    <Button onPress={manageCreateCategory}>{t('COMMON.DONE')}</Button>
                 </XStack>
 
                 <YStack mb={70}>

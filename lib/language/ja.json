@@ -2,6 +2,7 @@
   "translation": {
     "COMMON": {
       "ALL": "すべて",
+      "SEARCH": "検索",
       "CURRENCY": "通貨",
       "SPENT_IN": "で支払われた",
       "INCOME_IN": "で収入",
@@ -125,6 +126,8 @@
           "YEAR": "年",
           "TYPE": "タイプ",
           "SPENT_THIS_YEAR": "今年使った",
+          "INCOME_IN": "収入",
+          "INCOME_THIS_YEAR": "今年の収入",
           "SPENT_IN": "使った"
         },
         "LABELS": {

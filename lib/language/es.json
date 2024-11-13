@@ -2,6 +2,7 @@
   "translation": {
     "COMMON": {
       "ALL": "Todos",
+      "SEARCH": "Buscar",
       "CURRENCY": "Moneda",
       "NEXT": "Siguiente",
       "SPENT_IN": "Gastado en",
@@ -125,6 +126,8 @@
           "YEAR": "Año",
           "TYPE": "Tipo",
           "SPENT_THIS_YEAR": "Gastado este año",
+          "INCOME_THIS_YEAR": "Ingresado este año",
+          "INCOME_IN": "Ingresado en",
           "SPENT_IN": "Gastado en"
         },
         "LABELS": {

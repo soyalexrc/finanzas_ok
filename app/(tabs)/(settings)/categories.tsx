@@ -9,8 +9,12 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     deleteCategory,
     getAllCategories,
-    getAmountOfTransactionsByCategoryId, getAmountOfTransactionsByCategoryTitle, getTransactions,
-    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2
+    getAmountOfTransactionsByCategoryId,
+    getAmountOfTransactionsByCategoryTitle,
+    getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getTransactions,
+    getTransactionsGroupedAndFiltered,
+    getTransactionsGroupedAndFilteredV2
 } from "@/lib/db";
 import {Category, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {useRouter} from "expo-router";
@@ -25,7 +29,7 @@ import {
     updateChartPoints,
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek, getCustomMonthAndYear} from "@/lib/helpers/date";
 import {
     selectCategories, selectCategory, selectSelectedCategory,
     updateCategoriesList,
@@ -35,6 +39,7 @@ import * as Haptics from "expo-haptics";
 import React, {useState} from "react";
 import OnlyDeleteOptionSheet from "@/lib/components/ui/android-dropdowns-sheets/OnlyDeleteOptionSheet";
 import {useTranslation} from "react-i18next";
+import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const db = useSQLiteContext();
@@ -44,14 +49,13 @@ export default function Screen() {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const theme = useTheme();
-    const filterType = useAppSelector(selectHomeViewTypeFilter);
     const selectedCategoryForm = useAppSelector(selectSelectedCategory);
     const selectedCategoryFilter = useAppSelector(selectCategoryFilter);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
     const [open, setOpen] = useState<boolean>(false);
     const {t} = useTranslation();
     const [categoryType, setCategoryType] = useState<string>('expense')
-
+    const { limit, type, month, year } = useAppSelector(state => state.filter);
     async function onPressCategory(category: Category) {
         await Haptics.selectionAsync();
         dispatch(updateCategoryCreateUpdate(category));
@@ -60,7 +64,7 @@ export default function Screen() {
     }
 
     async function onPressDeleteCategory(categoryId: number) {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year);
         let transactions: TransactionsGroupedByDate[];
         Alert.alert(t('SETTINGS.CATEGORIES.DELETE.TITLE'), t('SETTINGS.CATEGORIES.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
@@ -77,8 +81,11 @@ export default function Screen() {
                     if (selectedCategoryForm.id === categoryId) {
                         dispatch(selectCategory(categories[0]))
                     }
-
-                    transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+                    dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+                    dispatch(updateTotalsInYear(totalSpentByYear));
+                    transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                     dispatch(updateTransactionsGroupedByDate(transactions));
                     if (selectedCategoryFilter.id === categoryId) {
                         dispatch(updateCategoryFilter({ id: 0, icon: '', type: '', title: '' }))

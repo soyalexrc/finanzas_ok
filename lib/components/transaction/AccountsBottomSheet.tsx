@@ -47,10 +47,8 @@ export default function AccountsBottomSheet({ open, setOpen }: Props) {
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
-            animation="quick"
         >
             <Sheet.Overlay
-                animation="quick"
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
             />

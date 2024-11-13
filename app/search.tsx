@@ -98,7 +98,7 @@ export default function Screen() {
                 </XStack>
                <View position="relative">
                    <Feather style={{ position: 'absolute', top: '35%', left: 15, zIndex: 99 }} name="search" size={24} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                   <Input flex={1} onChangeText={handleInputChange} placeholder={`Search`} my={20} style={{ paddingLeft: 50 }} />
+                   <Input flex={1} onChangeText={handleInputChange} placeholder={t('COMMON.SEARCH')} my={20} style={{ paddingLeft: 50 }} />
                </View>
             </YStack>
             <YStack px={10} pt={20} gap={10}>

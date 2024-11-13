@@ -1,7 +1,7 @@
 import {Button, ListItem, Separator, Sheet, Text, useTheme, View, XStack, YGroup, YStack} from "tamagui";
 import React, {useEffect, useState} from "react";
 import {AntDesign} from "@expo/vector-icons";
-import {TouchableOpacity, useColorScheme} from "react-native";
+import {Platform, TouchableOpacity, useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as Haptics from 'expo-haptics';
@@ -43,6 +43,7 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
     const scheme = useColorScheme()
     const { t } = useTranslation()
     const theme = useTheme();
+    const isIos = Platform.OS === 'ios';
     const {selectedLanguage} = useAppSelector(selectSettings);
     const {
         month,
@@ -72,6 +73,9 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
         dispatch(updateFilterType(t));
         const {start, end} = getCustomMonthAndYear(month.number, year);
         const totalResultByYear = t === 'expense' ? getTotalSpentByYear(db, year) : getTotalIncomeByYear(db, year);
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, year, t);
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+
         dispatch(updateTotalsInYear(totalResultByYear));
         const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), t === 'expense' ? 'Spent' : 'Revenue');
         dispatch(updateTransactionsGroupedByDate(transactions));
@@ -80,7 +84,7 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
     async function onYearChange(operation: 'add' | 'subtract') {
         const newYear = operation === 'add' ? year + 1 : year - 1;
         dispatch(updateYear(newYear));
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, newYear, limit);
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, newYear, type);
         const totalSpentByYear = getTotalSpentByYear(db, newYear);
 
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
@@ -112,17 +116,21 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
 
             <Sheet.Handle />
 
-            <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10} >
+            <Sheet.Frame borderTopLeftRadius={12} borderTopRightRadius={12} backgroundColor="$color1" px={10}>
                 <YStack justifyContent="space-between" flex={1}>
                     <YStack gap={20}>
                         <XStack justifyContent="space-between" p={10}>
                             <YStack minHeight={88}>
-                                <Text color="$gray9Dark">
-                                    {new Date().getFullYear() === year ? t('SETTINGS.FILTERS.OPTIONS.SPENT_THIS_YEAR'): t('SETTINGS.FILTERS.OPTIONS.SPENT_IN') + ' ' + year}
+                                <Text fontSize={16} color="$gray9Dark">
+                                    {
+                                        type === 'expense'
+                                            ? new Date().getFullYear() === year ? t('SETTINGS.FILTERS.OPTIONS.SPENT_THIS_YEAR'): t('SETTINGS.FILTERS.OPTIONS.SPENT_IN') + ' ' + year
+                                            : new Date().getFullYear() === year ? t('SETTINGS.FILTERS.OPTIONS.INCOME_THIS_YEAR'): t('SETTINGS.FILTERS.OPTIONS.INCOME_IN') + ' ' + year
+                                    }
                                 </Text>
                                 {
                                     totalInYear && totalInYear.length > 0 &&
-                                    <Text fontSize={40}>{totalInYear[0].symbol} {formatByThousands(String(totalInYear[0].amount))}</Text>
+                                    <Text fontSize={36}>{totalInYear[0].symbol} {formatByThousands(String(totalInYear[0].amount))}</Text>
                                 }
                                 {
                                     totalInYear && totalInYear.length > 1 &&
@@ -131,13 +139,13 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                 {/*<Text fontSize={18}>S/ 90,928.12 - Bs.S 450,120.23</Text>*/}
                             </YStack>
 
-                                <Button borderRadius={100} height={40} width={60} onPress={() => setOpen(false)}>
+                                <Button size="$2.5" borderRadius={100} onPress={() => setOpen(false)}>
                                     <AntDesign name="close" size={20} color={scheme === 'light' ? 'black' : 'white'}/>
                                 </Button>
                         </XStack>
                         <XStack position="relative" height={200} justifyContent="space-between" gap={5} alignItems="flex-end" px={5}>
-                            <Text position="absolute" fontSize={20} top={-25} right={10}>{convertNumberToK(limit)}</Text>
-                            <View height={1} position="absolute" borderWidth={1} borderColor={theme.color12?.val} width="100%" top={0} borderStyle="dashed" />
+                            <Text position="absolute" fontSize={20} top={-28} right={10}>{convertNumberToK(limit)}</Text>
+                            <View height={1} position="absolute" borderWidth={1} borderColor={theme.color10?.val} width="100%" top={0} borderStyle="dashed" />
                             {
                                 totalByMonth.map(item => (
                                     <TouchableOpacity
@@ -164,9 +172,12 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                 ))
                             }
                         </XStack>
-                        <XStack justifyContent="space-between" gap={5} alignItems="flex-end" px={5} mt={-15}>
+                        <XStack justifyContent="space-evenly" gap={5} alignItems="flex-end" px={5} mt={-15}>
                             {
-                                totalByMonth.map(item => <Text key={item.month}>{item.month.substring(0, 1)}</Text>)
+                                totalByMonth.map((item, index) => {
+                                    if (index % 2 !== 0) return null;
+                                    return <Text key={item.month}>{item.month.substring(0, 3)}</Text>
+                                })
                             }
                         </XStack>
                         <YGroup alignSelf="center" bordered
@@ -216,7 +227,9 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                         <Button onPress={() => setOpen(false)} flex={1}>{t('COMMON.DONE')}</Button>
                     </XStack>
                 </YStack>
-                <View height={85} />
+                {
+                    isIos && <View height={85} />
+                }
             </Sheet.Frame>
         </Sheet>
     )

@@ -28,12 +28,12 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
     createTransactionV2, deleteTransaction,
-    getAllAccounts,
+    getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
-import {formatDate, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {formatDate, getCurrentMonth, getCurrentWeek, getCustomMonthAndYear} from "@/lib/helpers/date";
 import RecurringSelectorDropdown from "@/lib/components/ui/RecurringSelectorDropdown";
 import TransactionKeyboard from "@/lib/components/transaction/TransactionKeyboard";
 import CategoriesBottomSheet from "@/lib/components/transaction/CategoriesBottomSheet";
@@ -58,6 +58,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
 import {getLocales} from "expo-localization";
 import currencies from "@/lib/utils/data/currencies";
+import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const locales = getLocales();
@@ -93,13 +94,14 @@ export default function Screen() {
     const [openRecurrencySheet, setOpenRecurrencySheet] = useState<boolean>(false)
     const {hidden_feature_flag} = useAppSelector(selectSettings);
     const [openCurrenciesSheet, setOpenCurrenciesSheet] = useState<boolean>(false)
+    const {type, month, year, limit} = useAppSelector(state => state.filter);
 
     const [tab, setTab] = useState<'total' | 'visible'>(hidden_feature_flag ? 'visible' : 'total');
 
     // callbacks
 
     async function handleCreateOrEditTransaction() {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year)
 
         if (Number(currentTransaction.amount) < 1 && Number(currentTransaction.hidden_amount) < 1) {
             Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.INSERT_AMOUNT'))
@@ -147,8 +149,11 @@ export default function Screen() {
         // dispatch(updateAccountInList(transaction.account));
         // const accounts = getAllAccounts(db);
         // dispatch(updateAccountsList(accounts))
-
-        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+        dispatch(updateTotalsInYear(totalSpentByYear));
+        const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
         // const {
         //     amountsGroupedByDate,
         //     transactionsGroupedByCategory
@@ -198,7 +203,7 @@ export default function Screen() {
             {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     await deleteTransaction(db, currentTransaction.id)
-                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                     // const {
                     //     amountsGroupedByDate,
                     //     transactionsGroupedByCategory
@@ -213,9 +218,6 @@ export default function Screen() {
             },
         ])
     }
-
-    console.log(currency)
-
     return (
         <>
             <View position="relative" flex={1} backgroundColor="$background">
@@ -309,7 +311,7 @@ export default function Screen() {
                                         <TouchableOpacity
                                             style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100, flexDirection: 'row', alignItems: 'center', gap: 10}}>
                                             <Text fontSize={12}>{t('COMMON.CURRENCY')} ({currency.code})</Text>
-                                            <FontAwesome6 name="arrows-rotate" size={16} color="black" />
+                                            <FontAwesome6 name="arrows-rotate" size={16} color={scheme === 'light' ? 'black' : 'white'}/>
                                         </TouchableOpacity>
                                     </DropdownMenu.Trigger>
                                     <DropdownMenu.Content loop={false} alignOffset={0} sideOffset={0} side={0} align={0}
@@ -366,7 +368,7 @@ export default function Screen() {
                                     onPress={() => setOpenCurrenciesSheet(true)}
                                     style={{backgroundColor: theme.color2?.val, padding: 10, borderRadius: 100, flexDirection: 'row', alignItems: 'center', gap: 10}}>
                                     <Text fontSize={12}>{t('COMMON.CURRENCY')} ({currency.code})</Text>
-                                    <FontAwesome6 name="arrows-rotate" size={18} color="black" />
+                                    <FontAwesome6 name="arrows-rotate" size={18} color={scheme === 'light' ? 'black' : 'white'} />
                                 </TouchableOpacity>
                             </>
                         }

@@ -33,10 +33,8 @@ export default function CurrenciesSheet({open, setOpen, locales, currentCode, on
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
-            animation="quick"
         >
             <Sheet.Overlay
-                animation="quick"
                 enterStyle={{opacity: 0}}
                 exitStyle={{opacity: 0}}
             />
