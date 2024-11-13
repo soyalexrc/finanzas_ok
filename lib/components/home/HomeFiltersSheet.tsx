@@ -144,8 +144,8 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
                                 </Button>
                         </XStack>
                         <XStack position="relative" height={200} justifyContent="space-between" gap={5} alignItems="flex-end" px={5}>
-                            <Text position="absolute" fontSize={20} top={-25} right={10}>{convertNumberToK(limit)}</Text>
-                            <View height={1} position="absolute" borderWidth={1} borderColor={theme.color12?.val} width="100%" top={0} borderStyle="dashed" />
+                            <Text position="absolute" fontSize={20} top={-28} right={10}>{convertNumberToK(limit)}</Text>
+                            <View height={1} position="absolute" borderWidth={1} borderColor={theme.color10?.val} width="100%" top={0} borderStyle="dashed" />
                             {
                                 totalByMonth.map(item => (
                                     <TouchableOpacity
