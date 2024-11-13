@@ -1173,7 +1173,7 @@ export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, ty
         SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
     `, [decDateFilter.start.toISOString(), decDateFilter.end.toISOString(), type]);
 
-    const highestValue = Math.max(jan[0]?.total || 0, feb[0]?.total || 0, mar[0]?.total || 0, apr[0]?.total || 0, may[0]?.total || 0, jun[0]?.total || 0, jul[0]?.total || 0, aug[0]?.total || 0, sep[0]?.total || 0, oct[0]?.total || 0, nov[0]?.total || 0, dec[0]?.total || 0) * 1.5;
+    const highestValue = Math.max(jan[0]?.total || 0, feb[0]?.total || 0, mar[0]?.total || 0, apr[0]?.total || 0, may[0]?.total || 0, jun[0]?.total || 0, jul[0]?.total || 0, aug[0]?.total || 0, sep[0]?.total || 0, oct[0]?.total || 0, nov[0]?.total || 0, dec[0]?.total || 0) * 1.2;
     updateSettingByKey(db, 'filter_limit', String(highestValue));
 
     return [
