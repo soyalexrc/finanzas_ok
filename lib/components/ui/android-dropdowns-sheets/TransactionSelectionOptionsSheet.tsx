@@ -7,7 +7,7 @@ import {FullTransaction} from "@/lib/types/Transaction";
 import {
     createTransaction,
     deleteTransaction,
-    getAllAccounts,
+    getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, stopRecurringInTransaction
 } from "@/lib/db";
@@ -18,7 +18,7 @@ import {
     updateTransactionsGroupedByDate
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {useSQLiteContext} from "expo-sqlite";
-import {getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {getCurrentMonth, getCurrentWeek, getCustomMonthAndYear} from "@/lib/helpers/date";
 import {Alert, TouchableOpacity, useColorScheme} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useState} from "react";
@@ -32,6 +32,7 @@ import {
     updateTransactionsGroupedByCategory
 } from "@/lib/store/features/transactions/reportSlice";
 import {useSelector} from "react-redux";
+import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 type Props = {
     open: boolean;
@@ -47,17 +48,12 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
     const [position, setPosition] = useState(0);
     const selectedDateRange = useAppSelector(selectDateRangeFilter);
     const filterType = useAppSelector(selectHomeViewTypeFilter)
-    const selectedAccount = useAppSelector(selectSelectedAccountGlobal);
-    const selectedCategoryFilter = useSelector(selectCategoryFilter);
-    const selectedAccountFilter = useSelector(selectAccountFilter);
-    const globalAccount = useAppSelector(selectSelectedAccountGlobal);
+    const { type, month, year, limit } = useAppSelector( state => state.filter );
     const dispatch = useAppDispatch();
     const {t} = useTranslation()
 
-
-
     function handleDeleteItem(id: number, groupId: number) {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year);
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -66,7 +62,12 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
                     resetData()
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+                    dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+                    dispatch(updateTotalsInYear(totalSpentByYear));
+
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                     // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
                     const accounts = getAllAccounts(db);
                     dispatch(updateAccountsList(accounts))
@@ -85,7 +86,7 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
             setOpen(false)
             resetData()
             dispatch(addTransactionInHomeList(newTransaction as FullTransaction))
-            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
             // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactions(db, selectedDateRange.start, selectedDateRange.end, selectedAccountFilter.id, selectedCategoryFilter.id);
             dispatch(updateTransactionsGroupedByDate(transactions));
             // dispatch(updateTransactionsGroupedByCategory(transactionsGroupedByCategory));
@@ -94,12 +95,16 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
     }
 
     async function stopRecurrent(transactionId: number) {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year);
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
             setOpen(false)
             resetData()
-            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+            const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+            dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+            dispatch(updateTotalsInYear(totalSpentByYear));
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
     }
@@ -113,14 +118,12 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
             onOpenChange={setOpen}
             position={position}
             onPositionChange={setPosition}
-            snapPoints={item && item.recurrentDate !== 'none' ? [20] : [16]}
+            snapPoints={item && item.recurrentDate !== 'none' ? [16] : [16]}
             snapPointsMode='percent'
             dismissOnSnapToBottom
             zIndex={100_000}
-            animation="quick"
         >
             <Sheet.Overlay
-                animation="quick"
                 enterStyle={{opacity: 0}}
                 exitStyle={{opacity: 0}}
             />
@@ -138,10 +141,10 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
                             </TouchableOpacity>
                         }
 
-                        <TouchableOpacity onPress={() => duplicateTransaction(item)} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 12, paddingVertical: 15 }}>
-                            <MaterialIcons name="control-point-duplicate" size={20} color={schemeColor === 'dark' ? 'white' : 'black'} />
-                            <Text fontSize={17}>{t('COMMON.DUPLICATE')}</Text>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity onPress={() => duplicateTransaction(item)} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 12, paddingVertical: 15 }}>*/}
+                        {/*    <MaterialIcons name="control-point-duplicate" size={20} color={schemeColor === 'dark' ? 'white' : 'black'} />*/}
+                        {/*    <Text fontSize={17}>{t('COMMON.DUPLICATE')}</Text>*/}
+                        {/*</TouchableOpacity>*/}
 
                         <TouchableOpacity onPress={() => handleDeleteItem(item.id, itemGroupId)} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 12, paddingVertical: 15 }}>
                             <MaterialIcons name="delete-forever" size={20} color="red" />
@@ -149,11 +152,6 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
                         </TouchableOpacity>
                     </>
                 }
-
-
-
-
-
             </Sheet.Frame>
         </Sheet>
     )

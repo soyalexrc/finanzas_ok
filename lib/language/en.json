@@ -2,6 +2,7 @@
   "translation": {
     "COMMON": {
       "ALL": "All",
+      "SEARCH": "Search",
       "CURRENCY": "Currency",
       "CANCEL": "Cancel",
       "SPENT_IN": "Spent in",
@@ -125,6 +126,8 @@
           "YEAR": "Year",
           "TYPE": "Type",
           "SPENT_THIS_YEAR": "Spent this year",
+          "INCOME_THIS_YEAR": "Income this year",
+          "INCOME_IN": "Income in",
           "SPENT_IN": "Spent in"
         },
         "LABELS": {

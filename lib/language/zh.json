@@ -2,6 +2,7 @@
   "translation": {
     "COMMON": {
       "ALL": "所有",
+      "SEARCH": "搜索",
       "CURRENCY": "货币",
       "CANCEL": "取消",
       "SPENT_IN": "花费在",
@@ -125,6 +126,8 @@
           "YEAR": "年",
           "TYPE": "类型",
           "SPENT_THIS_YEAR": "今年花费",
+          "INCOME_THIS_YEAR": "今年收入",
+          "INCOME_IN": "收入在",
           "SPENT_IN": "花费在"
         },
         "LABELS": {

@@ -70,17 +70,17 @@ const InitialLayout = () => {
             const accounts = getAllAccounts(db);
             const categories = getAllCategories(db);
             const settingLanguage = getSettingByKey(db, 'selected_language')
-            const filterLimit = getSettingByKey(db, 'filter_limit')
             const {start, end} = getCurrentMonth();
-            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), Number(filterLimit?.value));
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense');
             const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
             const currentMonthNumber = new Date().getMonth() + 1;
+            const filterLimit = getSettingByKey(db, 'filter_limit')
 
             // const {
             //     amountsGroupedByDate,
             //     transactionsGroupedByCategory
             // } = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
-            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+            const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), 'Spent');
             dispatch(updateAccountsList(accounts))
             dispatch(updateCategoriesList(categories));
             dispatch(updateCurrency({symbol: currencySymbol ?? '$', code: currencyCode ?? 'USD'}));

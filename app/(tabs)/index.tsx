@@ -7,12 +7,7 @@ import {useAppSelector} from "@/lib/store/hooks";
 import CustomHeader from "@/lib/components/ui/CustomHeader";
 import ResumeDropDown from "@/lib/components/home/ResumeDropDown";
 import HomeResumeItems from "@/lib/components/home/HomeResumeItems";
-import AccountSelectDropdown from "@/lib/components/ui/AccountSelectDropdown";
-import {selectSelectedAccountGlobal} from "@/lib/store/features/accounts/accountsSlice";
 import AccountSelectSheet from "@/lib/components/ui/android-dropdowns-sheets/AccountSelectSheet";
-import {formatAccountTitle} from "@/lib/helpers/string";
-import {useTranslation} from "react-i18next";
-import ResumeSheet from "@/lib/components/ui/android-dropdowns-sheets/ResumeSheet";
 import TransactionSelectionOptionsSheet
     from "@/lib/components/ui/android-dropdowns-sheets/TransactionSelectionOptionsSheet";
 import {FullTransaction} from "@/lib/types/Transaction";
@@ -20,8 +15,6 @@ import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import {useRouter} from "expo-router";
 import {formatDate, getCustomMonth} from "@/lib/helpers/date";
-import {format} from "date-fns";
-import {enUS, es} from "date-fns/locale";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import HomeFiltersSheet from "@/lib/components/home/HomeFiltersSheet";
 import {selectMonth} from "@/lib/store/features/transactions/filterSlice";
@@ -34,7 +27,6 @@ export default function HomeScreen() {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const [accountsSheetOpen, setAccountsSheetOpen] = useState<boolean>(false);
     const [homeFiltersSheetOpen, setHomeFiltersSheetOpen] = useState<boolean>(false);
-    const [resumeSheetOpen, setResumeSheetOpen] = useState<boolean>(false);
     const [transactionSelectionOpen, setTransactionSelectionOpen] = useState<boolean>(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
     const [selectedTransaction, setSelectedTransaction] = useState<FullTransaction>();
@@ -58,17 +50,6 @@ export default function HomeScreen() {
         setSelectedGroupId(groupId)
     }
 
-    async function handleTouchResume() {
-        await Haptics.selectionAsync();
-        setResumeSheetOpen(true)
-    }
-
-
-    async function handleTouchAccountsSelector() {
-        await Haptics.selectionAsync();
-        setAccountsSheetOpen(true)
-    }
-
     return (
         <View flex={1} backgroundColor="$color1">
             <Animated.View
@@ -79,16 +60,6 @@ export default function HomeScreen() {
             >
 
                 <CustomHeader style={{paddingTop: insets.top}}>
-                    {/*{isIos && <AccountSelectDropdown/>}*/}
-                    {/*{*/}
-                    {/*    !isIos &&*/}
-                    {/*    <TouchableOpacity onPress={handleTouchAccountsSelector}*/}
-                    {/*                      style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>*/}
-                    {/*        <Text*/}
-                    {/*            fontSize={16}>{formatAccountTitle(selectedAccount, true, t('COMMON.ALL_ACCOUNTS'))}</Text>*/}
-                    {/*        <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>*/}
-                    {/*    </TouchableOpacity>*/}
-                    {/*}*/}
                     <TouchableOpacity
                         onPress={async () => {
                             await Haptics.selectionAsync();
@@ -114,21 +85,19 @@ export default function HomeScreen() {
                             flexDirection: 'row', alignItems: 'center', gap: 5,
                             backgroundColor: theme.color2?.val,
                             padding: 10,
-                            borderRadius: 10
+                            borderRadius: 100
                         }}>
                         <Feather name="search" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
-                    <ResumeDropDown fn={handleTouchResume}/>
-                    {/*<Button onPress={() => signOut()}>Sign out</Button>*/}
+                    <ResumeDropDown/>
                     {/*    Lista de items por semana, mes y cada dia como separator con el total*/}
                     <HomeResumeItems fn={(t, groupId) => onSelectTransaction(t, groupId)}/>
                     <View style={{height: 200}}/>
                 </ScrollView>
                 <HomeFiltersSheet open={homeFiltersSheetOpen} setOpen={setHomeFiltersSheetOpen} />
                 {!isIos && <AccountSelectSheet setOpen={setAccountsSheetOpen} open={accountsSheetOpen}/>}
-                {!isIos && <ResumeSheet open={resumeSheetOpen} setOpen={setResumeSheetOpen}/>}
                 {!isIos && <TransactionSelectionOptionsSheet open={transactionSelectionOpen}
                                                              setOpen={setTransactionSelectionOpen}
                                                              item={selectedTransaction} itemGroupId={selectedGroupId}

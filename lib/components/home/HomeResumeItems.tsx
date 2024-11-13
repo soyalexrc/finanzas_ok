@@ -18,10 +18,16 @@ import {
     selectSelectedAccountGlobal,
     updateAccountsList
 } from "@/lib/store/features/accounts/accountsSlice";
-import {formatDateHomeItemGroups, getCurrentMonth, getCurrentWeek} from "@/lib/helpers/date";
+import {
+    formatDateHomeItemGroups,
+    getCurrentMonth,
+    getCurrentWeek,
+    getCustomMonth,
+    getCustomMonthAndYear
+} from "@/lib/helpers/date";
 import {
     createTransaction,
-    deleteTransaction, getAllAccounts, getTransactions,
+    deleteTransaction, getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear, getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
     stopRecurringInTransaction
 } from "@/lib/db";
@@ -38,6 +44,7 @@ import {useSelector} from "react-redux";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import * as Haptics from 'expo-haptics';
 import {useTranslation} from "react-i18next";
+import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId: number) => void}) {
     const db = useSQLiteContext();
@@ -50,6 +57,7 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     const {selectedLanguage} = useAppSelector(selectSettings);
     const isIos = Platform.OS === 'ios';
     const {t} = useTranslation();
+    const { type, month, year, limit } = useAppSelector(state => state.filter);
 
     async function handlePress(t: FullTransaction) {
         await Haptics.selectionAsync();
@@ -81,14 +89,18 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     }
 
     function handleDeleteItem(id: number, groupId: number) {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year)
         Alert.alert(t('TRANSACTIONS.DELETE.TITLE'), t('TRANSACTIONS.DELETE.TEXT'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+                    dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+                    dispatch(updateTotalsInYear(totalSpentByYear));
+                    const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), type === 'expense' ? 'Spent' : 'Revenue');
                     // const {amountsGroupedByDate, transactionsGroupedByCategory} = await getTransactionsV2(db, selectedDateRange.start, selectedDateRange.end);
                     // const accounts = getAllAccounts(db);
                     // dispatch(updateAccountsList(accounts))
@@ -114,9 +126,14 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
     }
 
     async function stopRecurrent(transactionId: number) {
-        const {start, end} = getCurrentMonth()
+        const {start, end} = getCustomMonthAndYear(month.number, year);
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+            const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+            dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+            dispatch(updateTotalsInYear(totalSpentByYear));
+
             const transactions = await getTransactionsGroupedAndFilteredV2(db, start.toISOString(), end.toISOString(), filterType.type);
             dispatch(updateTransactionsGroupedByDate(transactions));
         }
@@ -175,14 +192,14 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                                                 />
                                             </ContextMenu.Item>
                                         }
-                                        <ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>
-                                            <ContextMenu.ItemTitle>{t('TRANSACTIONS.DUPLICATE')}</ContextMenu.ItemTitle>
-                                            <ContextMenu.ItemIcon
-                                                ios={{
-                                                    name: 'doc.on.doc'
-                                                }}
-                                            />
-                                        </ContextMenu.Item>
+                                        {/*<ContextMenu.Item key='duplicate' onSelect={() => duplicateTransaction(item)}>*/}
+                                        {/*    <ContextMenu.ItemTitle>{t('TRANSACTIONS.DUPLICATE')}</ContextMenu.ItemTitle>*/}
+                                        {/*    <ContextMenu.ItemIcon*/}
+                                        {/*        ios={{*/}
+                                        {/*            name: 'doc.on.doc'*/}
+                                        {/*        }}*/}
+                                        {/*    />*/}
+                                        {/*</ContextMenu.Item>*/}
                                         <ContextMenu.Item key='delete' onSelect={() => handleDeleteItem(item.id, group.id)} destructive>
                                             <ContextMenu.ItemTitle>{t('COMMON.DELETE')}</ContextMenu.ItemTitle>
                                             <ContextMenu.ItemIcon

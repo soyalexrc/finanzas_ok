@@ -54,8 +54,25 @@ const filterSlice = createSlice({
         updateLimit(state, action: PayloadAction<number>) {
             state.limit = action.payload
         },
-        updateSearch(state, action: PayloadAction<{ type: 'expense' | 'income' | 'all', date: string, query: string }>) {
-            state.search = action.payload;
+        resetFilter(state) {
+            state.type = 'expense';
+            state.limit = 2500;
+            state.year = new Date().getFullYear();
+            state.totalByMonth = [
+                {month: 'JAN', percentage: 0, monthNumber: 1},
+                {month: 'FEB', percentage: 0, monthNumber: 2},
+                {month: 'MAR', percentage: 0, monthNumber: 3},
+                {month: 'APR', percentage: 0, monthNumber: 4},
+                {month: 'MAY', percentage: 0, monthNumber: 5},
+                {month: 'JUN', percentage: 0, monthNumber: 6},
+                {month: 'JUL', percentage: 0, monthNumber: 7},
+                {month: 'AUG', percentage: 0, monthNumber: 8},
+                {month: 'SEP', percentage: 0, monthNumber: 9},
+                {month: 'OCT', percentage: 0, monthNumber: 10},
+                {month: 'NOV', percentage: 0, monthNumber: 11},
+                {month: 'DEC', percentage: 0, monthNumber: 12}
+            ];
+            state.totalInYear = []
         }
     }
 })
@@ -63,6 +80,7 @@ const filterSlice = createSlice({
 export const {
     updateTotalsInYear,
     updateFilterType,
+    resetFilter,
     updateYear,
     updateMonth,
     updateTotalByMonth,

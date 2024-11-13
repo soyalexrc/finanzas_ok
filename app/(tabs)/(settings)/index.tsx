@@ -288,6 +288,7 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
+                                disabled={!isIos}
                                 onPress={shareToFriends}
                                 title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                                 icon={<IconWrapper bgColor="$blue10Light"
