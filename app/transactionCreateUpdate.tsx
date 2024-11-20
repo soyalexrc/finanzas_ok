@@ -481,10 +481,10 @@ export default function Screen() {
                 onConfirm={(date) => {
                     // TODO GET DATE TIME CORRECTLY
                     const timeZonedDate = formatDate(date)
-                    // console.log({timeZonedDate, date})
-                    timeZonedDate.setHours(5);
+                    const formattedDate = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
+                    // timeZonedDate.setHours(5);
                     setShowCalendar(false)
-                    dispatch(onChangeDate(timeZonedDate.toISOString()))
+                    dispatch(onChangeDate(formattedDate))
                 }}
                 onCancel={() => {
                     setShowCalendar(false)

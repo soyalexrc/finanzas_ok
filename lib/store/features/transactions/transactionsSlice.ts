@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {formatDate} from "@/lib/helpers/date";
+import {format} from "date-fns";
 
 export interface TransactionsState {
     currentTransaction: Transaction;
@@ -13,8 +14,8 @@ export interface TransactionsState {
 
 function setInitialDate() {
     const date = formatDate(new Date());
-    date.setHours(5);
-    return date.toISOString();
+    // date.setHours(5);
+    return format(date, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
 }
 
 const initialState: TransactionsState = {
