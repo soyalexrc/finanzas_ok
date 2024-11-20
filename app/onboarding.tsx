@@ -11,7 +11,7 @@ import {
     createAccount,
     deleteSettingByKey,
     getAllAccounts, getAllCategories,
-    getSettingByKey, insertMultipleCategories,
+    getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear, insertMultipleCategories,
     updateSettingByKey
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
@@ -55,7 +55,7 @@ import {cancelScheduledNotificationAsync} from "expo-notifications";
 import {updateAccountFilter} from "@/lib/store/features/transactions/reportSlice";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
 import {formatByThousands} from "@/lib/helpers/string";
-import {updateLimit} from "@/lib/store/features/transactions/filterSlice";
+import {updateLimit, updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const locales = getLocales();
@@ -84,6 +84,10 @@ export default function Screen() {
         const result = updateSettingByKey(db, 'is_onboarding_shown', 'true');
         if (result) {
             dispatch(updateOnboardingState(result));
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense', Number(goalAmount));
+            const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+            dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+            dispatch(updateTotalsInYear(totalSpentByYear));
             router.replace('/(tabs)');
         }
     }
