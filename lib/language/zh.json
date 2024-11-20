@@ -230,7 +230,10 @@
         "TITLE": "在商店上评价应用"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "与朋友分享"
+        "TITLE": "与朋友分享",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "查看Finanzas OK！这是一个管理财务的好应用。现在从App Store或Google Play Store下载！"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "关注@finanzasokapp"

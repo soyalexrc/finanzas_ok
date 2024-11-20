@@ -230,7 +230,10 @@
         "TITLE": "Rate app on Store"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Share with friends"
+        "TITLE": "Share with friends",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": " Check out Finanzas OK! It's a great app for managing your finances. Download it now from the App Store or Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Follow @finanzasokapp"

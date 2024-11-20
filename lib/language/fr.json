@@ -230,7 +230,10 @@
         "TITLE": "Noter l'application sur la boutique"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Partager avec des amis"
+        "TITLE": "Partager avec des amis",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "Découvrez Finanzas OK! C'est une excellente application pour gérer vos finances. Téléchargez-la maintenant depuis l'App Store ou Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Suivre @finanzasokapp"

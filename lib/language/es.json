@@ -230,7 +230,10 @@
         "TITLE": "Calificar el app en la tienda"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Compartir con amigos"
+        "TITLE": "Compartir con amigos",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "¡Mira Finanzas OK! Es una gran aplicación para gestionar tus finanzas. ¡Descárgala ahora desde la App Store o Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Seguir @finanzasokapp"

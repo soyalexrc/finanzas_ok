@@ -229,7 +229,10 @@
         "TITLE": "App im Store bewerten"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Mit Freunden teilen"
+        "TITLE": "Mit Freunden teilen",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "Schau dir Finanzas OK an! Es ist eine großartige App zur Verwaltung deiner Finanzen. Lade sie jetzt aus dem App Store oder Google Play Store herunter!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Folge @finanzasokapp"

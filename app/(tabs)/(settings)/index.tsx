@@ -111,10 +111,11 @@ export default function Screen() {
 
     async function shareToFriends() {
         try {
+            const initialMessage = t('SETTINGS.SHARE_WITH_FRIENDS.OPTIONS.DEFAULT_MESSAGE')
             const message = `
-            Check out Finanzas OK! It's a great app for managing your finances. Download it now from the App Store or Google Play Store!
+            ${initialMessage}
             iOS: https://apps.apple.com/app/id6737455994
-            crAndroid: https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok`
+            Android: https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok`
             if (Platform.OS === 'ios') {
                 await Share.share({
                     title: 'Finanzas OK',
@@ -299,7 +300,6 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled={!isIos}
                                 onPress={shareToFriends}
                                 title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                                 icon={<IconWrapper bgColor="$blue10Light"
