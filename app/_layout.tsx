@@ -71,10 +71,10 @@ const InitialLayout = () => {
             const categories = getAllCategories(db);
             const settingLanguage = getSettingByKey(db, 'selected_language')
             const {start, end} = getCurrentMonth();
-            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense');
+            const filterLimit = getSettingByKey(db, 'filter_limit')
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense', filterLimit?.value ? Number(filterLimit.value) : 2500);
             const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
             const currentMonthNumber = new Date().getMonth() + 1;
-            const filterLimit = getSettingByKey(db, 'filter_limit')
 
             // const {
             //     amountsGroupedByDate,

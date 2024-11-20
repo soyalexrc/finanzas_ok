@@ -1,6 +1,14 @@
 import {SQLiteDatabase} from "expo-sqlite";
-import { englishCategories, spanishCategories } from '@/lib/utils/data/categories';
+import {insertMultipleCategories} from "@/lib/db/queries";
 import {getLocales} from "expo-localization";
+import {Category} from "@/lib/types/Transaction";
+import {
+    chineseCategories,
+    englishCategories, frenchCategories,
+    germanCategories,
+    japaneseCategories,
+    spanishCategories
+} from "@/lib/utils/data/categories";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     console.log('migrations called');
@@ -125,6 +133,44 @@ const migrations = [
                     value INTEGER NOT NULL
                 )
             `)
+
+            //     create default categories
+                const locales = getLocales();
+                let categories: Category[] = [];
+                if (locales[0].languageCode === 'es') {
+                    categories = spanishCategories
+                } else if (locales[0].languageCode === 'en') {
+                    categories = englishCategories
+                }
+                else if (locales[0].languageCode === 'de') {
+                    categories = germanCategories
+                }
+                else if (locales[0].languageCode === 'ja') {
+                    categories = japaneseCategories
+                }
+                else if (locales[0].languageCode === 'zh') {
+                    categories = chineseCategories
+                }
+                else if (locales[0].languageCode === 'fr') {
+                    categories = frenchCategories
+                }
+
+                let filteredCategories = [...categories];
+
+                const currentCategories = db.getAllSync(`SELECT * FROM categories`);
+
+                if (currentCategories.length > 0) {
+                    filteredCategories = categories.filter(category => !currentCategories.some((c: any) => c.title === category.title));
+                }
+
+                try {
+                    for (const category of filteredCategories) {
+                        const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
+                        statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
 
             } catch (err) {
                 console.error('Ocurrio un error corriendo las migraciones... ', err)

@@ -11,7 +11,7 @@ import {useEffect, useState} from "react";
 import {selectCurrentEmoji} from "@/lib/store/features/ui/uiSlice";
 import {
     createCategory,
-    getAllCategories, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getAllCategories, getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2,
     updateCategory
 } from "@/lib/db";
@@ -91,7 +91,8 @@ export default function Screen() {
                 handleGoBack()
             }
         }
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
         const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
         dispatch(updateTotalsInYear(totalSpentByYear));

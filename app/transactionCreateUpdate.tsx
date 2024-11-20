@@ -28,7 +28,7 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
     createTransactionV2, deleteTransaction,
-    getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getAllAccounts, getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
 } from "@/lib/db";
@@ -149,7 +149,8 @@ export default function Screen() {
         // dispatch(updateAccountInList(transaction.account));
         // const accounts = getAllAccounts(db);
         // dispatch(updateAccountsList(accounts))
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
         const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
         dispatch(updateTotalsInYear(totalSpentByYear));

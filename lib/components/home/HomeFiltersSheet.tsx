@@ -23,6 +23,7 @@ import {formatDate, getCustomMonthAndYear} from "@/lib/helpers/date";
 import {enUS, es} from "date-fns/locale";
 import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import {
+    getSettingByKey,
     getTotalIncomeByYear,
     getTotalsOnEveryMonthByYear,
     getTotalSpentByYear,
@@ -73,7 +74,8 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
         dispatch(updateFilterType(t));
         const {start, end} = getCustomMonthAndYear(month.number, year);
         const totalResultByYear = t === 'expense' ? getTotalSpentByYear(db, year) : getTotalIncomeByYear(db, year);
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, year, t);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, year, t, filterLimit?.value ? Number(filterLimit.value) : 2500);
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
 
         dispatch(updateTotalsInYear(totalResultByYear));
@@ -84,7 +86,8 @@ export default function HomeFiltersSheet({setOpen, open} : Props) {
     async function onYearChange(operation: 'add' | 'subtract') {
         const newYear = operation === 'add' ? year + 1 : year - 1;
         dispatch(updateYear(newYear));
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, newYear, type);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, newYear, type, filterLimit?.value ? Number(filterLimit.value) : 2500);
         const totalSpentByYear = getTotalSpentByYear(db, newYear);
 
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));

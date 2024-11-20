@@ -21,7 +21,7 @@ import {
     FlatList,
     KeyboardAvoidingView,
     Platform,
-    RefreshControl,
+    RefreshControl, StyleSheet, TextInput,
     TouchableOpacity,
     useColorScheme
 } from "react-native";
@@ -54,6 +54,8 @@ import * as Haptics from "expo-haptics";
 import {cancelScheduledNotificationAsync} from "expo-notifications";
 import {updateAccountFilter} from "@/lib/store/features/transactions/reportSlice";
 import {selectCategory, updateCategoriesList} from "@/lib/store/features/categories/categoriesSlice";
+import {formatByThousands} from "@/lib/helpers/string";
+import {updateLimit} from "@/lib/store/features/transactions/filterSlice";
 
 export default function Screen() {
     const locales = getLocales();
@@ -64,43 +66,19 @@ export default function Screen() {
     const router = useRouter();
     const {t} = useTranslation()
     const {notifications} = useAppSelector(selectSettings);
-
+    const [goalAmount, setGoalAmount] = useState<string>('2500')
 
     // Notifications
     const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
 
     const isIos = Platform.OS === 'ios';
     const [openCurrenciesSheet, setOpenCurrenciesSheet] = useState<boolean>(false)
-    const [accountTitle, setAccountTitle] = useState<string>('')
-    const [accountBalance, setAccountBalance] = useState<string>('0')
-    const [categories, setCategories] = useState<{ type: string, title: string; id: number, icon: string }[]>([])
-    const [refreshing, setRefreshing] = useState<boolean>(false)
+
+
     const [accountCurrency, setAccountCurrency] = useState<{ code: string, symbol: string }>({
         code: locales[0].currencyCode ?? 'USD',
         symbol: locales[0].currencySymbol ?? '$'
     })
-    const [accountPositiveState, setAccountPositiveState] = useState<string>('');
-    const currentEmoji = useAppSelector(selectCurrentEmoji);
-
-    useEffect(() => {
-        if (locales[0].languageCode === 'es') {
-            setCategories(spanishCategories)
-        } else if (locales[0].languageCode === 'en') {
-            setCategories(englishCategories)
-        }
-        else if (locales[0].languageCode === 'de') {
-            setCategories(germanCategories)
-        }
-        else if (locales[0].languageCode === 'ja') {
-            setCategories(japaneseCategories)
-        }
-        else if (locales[0].languageCode === 'zh') {
-            setCategories(chineseCategories)
-        }
-        else if (locales[0].languageCode === 'fr') {
-            setCategories(frenchCategories)
-        }
-    }, []);
 
     async function complete() {
         const result = updateSettingByKey(db, 'is_onboarding_shown', 'true');
@@ -121,25 +99,19 @@ export default function Screen() {
         }
     }
 
+    function onSetLimitAndChangeStep() {
+        updateSettingByKey(db, 'filter_limit', goalAmount);
+        dispatch(updateLimit(Number(goalAmount)));
+
+        changeStep('next')
+    }
+
     function changeStep(operation: 'next' | 'prev') {
         const newStep = operation === 'next' ? onBoardingLastStep + 1 : onBoardingLastStep - 1;
         // const result = await save('onboarding_last_step', newStep);
         // if (result) {
         dispatch(updateOnBoardingLastStep(newStep));
         // }
-    }
-
-    function manageCreateCategories() {
-        insertMultipleCategories(db, categories);
-        const allCategories = getAllCategories(db);
-        dispatch(updateCategoriesList(allCategories));
-        dispatch(selectCategory(allCategories[0]));
-        changeStep('next')
-    }
-
-    function removeCategory(id: number) {
-        const updatedList = categories.filter(category => category.id !== id);
-        setCategories(updatedList);
     }
 
     async function getPermissionsStatus() {
@@ -150,7 +122,7 @@ export default function Screen() {
     useEffect(() => {
         const interval = setInterval(() => {
             getPermissionsStatus();
-        }, 3000)
+        }, 1000)
 
         return () => {
             clearInterval(interval)
@@ -210,6 +182,14 @@ export default function Screen() {
         }
     }
 
+    useEffect(() => {
+        goalAmount === '' && setGoalAmount('0')
+        if (goalAmount.length > 1) {
+            const newValue = goalAmount.replace(/^0+/, '');
+            setGoalAmount(newValue);
+        }
+    }, [goalAmount]);
+
 
     return (
         <View flex={1} backgroundColor="$color1" paddingTop={insets.top} paddingBottom={insets.bottom}>
@@ -232,44 +212,19 @@ export default function Screen() {
                 onBoardingLastStep === 2 &&
                 <View flex={1}>
                     <XStack justifyContent="center">
-                        <Image
-                            source={require('@/assets/images/edit-list.png')}
-                            width={170}
-                            height={170}
-                            objectFit="contain"
-                        />
+                        <Image source={require('@/assets/images/adaptive-icon.png')} width={100} height={100}/>
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>{t('ONBOARDING.CATEGORIES.TITLE')}</Text>
-                        <Text fontSize={14} mb={10}>{t('ONBOARDING.CATEGORIES.DESC')}</Text>
+                        <Text fontSize={30} mb={10}>Cual es tu meta de gastos mensual?</Text>
+                        <Text fontSize={14} mb={10}>Podras editar esto en las configuraciones de nuevo.</Text>
                     </YStack>
-
-                    {/*<ScrollView flex={1} mb={10} p={20}>*/}
-                    {/*    */}
-                    {/*</ScrollView>*/}
-
-                    <FlatList
-                        data={categories}
-                        style={{flex: 1, marginVertical: 10}}
-                        contentContainerStyle={{paddingHorizontal: 20}}
-                        keyExtractor={((item, index) => item.id.toString())}
-                        renderItem={({item, index}) => (
-                            <XStack justifyContent="space-between" mb={10}>
-                                <XStack gap={10} alignItems="center">
-                                    <Text fontSize={24}>{item.icon}</Text>
-                                    <Text fontSize={16}>{item.title}</Text>
-                                </XStack>
-                                <TouchableOpacity onPress={() => removeCategory(item.id)} accessible={true} accessibilityLabel={`Remove category ${item.title} ${index + 1}`} accessibilityHint={`Removes the default category named: ${item.title} ${index + 1}`}>
-                                    <Feather name="trash-2" size={isIos ? 24 : 30} color="red" />
-                                </TouchableOpacity>
-                            </XStack>
-                        )}
-                    />
-
-                    <Button mx={20} mb={10} onPress={manageCreateCategories} >{t('COMMON.NEXT')}</Button>
-
+                    <TextInput keyboardType="numeric" style={styles.input} returnKeyType="done" value={goalAmount} onChangeText={setGoalAmount} />
+                    {/*<Text fontSize={50} textAlign="center" mt={40}>{formatByThousands('2500') }</Text>*/}
+                    <View flex={1}/>
+                    <Button mx={20} mb={10} onPress={onSetLimitAndChangeStep}>{t('COMMON.NEXT')}</Button>
                 </View>
             }
+
             {
                 onBoardingLastStep === 3 &&
                 <View flex={1}>
@@ -392,3 +347,12 @@ export default function Screen() {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    input: {
+        fontSize: 50,
+        marginTop: 50,
+        textAlign: 'center'
+    }
+})
+

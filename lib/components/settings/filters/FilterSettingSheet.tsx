@@ -2,9 +2,14 @@ import {Button, Input, Sheet, Text, XStack, YStack} from "tamagui";
 import React, {useEffect, useState} from "react";
 import {useSQLiteContext} from "expo-sqlite";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {selectLimit, updateLimit} from "@/lib/store/features/transactions/filterSlice";
+import {
+    selectLimit,
+    updateLimit,
+    updateTotalByMonth,
+    updateTotalsInYear
+} from "@/lib/store/features/transactions/filterSlice";
 import {Keyboard, Pressable} from "react-native";
-import {updateSettingByKey} from "@/lib/db";
+import {getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear, updateSettingByKey} from "@/lib/db";
 import {useTranslation} from "react-i18next";
 
 type Props = {
@@ -15,7 +20,8 @@ type Props = {
 export default function FilterSettingSheet({open, setOpen}: Props) {
     const db = useSQLiteContext();
     const [position, setPosition] = useState(0);
-    const limit = useAppSelector(selectLimit);
+    const {type, month, year, limit} = useAppSelector(state => state.filter);
+
     const dispatch = useAppDispatch();
     const {t} = useTranslation()
     const [filterLimit, setFilterLimit] = useState<string>(String(limit));
@@ -27,6 +33,10 @@ export default function FilterSettingSheet({open, setOpen}: Props) {
     function onPressDone() {
         updateSettingByKey(db, 'filter_limit', filterLimit);
         dispatch(updateLimit(Number(filterLimit)));
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, year, type, filterLimit ? Number(filterLimit) : 2500);
+        const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
+        dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
+        dispatch(updateTotalsInYear(totalSpentByYear));
         setOpen(false);
     }
 

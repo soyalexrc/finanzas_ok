@@ -6,7 +6,7 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     getAllAccounts,
     getAllCategories,
-    getAllTransactions, getSettings, getSettingsRaw, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getAllTransactions, getSettingByKey, getSettings, getSettingsRaw, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, importSheetToDB,
     wipeData
 } from "@/lib/db";
@@ -98,7 +98,8 @@ export default function Screen() {
         const accounts = getAllAccounts(db);
         const categories = getAllCategories(db);
         const {start, end} = getCustomMonthAndYear(month.number, year);
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
         const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
         // const {
         //     amountsGroupedByDate,

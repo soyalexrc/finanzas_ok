@@ -27,8 +27,15 @@ import {
 } from "@/lib/helpers/date";
 import {
     createTransaction,
-    deleteTransaction, getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear, getTransactions,
-    getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
+    deleteTransaction,
+    getAllAccounts,
+    getSettingByKey,
+    getTotalsOnEveryMonthByYear,
+    getTotalSpentByYear,
+    getTransactions,
+    getTransactionsGroupedAndFiltered,
+    getTransactionsGroupedAndFilteredV2,
+    getTransactionsV2,
     stopRecurringInTransaction
 } from "@/lib/db";
 import {useSQLiteContext} from "expo-sqlite";
@@ -96,7 +103,8 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
                 style: 'destructive', text: t('COMMON.DELETE'), isPreferred: true, onPress: async () => {
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const filterLimit = getSettingByKey(db, 'filter_limit')
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
                     const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
                     dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
                     dispatch(updateTotalsInYear(totalSpentByYear));
@@ -129,7 +137,8 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
         const {start, end} = getCustomMonthAndYear(month.number, year);
         const updatedTransaction = await stopRecurringInTransaction(db, transactionId)
         if (updatedTransaction) {
-            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+            const filterLimit = getSettingByKey(db, 'filter_limit')
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
             const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
             dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
             dispatch(updateTotalsInYear(totalSpentByYear));

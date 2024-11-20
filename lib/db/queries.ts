@@ -15,6 +15,14 @@ import {
 import {migrateDbIfNeeded} from "@/lib/db/migrations";
 import {getCustomMonthRangeWithYear} from "@/lib/helpers/date";
 import {calculatePercentageOfTotal} from "@/lib/helpers/operations";
+import {
+    chineseCategories,
+    englishCategories, frenchCategories,
+    germanCategories,
+    japaneseCategories,
+    spanishCategories
+} from "@/lib/utils/data/categories";
+import { getLocales } from 'expo-localization'
 
 export function getAllAccounts(db: SQLiteDatabase): Account[] {
     // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
@@ -54,11 +62,37 @@ export function updateSettingByKey(db: SQLiteDatabase, key: string, value: strin
     }
 }
 
-export function insertMultipleCategories(db: SQLiteDatabase, categories: { type: string, title: string, icon: string, id: number }[]): void {
-    const filteredCategories = [...categories];
+export function insertMultipleCategories(db: SQLiteDatabase): void {
+    const locales = getLocales();
+    let categories: Category[] = [];
+    if (locales[0].languageCode === 'es') {
+        categories = spanishCategories
+    } else if (locales[0].languageCode === 'en') {
+        categories = englishCategories
+    }
+    else if (locales[0].languageCode === 'de') {
+        categories = germanCategories
+    }
+    else if (locales[0].languageCode === 'ja') {
+        categories = japaneseCategories
+    }
+    else if (locales[0].languageCode === 'zh') {
+        categories = chineseCategories
+    }
+    else if (locales[0].languageCode === 'fr') {
+        categories = frenchCategories
+    }
+
+    let filteredCategories = [...categories];
+
+    const currentCategories = db.getAllSync(`SELECT * FROM categories`);
+
+    if (currentCategories.length > 0) {
+        filteredCategories = categories.filter(category => !currentCategories.some((c: any) => c.title === category.title));
+    }
 
     try {
-        for (const category of categories) {
+        for (const category of filteredCategories) {
             const statement = db.prepareSync(`INSERT INTO categories (title, icon, type) VALUES ($title, $icon, $type)`)
             statement.executeSync({ $title: category.title, $icon: category.icon, $type: category.type })
         }
@@ -1109,7 +1143,7 @@ export function getTotalIncomeByYear(db: SQLiteDatabase, year: number): { symbol
     return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'income']);
 }
 
-export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, type: 'income' | 'expense'): { month: string, percentage: number, monthNumber: number }[] {
+export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, type: 'income' | 'expense', limit: number): { month: string, percentage: number, monthNumber: number }[] {
     const janDateFilter = getCustomMonthRangeWithYear(1, 1, year);
     const febDateFilter = getCustomMonthRangeWithYear(2, 2, year);
     const marDateFilter = getCustomMonthRangeWithYear(3, 3, year);
@@ -1173,22 +1207,22 @@ export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, ty
         SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
     `, [decDateFilter.start.toISOString(), decDateFilter.end.toISOString(), type]);
 
-    const highestValue = Math.max(jan[0]?.total || 0, feb[0]?.total || 0, mar[0]?.total || 0, apr[0]?.total || 0, may[0]?.total || 0, jun[0]?.total || 0, jul[0]?.total || 0, aug[0]?.total || 0, sep[0]?.total || 0, oct[0]?.total || 0, nov[0]?.total || 0, dec[0]?.total || 0) * 1.2;
-    updateSettingByKey(db, 'filter_limit', String(highestValue));
+    // const highestValue = Math.max(jan[0]?.total || 0, feb[0]?.total || 0, mar[0]?.total || 0, apr[0]?.total || 0, may[0]?.total || 0, jun[0]?.total || 0, jul[0]?.total || 0, aug[0]?.total || 0, sep[0]?.total || 0, oct[0]?.total || 0, nov[0]?.total || 0, dec[0]?.total || 0) * 1.2;
+    // updateSettingByKey(db, 'filter_limit', String(highestValue));
 
     return [
-        { month: 'JAN', percentage: calculatePercentageOfTotal(jan[0]?.total, highestValue), monthNumber: 1 },
-        { month: 'FEB', percentage: calculatePercentageOfTotal(feb[0]?.total, highestValue), monthNumber: 2 },
-        { month: 'MAR', percentage: calculatePercentageOfTotal(mar[0]?.total, highestValue), monthNumber: 3 },
-        { month: 'APR', percentage: calculatePercentageOfTotal(apr[0]?.total, highestValue), monthNumber: 4 },
-        { month: 'MAY', percentage: calculatePercentageOfTotal(may[0]?.total, highestValue), monthNumber: 5 },
-        { month: 'JUN', percentage: calculatePercentageOfTotal(jun[0]?.total, highestValue), monthNumber: 6 },
-        { month: 'JUL', percentage: calculatePercentageOfTotal(jul[0]?.total, highestValue), monthNumber: 7 },
-        { month: 'AUG', percentage: calculatePercentageOfTotal(aug[0]?.total, highestValue), monthNumber: 8 },
-        { month: 'SEP', percentage: calculatePercentageOfTotal(sep[0]?.total, highestValue), monthNumber: 9 },
-        { month: 'OCT', percentage: calculatePercentageOfTotal(oct[0]?.total, highestValue), monthNumber: 10 },
-        { month: 'NOV', percentage: calculatePercentageOfTotal(nov[0]?.total, highestValue), monthNumber: 11 },
-        { month: 'DIC', percentage: calculatePercentageOfTotal(dec[0]?.total, highestValue), monthNumber: 12 },
+        { month: 'JAN', percentage: calculatePercentageOfTotal(jan[0]?.total, limit), monthNumber: 1 },
+        { month: 'FEB', percentage: calculatePercentageOfTotal(feb[0]?.total, limit), monthNumber: 2 },
+        { month: 'MAR', percentage: calculatePercentageOfTotal(mar[0]?.total, limit), monthNumber: 3 },
+        { month: 'APR', percentage: calculatePercentageOfTotal(apr[0]?.total, limit), monthNumber: 4 },
+        { month: 'MAY', percentage: calculatePercentageOfTotal(may[0]?.total, limit), monthNumber: 5 },
+        { month: 'JUN', percentage: calculatePercentageOfTotal(jun[0]?.total, limit), monthNumber: 6 },
+        { month: 'JUL', percentage: calculatePercentageOfTotal(jul[0]?.total, limit), monthNumber: 7 },
+        { month: 'AUG', percentage: calculatePercentageOfTotal(aug[0]?.total, limit), monthNumber: 8 },
+        { month: 'SEP', percentage: calculatePercentageOfTotal(sep[0]?.total, limit), monthNumber: 9 },
+        { month: 'OCT', percentage: calculatePercentageOfTotal(oct[0]?.total, limit), monthNumber: 10 },
+        { month: 'NOV', percentage: calculatePercentageOfTotal(nov[0]?.total, limit), monthNumber: 11 },
+        { month: 'DIC', percentage: calculatePercentageOfTotal(dec[0]?.total, limit), monthNumber: 12 },
     ];
 }
 
