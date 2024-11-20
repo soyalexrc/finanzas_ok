@@ -1134,13 +1134,13 @@ export function getAmountOfTransactionsByCategoryTitle(db: SQLiteDatabase, categ
 
 export function getTotalSpentByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
     const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
-    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'expense']);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol ORDER BY amount DESC', [start.toISOString(), end.toISOString(), 'expense']);
 }
 
 
 export function getTotalIncomeByYear(db: SQLiteDatabase, year: number): { symbol: string, amount: number }[] {
     const { start, end } = getCustomMonthRangeWithYear(1, 12, year);
-    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol', [start.toISOString(), end.toISOString(), 'income']);
+    return db.getAllSync('SELECT ROUND(SUM(amount), 2) AS amount, currency_symbol_t AS symbol FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY symbol ORDER BY amount DESC', [start.toISOString(), end.toISOString(), 'income']);
 }
 
 export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, type: 'income' | 'expense', limit: number): { month: string, percentage: number, monthNumber: number }[] {
@@ -1158,53 +1158,53 @@ export function getTotalsOnEveryMonthByYear(db: SQLiteDatabase, year: number, ty
     const decDateFilter = getCustomMonthRangeWithYear(12, 12, year);
 
     const jan: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t  AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t  AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [janDateFilter.start.toISOString(), janDateFilter.end.toISOString(), type]);
 
     // Do the same for feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec
 
     const feb: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [febDateFilter.start.toISOString(), febDateFilter.end.toISOString(), type]);
 
     const mar: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [marDateFilter.start.toISOString(), marDateFilter.end.toISOString(), type]);
 
     const apr: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [aprDateFilter.start.toISOString(), aprDateFilter.end.toISOString(), type]);
 
     const may: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [mayDateFilter.start.toISOString(), mayDateFilter.end.toISOString(), type]);
 
     const jun: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [junDateFilter.start.toISOString(), junDateFilter.end.toISOString(), type]);
 
     const jul: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [julDateFilter.start.toISOString(), julDateFilter.end.toISOString(), type]);
 
     const aug: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [augDateFilter.start.toISOString(), augDateFilter.end.toISOString(), type]);
 
     const sep: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [sepDateFilter.start.toISOString(), sepDateFilter.end.toISOString(), type]);
 
     const oct: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [octDateFilter.start.toISOString(), octDateFilter.end.toISOString(), type]);
 
     const nov: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [novDateFilter.start.toISOString(), novDateFilter.end.toISOString(), type])
 
     const dec: any = db.getAllSync(`
-        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency LIMIT 1
+        SELECT ROUND(SUM(amount), 2) AS total, currency_symbol_t AS currency FROM transactions WHERE date BETWEEN ? AND ? AND category_type = ? GROUP BY currency ORDER BY total DESC LIMIT 1 
     `, [decDateFilter.start.toISOString(), decDateFilter.end.toISOString(), type]);
 
     // const highestValue = Math.max(jan[0]?.total || 0, feb[0]?.total || 0, mar[0]?.total || 0, apr[0]?.total || 0, may[0]?.total || 0, jun[0]?.total || 0, jul[0]?.total || 0, aug[0]?.total || 0, sep[0]?.total || 0, oct[0]?.total || 0, nov[0]?.total || 0, dec[0]?.total || 0) * 1.2;
