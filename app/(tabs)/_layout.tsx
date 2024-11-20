@@ -53,22 +53,14 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="scheduledTransactions"
+                name="paymentScheduling"
                 options={{
                     title: '',
-                    tabBarItemStyle: {
-                        display: 'none'
-                    },
+                    headerShown: false,
                     tabBarIcon: ({color}) => (
-                        <FontAwesome6 style={{ transform: 'rotate(280deg)' }} name="arrow-rotate-right" size={28} color={color}/>
+                        <Entypo name="calendar" size={28} color={color}/>
                     )
                 }}
-                listeners={() => ({
-                    tabPress: e => {
-                        e.preventDefault();
-                        Alert.alert(t('COMMON.WARNING'), t('COMMON.MESSAGES.SCREEN_UNDER_DEVELOPMENT'))
-                    }
-                })}
             />
             <Tabs.Screen
                 name="action"
@@ -105,6 +97,16 @@ export default function TabLayout() {
                         e.preventDefault();
                     }
                 })}
+            />
+            <Tabs.Screen
+                name="wallet"
+                options={{
+                    title: '',
+                    headerShown: false,
+                    tabBarIcon: ({color}) => (
+                        <Entypo name="wallet" size={28} color={color}/>
+                    )
+                }}
             />
             <Tabs.Screen
                 name="(reports)"
