@@ -90,8 +90,6 @@ export default function ResumeDropDown() {
                 keyExtractor={item => item.id}
                 renderItem={({item, index}) => item.content}
                 onMomentumScrollEnd={event => {
-                    console.log(Math.floor(event.nativeEvent.contentOffset.x))
-                    console.log(Math.floor(width))
                     const index = Math.floor(event.nativeEvent.contentOffset.x) / Math.floor(width);
                     setSelectedIndex(index);
                 }}

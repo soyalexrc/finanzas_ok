@@ -80,7 +80,10 @@ export default function HomeScreen() {
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => router.push('/search')}
+                        onPress={async () => {
+                            await Haptics.selectionAsync()
+                            router.push('/search')
+                        }}
                         style={{
                             flexDirection: 'row', alignItems: 'center', gap: 5,
                             backgroundColor: theme.color2?.val,
