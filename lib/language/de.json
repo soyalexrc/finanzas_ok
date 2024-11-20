@@ -219,8 +219,8 @@
           "IMPORT": "Aus Vorlage importieren",
           "EXPORT": "Exportieren",
           "WIPE": "Wischen (Daten zurücksetzen)",
-          "POPUP_MESSAGE": "Alle Daten gehen verloren, einschließlich Transaktionen, Konten und Kategorien."
-        }
+          "POPUP_MESSAGE": "Alle Daten gehen verloren, einschließlich Transaktionen, Konten und Kategorien.",
+          "DATA_ERASED": "Alle Informationen der Anwendung wurden gelöscht"        }
       },
       "CONTACT_DEV": {
         "TITLE": "Entwickler kontaktieren"
@@ -243,6 +243,10 @@
       "LANGUAGE": {
         "TITLE": "Sprache",
         "DESC": "Du kannst es jederzeit im Einstellungsbereich ändern."
+      },
+      "GOAL": {
+        "TITLE": "Was ist dein monatliches Ausgabenziel?",
+        "DESC": "Setze dir ein monatliches Ausgabenziel, um auf Kurs zu bleiben."
       },
       "ACCOUNT": {
         "TITLE": "Konto",

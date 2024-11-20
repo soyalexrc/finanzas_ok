@@ -219,7 +219,8 @@
           "IMPORT": "Import from template",
           "EXPORT": "Export",
           "WIPE": "Wipe (reset data)",
-          "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories."
+          "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories.",
+          "DATA_ERASED": "All application information has been deleted",
         }
       },
       "CONTACT_DEV": {
@@ -243,6 +244,10 @@
       "LANGUAGE": {
         "TITLE": "Language",
         "DESC": "You can always change it in the settings panel."
+      },
+      "GOAL": {
+        "TITLE": "What is your monthly spending goal?",
+        "DESC": "Set a monthly spending goal to stay on track."
       },
       "ACCOUNT": {
         "TITLE": "Account",

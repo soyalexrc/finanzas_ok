@@ -45,7 +45,7 @@ export default function Screen() {
     const dispatch = useAppDispatch();
     const {type, month, year, limit} = useAppSelector(state => state.filter);
 
-    function handleWipeData() {
+    function handleWipeData(fn: () => void) {
         Alert.alert(t('COMMON.WARNING'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.POPUP_MESSAGE'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -58,7 +58,8 @@ export default function Screen() {
                     dispatch(resetCategoriesSlice())
                     dispatch(resetAccountsSlice())
                     dispatch(resetFilter())
-                    Alert.alert(t('COMMON.DONE'), 'Se ha eliminado toda la información de la aplicación')
+                    if (fn) fn();
+                    Alert.alert(t('COMMON.DONE'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.DATA_ERASED'))
                 }
             }
         ])
@@ -144,7 +145,7 @@ export default function Screen() {
                     <ListItem
                         hoverTheme
                         pressTheme
-                        onPress={handleImportDataFromSheet}
+                        onPress={() => handleWipeData(() => handleImportDataFromSheet())}
                         title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.IMPORT')}
                     />
                 </YGroup.Item>

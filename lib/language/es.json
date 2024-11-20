@@ -219,7 +219,8 @@
           "IMPORT": "Importar desde plantilla",
           "EXPORT": "Exportar",
           "WIPE": "Limpiar (eliminar informacion)",
-          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias"
+          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias",
+          "DATA_ERASED": "Se ha eliminado toda la información de la aplicación"
         }
       },
       "CONTACT_DEV": {
@@ -243,6 +244,10 @@
       "LANGUAGE": {
         "TITLE": "Idioma",
         "DESC": "Puedes cambiarlo en cualquier momento en el panel de configuración."
+      },
+      "GOAL": {
+        "TITLE": "¿Cuál es tu meta de gastos mensual?",
+        "DESC": "Establece un objetivo de gastos mensual para mantenerte en el camino correcto."
       },
       "ACCOUNT": {
         "TITLE": "Cuenta",

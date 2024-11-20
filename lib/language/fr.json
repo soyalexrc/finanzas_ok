@@ -219,7 +219,8 @@
           "IMPORT": "Importer à partir du modèle",
           "EXPORT": "Exporter",
           "WIPE": "Effacer (réinitialiser les données)",
-          "POPUP_MESSAGE": "Toutes les données seront perdues, y compris les transactions, les comptes et les catégories."
+          "POPUP_MESSAGE": "Toutes les données seront perdues, y compris les transactions, les comptes et les catégories.",
+          "DATA_ERASED": "Toutes les informations de l'application ont été supprimées"
         }
       },
       "CONTACT_DEV": {
@@ -243,6 +244,10 @@
       "LANGUAGE": {
         "TITLE": "Langue",
         "DESC": "Vous pouvez toujours le changer dans le panneau de configuration."
+      },
+      "GOAL": {
+        "TITLE": "Quel est votre objectif de dépenses mensuel?",
+        "DESC": "Fixez-vous un objectif de dépenses mensuel pour rester sur la bonne voie."
       },
       "ACCOUNT": {
         "TITLE": "Compte",

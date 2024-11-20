@@ -219,8 +219,8 @@ export default function Screen() {
                         <Image source={require('@/assets/images/adaptive-icon.png')} width={100} height={100}/>
                     </XStack>
                     <YStack px={20} mt={20}>
-                        <Text fontSize={30} mb={10}>Cual es tu meta de gastos mensual?</Text>
-                        <Text fontSize={14} mb={10}>Podras editar esto en las configuraciones de nuevo.</Text>
+                        <Text fontSize={30} mb={10}>{t('ONBOARDING.GOAL.TITLE')}</Text>
+                        <Text fontSize={14} mb={10}>{t('ONBOARDING.GOAL.DESC')}</Text>
                     </YStack>
                     <TextInput keyboardType="numeric" style={styles.input} returnKeyType="done" value={goalAmount} onChangeText={setGoalAmount} />
                     {/*<Text fontSize={50} textAlign="center" mt={40}>{formatByThousands('2500') }</Text>*/}
