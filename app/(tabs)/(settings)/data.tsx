@@ -6,8 +6,17 @@ import {useSQLiteContext} from "expo-sqlite";
 import {
     getAllAccounts,
     getAllCategories,
-    getAllTransactions, getSettingByKey, getSettings, getSettingsRaw, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
-    getTransactions, getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, importSheetToDB,
+    getAllTransactions,
+    getSettingByKey,
+    getSettings,
+    getSettingsRaw,
+    getTotalsOnEveryMonthByYear,
+    getTotalSpentByYear,
+    getTransactions,
+    getTransactionsGroupedAndFiltered,
+    getTransactionsGroupedAndFilteredV2,
+    importSheetToDB,
+    insertMultipleCategories,
     wipeData
 } from "@/lib/db";
 import {useTranslation} from "react-i18next";
@@ -45,7 +54,7 @@ export default function Screen() {
     const dispatch = useAppDispatch();
     const {type, month, year, limit} = useAppSelector(state => state.filter);
 
-    function handleWipeData(fn: () => void) {
+    function handleWipeData(hasCb = false, cb: () => void) {
         Alert.alert(t('COMMON.WARNING'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.POPUP_MESSAGE'), [
             {style: 'default', text: t('COMMON.CANCEL'), isPreferred: true},
             {
@@ -58,7 +67,15 @@ export default function Screen() {
                     dispatch(resetCategoriesSlice())
                     dispatch(resetAccountsSlice())
                     dispatch(resetFilter())
-                    if (fn) fn();
+                    if (hasCb) {
+                        cb()
+                    } else {
+                        insertMultipleCategories(db);
+                        setTimeout(() => {
+                            const categories = getAllCategories(db);
+                            dispatch(updateCategoriesList(categories));
+                        }, 2000)
+                    }
                     Alert.alert(t('COMMON.DONE'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.DATA_ERASED'))
                 }
             }
@@ -145,7 +162,7 @@ export default function Screen() {
                     <ListItem
                         hoverTheme
                         pressTheme
-                        onPress={() => handleWipeData(() => handleImportDataFromSheet())}
+                        onPress={() => handleWipeData(true, () => handleImportDataFromSheet())}
                         title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.IMPORT')}
                     />
                 </YGroup.Item>
@@ -164,7 +181,7 @@ export default function Screen() {
                     <ListItem
                         hoverTheme
                         pressTheme
-                        onPress={handleWipeData}
+                        onPress={() => handleWipeData(false, () => {})}
                         title={t('SETTINGS.DATA_MANAGEMENT.OPTIONS.WIPE')}
                     />
                 </YGroup.Item>

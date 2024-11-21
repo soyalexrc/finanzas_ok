@@ -27,6 +27,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // await db.runAsync('DROP TABLE accounts')
     // await db.runAsync('DROP TABLE categories')
     // await db.runAsync('DROP TABLE transactions')
+    // await db.runAsync('DROP TABLE cards')
 
     // Check if migrations table exists
 
@@ -107,6 +108,16 @@ const migrations = [
                     type TEXT NOT NULL
                 )
             `);
+
+                await db.execAsync(`
+                    CREATE TABLE IF NOT EXISTS cards (
+                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                         type TEXT,
+                         lastFour TEXT,
+                         source TEXT NOT NULL,
+                         bg TEXT NOT NULL
+                    )
+                `);
 
                 await db.execAsync(`
                 CREATE TABLE IF NOT EXISTS transactions (

@@ -146,6 +146,7 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
         await db.runAsync('DROP TABLE accounts')
         await db.runAsync('DROP TABLE categories')
         await db.runAsync('DROP TABLE transactions')
+        await db.runAsync('DROP TABLE cards')
 
         await migrateDbIfNeeded(db)
     } catch (e) {
