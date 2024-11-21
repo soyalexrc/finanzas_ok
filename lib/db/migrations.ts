@@ -111,11 +111,15 @@ const migrations = [
 
                 await db.execAsync(`
                     CREATE TABLE IF NOT EXISTS cards (
-                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                         type TEXT,
-                         lastFour TEXT,
-                         source TEXT NOT NULL,
-                         bg TEXT NOT NULL
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        type TEXT,
+                        lastFour TEXT,
+                        source TEXT NOT NULL,
+                        bg TEXT NOT NULL,
+                        creditLine INTEGER,
+                        preferred_currency_code TEXT,
+                        preferred_currency_symbol TEXT,
+                        balance INTEGER
                     )
                 `);
 

@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
         opacity: 0.5
     },
     dot: {
-        width: 10,
-        height: 10,
+        width: 6,
+        height: 6,
         borderRadius: 5,
         backgroundColor: '#ccc',
         marginHorizontal: 5

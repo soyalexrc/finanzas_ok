@@ -134,7 +134,7 @@ export default function Screen() {
             account: selectedAccount?.title ?? '',
             currency_code_t: currency.code,
             currency_symbol_t: currency.symbol,
-            dateTime: new Date().toISOString(),
+            dateTime: currentTransaction.date,
             category: selectedCategory.title,
             category_icon: selectedCategory.icon,
             category_type: selectedCategory.type,
@@ -168,13 +168,14 @@ export default function Screen() {
     }
 
     useEffect(() => {
-        if (selectedAccount?.id === 0) {
-            if (globalAccount.id > 0) {
-                dispatch(selectAccountForm(globalAccount));
-            } else {
-                dispatch(selectAccountForm(accounts[0]));
-            }
-        }
+        // if (selectedAccount?.id === 0) {
+        //     if (globalAccount.id > 0) {
+        //         dispatch(selectAccountForm(globalAccount));
+        //     } else {
+        //         dispatch(selectAccountForm(accounts[0]));
+        //     }
+        // }
+        console.log(currentTransaction);
     }, []);
 
     async function handlePopHiddenMenu() {
@@ -482,6 +483,7 @@ export default function Screen() {
                     // TODO GET DATE TIME CORRECTLY
                     const timeZonedDate = formatDate(date)
                     const formattedDate = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
+                    console.log(formattedDate);
                     // timeZonedDate.setHours(5);
                     setShowCalendar(false)
                     dispatch(onChangeDate(formattedDate))

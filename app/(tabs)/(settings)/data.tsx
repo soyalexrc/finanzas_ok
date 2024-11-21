@@ -86,6 +86,7 @@ export default function Screen() {
         const transactions = await getAllTransactions(db);
         const categories = getAllCategories(db);
         const accounts = getAllAccounts(db);
+        // const cards = getSettingsRaw(db);
         const settings = getSettingsRaw(db);
         await exportXSLX(transactions, settings, categories, accounts, 'Finanzas ok - Backup')
     }

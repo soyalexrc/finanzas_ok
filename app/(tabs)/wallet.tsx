@@ -22,12 +22,12 @@ export default function Screen() {
 
 
     const cards = [
-        {type: 'Credit', source: 'visa', lastFour: '5168', bg: "#0f153b"},
-        {type: 'Credit', source: 'mastercard', lastFour: '4289', bg: "#000000"},
-        {type: 'Debit', source: 'visa', lastFour: '4878', bg: "#17A2A2"},
-        {type: 'Credit', source: 'amex', lastFour: '4878', bg: "#bdbec2"},
-        {type: 'Credit', source: 'discover', lastFour: '4878', bg: "#3f9328"},
-        {type: '', source: '', lastFour: '', bg: '', isLast: true}
+        {type: 'Credit', source: 'visa', lastFour: '5168', bg: "#0f153b", creditLine: 70000, balance: 50000, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'},
+        {type: 'Credit', source: 'mastercard', lastFour: '4289', bg: "#000000", creditLine: 22600, balance: 22000, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'},
+        {type: 'Debit', source: 'visa', lastFour: '4878', bg: "#17A2A2", creditLine: 16000, balance: 12000, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'},
+        {type: 'Credit', source: 'amex', lastFour: '4878', bg: "#bdbec2", creditLine: 90000, balance: 48000, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'},
+        {type: 'Credit', source: 'discover', lastFour: '4878', bg: "#3f9328", creditLine: 5000, balance: 3500, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'},
+        {type: '', source: '', lastFour: '', bg: '', creditLine: 0, balance: 0, isLast: true, preferred_currency_symbol: 'S/', preferred_currency_code: 'PEN'}
     ]
 
     const accounts: Account[] = [
@@ -122,7 +122,7 @@ export default function Screen() {
                                     )
                                 } else {
                                     return (
-                                        <Pressable onPress={() => console.log('here')} style={styles.carouselContent}>
+                                        <Pressable onLongPress={async () => await Haptics.selectionAsync()} style={styles.carouselContent}>
                                             <View style={[styles.creditCard, {backgroundColor: item.bg}]}>
                                                 <View style={styles.creditAndVisaView}>
                                                     <Text style={styles.creditText}>{item.type}</Text>
@@ -137,8 +137,14 @@ export default function Screen() {
                                                 </View>
                                                 <View style={styles.cardDetailsView}>
                                                     {/*<Text style={styles.cardDetailsText}>Just Malla</Text>*/}
-                                                    <Text style={styles.cardDetailsText}>**** ****
-                                                        **** {item.lastFour}</Text>
+                                                    <Text style={styles.cardDetailsText}>**** **** **** {item.lastFour}</Text>
+                                                    <View style={styles.progressBar}>
+                                                        <View style={[styles.progress, { width: `${(item.balance / item.creditLine) * 100}%` }]} />
+                                                    </View>
+                                                    <XStack justifyContent="space-between">
+                                                        <Text style={styles.cardDetailsText}>{item.preferred_currency_symbol} {formatByThousands(String(item.balance))}</Text>
+                                                        <Text style={styles.cardDetailsText}>{item.preferred_currency_symbol} {formatByThousands(String(item.creditLine))}</Text>
+                                                    </XStack>
                                                 </View>
                                             </View>
                                         </Pressable>
@@ -216,6 +222,18 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         height: '100%'
-    }
+    },
+    progressBar: {
+        height: 3,
+        width: '100%',
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
+        overflow: 'hidden',
+        marginTop: 5,
+    },
+    progress: {
+        height: '100%',
+        backgroundColor: '#5EAA4BFF',
+    },
 
 });
