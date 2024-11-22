@@ -68,16 +68,7 @@ export default function Screen() {
                 }}
             >
                 <CustomHeader style={{paddingTop: insets.top}}>
-                    <TouchableOpacity onPress={async () => {
-                        await Haptics.selectionAsync()
-                    }} style={{
-                        flexDirection: 'row', alignItems: 'center', gap: 5,
-                        backgroundColor: theme.color2?.val,
-                        padding: 10,
-                        borderRadius: 100
-                    }}>
-                        <Text>List of loans</Text>
-                    </TouchableOpacity>
+                    <View />
                     <TouchableOpacity onPress={async () => {
                         await Haptics.selectionAsync()
                     }} style={{

@@ -140,7 +140,26 @@ const migrations = [
                         category_icon TEXT NOT NULL,
                         category TEXT,
                         account TEXT,
-                        status BOOLEAN DEFAULT TRUE
+                        status BOOLEAN DEFAULT FALSE
+                    )
+                `);
+
+                await db.execAsync(`
+                    CREATE TABLE IF NOT EXISTS who_owes_me (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        date_created TEXT NOT NULL,
+                        date_paid TEXT,
+                        message TEXT,
+                        hidden_amount INTEGER DEFAULT 0,
+                        amount INTEGER NOT NULL,
+                        currency_symbol TEXT,
+                        currency_code TEXT,
+                        category_type TEXT NOT NULL,
+                        category_icon TEXT NOT NULL,
+                        category TEXT,
+                        account TEXT,
+                        status BOOLEAN DEFAULT FALSE
                     )
                 `);
 
