@@ -4,7 +4,7 @@ import {Alert, Platform} from "react-native";
 import {useHeaderHeight} from "@react-navigation/elements";
 import {useSQLiteContext} from "expo-sqlite";
 import {
-    getAllAccounts,
+    getAllAccounts, getAllCards,
     getAllCategories,
     getAllTransactions,
     getSettingByKey,
@@ -74,7 +74,7 @@ export default function Screen() {
                         setTimeout(() => {
                             const categories = getAllCategories(db);
                             dispatch(updateCategoriesList(categories));
-                        }, 2000)
+                        }, 1000)
                     }
                     Alert.alert(t('COMMON.DONE'), t('SETTINGS.DATA_MANAGEMENT.OPTIONS.DATA_ERASED'))
                 }
@@ -86,9 +86,9 @@ export default function Screen() {
         const transactions = await getAllTransactions(db);
         const categories = getAllCategories(db);
         const accounts = getAllAccounts(db);
-        // const cards = getSettingsRaw(db);
+        const cards = getAllCards(db);
         const settings = getSettingsRaw(db);
-        await exportXSLX(transactions, settings, categories, accounts, 'Finanzas ok - Backup')
+        await exportXSLX(transactions, settings, categories, accounts, cards, 'Finanzas ok - Backup')
     }
 
     async function handleImportDataFromSheet() {
@@ -97,7 +97,7 @@ export default function Screen() {
 
         // validate that in te keys exists the transactions, categories, accounts and settings keys
         if (!keys.includes('transactions') || !keys.includes('categories') || !keys.includes('accounts') || !keys.includes('settings')) {
-            Alert.alert(t('COMMON.ERROR'), 'No se ha podido importar la información, por favor verifica que el archivo tenga las hojas necesarias');
+            Alert.alert(t('COMMON.ERROR'), 'No se ha podido importar la información, por favor verifica que el archivo tenga las hojas necesarias (transactions, categories, accounts, settings, cards)');
             return;
         }
 
@@ -107,7 +107,7 @@ export default function Screen() {
             return;
         }
 
-        await importSheetToDB(db, data.transactions, data.accounts, data.categories, data.settings);
+        await importSheetToDB(db, data.transactions, data.accounts, data.categories, data.settings, data.cards);
         dispatch(resetFilters());
         dispatch(resetTransactionsSlice());
         dispatch(resetCategoriesSlice())

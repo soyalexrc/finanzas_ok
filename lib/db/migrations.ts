@@ -77,6 +77,9 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         // const transactions = await db.getAllAsync('SELECT * FROM transactions');
         // console.log(transactions);
 
+        const payments = await db.getAllAsync('SELECT * FROM payments');
+        console.log(payments);
+
     } catch (err) {
         console.error('Ocurrio un error corriendo las migraciones... ', err)
     }
@@ -120,6 +123,24 @@ const migrations = [
                         preferred_currency_code TEXT,
                         preferred_currency_symbol TEXT,
                         balance INTEGER
+                    )
+                `);
+
+                await db.execAsync(`
+                    CREATE TABLE IF NOT EXISTS payments (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        message TEXT,
+                        hidden_amount INTEGER DEFAULT 0,
+                        amount INTEGER NOT NULL,
+                        currency_symbol TEXT,
+                        currency_code TEXT,
+                        category_type TEXT NOT NULL,
+                        category_icon TEXT NOT NULL,
+                        category TEXT,
+                        account TEXT,
+                        status BOOLEAN DEFAULT TRUE
                     )
                 `);
 

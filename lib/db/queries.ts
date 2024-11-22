@@ -31,6 +31,13 @@ export function getAllAccounts(db: SQLiteDatabase): Account[] {
                           FROM accounts ORDER BY title`);
 }
 
+export function getAllCards(db: SQLiteDatabase): any[] {
+    // db.runSync(`UPDATE accounts SET balance = ? WHERE id = ? `, [500, 1]);
+    // db.runSync(`INSERT INTO accounts (title, icon, balance, positive_state) VALUES ($title, $icon, $balance, $positive_status)`, { $title: 'Visa 1234', $icon: '💳', $balance: 43142.23, $positive_status: false })
+    return db.getAllSync(`SELECT *
+                          FROM cards ORDER BY type`);
+}
+
 export function getSettingsRaw(db: SQLiteDatabase): {key: string, value: string}[] {
     return  db.getAllSync(`SELECT * FROM settings`);
 }
@@ -154,7 +161,7 @@ export async function wipeData(db: SQLiteDatabase): Promise<void> {
     }
 }
 
-export async function importSheetToDB(db: SQLiteDatabase, transactions: Transaction[], accounts: Account[], categories: Category[], settings: {key: string, value: string}[]) {
+export async function importSheetToDB(db: SQLiteDatabase, transactions: Transaction[], accounts: Account[], categories: Category[], settings: {key: string, value: string}[], cards: any[]) {
     try {
         // insert transaction, account, category and setting into Sqlite db
         for (const account of accounts) {
@@ -1278,11 +1285,11 @@ export function searchTransactions(db: SQLiteDatabase, query: string, type: 'all
 }
 
 export async function deleteAccount(db: SQLiteDatabase, accountId: number) {
-    await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
+    // await db.runAsync('DELETE FROM transactions WHERE account_id = ? ', [accountId]);
     await db.runAsync('DELETE FROM accounts WHERE id = ?', [accountId]);
 }
 
 export async function deleteCategory(db: SQLiteDatabase, categoryId: number) {
-    await db.runAsync('DELETE FROM transactions WHERE category_id = ? ', [categoryId]);
+    // await db.runAsync('DELETE FROM transactions WHERE category_id = ? ', [categoryId]);
     await db.runAsync('DELETE FROM categories WHERE id = ?', [categoryId]);
 }
