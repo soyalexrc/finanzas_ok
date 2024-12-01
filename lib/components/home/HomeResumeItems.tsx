@@ -52,6 +52,8 @@ import {selectSettings} from "@/lib/store/features/settings/settingsSlice";
 import * as Haptics from 'expo-haptics';
 import {useTranslation} from "react-i18next";
 import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
+import {fromZonedTime} from "date-fns-tz";
+import {getCalendars,} from "expo-localization";
 
 export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId: number) => void}) {
     const db = useSQLiteContext();
@@ -68,10 +70,12 @@ export default function HomeResumeItems({fn}: {fn: (t: FullTransaction, groupId:
 
     async function handlePress(t: FullTransaction) {
         await Haptics.selectionAsync();
+        const { timeZone } = getCalendars()[0];
+        const formattedDate = fromZonedTime(t.date, timeZone!).toISOString();
         dispatch(updateCurrentTransaction({
-            dateTime: t.date,
+            dateTime: formattedDate,
             category_icon: t.category.icon,
-            date: t.date,
+            date: formattedDate,
             category: t.category.title,
             currency_symbol_t: t.account.currency_symbol,
             currency_code_t: t.account.currency_code,

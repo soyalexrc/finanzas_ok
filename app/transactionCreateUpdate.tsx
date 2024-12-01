@@ -56,9 +56,10 @@ import {es, enUS} from 'date-fns/locale';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
-import {getLocales} from "expo-localization";
+import {getCalendars, getLocales} from "expo-localization";
 import currencies from "@/lib/utils/data/currencies";
 import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
+import {fromZonedTime} from "date-fns-tz";
 
 export default function Screen() {
     const locales = getLocales();
@@ -481,9 +482,12 @@ export default function Screen() {
                 maximumDate={new Date()}
                 onConfirm={(date) => {
                     // TODO GET DATE TIME CORRECTLY
-                    const timeZonedDate = formatDate(date)
-                    const formattedDate = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
+                    // const timeZonedDate = formatDate(date)
+                    const { timeZone } = getCalendars()[0];
+                    const formattedDate = fromZonedTime(date, timeZone!).toISOString();
+                    // const formattedDateOld = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
                     console.log(formattedDate);
+                    // console.log(formattedDateOld);
                     // timeZonedDate.setHours(5);
                     setShowCalendar(false)
                     dispatch(onChangeDate(formattedDate))
