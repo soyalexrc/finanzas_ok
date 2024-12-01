@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Actualizacion disponible",
+      "DESCRIPTION": "Hay una nueva actualizacion disponible. ¿Te gustaria descargarla e instalarla ahora?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Gastado esta semana",
       "SPENT_THIS_MONTH": "Gastado este mes",

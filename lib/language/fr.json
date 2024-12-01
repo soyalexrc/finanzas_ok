@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Cette section de l'application est en cours de développement."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Mise à jour disponible",
+      "DESCRIPTION": "Une nouvelle mise à jour est disponible. Souhaitez-vous la télécharger et l'installer maintenant ?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Dépensé cette semaine",
       "SPENT_THIS_MONTH": "Dépensé ce mois-ci",

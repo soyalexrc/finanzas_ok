@@ -176,7 +176,7 @@ export default function Screen() {
         //         dispatch(selectAccountForm(accounts[0]));
         //     }
         // }
-        console.log(currentTransaction);
+        // console.log(currentTransaction);
     }, []);
 
     async function handlePopHiddenMenu() {
@@ -486,7 +486,7 @@ export default function Screen() {
                     const { timeZone } = getCalendars()[0];
                     const formattedDate = fromZonedTime(date, timeZone!).toISOString();
                     // const formattedDateOld = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
-                    console.log(formattedDate);
+                    // console.log(formattedDate);
                     // console.log(formattedDateOld);
                     // timeZonedDate.setHours(5);
                     setShowCalendar(false)

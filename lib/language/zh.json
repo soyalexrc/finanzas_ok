@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "该应用程序的这一部分正在开发中。"
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "可用更新",
+      "DESCRIPTION": "有新的更新可用。您想现在下载并安装吗？"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "本周支出",
       "SPENT_THIS_MONTH": "本月支出",

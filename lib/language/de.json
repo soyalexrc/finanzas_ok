@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Update verfügbar",
+      "DESCRIPTION": "Ein neues Update ist verfügbar. Möchten Sie es jetzt herunterladen und installieren?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Diese Woche ausgegeben",
       "SPENT_THIS_MONTH": "Diesen Monat ausgegeben",

@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "This section of the app is under development."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Update Available",
+      "DESCRIPTION": "A new update is available. Would you like to download and install it now?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Spent this week",
       "SPENT_THIS_MONTH": "Spent this month",
