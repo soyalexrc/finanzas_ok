@@ -7,7 +7,7 @@ import {FullTransaction} from "@/lib/types/Transaction";
 import {
     createTransaction,
     deleteTransaction,
-    getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getAllAccounts, getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, stopRecurringInTransaction
 } from "@/lib/db";
@@ -62,7 +62,8 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
                     resetData()
                     dispatch(removeTransactionFromHomeList({transactionId: id, groupId}));
                     await deleteTransaction(db, id)
-                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const filterLimit = getSettingByKey(db, 'filter_limit')
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
                     const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
                     dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
                     dispatch(updateTotalsInYear(totalSpentByYear));
@@ -100,7 +101,8 @@ export default function TransactionSelectionOptionsSheet({open, setOpen, item, i
         if (updatedTransaction) {
             setOpen(false)
             resetData()
-            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+            const filterLimit = getSettingByKey(db, 'filter_limit')
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
             const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
             dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
             dispatch(updateTotalsInYear(totalSpentByYear));

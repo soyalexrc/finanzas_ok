@@ -81,7 +81,7 @@ export default function Screen() {
                     if (selectedCategoryForm.id === categoryId) {
                         dispatch(selectCategory(categories[0]))
                     }
-                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+                    const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, limit);
                     const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
                     dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
                     dispatch(updateTotalsInYear(totalSpentByYear));

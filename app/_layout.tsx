@@ -8,7 +8,7 @@ import Providers from "@/lib/components/Providers";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {changeNetworkState, selectNetworkState} from "@/lib/store/features/network/networkSlice";
 import {load, loadString, saveString} from "@/lib/utils/storage";
-import {Appearance, Platform, StatusBar, useColorScheme} from "react-native";
+import {Alert, Appearance, Platform, StatusBar, useColorScheme} from "react-native";
 import {
     selectSettings,
     updateAppearance,
@@ -16,6 +16,7 @@ import {
     updateSelectedLanguage
 } from "@/lib/store/features/settings/settingsSlice";
 import {useTheme, View} from "tamagui";
+import * as Updates from 'expo-updates';
 import {
     selectCategoryFilter,
     selectDateRangeFilter, updateAccountFilter, updateChartPoints, updateTransactionsGroupedByCategory
@@ -49,6 +50,7 @@ import {
 } from "@/lib/store/features/transactions/filterSlice";
 import {format} from "date-fns";
 import {enUS, es} from "date-fns/locale";
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -61,7 +63,6 @@ const InitialLayout = () => {
     const router = useRouter();
     const colorScheme = useColorScheme();
     const {languageCode, currencyCode, currencySymbol} = getLocales()[0]
-    const filterType = useAppSelector(selectHomeViewTypeFilter)
     const db = useSQLiteContext();
 
     async function updateStore() {
@@ -71,10 +72,10 @@ const InitialLayout = () => {
             const categories = getAllCategories(db);
             const settingLanguage = getSettingByKey(db, 'selected_language')
             const {start, end} = getCurrentMonth();
-            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense');
+            const filterLimit = getSettingByKey(db, 'filter_limit')
+            const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), 'expense', filterLimit?.value ? Number(filterLimit.value) : 2500);
             const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
             const currentMonthNumber = new Date().getMonth() + 1;
-            const filterLimit = getSettingByKey(db, 'filter_limit')
 
             // const {
             //     amountsGroupedByDate,
@@ -101,6 +102,14 @@ const InitialLayout = () => {
 
     useEffect(() => {
         updateStore();
+        const unsubscribe = NetInfo.addEventListener(
+            state => {
+                dispatch(changeNetworkState(state))
+            }
+        )
+        return () => {
+            unsubscribe()
+        }
     }, []);
 
     const [loaded, error] = useFonts({
@@ -121,16 +130,7 @@ const InitialLayout = () => {
         }
     }, [appearance]);
 
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(
-            state => {
-                dispatch(changeNetworkState(state))
-            }
-        )
-        return () => {
-            unsubscribe()
-        }
-    }, []);
+
 
     useEffect(() => {
         if (loaded) {
@@ -166,6 +166,8 @@ const InitialLayout = () => {
 
         await i18next.changeLanguage(settings?.selected_language ? settings.selected_language : languageCode ?? 'en');
 
+        await checkForUpdates();
+
         const notifications_scheduling: any = await load('notifications_scheduling') ?? {
             hour: 20,
             minute: 0,
@@ -175,6 +177,38 @@ const InitialLayout = () => {
 
 
     }
+
+    async function checkForUpdates()  {
+        try {
+            const update = await Updates.checkForUpdateAsync();
+            if (update.isAvailable) {
+                Alert.alert(
+                    t('UPDATES.NEW_VERSION'),
+                    t('UPDATES.DESCRIPTION'),
+                    [
+                        {
+                            text: t('COMMON.CANCEL'),
+                            style: 'cancel',
+                        },
+                        {
+                            text: t('COMMON.OK'),
+                            onPress: async () => {
+                                try {
+                                    await Updates.fetchUpdateAsync();
+                                    await Updates.reloadAsync();
+                                } catch (error) {
+                                    console.error('Error downloading or installing update:', error);
+                                }
+                            },
+                        },
+                    ],
+                );
+            }
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    };
+
 
 
     return (

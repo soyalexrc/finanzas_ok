@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "This section of the app is under development."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Update Available",
+      "DESCRIPTION": "A new update is available. Would you like to download and install it now?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Spent this week",
       "SPENT_THIS_MONTH": "Spent this month",
@@ -219,7 +223,8 @@
           "IMPORT": "Import from template",
           "EXPORT": "Export",
           "WIPE": "Wipe (reset data)",
-          "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories."
+          "POPUP_MESSAGE": "All data will be lost, including transactions, accounts and categories.",
+          "DATA_ERASED": "All application information has been deleted",
         }
       },
       "CONTACT_DEV": {
@@ -229,7 +234,10 @@
         "TITLE": "Rate app on Store"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Share with friends"
+        "TITLE": "Share with friends",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": " Check out Finanzas OK! It's a great app for managing your finances. Download it now from the App Store or Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Follow @finanzasokapp"
@@ -243,6 +251,10 @@
       "LANGUAGE": {
         "TITLE": "Language",
         "DESC": "You can always change it in the settings panel."
+      },
+      "GOAL": {
+        "TITLE": "What is your monthly spending goal?",
+        "DESC": "Set a monthly spending goal to stay on track."
       },
       "ACCOUNT": {
         "TITLE": "Account",

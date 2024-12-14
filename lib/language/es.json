@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Esta seccion se encuentra bajo desarrollo."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Actualizacion disponible",
+      "DESCRIPTION": "Hay una nueva actualizacion disponible. ¿Te gustaria descargarla e instalarla ahora?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Gastado esta semana",
       "SPENT_THIS_MONTH": "Gastado este mes",
@@ -219,7 +223,8 @@
           "IMPORT": "Importar desde plantilla",
           "EXPORT": "Exportar",
           "WIPE": "Limpiar (eliminar informacion)",
-          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias"
+          "POPUP_MESSAGE": "Se eliminara toda la informacion, incluyendo transacciones, cuentas y categorias",
+          "DATA_ERASED": "Se ha eliminado toda la información de la aplicación"
         }
       },
       "CONTACT_DEV": {
@@ -229,7 +234,10 @@
         "TITLE": "Calificar el app en la tienda"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Compartir con amigos"
+        "TITLE": "Compartir con amigos",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "¡Mira Finanzas OK! Es una gran aplicación para gestionar tus finanzas. ¡Descárgala ahora desde la App Store o Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Seguir @finanzasokapp"
@@ -243,6 +251,10 @@
       "LANGUAGE": {
         "TITLE": "Idioma",
         "DESC": "Puedes cambiarlo en cualquier momento en el panel de configuración."
+      },
+      "GOAL": {
+        "TITLE": "¿Cuál es tu meta de gastos mensual?",
+        "DESC": "Establece un objetivo de gastos mensual para mantenerte en el camino correcto."
       },
       "ACCOUNT": {
         "TITLE": "Cuenta",

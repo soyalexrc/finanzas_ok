@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
+import {getMonthsArrayByLocale} from "@/lib/helpers/date";
 
 interface FilterState {
     month: { text: string, number: number};
@@ -15,20 +16,7 @@ const initialState: FilterState = {
     totalInYear: [],
     year: new Date().getFullYear(),
     type: 'expense',
-    totalByMonth: [
-        {month: 'JAN', percentage: 0, monthNumber: 1},
-        {month: 'FEB', percentage: 0, monthNumber: 2},
-        {month: 'MAR', percentage: 0, monthNumber: 3},
-        {month: 'APR', percentage: 0, monthNumber: 4},
-        {month: 'MAY', percentage: 0, monthNumber: 5},
-        {month: 'JUN', percentage: 0, monthNumber: 6},
-        {month: 'JUL', percentage: 0, monthNumber: 7},
-        {month: 'AUG', percentage: 0, monthNumber: 8},
-        {month: 'SEP', percentage: 0, monthNumber: 9},
-        {month: 'OCT', percentage: 0, monthNumber: 10},
-        {month: 'NOV', percentage: 0, monthNumber: 11},
-        {month: 'DEC', percentage: 0, monthNumber: 12}
-    ],
+    totalByMonth: getMonthsArrayByLocale(),
     limit: 2500
 }
 
@@ -58,20 +46,7 @@ const filterSlice = createSlice({
             state.type = 'expense';
             state.limit = 2500;
             state.year = new Date().getFullYear();
-            state.totalByMonth = [
-                {month: 'JAN', percentage: 0, monthNumber: 1},
-                {month: 'FEB', percentage: 0, monthNumber: 2},
-                {month: 'MAR', percentage: 0, monthNumber: 3},
-                {month: 'APR', percentage: 0, monthNumber: 4},
-                {month: 'MAY', percentage: 0, monthNumber: 5},
-                {month: 'JUN', percentage: 0, monthNumber: 6},
-                {month: 'JUL', percentage: 0, monthNumber: 7},
-                {month: 'AUG', percentage: 0, monthNumber: 8},
-                {month: 'SEP', percentage: 0, monthNumber: 9},
-                {month: 'OCT', percentage: 0, monthNumber: 10},
-                {month: 'NOV', percentage: 0, monthNumber: 11},
-                {month: 'DEC', percentage: 0, monthNumber: 12}
-            ];
+            state.totalByMonth = getMonthsArrayByLocale();
             state.totalInYear = []
         }
     }
