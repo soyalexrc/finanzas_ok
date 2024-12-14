@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Dieser Abschnitt der App befindet sich in der Entwicklung."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Update verfügbar",
+      "DESCRIPTION": "Ein neues Update ist verfügbar. Möchten Sie es jetzt herunterladen und installieren?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Diese Woche ausgegeben",
       "SPENT_THIS_MONTH": "Diesen Monat ausgegeben",
@@ -219,8 +223,8 @@
           "IMPORT": "Aus Vorlage importieren",
           "EXPORT": "Exportieren",
           "WIPE": "Wischen (Daten zurücksetzen)",
-          "POPUP_MESSAGE": "Alle Daten gehen verloren, einschließlich Transaktionen, Konten und Kategorien."
-        }
+          "POPUP_MESSAGE": "Alle Daten gehen verloren, einschließlich Transaktionen, Konten und Kategorien.",
+          "DATA_ERASED": "Alle Informationen der Anwendung wurden gelöscht"        }
       },
       "CONTACT_DEV": {
         "TITLE": "Entwickler kontaktieren"
@@ -229,7 +233,10 @@
         "TITLE": "App im Store bewerten"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Mit Freunden teilen"
+        "TITLE": "Mit Freunden teilen",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "Schau dir Finanzas OK an! Es ist eine großartige App zur Verwaltung deiner Finanzen. Lade sie jetzt aus dem App Store oder Google Play Store herunter!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Folge @finanzasokapp"
@@ -243,6 +250,10 @@
       "LANGUAGE": {
         "TITLE": "Sprache",
         "DESC": "Du kannst es jederzeit im Einstellungsbereich ändern."
+      },
+      "GOAL": {
+        "TITLE": "Was ist dein monatliches Ausgabenziel?",
+        "DESC": "Setze dir ein monatliches Ausgabenziel, um auf Kurs zu bleiben."
       },
       "ACCOUNT": {
         "TITLE": "Konto",

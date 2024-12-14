@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "Cette section de l'application est en cours de développement."
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "Mise à jour disponible",
+      "DESCRIPTION": "Une nouvelle mise à jour est disponible. Souhaitez-vous la télécharger et l'installer maintenant ?"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "Dépensé cette semaine",
       "SPENT_THIS_MONTH": "Dépensé ce mois-ci",
@@ -219,7 +223,8 @@
           "IMPORT": "Importer à partir du modèle",
           "EXPORT": "Exporter",
           "WIPE": "Effacer (réinitialiser les données)",
-          "POPUP_MESSAGE": "Toutes les données seront perdues, y compris les transactions, les comptes et les catégories."
+          "POPUP_MESSAGE": "Toutes les données seront perdues, y compris les transactions, les comptes et les catégories.",
+          "DATA_ERASED": "Toutes les informations de l'application ont été supprimées"
         }
       },
       "CONTACT_DEV": {
@@ -229,7 +234,10 @@
         "TITLE": "Noter l'application sur la boutique"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "Partager avec des amis"
+        "TITLE": "Partager avec des amis",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "Découvrez Finanzas OK! C'est une excellente application pour gérer vos finances. Téléchargez-la maintenant depuis l'App Store ou Google Play Store!"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "Suivre @finanzasokapp"
@@ -243,6 +251,10 @@
       "LANGUAGE": {
         "TITLE": "Langue",
         "DESC": "Vous pouvez toujours le changer dans le panneau de configuration."
+      },
+      "GOAL": {
+        "TITLE": "Quel est votre objectif de dépenses mensuel?",
+        "DESC": "Fixez-vous un objectif de dépenses mensuel pour rester sur la bonne voie."
       },
       "ACCOUNT": {
         "TITLE": "Compte",

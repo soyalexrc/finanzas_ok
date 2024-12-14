@@ -11,6 +11,8 @@ import {
 } from "date-fns";
 import {es, enUS} from 'date-fns/locale'
 import {fromZonedTime} from "date-fns-tz";
+import {getLocales} from "expo-localization";
+// import { es,  enUS, fr, ja, de, zhCN} from 'date-fns/locale';
 
 export function getCurrentWeek(): { start: Date, end: Date } {
     const today = new Date();
@@ -68,6 +70,103 @@ export function getCustomMonthAndYear(month: number, year: number): { start: Dat
         start: startOfMonth(today),
         end: endOfMonth(today),
     }
+}
+
+export function getMonthsArrayByLocale() {
+    const locales = getLocales();
+    switch (locales[0].languageCode) {
+        case 'es':
+            return [
+                {month: 'ENE', percentage: 0, monthNumber: 1},
+                {month: 'FEB', percentage: 0, monthNumber: 2},
+                {month: 'MAR', percentage: 0, monthNumber: 3},
+                {month: 'ABR', percentage: 0, monthNumber: 4},
+                {month: 'MAY', percentage: 0, monthNumber: 5},
+                {month: 'JUN', percentage: 0, monthNumber: 6},
+                {month: 'JUL', percentage: 0, monthNumber: 7},
+                {month: 'AGO', percentage: 0, monthNumber: 8},
+                {month: 'SEP', percentage: 0, monthNumber: 9},
+                {month: 'OCT', percentage: 0, monthNumber: 10},
+                {month: 'NOV', percentage: 0, monthNumber: 11},
+                {month: 'DIC', percentage: 0, monthNumber: 12}
+            ];
+        case 'fr':
+            return [
+                {month: 'JAN', percentage: 0, monthNumber: 1},
+                {month: 'FEB', percentage: 0, monthNumber: 2},
+                {month: 'MAR', percentage: 0, monthNumber: 3},
+                {month: 'AVR', percentage: 0, monthNumber: 4},
+                {month: 'MAI', percentage: 0, monthNumber: 5},
+                {month: 'JUN', percentage: 0, monthNumber: 6},
+                {month: 'JUL', percentage: 0, monthNumber: 7},
+                {month: 'AOU', percentage: 0, monthNumber: 8},
+                {month: 'SEP', percentage: 0, monthNumber: 9},
+                {month: 'OCT', percentage: 0, monthNumber: 10},
+                {month: 'NOV', percentage: 0, monthNumber: 11},
+                {month: 'DEC', percentage: 0, monthNumber: 12}
+            ];
+        case 'de':
+            return [
+                {month: 'JAN', percentage: 0, monthNumber: 1},
+                {month: 'FEB', percentage: 0, monthNumber: 2},
+                {month: 'MÄR', percentage: 0, monthNumber: 3},
+                {month: 'APR', percentage: 0, monthNumber: 4},
+                {month: 'MAI', percentage: 0, monthNumber: 5},
+                {month: 'JUN', percentage: 0, monthNumber: 6},
+                {month: 'JUL', percentage: 0, monthNumber: 7},
+                {month: 'AUG', percentage: 0, monthNumber: 8},
+                {month: 'SEP', percentage: 0, monthNumber: 9},
+                {month: 'OKT', percentage: 0, monthNumber: 10},
+                {month: 'NOV', percentage: 0, monthNumber: 11},
+                {month: 'DEZ', percentage: 0, monthNumber: 12}
+            ];
+        case 'ja':
+            return [
+                {month: '1月', percentage: 0, monthNumber: 1},
+                {month: '2月', percentage: 0, monthNumber: 2},
+                {month: '3月', percentage: 0, monthNumber: 3},
+                {month: '4月', percentage: 0, monthNumber: 4},
+                {month: '5月', percentage: 0, monthNumber: 5},
+                {month: '6月', percentage: 0, monthNumber: 6},
+                {month: '7月', percentage: 0, monthNumber: 7},
+                {month: '8月', percentage: 0, monthNumber: 8},
+                {month: '9月', percentage: 0, monthNumber: 9},
+                {month: '10月', percentage: 0, monthNumber: 10},
+                {month: '11月', percentage: 0, monthNumber: 11},
+                {month: '12月', percentage: 0, monthNumber: 12}
+            ];
+        case 'zh':
+            return [
+                {month: '1月', percentage: 0, monthNumber: 1},
+                {month: '2月', percentage: 0, monthNumber: 2},
+                {month: '3月', percentage: 0, monthNumber: 3},
+                {month: '4月', percentage: 0, monthNumber: 4},
+                {month: '5月', percentage: 0, monthNumber: 5},
+                {month: '6月', percentage: 0, monthNumber: 6},
+                {month: '7月', percentage: 0, monthNumber: 7},
+                {month: '8月', percentage: 0, monthNumber: 8},
+                {month: '9月', percentage: 0, monthNumber: 9},
+                {month: '10月', percentage: 0, monthNumber: 10},
+                {month: '11月', percentage: 0, monthNumber: 11},
+                {month: '12月', percentage: 0, monthNumber: 12}
+            ];
+        default:
+            return [
+                {month: 'JAN', percentage: 0, monthNumber: 1},
+                {month: 'FEB', percentage: 0, monthNumber: 2},
+                {month: 'MAR', percentage: 0, monthNumber: 3},
+                {month: 'APR', percentage: 0, monthNumber: 4},
+                {month: 'MAY', percentage: 0, monthNumber: 5},
+                {month: 'JUN', percentage: 0, monthNumber: 6},
+                {month: 'JUL', percentage: 0, monthNumber: 7},
+                {month: 'AUG', percentage: 0, monthNumber: 8},
+                {month: 'SEP', percentage: 0, monthNumber: 9},
+                {month: 'OCT', percentage: 0, monthNumber: 10},
+                {month: 'NOV', percentage: 0, monthNumber: 11},
+                {month: 'DEC', percentage: 0, monthNumber: 12}
+            ];
+    }
+    // i need to get by the fist locale language, the name of the months and return a syntax similar to the one below
 }
 
 export const formatDateHomeItemGroups = (date: string, locale = 'es') => {

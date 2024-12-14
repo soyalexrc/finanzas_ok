@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "该应用程序的这一部分正在开发中。"
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "可用更新",
+      "DESCRIPTION": "有新的更新可用。您想现在下载并安装吗？"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "本周支出",
       "SPENT_THIS_MONTH": "本月支出",
@@ -219,8 +223,8 @@
           "IMPORT": "从模板导入",
           "EXPORT": "导出",
           "WIPE": "擦除（重置数据）",
-          "POPUP_MESSAGE": "所有数据都将丢失，包括交易、账户和类别。"
-
+          "POPUP_MESSAGE": "所有数据都将丢失，包括交易、账户和类别。",
+          "DATA_ERASED": "所有应用程序信息已被删除"
         }
       },
       "CONTACT_DEV": {
@@ -230,7 +234,10 @@
         "TITLE": "在商店上评价应用"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "与朋友分享"
+        "TITLE": "与朋友分享",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "查看Finanzas OK！这是一个管理财务的好应用。现在从App Store或Google Play Store下载！"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "关注@finanzasokapp"
@@ -244,6 +251,10 @@
       "LANGUAGE": {
         "TITLE": "语言",
         "DESC": "您可以在设置面板中随时更改。"
+      },
+      "GOAL": {
+        "TITLE": "你的每月支出目标是什么？",
+        "DESC": "设定每月支出目标以保持正轨。"
       },
       "ACCOUNT": {
         "TITLE": "账户",

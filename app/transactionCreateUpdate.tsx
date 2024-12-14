@@ -28,7 +28,7 @@ import {
 } from "@/lib/store/features/transactions/transactionsSlice";
 import {
     createTransactionV2, deleteTransaction,
-    getAllAccounts, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
+    getAllAccounts, getSettingByKey, getTotalsOnEveryMonthByYear, getTotalSpentByYear,
     getTransactions,
     getTransactionsGroupedAndFiltered, getTransactionsGroupedAndFilteredV2, getTransactionsV2,
 } from "@/lib/db";
@@ -56,9 +56,10 @@ import {es, enUS} from 'date-fns/locale';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import CurrenciesSheet from "@/lib/components/ui/android-dropdowns-sheets/CurrenciesSheet";
-import {getLocales} from "expo-localization";
+import {getCalendars, getLocales} from "expo-localization";
 import currencies from "@/lib/utils/data/currencies";
 import {updateTotalByMonth, updateTotalsInYear} from "@/lib/store/features/transactions/filterSlice";
+import {fromZonedTime} from "date-fns-tz";
 
 export default function Screen() {
     const locales = getLocales();
@@ -134,7 +135,7 @@ export default function Screen() {
             account: selectedAccount?.title ?? '',
             currency_code_t: currency.code,
             currency_symbol_t: currency.symbol,
-            dateTime: new Date().toISOString(),
+            dateTime: currentTransaction.date,
             category: selectedCategory.title,
             category_icon: selectedCategory.icon,
             category_type: selectedCategory.type,
@@ -149,7 +150,8 @@ export default function Screen() {
         // dispatch(updateAccountInList(transaction.account));
         // const accounts = getAllAccounts(db);
         // dispatch(updateAccountsList(accounts))
-        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type);
+        const filterLimit = getSettingByKey(db, 'filter_limit')
+        const totalsOnEveryMonthByYear = getTotalsOnEveryMonthByYear(db, new Date().getFullYear(), type, filterLimit?.value ? Number(filterLimit.value) : 2500);
         const totalSpentByYear = getTotalSpentByYear(db, new Date().getFullYear());
         dispatch(updateTotalByMonth(totalsOnEveryMonthByYear));
         dispatch(updateTotalsInYear(totalSpentByYear));
@@ -167,13 +169,14 @@ export default function Screen() {
     }
 
     useEffect(() => {
-        if (selectedAccount?.id === 0) {
-            if (globalAccount.id > 0) {
-                dispatch(selectAccountForm(globalAccount));
-            } else {
-                dispatch(selectAccountForm(accounts[0]));
-            }
-        }
+        // if (selectedAccount?.id === 0) {
+        //     if (globalAccount.id > 0) {
+        //         dispatch(selectAccountForm(globalAccount));
+        //     } else {
+        //         dispatch(selectAccountForm(accounts[0]));
+        //     }
+        // }
+        // console.log(currentTransaction);
     }, []);
 
     async function handlePopHiddenMenu() {
@@ -479,11 +482,15 @@ export default function Screen() {
                 maximumDate={new Date()}
                 onConfirm={(date) => {
                     // TODO GET DATE TIME CORRECTLY
-                    const timeZonedDate = formatDate(date)
-                    // console.log({timeZonedDate, date})
-                    timeZonedDate.setHours(5);
+                    // const timeZonedDate = formatDate(date)
+                    const { timeZone } = getCalendars()[0];
+                    const formattedDate = fromZonedTime(date, timeZone!).toISOString();
+                    // const formattedDateOld = format(timeZonedDate, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
+                    // console.log(formattedDate);
+                    // console.log(formattedDateOld);
+                    // timeZonedDate.setHours(5);
                     setShowCalendar(false)
-                    dispatch(onChangeDate(timeZonedDate.toISOString()))
+                    dispatch(onChangeDate(formattedDate))
                 }}
                 onCancel={() => {
                     setShowCalendar(false)

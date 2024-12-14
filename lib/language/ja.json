@@ -50,6 +50,10 @@
         "SCREEN_UNDER_DEVELOPMENT": "アプリのこのセクションは開発中です。"
       }
     },
+    "UPDATES": {
+      "NEW_VERSION": "利用可能な更新",
+      "DESCRIPTION": "新しい更新が利用可能です。今すぐダウンロードしてインストールしますか？"
+    },
     "HOME_RESUME_DROPDOWN": {
       "SPENT_THIS_WEEK": "今週の支出",
       "SPENT_THIS_MONTH": "今月の支出",
@@ -219,8 +223,8 @@
           "IMPORT": "テンプレートからインポート",
           "EXPORT": "エクスポート",
           "WIPE": "ワイプ（データをリセット）",
-          "POPUP_MESSAGE": "すべてのデータが失われます。取引、口座、カテゴリなどすべてが含まれます。"
-
+          "POPUP_MESSAGE": "すべてのデータが失われます。取引、口座、カテゴリなどすべてが含まれます。",
+          "DATA_ERASED": "アプリケーションのすべての情報が削除されました"
         }
       },
       "CONTACT_DEV": {
@@ -230,7 +234,10 @@
         "TITLE": "ストアでアプリを評価"
       },
       "SHARE_WITH_FRIENDS": {
-        "TITLE": "友達と共有"
+        "TITLE": "友達と共有",
+        "OPTIONS": {
+          "DEFAULT_MESSAGE": "Finanzas OKをチェックしてください！これはあなたの財務を管理するための素晴らしいアプリです。今すぐApp StoreまたはGoogle Play Storeからダウンロードしてください！"
+        }
       },
       "FOLLOW_ON_IG": {
         "TITLE": "フォロー @finanzasokapp"
@@ -244,6 +251,10 @@
       "LANGUAGE": {
         "TITLE": "言語",
         "DESC": "設定パネルでいつでも変更できます。"
+      },
+      "GOAL": {
+        "TITLE": "あなたの月間支出目標は何ですか？",
+        "DESC": "軌道に乗るために月間支出目標を設定しましょう。"
       },
       "ACCOUNT": {
         "TITLE": "アカウント",

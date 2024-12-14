@@ -11,7 +11,7 @@ import {
     Button, Image
 } from 'tamagui';
 import React, {useEffect, useRef} from "react";
-import {Alert, Animated, Linking, Platform} from "react-native";
+import {Alert, Animated, Linking, Platform, Share} from "react-native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -24,7 +24,6 @@ import {useAuth, useUser} from "@clerk/clerk-expo";
 import * as Application from 'expo-application';
 import * as Haptics from "expo-haptics";
 import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
-import * as Sharing from 'expo-sharing';
 
 export default function Screen() {
     const {signOut, isSignedIn} = useAuth();
@@ -112,10 +111,23 @@ export default function Screen() {
 
     async function shareToFriends() {
         try {
+            const initialMessage = t('SETTINGS.SHARE_WITH_FRIENDS.OPTIONS.DEFAULT_MESSAGE')
+            const message = `
+            ${initialMessage}
+            iOS: https://apps.apple.com/app/id6737455994
+            Android: https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok`
             if (Platform.OS === 'ios') {
-                await Sharing.shareAsync('https://apps.apple.com/app/id6737455994');
+                await Share.share({
+                    title: 'Finanzas OK',
+                    url: 'https://apps.apple.com/app/id6737455994',
+                    message,
+                }, { subject: 'Finanzas Ok', dialogTitle: 'Finanas Ok', tintColor: '#5EAA4BFF' })
             } else {
-                await Sharing.shareAsync('https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok');
+                await Share.share({
+                    title: 'Finanzas OK',
+                    url: 'https://play.google.com/store/apps/details?id=com.alexrc.finanzas_ok',
+                    message,
+                }, { subject: 'Finanzas Ok', dialogTitle: 'Finanas Ok', tintColor: '#5EAA4BFF' })
             }
         } catch (error) {
             console.error('Error sharing', error)
@@ -288,7 +300,6 @@ export default function Screen() {
                             <ListItem
                                 hoverTheme
                                 pressTheme
-                                disabled={!isIos}
                                 onPress={shareToFriends}
                                 title={t('SETTINGS.SHARE_WITH_FRIENDS.TITLE')}
                                 icon={<IconWrapper bgColor="$blue10Light"

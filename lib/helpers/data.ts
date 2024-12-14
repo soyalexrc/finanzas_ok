@@ -3,9 +3,11 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 
-export async function exportXSLX(transactions: any[], settings: any[], categories: any[], accounts: any[], fileName: string) {
+export async function exportXSLX(transactions: any[], settings: any[], categories: any[], accounts: any[], cards: any[], fileName: string) {
     // Create a new workbook
     const wb = XLSX.utils.book_new();
+
+    // TODO agregar cards
 
     // Convert data to sheets and append them to the workbook
     const dataSheet = XLSX.utils.json_to_sheet(transactions);
@@ -19,6 +21,9 @@ export async function exportXSLX(transactions: any[], settings: any[], categorie
 
     const accountsSheet = XLSX.utils.json_to_sheet(accounts);
     XLSX.utils.book_append_sheet(wb, accountsSheet, "Accounts");
+
+    const cardsSheet = XLSX.utils.json_to_sheet(cards);
+    XLSX.utils.book_append_sheet(wb, cardsSheet, "Cards");
 
     const wbout = XLSX.write(wb, {
         type: 'base64',
@@ -67,7 +72,7 @@ export async function readXlsxFile(): Promise<any> {
                 const worksheet = workbook.Sheets[sheetName];
                 sheetsData[sheetName] = XLSX.utils.sheet_to_json(worksheet);
             });
-
+            // TODO agregar cards
             return {
                 settings: sheetsData['Settings'],
                 transactions: sheetsData['Transactions'],

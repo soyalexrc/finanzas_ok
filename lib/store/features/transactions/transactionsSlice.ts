@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/Transaction";
 import {formatDate} from "@/lib/helpers/date";
+import {format} from "date-fns";
 
 export interface TransactionsState {
     currentTransaction: Transaction;
@@ -13,8 +14,8 @@ export interface TransactionsState {
 
 function setInitialDate() {
     const date = formatDate(new Date());
-    date.setHours(5);
-    return date.toISOString();
+    // date.setHours(5);
+    return format(date, 'yyyy-MM-dd\'T\'HH:mm:ssXXX');
 }
 
 const initialState: TransactionsState = {
@@ -27,7 +28,7 @@ const initialState: TransactionsState = {
         currency_code_t: 'USD',
         currency_symbol_t: '$',
         account: '',
-        dateTime: new Date().toDateString(),
+        dateTime: setInitialDate(),
         date: setInitialDate(),
         notes: '',
         hidden_amount: "0",
@@ -80,14 +81,14 @@ export const transactionsSlice = createSlice({
             state.currentTransaction = {
                 amount: "0",
                 hidden_amount: "0",
-                dateTime: new Date().toISOString(),
+                dateTime: setInitialDate(),
                 currency_symbol_t: '$',
                 currency_code_t: 'USD',
                 account: '',
                 category_type: '',
                 category: '',
                 category_icon: '',
-                date: new Date().toISOString(),
+                date: setInitialDate(),
                 notes: '',
                 recurrentDate: 'none',
                 id: -1

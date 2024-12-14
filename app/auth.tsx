@@ -1,4 +1,4 @@
-import {Button, Input, Text, useTheme, View} from "tamagui";
+import {Button, Image, Input, Text, useTheme, View} from "tamagui";
 import {RefObject, useCallback, useRef, useState} from "react";
 import {
     Alert,
@@ -71,7 +71,7 @@ export default function Screen() {
             })
 
             if (signInAttempt.status === 'complete') {
-                await setActive({ session: signInAttempt.createdSessionId })
+                await setActive({session: signInAttempt.createdSessionId})
                 router.back()
             } else {
                 // If the status is not complete, check why. User may need to
@@ -126,7 +126,7 @@ export default function Screen() {
 
 
             // Send the user an email with the verification code
-            await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+            await signUp.prepareEmailAddressVerification({strategy: 'email_code'})
 
             // Display the second form to collect the verification code
             setPendingVerification(true)
@@ -153,7 +153,7 @@ export default function Screen() {
             // // If verification was completed, set the session to active
             // // and redirect the user
             if (signUpAttempt.status === 'complete') {
-                await setActive!({ session: signUpAttempt.createdSessionId })
+                await setActive!({session: signUpAttempt.createdSessionId})
                 router.back();
             } else {
                 // If the status is not complete, check why. User may need to
@@ -162,8 +162,7 @@ export default function Screen() {
             }
         } catch (error: any) {
             Alert.alert(error.errors[0].message, error.errors[0].longMessage);
-        }
-        finally {
+        } finally {
             setLoading(false)
         }
     }
@@ -223,17 +222,29 @@ export default function Screen() {
         <View flex={1} backgroundColor="$color1" px={20} justifyContent="center">
             <KeyboardAvoidingView style={{flex: 1}} behavior={isIos ? 'padding' : 'height'} keyboardVerticalOffset={70}>
                 <View alignItems="center">
-                    <LottieView
-                        autoPlay
-                        ref={animation}
-                        enableMergePathsAndroidForKitKatAndAbove={true}
-                        style={{
-                            width: type === 'login' ? 200 : 150,
-                            height: type === 'login' ? 200 : 150,
-                        }}
-                        // Find more Lottie files at https://lottiefiles.com/featured
-                        source={require('@/assets/lottie/auth-animation.json')}
-                    />
+                    {
+                        isIos &&
+                        <LottieView
+                            autoPlay
+                            ref={animation}
+                            enableMergePathsAndroidForKitKatAndAbove={true}
+                            style={{
+                                width: type === 'login' ? 200 : 150,
+                                height: type === 'login' ? 200 : 150,
+                            }}
+                            // Find more Lottie files at https://lottiefiles.com/featured
+                            source={require('@/assets/lottie/auth-animation.json')}
+                        />
+                    }
+                    {
+                        !isIos &&
+                        <Image source={require('@/assets/images/auth-icon.png')}
+                               style={{
+                                   width: type === 'login' ? 200 : 150,
+                                   height: type === 'login' ? 200 : 150,
+                               }}
+                        />
+                    }
                 </View>
                 {
                     !pendingVerification &&
@@ -250,10 +261,12 @@ export default function Screen() {
                         }
 
                         <Text mb={2}>{t('AUTH.EMAIL')}</Text>
-                        <Input value={email} autoCapitalize="none" onChangeText={setEmail} size="$4" borderWidth={2} mb={10}/>
+                        <Input value={email} autoCapitalize="none" onChangeText={setEmail} size="$4" borderWidth={2}
+                               mb={10}/>
 
                         <Text mb={2}>{t('AUTH.PASSWORD')}</Text>
-                        <Input value={password} autoCapitalize="none" secureTextEntry onChangeText={setPassword} size="$4" borderWidth={2}/>
+                        <Input value={password} autoCapitalize="none" secureTextEntry onChangeText={setPassword}
+                               size="$4" borderWidth={2}/>
 
                         <View alignItems="center" mt={10}>
                             <TouchableOpacity onPress={toggleType}>
@@ -313,8 +326,10 @@ export default function Screen() {
                 {
                     pendingVerification &&
                     <>
-                        <Text textAlign="center" fontSize={20} mb={10} fontWeight="bold">{t('AUTH.ACCESS_CODE.TITLE')}</Text>
-                        <Text textAlign="center" mb={30}>{t('AUTH.ACCESS_CODE.DESCRIPTION')} <Text fontWeight="bold">{email}</Text></Text>
+                        <Text textAlign="center" fontSize={20} mb={10}
+                              fontWeight="bold">{t('AUTH.ACCESS_CODE.TITLE')}</Text>
+                        <Text textAlign="center" mb={30}>{t('AUTH.ACCESS_CODE.DESCRIPTION')} <Text
+                            fontWeight="bold">{email}</Text></Text>
                         <OTPInput
                             codes={codes!}
                             errorMessages={errorMessages}
