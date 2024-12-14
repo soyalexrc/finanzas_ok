@@ -72,13 +72,13 @@ export default function Screen() {
                     <TouchableOpacity
                         onPress={onPressType}
                         style={{
-                        flexDirection: 'row',
-                        gap: 5,
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: theme.color2?.val,
-                        borderRadius: 100
-                    }}>
+                            flexDirection: 'row',
+                            gap: 5,
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            backgroundColor: theme.color2?.val,
+                            borderRadius: 100
+                        }}>
                         <Text>{type === 'expense' ? t('COMMON.EXPENSE') : type === 'income' ? t('COMMON.INCOME') : t('COMMON.ALL')}</Text>
                         <Entypo name="select-arrows" size={18}
                                 color={schemeColor === 'light' ? 'black' : 'white'}/>
@@ -96,10 +96,10 @@ export default function Screen() {
                     {/*            color={schemeColor === 'light' ? 'black' : 'white'}/>*/}
                     {/*</TouchableOpacity>*/}
                 </XStack>
-               <View position="relative">
-                   <Feather style={{ position: 'absolute', top: '35%', left: 15, zIndex: 99 }} name="search" size={24} color={schemeColor === 'light' ? 'black' : 'white'}/>
-                   <Input flex={1} onChangeText={handleInputChange} placeholder={t('COMMON.SEARCH')} my={20} style={{ paddingLeft: 50 }} />
-               </View>
+                <View position="relative">
+                    <Feather style={{ position: 'absolute', top: '35%', left: 15, zIndex: 99 }} name="search" size={24} color={schemeColor === 'light' ? 'black' : 'white'}/>
+                    <Input flex={1} onChangeText={handleInputChange} placeholder={t('COMMON.SEARCH')} my={20} style={{ paddingLeft: 50 }} />
+                </View>
             </YStack>
             <YStack px={10} pt={20} gap={10}>
                 {transactions.map((transaction, index) => (

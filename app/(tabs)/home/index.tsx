@@ -82,7 +82,7 @@ export default function HomeScreen() {
                     <TouchableOpacity
                         onPress={async () => {
                             await Haptics.selectionAsync()
-                            router.push('/search')
+                            router.push('/home/search')
                         }}
                         style={{
                             flexDirection: 'row', alignItems: 'center', gap: 5,

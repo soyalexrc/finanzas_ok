@@ -60,6 +60,15 @@
     },
     "plugins": [
       "expo-router",
+      "react-native-bottom-tabs",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       [
         "expo-notifications",
         {
@@ -76,7 +85,7 @@
             "minSdkVersion": 24
           },
           "ios": {
-            "deploymentTarget": "13.4"
+            "deploymentTarget": "14.0"
           }
         }
       ],
@@ -112,7 +121,8 @@
         {
           "iCloudContainerEnvironment": "Development"
         }
-      ]
+      ],
+      "react-native-bottom-tabs"
     ],
     "experiments": {
       "typedRoutes": true
@@ -125,7 +135,6 @@
         "projectId": "f3f3f3a8-d2ec-4088-ae83-cc81c8c47638"
       }
     },
-    //    "runtimeVersion": "1.0.0",
     "runtimeVersion": {
       "policy": "appVersion"
     },
