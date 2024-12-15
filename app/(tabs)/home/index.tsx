@@ -79,19 +79,6 @@ export default function HomeScreen() {
                         </Text>
                         <Entypo name="select-arrows" size={18} color={scheme === 'light' ? 'black' : 'white'}/>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={async () => {
-                            await Haptics.selectionAsync()
-                            router.push('/search')
-                        }}
-                        style={{
-                            flexDirection: 'row', alignItems: 'center', gap: 5,
-                            backgroundColor: theme.color2?.val,
-                            padding: 10,
-                            borderRadius: 100
-                        }}>
-                        <Feather name="search" size={24} color={scheme === 'light' ? 'black' : 'white'}/>
-                    </TouchableOpacity>
                 </CustomHeader>
                 <ScrollView showsVerticalScrollIndicator={false} paddingTop={isIos ? insets.top + 50 : 0}>
                     <ResumeDropDown/>

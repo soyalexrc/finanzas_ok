@@ -11,7 +11,7 @@ export function useBiometricAuth() {
         try {
             const hasHardwareSupport = await LocalAuthentication.hasHardwareAsync();
             if (!hasHardwareSupport) {
-                Alert.alert(t('COMMON.WARNING'), 'Biometric authentication permissions are denied or not found, if you want to access the content on this page, please check out the settings and give the requested permissions.', [
+                Alert.alert(t('COMMON.WARNING'), 'Biometric authentication permissions are denied or not found, if you want to access the content on this page, please check out the (settings) and give the requested permissions.', [
                     { text: t('COMMON.CANCEL'), style: 'destructive' },
                     {
                         text: t('COMMON.GIVE_ACCESS'),

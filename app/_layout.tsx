@@ -166,7 +166,7 @@ const InitialLayout = () => {
 
         await i18next.changeLanguage(settings?.selected_language ? settings.selected_language : languageCode ?? 'en');
 
-        await checkForUpdates();
+        // await checkForUpdates();
 
         const notifications_scheduling: any = await load('notifications_scheduling') ?? {
             hour: 20,
@@ -222,18 +222,18 @@ const InitialLayout = () => {
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
                 <Stack.Screen name="emojiSelection"
                               options={{presentation: 'modal', headerShown: false, animation: "slide_from_bottom"}}/>
-                <Stack.Screen name="search"
-                              options={{
-                                  animation: "slide_from_right",
-                                  title: '',
-                                  headerBlurEffect: 'prominent',
-                                  headerBackTitle: t('COMMON.BACK'),
-                                  headerTransparent: isIos,
-                                  headerTintColor: theme.color12?.val,
-                                  headerStyle: {
-                                      backgroundColor: theme.color1?.val,
-                                  },
-                              }}/>
+                {/*<Stack.Screen name="search"*/}
+                {/*              options={{*/}
+                {/*                  animation: "slide_from_right",*/}
+                {/*                  title: '',*/}
+                {/*                  headerBlurEffect: 'prominent',*/}
+                {/*                  headerBackTitle: t('COMMON.BACK'),*/}
+                {/*                  headerTransparent: isIos,*/}
+                {/*                  headerTintColor: theme.color12?.val,*/}
+                {/*                  headerStyle: {*/}
+                {/*                      backgroundColor: theme.color1?.val,*/}
+                {/*                  },*/}
+                {/*              }}/>*/}
                 <Stack.Screen name="auth" options={{
                     headerShown: false,
                     presentation: 'modal',

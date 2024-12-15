@@ -95,9 +95,9 @@ export default function Screen() {
         const data = await readXlsxFile();
         const keys = Object.keys(data);
 
-        // validate that in te keys exists the transactions, categories, accounts and settings keys
+        // validate that in te keys exists the transactions, categories, accounts and (settings) keys
         if (!keys.includes('transactions') || !keys.includes('categories') || !keys.includes('accounts') || !keys.includes('settings')) {
-            Alert.alert(t('COMMON.ERROR'), 'No se ha podido importar la información, por favor verifica que el archivo tenga las hojas necesarias (transactions, categories, accounts, settings, cards)');
+            Alert.alert(t('COMMON.ERROR'), 'No se ha podido importar la información, por favor verifica que el archivo tenga las hojas necesarias (transactions, categories, accounts, (settings), cards)');
             return;
         }
 

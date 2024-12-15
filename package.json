@@ -16,6 +16,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@bottom-tabs/react-navigation": "^0.7.6",
     "@clerk/clerk-expo": "^2.2.25",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^1.24.0",
@@ -68,6 +69,7 @@
     "react-dom": "18.2.0",
     "react-i18next": "^15.0.3",
     "react-native": "0.74.3",
+    "react-native-bottom-tabs": "^0.7.6",
     "react-native-calendars": "^1.1307.0",
     "react-native-date-picker": "^5.0.4",
     "react-native-gesture-handler": "^2.18.1",
