@@ -109,7 +109,7 @@ const Dot = ({isSelected}) => (
 
 const styles = StyleSheet.create({
     container: {
-        height: 300,
+        height: 150,
         justifyContent: 'center',
         alignItems: 'center'
     },

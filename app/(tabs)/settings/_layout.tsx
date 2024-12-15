@@ -30,16 +30,16 @@ export default function SettingsLayout() {
     }
 
     return (
-        <Stack screenOptions={{headerBackTitle: t('COMMON.BACK')}}>
+        <Stack initialRouteName="index" screenOptions={{headerBackTitle: t('COMMON.BACK')}}>
             <Stack.Screen
                 name="index"
                 options={{
                     title: t('SETTINGS.TITLE'),
                     headerBlurEffect: 'prominent',
                     headerTransparent: isIos,
-                    headerTintColor: theme.color12.val,
+                    headerTintColor: theme.color12?.val,
                     headerStyle: {
-                        backgroundColor: theme.color1.val,
+                        backgroundColor: theme.color1?.val,
                     }
                 }}
             />
@@ -47,9 +47,9 @@ export default function SettingsLayout() {
                 title: t('SETTINGS.APPEARANCE.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 
@@ -57,9 +57,9 @@ export default function SettingsLayout() {
                 title: t('SETTINGS.PRIVACY.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 
@@ -67,9 +67,9 @@ export default function SettingsLayout() {
                 title: t('SETTINGS.OTHER.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 
@@ -77,9 +77,9 @@ export default function SettingsLayout() {
                 title: t('SETTINGS.LANGUAGE.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 
@@ -87,9 +87,9 @@ export default function SettingsLayout() {
                 title: t('SETTINGS.ACCOUNTS.TITLE'),
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
                 headerRight: () => (
                     <Button size="$2" borderRadius="$12" onPress={onPressCreateAccount}>
@@ -102,9 +102,9 @@ export default function SettingsLayout() {
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
                 title: t('SETTINGS.CATEGORIES.TITLE'),
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
                 headerRight: () => (
                     <Button size="$2" borderRadius="$12" onPress={onPressCreateCategory}>
@@ -117,9 +117,9 @@ export default function SettingsLayout() {
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
                 title: t('SETTINGS.DATA_MANAGEMENT.TITLE'),
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 
@@ -127,9 +127,9 @@ export default function SettingsLayout() {
                 headerBlurEffect: 'prominent',
                 headerTransparent: isIos,
                 title: t('SETTINGS.NOTIFICATIONS.TITLE'),
-                headerTintColor: theme.color12.val,
+                headerTintColor: theme.color12?.val,
                 headerStyle: {
-                    backgroundColor: theme.color1.val,
+                    backgroundColor: theme.color1?.val,
                 },
             }}/>
 

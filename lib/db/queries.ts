@@ -55,9 +55,9 @@ export function getSettings(db: SQLiteDatabase): {[key: string]: string} {
 
 export function updateSettingByKey(db: SQLiteDatabase, key: string, value: string): boolean{
     try {
-        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        const row = db.getFirstSync('SELECT key FROM (settings) WHERE key = ?', [key]);;
         if (!row) {
-            db.runSync('INSERT INTO settings (key, value) VALUES ($key, $value)', {$key: key, $value: value});
+            db.runSync('INSERT INTO (settings) (key, value) VALUES ($key, $value)', {$key: key, $value: value});
             return true;
         } else {
             db.runSync(`UPDATE settings  SET value = ? WHERE key = ?`, [value, key]);
@@ -110,7 +110,7 @@ export function insertMultipleCategories(db: SQLiteDatabase): void {
 
 export function deleteSettingByKey(db: SQLiteDatabase, key: string): boolean{
     try {
-        const row = db.getFirstSync('SELECT key FROM settings WHERE key = ?', [key]);;
+        const row = db.getFirstSync('SELECT key FROM (settings) WHERE key = ?', [key]);;
         if (!row) {
             return false;
         } else {

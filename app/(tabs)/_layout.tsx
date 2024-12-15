@@ -59,7 +59,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="(settings)"
+                name="settings"
                 options={{
                     title: 'Settings',
                     tabBarIcon: () => ({ sfSymbol: 'gear' }),
@@ -171,7 +171,7 @@ export default function TabLayout() {
         //             title: '',
         //             headerShown: false,
         //             tabBarIcon: ({color, focused}) => (
-        //                 <Feather name="settings" size={28} color={color}/>
+        //                 <Feather name="(settings)" size={28} color={color}/>
         //             ),
         //         }}
         //     />

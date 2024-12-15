@@ -62,14 +62,6 @@
       "expo-router",
       "react-native-bottom-tabs",
       [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
-      [
         "expo-notifications",
         {
           "defaultChannel": "default"
@@ -82,10 +74,11 @@
             "compileSdkVersion": 34,
             "targetSdkVersion": 34,
             "buildToolsVersion": "34.0.0",
-            "minSdkVersion": 24
+            "minSdkVersion": 25
           },
           "ios": {
-            "deploymentTarget": "14.0"
+            "deploymentTarget": "14.0",
+            "useFrameworks": "static"
           }
         }
       ],
@@ -121,8 +114,7 @@
         {
           "iCloudContainerEnvironment": "Development"
         }
-      ],
-      "react-native-bottom-tabs"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
