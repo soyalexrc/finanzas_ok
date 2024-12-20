@@ -1,20 +1,36 @@
-import {useState, useCallback} from 'react';
+import {useState, useCallback, useEffect} from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
 import {Alert, Linking} from "react-native";
-import {useTranslation} from "react-i18next";
 
 export function useBiometricAuth() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const {t} = useTranslation();
+    const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+
+    const checkBiometricSupport = async (): Promise<boolean> => {
+        const hasHardwareSupport = await LocalAuthentication.hasHardwareAsync();
+        if (!hasHardwareSupport) {
+            Alert.alert('Aviso', 'Los permisos de autenticación biométrica están denegados o no se encuentran, si deseas acceder al contenido de esta página, por favor revisa la configuración y otorga los permisos solicitados.', [
+                { text: 'Cancelar', style: 'destructive' },
+                {
+                    text: 'Dar Acceso',
+                    style: 'default',
+                    isPreferred: true,
+                    onPress: async () => await Linking.openSettings()
+                }
+            ]);
+        }
+        setIsBiometricSupported(hasHardwareSupport);
+        return hasHardwareSupport;
+    }
 
     const authenticate = useCallback(async () => {
         try {
             const hasHardwareSupport = await LocalAuthentication.hasHardwareAsync();
             if (!hasHardwareSupport) {
-                Alert.alert(t('COMMON.WARNING'), 'Biometric authentication permissions are denied or not found, if you want to access the content on this page, please check out the (settings) and give the requested permissions.', [
-                    { text: t('COMMON.CANCEL'), style: 'destructive' },
+                Alert.alert('Aviso', 'Los permisos de autenticación biométrica están denegados o no se encuentran, si deseas acceder al contenido de esta página, por favor revisa la configuración y otorga los permisos solicitados.', [
+                    { text: 'Cancelar', style: 'destructive' },
                     {
-                        text: t('COMMON.GIVE_ACCESS'),
+                        text: 'Dar Acceso',
                         style: 'default',
                         isPreferred: true,
                         onPress: async () => await Linking.openSettings()
@@ -24,8 +40,8 @@ export function useBiometricAuth() {
             }
 
             const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: 'Authenticate to continue',
-                cancelLabel: 'Cancel Biometrics prompt',
+                promptMessage: 'Verifica tu identidad para continuar',
+                cancelLabel: 'Cancelar autenticación biométrica',
             });
 
             if (result.success) {
@@ -36,10 +52,10 @@ export function useBiometricAuth() {
                 return false;
             }
         } catch (error) {
-            console.error('Error during biometric authentication:', error);
+            console.error('Error durante procedimiento con biometria:', error);
             return false;
         }
     }, []);
 
-    return {isAuthenticated, authenticate};
+    return {isAuthenticated, authenticate, isBiometricSupported, checkBiometricSupport};
 }
