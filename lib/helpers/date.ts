@@ -2,16 +2,17 @@ import {
     endOfMonth,
     endOfWeek,
     format,
-    formatDistanceToNow, isSameMonth,
+    formatDistanceToNow, isSameDay, isSameMonth,
     isSameWeek, isThisMonth,
-    isToday,
+    isToday, isTomorrow,
     isYesterday,
     startOfMonth,
     startOfWeek
 } from "date-fns";
-import {es, enUS} from 'date-fns/locale'
-import {fromZonedTime} from "date-fns-tz";
+// import {es, enUS} from 'date-fns/locale'
+// import {fromZonedTime} from "date-fns-tz";
 import {getLocales} from "expo-localization";
+import {DATE_COLORS} from "@/lib/constants/colors";
 // import { es,  enUS, fr, ja, de, zhCN} from 'date-fns/locale';
 
 export function getCurrentWeek(): { start: Date, end: Date } {
@@ -71,6 +72,16 @@ export function getCustomMonthAndYear(month: number, year: number): { start: Dat
         end: endOfMonth(today),
     }
 }
+
+const getDateObject = (date: Date) => {
+    if (isSameDay(date, new Date())) {
+        return { name: 'Today', color: DATE_COLORS.today };
+    } else if (isTomorrow(new Date(date))) {
+        return { name: 'Tomorrow', color: DATE_COLORS.tomorrow };
+    } else {
+        return { name: format(new Date(date), 'd MMM'), color: DATE_COLORS.other };
+    }
+};
 
 export function getMonthsArrayByLocale() {
     const locales = getLocales();
@@ -169,46 +180,46 @@ export function getMonthsArrayByLocale() {
     // i need to get by the fist locale language, the name of the months and return a syntax similar to the one below
 }
 
-export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
-    const now = new Date();
-    const localDate = fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
-    if (isToday(localDate)) {
-        return locale === 'es' ? 'Hoy' : 'Today';
-    } else if (isYesterday(localDate)) {
-        return locale === 'es' ? 'Ayer' : 'Yesterday';
-    } else if (isSameWeek(localDate, now)) {
-        return format(localDate, 'EEEE', {locale: locale === 'es' ? es : enUS}); // e.g., Monday, Tuesday
-    } else if (isSameMonth(localDate, now)) {
-        return formatDistanceToNow(date, {addSuffix: true, locale: locale === 'es' ? es : enUS});
-    }
-    else {
-        // For dates beyond a week, use formatDistanceToNow
-        return format(localDate, 'dd/MM/yyyy', {locale: locale === 'es' ? es : enUS}); // e.g., 10/11/2021
-    }
-};
+// export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
+//     const now = new Date();
+//     const localDate = fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+//     if (isToday(localDate)) {
+//         return locale === 'es' ? 'Hoy' : 'Today';
+//     } else if (isYesterday(localDate)) {
+//         return locale === 'es' ? 'Ayer' : 'Yesterday';
+//     } else if (isSameWeek(localDate, now)) {
+//         return format(localDate, 'EEEE', {locale: locale === 'es' ? es : enUS}); // e.g., Monday, Tuesday
+//     } else if (isSameMonth(localDate, now)) {
+//         return formatDistanceToNow(date, {addSuffix: true, locale: locale === 'es' ? es : enUS});
+//     }
+//     else {
+//         // For dates beyond a week, use formatDistanceToNow
+//         return format(localDate, 'dd/MM/yyyy', {locale: locale === 'es' ? es : enUS}); // e.g., 10/11/2021
+//     }
+// };
 
-export function formatDate(date: string | Date | number) {
-    return fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
-}
+// export function formatDate(date: string | Date | number) {
+//     return fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+// }
 
-export function getDateRangeBetweenGapDaysAndToday(gap: number): { start: Date, end: Date } {
-    const today = new Date();
-    today.setHours(19);
-    const start = new Date(today);
-    start.setHours(0)
-    start.setDate(today.getDate() - gap);
-    return {
-        start: formatDate(start),
-        end: formatDate(today),
-    }
-}
+// export function getDateRangeBetweenGapDaysAndToday(gap: number): { start: Date, end: Date } {
+//     const today = new Date();
+//     today.setHours(19);
+//     const start = new Date(today);
+//     start.setHours(0)
+//     start.setDate(today.getDate() - gap);
+//     return {
+//         start: formatDate(start),
+//         end: formatDate(today),
+//     }
+// }
 
-export function getDateRangeAlongTimeAgo(): { start: Date, end: Date } {
-    const today = new Date();
-    const start = new Date(today);
-    start.setFullYear(today.getFullYear() - 1);
-    return {
-        start: formatDate(start),
-        end: formatDate(today),
-    }
-}
+// export function getDateRangeAlongTimeAgo(): { start: Date, end: Date } {
+//     const today = new Date();
+//     const start = new Date(today);
+//     start.setFullYear(today.getFullYear() - 1);
+//     return {
+//         start: formatDate(start),
+//         end: formatDate(today),
+//     }
+// }
