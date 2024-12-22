@@ -15,8 +15,9 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import {Ionicons} from "@expo/vector-icons";
-import {useRef} from "react";
+import {Fragment, useCallback, useMemo, useRef} from "react";
 import {Colors} from "@/lib/constants/colors";
+import BottomSheet, {BottomSheetModal} from "@gorhom/bottom-sheet";
 
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
@@ -106,7 +107,7 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     );
 }
 
-export default function TransactionRow({transaction}: any) {
+export default function TransactionRow({transaction, cb}: any) {
     const reanimatedRef = useRef<SwipeableMethods>(null);
     const heightAnim = useSharedValue(70); // Approximate height of row
     const opacityAnim = useSharedValue(1);
@@ -125,37 +126,40 @@ export default function TransactionRow({transaction}: any) {
 
 
     return (
-        <Reanimated.View style={animatedStyle}>
-            <ReanimatedSwipeable
-                ref={reanimatedRef}
-                containerStyle={styles.swipeable}
-                friction={2}
-                enableTrackpadTwoFingerGesture
-                rightThreshold={40}
-                renderRightActions={RightAction}
-                renderLeftActions={LeftAction}
-                onSwipeableWillOpen={onSwipeableOpen}>
-                <Pressable style={styles.container}>
-                    <View style={styles.row}>
-                        <Text style={styles.icon}>{transaction?.category?.icon}</Text>
-                        {/*<BouncyCheckbox*/}
-                        {/*    textContainerStyle={{ display: 'none' }}*/}
-                        {/*    size={25}*/}
-                        {/*    fillColor={task.project_color}*/}
-                        {/*    unFillColor="#FFFFFF"*/}
-                        {/*    textStyle={{ color: '#000', fontSize: 16, textDecorationLine: 'none' }}*/}
-                        {/*    onPress={markAsCompleted}*/}
-                        {/*/>*/}
-                        <View style={{flex: 0.9}}>
-                            <Text style={styles.title}>{transaction.title || transaction.category.title}</Text>
-                            {transaction.description &&
-                                <Text style={styles.description}>{transaction.description}</Text>}
+        <Fragment>
+            <Reanimated.View style={animatedStyle}>
+                <ReanimatedSwipeable
+                    ref={reanimatedRef}
+                    containerStyle={styles.swipeable}
+                    friction={2}
+                    enableTrackpadTwoFingerGesture
+                    rightThreshold={40}
+                    renderRightActions={RightAction}
+                    renderLeftActions={LeftAction}
+                    onSwipeableWillOpen={onSwipeableOpen}>
+                    <Pressable style={styles.container} onPress={cb}>
+                        <View style={styles.row}>
+                            <Text style={styles.icon}>{transaction?.category?.icon}</Text>
+                            {/*<BouncyCheckbox*/}
+                            {/*    textContainerStyle={{ display: 'none' }}*/}
+                            {/*    size={25}*/}
+                            {/*    fillColor={task.project_color}*/}
+                            {/*    unFillColor="#FFFFFF"*/}
+                            {/*    textStyle={{ color: '#000', fontSize: 16, textDecorationLine: 'none' }}*/}
+                            {/*    onPress={markAsCompleted}*/}
+                            {/*/>*/}
+                            <View style={{flex: 0.9}}>
+                                <Text style={styles.title}>{transaction.title || transaction.category.title}</Text>
+                                {transaction.description &&
+                                    <Text style={styles.description}>{transaction.description}</Text>}
+                            </View>
                         </View>
-                    </View>
-                    <Text style={styles.amount}>{transaction.currency.symbol} {transaction.amount}</Text>
-                </Pressable>
-            </ReanimatedSwipeable>
-        </Reanimated.View>
+                        <Text style={styles.amount}>{transaction.currency.symbol} {transaction.amount}</Text>
+                    </Pressable>
+                </ReanimatedSwipeable>
+            </Reanimated.View>
+
+        </Fragment>
     )
 }
 

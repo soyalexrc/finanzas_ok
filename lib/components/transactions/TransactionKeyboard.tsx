@@ -1,55 +1,54 @@
 import {Dimensions, FlatList, TouchableOpacity, useWindowDimensions} from "react-native";
 import {keypadData} from "@/lib/utils/data/transaction";
 import {View, Text} from 'react-native';
+import * as Haptics from "expo-haptics";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {onChangeAmount, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
 
 export default function TransactionKeyboard() {
     const { height } = useWindowDimensions();
+    const dispatch = useAppDispatch();
+    const currentTransaction = useAppSelector(selectCurrentTransaction)
 
-    const handleNumberPress = (item: { id: string, value: string, isBackSpace?: boolean }) => {
-       return;
-        // if (item.isBackSpace) {
-        //     let newAmount = tab === 'total' ? currentTransaction.amount.slice(0, -1) : currentTransaction.hidden_amount.slice(0, -1);
-        //     if (newAmount === '') {
-        //         newAmount = '0';
-        //     }
-        //     if (tab === 'total') {
-        //         dispatch(onChangeAmount(newAmount))
-        //     } else {
-        //         dispatch(onChangeHiddenAmount(newAmount))
-        //     }
-        // } else {
-        //     let updatedAmount = tab === 'total' ? currentTransaction.amount === '0' ? '' : currentTransaction.amount : currentTransaction.hidden_amount === '0' ? '' : currentTransaction.hidden_amount
-        //     if (item.value === '.') {
-        //  //        Ensure only one decimal point
-                // if (!updatedAmount.includes('.')) {
-                //     updatedAmount += item.value;
-                // }
-            // } else {
-            //     updatedAmount += item.value;
-            // }
-            // const decimalIndex = updatedAmount.indexOf('.');
-            // if (decimalIndex !== -1 && updatedAmount.length - decimalIndex > 3) return;
-            //
-            // if (tab === 'total') {
-            //     dispatch(onChangeAmount(updatedAmount));
-            // } else {
-            //     dispatch(onChangeHiddenAmount(updatedAmount));
-            // }
-        // }
+    const handleNumberPress = async (item: { id: string, value: string, isBackSpace?: boolean }) => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        if (item.isBackSpace) {
+            let newAmount = currentTransaction.amount.slice(0, -1);
+            if (newAmount === '') {
+                newAmount = '0';
+            }
+            dispatch(onChangeAmount(newAmount))
+
+        } else {
+            let updatedAmount = currentTransaction.amount === '0' ? '' : currentTransaction.amount;
+            if (item.value === '.') {
+                // Ensure only one decimal point
+                if (!updatedAmount.includes('.')) {
+                    updatedAmount += item.value;
+                }
+            } else {
+                updatedAmount += item.value;
+            }
+            const decimalIndex = updatedAmount.indexOf('.');
+            if (decimalIndex !== -1 && updatedAmount.length - decimalIndex > 3) return;
+            dispatch(onChangeAmount(updatedAmount));
+        }
     };
 
 
     return (
-        <View style={{ flex: 1, marginTop: height <= 812 ? -30 : 0}}>
+        <View style={{ height: 300 }}>
             <FlatList
                 data={keypadData}
-                contentContainerStyle={{flex: 1, justifyContent: 'center', marginHorizontal: 30}}
+                contentContainerStyle={{justifyContent: 'center', marginHorizontal: 30}}
                 keyExtractor={({id}) => id}
                 numColumns={3}
                 scrollEnabled={false}
                 renderItem={({item}) => (
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', margin: 3 }}>
                         <TouchableOpacity
+                            onPress={() => handleNumberPress(item)}
                             style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',

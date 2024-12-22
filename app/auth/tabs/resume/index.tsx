@@ -1,8 +1,7 @@
-import {Button, RefreshControl, SectionList, StyleSheet, Text, View} from "react-native";
+import {Button, RefreshControl, ScrollView, SectionList, StyleSheet, Text, View} from "react-native";
 import Animated, {StretchInY, LayoutAnimationConfig} from 'react-native-reanimated';
-import {useEffect, useLayoutEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import TransactionRow from "@/lib/components/transactions/TransactionRow";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
 import usePlatform from "@/lib/hooks/usePlatform";
 import firestore, {Timestamp, query, and, where} from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
@@ -10,9 +9,19 @@ import {getCurrentMonth} from "@/lib/helpers/date";
 import {format} from "date-fns";
 import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHeader";
 import Fab from "@/lib/components/transactions/Fab";
-import {loadArray} from "@/lib/utils/storage";
-import {useNavigation} from "expo-router";
+import {useNavigation, useRouter} from "expo-router";
 import {Colors} from "@/lib/constants/colors";
+import BottomSheet, {
+    BottomSheetModal,
+    BottomSheetModalProvider,
+    BottomSheetScrollView, BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import {Backdrop} from "@/lib/components/ui/sheet/Backdrop";
+import {BottomSheetBackground} from "@/lib/components/ui/sheet/Background";
+import * as Haptics from 'expo-haptics';
+import TransactionResumeModal from "@/lib/components/ui/modals/TransactionResumeModal";
+import {useAppDispatch} from "@/lib/store/hooks";
+import {onChangeModalVisible} from "@/lib/store/features/ui/ui.slice";
 
 interface Todo {
     id: number;
@@ -41,6 +50,13 @@ export default function Screen() {
     const [refreshing, setRefreshing] = useState(false);
     const [docs, setDocs] = useState<Section[]>([])
     const navigation = useNavigation();
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<any>({});
+    const router = useRouter();
+
+    function manageEdit() {
+        router.push('/auth/transaction-form');
+    }
 
 
     useEffect(() => {
@@ -115,6 +131,28 @@ export default function Screen() {
         return () => subscriber();
     }, [navigation]);
 
+    async function onPressRow(transaction: any) {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setSelectedTransaction({
+            date: transaction?.date,
+            amount: transaction?.amount,
+            currency: transaction?.currency,
+            category: {
+                id: transaction?.category?.id || '',
+                title: transaction?.category.title || '',
+                icon: transaction?.category?.icon || '',
+                type: transaction?.category?.type || '',
+                description: transaction?.category?.description || ''
+            },
+            description: transaction?.description || '',
+            documents: transaction?.documents || '',
+            images: transaction?.images || [],
+            title: transaction?.title || '',
+            id: transaction?.id
+        });
+        setModalVisible(true)
+    }
+
 
     return (
         <View style={[styles.container]}>
@@ -127,14 +165,15 @@ export default function Screen() {
                 renderItem={({item}) => (
                     <LayoutAnimationConfig>
                         <Animated.View entering={StretchInY}>
-                            <TransactionRow transaction={item}/>
+                            <TransactionRow transaction={item} cb={() => onPressRow(item)}/>
                         </Animated.View>
                     </LayoutAnimationConfig>
                 )}
                 renderSectionHeader={TransactionRowHeader}
             />
 
-            <Fab />
+            <Fab/>
+            <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />
         </View>
     )
 }
@@ -155,5 +194,9 @@ const styles = StyleSheet.create({
         padding: 14,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: Colors.lightBorder,
+    },
+    sheetContainer: {
+        // add horizontal space
+        borderRadius: 0
     },
 });

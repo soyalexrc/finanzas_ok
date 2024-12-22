@@ -73,16 +73,6 @@ export function getCustomMonthAndYear(month: number, year: number): { start: Dat
     }
 }
 
-const getDateObject = (date: Date) => {
-    if (isSameDay(date, new Date())) {
-        return { name: 'Today', color: DATE_COLORS.today };
-    } else if (isTomorrow(new Date(date))) {
-        return { name: 'Tomorrow', color: DATE_COLORS.tomorrow };
-    } else {
-        return { name: format(new Date(date), 'd MMM'), color: DATE_COLORS.other };
-    }
-};
-
 export function getMonthsArrayByLocale() {
     const locales = getLocales();
     switch (locales[0].languageCode) {
@@ -178,6 +168,19 @@ export function getMonthsArrayByLocale() {
             ];
     }
     // i need to get by the fist locale language, the name of the months and return a syntax similar to the one below
+}
+
+export function getDateObject(date: Date | string) : { name: string; color: string }{
+    if (isYesterday(date)) {
+        return { name: 'Ayer', color: DATE_COLORS.yesterday };
+    }
+    else if (isSameDay(date, new Date())) {
+        return {  name: 'Hoy', color: DATE_COLORS.today };
+    } else if (isTomorrow(new Date(date))) {
+        return { name: 'Mañana', color: DATE_COLORS.tomorrow };
+    } else {
+        return { name: format(date, 'EEE'), color: DATE_COLORS.other };
+    }
 }
 
 // export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
