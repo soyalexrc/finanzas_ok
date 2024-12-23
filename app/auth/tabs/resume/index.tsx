@@ -1,4 +1,4 @@
-import {Button, RefreshControl, ScrollView, SectionList, StyleSheet, Text, View} from "react-native";
+import {Button, RefreshControl, SafeAreaView, ScrollView, SectionList, StyleSheet, Text, View} from "react-native";
 import Animated, {StretchInY, LayoutAnimationConfig} from 'react-native-reanimated';
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import TransactionRow from "@/lib/components/transactions/TransactionRow";
@@ -11,17 +11,9 @@ import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHe
 import Fab from "@/lib/components/transactions/Fab";
 import {useNavigation, useRouter} from "expo-router";
 import {Colors} from "@/lib/constants/colors";
-import BottomSheet, {
-    BottomSheetModal,
-    BottomSheetModalProvider,
-    BottomSheetScrollView, BottomSheetView,
-} from "@gorhom/bottom-sheet";
-import {Backdrop} from "@/lib/components/ui/sheet/Backdrop";
-import {BottomSheetBackground} from "@/lib/components/ui/sheet/Background";
 import * as Haptics from 'expo-haptics';
 import TransactionResumeModal from "@/lib/components/ui/modals/TransactionResumeModal";
-import {useAppDispatch} from "@/lib/store/hooks";
-import {onChangeModalVisible} from "@/lib/store/features/ui/ui.slice";
+import {es} from "date-fns/locale";
 
 interface Todo {
     id: number;
@@ -75,8 +67,7 @@ export default function Screen() {
 
                     if (data.category && data.category.get) {
                         const categoryDoc = await data.category.get();
-                        categoryData = categoryDoc.data();
-                    }
+                        categoryData = { id: categoryDoc.id, ...categoryDoc.data() };                    }
                     return {
                         ...data,
                         id: doc.id,
@@ -87,7 +78,7 @@ export default function Screen() {
 
                 // Group tasks by day
                 const groupedByDay = transactions?.reduce((acc: { [key: string]: any[] }, transaction) => {
-                    const day = format(new Date(transaction.date || new Date()), 'd MMM · eee');
+                    const day = format(new Date(transaction.date || new Date()), 'd MMM · eeee', {locale: es});
                     if (!acc[day]) {
                         acc[day] = [];
                     }
@@ -155,7 +146,7 @@ export default function Screen() {
 
 
     return (
-        <View style={[styles.container]}>
+        <SafeAreaView style={[styles.container]}>
             <SectionList
                 showsVerticalScrollIndicator={false}
                 sections={docs}
@@ -165,7 +156,7 @@ export default function Screen() {
                 renderItem={({item}) => (
                     <LayoutAnimationConfig>
                         <Animated.View entering={StretchInY}>
-                            <TransactionRow transaction={item} cb={() => onPressRow(item)}/>
+                            <TransactionRow transaction={item} cb={() => onPressRow(item)} />
                         </Animated.View>
                     </LayoutAnimationConfig>
                 )}
@@ -174,7 +165,7 @@ export default function Screen() {
 
             <Fab/>
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />
-        </View>
+        </SafeAreaView>
     )
 }
 

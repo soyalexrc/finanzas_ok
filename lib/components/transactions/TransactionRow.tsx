@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {LogBox, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import ReanimatedSwipeable, {
     SwipeableMethods,
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -15,9 +15,13 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import {Ionicons} from "@expo/vector-icons";
-import {Fragment, useCallback, useMemo, useRef} from "react";
+import {Fragment, memo, useCallback, useMemo, useRef} from "react";
 import {Colors} from "@/lib/constants/colors";
-import BottomSheet, {BottomSheetModal} from "@gorhom/bottom-sheet";
+import {formatByThousands} from "@/lib/helpers/string";
+
+LogBox.ignoreLogs([
+    'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
+]);
 
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
@@ -107,9 +111,9 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     );
 }
 
-export default function TransactionRow({transaction, cb}: any) {
+function TransactionRow({transaction, cb, heightValue = 70}: any) {
     const reanimatedRef = useRef<SwipeableMethods>(null);
-    const heightAnim = useSharedValue(70); // Approximate height of row
+    const heightAnim = useSharedValue(heightValue); // Approximate height of row
     const opacityAnim = useSharedValue(1);
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -154,7 +158,7 @@ export default function TransactionRow({transaction, cb}: any) {
                                     <Text style={styles.description}>{transaction.description}</Text>}
                             </View>
                         </View>
-                        <Text style={styles.amount}>{transaction.currency.symbol} {transaction.amount}</Text>
+                        <Text style={styles.amount}>{transaction.currency.symbol} {formatByThousands(String(transaction.amount))}</Text>
                     </Pressable>
                 </ReanimatedSwipeable>
             </Reanimated.View>
@@ -163,12 +167,14 @@ export default function TransactionRow({transaction, cb}: any) {
     )
 }
 
+export default memo(TransactionRow);
+
 const styles = StyleSheet.create({
     container: {
         padding: 14,
         backgroundColor: '#fff',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: Colors.lightBorder,
+        // borderBottomWidth: StyleSheet.hairlineWidth,
+        // borderBottomColor: Colors.lightBorder,
     },
     row: {
         flexDirection: 'row',

@@ -4,6 +4,7 @@ import {configureStore} from "@reduxjs/toolkit";
 // import accountsReducer from './features/accounts/accountsSlice'
 // import categoriesReducer from './features/categories/categoriesSlice'
 import transactionsReducer from './features/transactions/transactions.slice'
+import categoriesReducer from './features/transactions/categories.slice'
 import uiReducer from './features/ui/ui.slice'
 // import reportReducer from './features/transactions/reportSlice';
 // import settingsReducer from './features/settings/settingsSlice';
@@ -14,6 +15,7 @@ export const store = configureStore({
     reducer: {
         // transactionsLists: transactionsListReducer,
         transactions: transactionsReducer,
+        categories: categoriesReducer,
         ui: uiReducer,
         // network: networkReducer,
         // accounts: accountsReducer,

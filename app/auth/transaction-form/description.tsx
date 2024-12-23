@@ -23,9 +23,13 @@ export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const dispatch = useAppDispatch();
 
+    console.log(currentTransaction)
+
     useEffect(() => {
-        if (currentTransaction?.title && currentTransaction?.description) {
+        if (currentTransaction?.title) {
             setTitle(currentTransaction.title);
+        }
+        if (currentTransaction?.description) {
             setDescription(currentTransaction.description);
         }
     }, [currentTransaction.title, currentTransaction.description]);

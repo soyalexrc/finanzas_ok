@@ -18,7 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import {Colors} from "@/lib/constants/colors";
 import * as Haptics from 'expo-haptics';
 import storage from '@react-native-firebase/storage';
-import {DocumentPickerAsset} from "expo-document-picker";
+import auth from '@react-native-firebase/auth';
 import * as DocumentPicker from "expo-document-picker";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
@@ -42,6 +42,7 @@ export default function Screen() {
     const { bottom } = useSafeAreaInsets();
     const [loadingImage, setLoadingImage] = useState<boolean>(false);
     const [loadingDocument, setLoadingDocument] = useState<boolean>(false);
+    const evidencesPath = `evidencias/${auth().currentUser?.uid}`;
 
     async function openDocumentPicker() {
         const result = await DocumentPicker.getDocumentAsync({
@@ -56,7 +57,7 @@ export default function Screen() {
 
             // make a await for of
             for (const document of result.assets) {
-                const reference = storage().ref('documents/' + document.name);
+                const reference = storage().ref(`${evidencesPath}/documentos/${document.name}`);
                 await reference.putFile(document.uri);
                 const url = await reference.getDownloadURL();
                 dispatch(addDocumentToCurrentTransaction({url, title: document.name}));
@@ -79,19 +80,6 @@ export default function Screen() {
         return <View/>;
     }
 
-    if (!permission.granted) {
-        // Camera permissions are not granted yet.
-        return (
-            <View style={styles.container}>
-                <View style={ { flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Pressable style={styles.cameraButton} onPress={handleRequestPermissions}>
-                        <Text style={styles.cameraButtonText}>Se necesitan permisos para usar la camara.</Text>
-                    </Pressable>
-                </View>
-            </View>
-        );
-    }
-
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
@@ -107,8 +95,13 @@ export default function Screen() {
     async function takePicture() {
         if (cameraRef.current) {
             setLoadingImage(true)
-            const photo = await cameraRef.current.takePictureAsync();
-            const reference = storage().ref('images/photo-taken.jpg');
+            const photo = await cameraRef.current.takePictureAsync({
+                quality: 0.5,
+                imageType: 'jpg',
+            });
+            const photoName = `photo-${Date.now()}.jpg`;
+
+            const reference = storage().ref(`${evidencesPath}/imagenes/${photoName}`);
             await reference.putFile(photo!.uri);
             const url = await reference.getDownloadURL();
             dispatch(addImageToCurrentTransaction(url));
@@ -119,15 +112,13 @@ export default function Screen() {
     async function openImagePicker() {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+            quality: 0.5,
         });
 
         if (!result.canceled) {
             setLoadingImage(true)
             const selectedImage = result.assets[0].uri;
-            const reference = storage().ref('images/photo-uploaded.jpg');
+            const reference = storage().ref(`${evidencesPath}/imagenes/${result.assets[0].fileName}`);
             await reference.putFile(selectedImage);
             const url = await reference.getDownloadURL();
             dispatch(addImageToCurrentTransaction(url));
@@ -150,9 +141,17 @@ export default function Screen() {
                 }}
             />
             <View style={styles.cameraContainer}>
-                { showCamera && <CameraView ref={cameraRef} style={styles.camera} facing={facing} />  }
                 {
-                    !showCamera &&
+                    !permission.granted &&
+                    <View style={ { flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Pressable style={styles.cameraButton} onPress={handleRequestPermissions}>
+                            <Text style={styles.cameraButtonText}>Dar acceso para usar la camara.</Text>
+                        </Pressable>
+                    </View>
+                }
+                { permission.granted && showCamera && <CameraView ref={cameraRef} style={styles.camera} facing={facing} />  }
+                {
+                    permission.granted && !showCamera &&
                     <View style={[styles.camera, { justifyContent: 'center', alignItems: 'center' }]}>
                         <Pressable disabled={loadingImage} style={styles.cameraButton} onPress={activateCamera}>
                             { loadingImage ? <ActivityIndicator size={24} color="white" /> : <Ionicons name="camera" size={24} color="white" /> }

@@ -42,7 +42,7 @@ const initialState: TransactionsState = {
         description: '',
         hidden_amount: "0",
         recurrentDate: 'none',
-        id: -1
+        id: ''
     },
     transactionsGroupedByDate: [],
     currentBalance: 0,
@@ -74,6 +74,9 @@ export const transactionsSlice = createSlice({
         },
         onChangeHiddenAmount: (state, action: PayloadAction<string>) => {
             state.currentTransaction.hidden_amount = action.payload;
+        },
+        onChangeId: (state, action: PayloadAction<string>) => {
+            state.currentTransaction.id = action.payload;
         },
         updateHiddenFlag: (state, action: PayloadAction<number>) => {
             // state.currentTransaction.is_hidden_transaction = action.payload;
@@ -140,6 +143,7 @@ export const transactionsSlice = createSlice({
 export const {
     onChangeNotes,
     updateCurrentTransaction,
+    onChangeId,
     updateTransactionsGroupedByDate,
     onRecurrentSettingChange,
     onChangeAmount,

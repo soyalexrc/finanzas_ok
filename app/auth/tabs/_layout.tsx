@@ -20,7 +20,7 @@ export default function Layout() {
             <Tabs.Screen
                 name="resume"
                 options={{
-                    title: 'Resume',
+                    title: 'Resumen',
                     tabBarActiveTintColor: 'green',
                     tabBarIcon: () => platform === 'android' ? require('@/assets/icons/resume.svg') : ({sfSymbol: 'house'}),
                 }}
@@ -29,7 +29,7 @@ export default function Layout() {
                 name="upcoming"
                 options={{
                     tabBarActiveTintColor: 'green',
-                    title: 'Upcoming',
+                    title: 'Calendario',
                     tabBarIcon: () => platform === 'android' ? require('@/assets/icons/upcoming.svg') : ({sfSymbol: 'calendar'}),
                 }}
             />
@@ -37,7 +37,7 @@ export default function Layout() {
                 name="search"
                 options={{
                     tabBarActiveTintColor: 'green',
-                    title: 'Search',
+                    title: 'Buscar',
                     tabBarIcon: ({ focused }) => platform === 'android' ? require('@/assets/icons/search.svg') : ({
                         sfSymbol: focused ? 'text.magnifyingglass' : 'magnifyingglass',
                     }),
@@ -47,7 +47,7 @@ export default function Layout() {
                 name="browse"
                 options={{
                     tabBarActiveTintColor: 'green',
-                    title: 'Browse',
+                    title: 'Explorar',
                     tabBarIcon: ({ focused }) => platform === 'android' ? require('@/assets/icons/browse.svg') : ({
                         sfSymbol: focused ? 'doc.text.image.fill' : 'doc.text.image',
                     }),

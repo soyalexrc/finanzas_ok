@@ -1,4 +1,5 @@
 import {StyleSheet, Text, View} from "react-native";
+import {formatByThousands} from "@/lib/helpers/string";
 
 export default function TransactionRowHeader({ section }: any) {
     return (
@@ -7,7 +8,7 @@ export default function TransactionRowHeader({ section }: any) {
             <View style={{ flexDirection: 'row', gap: 15 }}>
                 {
                     section.totals.map((total: any, index: number) => (
-                        <Text style={styles.headerText} key={index}>{total.symbol} {total.total}</Text>
+                        <Text style={styles.headerText} key={index}>{total.symbol} {formatByThousands(String(total.total))}</Text>
                     ))
                 }
             </View>

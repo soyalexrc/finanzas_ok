@@ -13,6 +13,7 @@ import {addDays, addWeeks, format, nextSaturday, subDays} from "date-fns";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onChangeDate, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
+import {es} from "date-fns/locale";
 
 export default function Screen() {
     const router = useRouter();
@@ -44,7 +45,7 @@ export default function Screen() {
                     }}>
                     <Ionicons name="today-outline" size={20} color={DATE_COLORS.yesterday}/>
                     <Text style={styles.quickButtonText}>Ayer</Text>
-                    <Text style={styles.quickButtonDate}>{format(subDays(new Date(), 1), 'EEE')}</Text>
+                    <Text style={styles.quickButtonDate}>{format(subDays(new Date(), 1), 'EEE', {locale: es})}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.quickButton}
@@ -53,7 +54,7 @@ export default function Screen() {
                     }}>
                     <Ionicons name="today-outline" size={20} color={DATE_COLORS.today}/>
                     <Text style={styles.quickButtonText}>Hoy</Text>
-                    <Text style={styles.quickButtonDate}>{format(new Date(), 'EEE')}</Text>
+                    <Text style={styles.quickButtonDate}>{format(new Date(), 'EEE', {locale: es})}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -63,7 +64,7 @@ export default function Screen() {
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.tomorrow}/>
                     <Text style={styles.quickButtonText}>Manana</Text>
-                    <Text style={styles.quickButtonDate}>{format(addDays(new Date(), 1), 'EEE')}</Text>
+                    <Text style={styles.quickButtonDate}>{format(addDays(new Date(), 1), 'EEE', {locale: es})}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -73,7 +74,7 @@ export default function Screen() {
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.weekend}/>
                     <Text style={styles.quickButtonText}>Este fin de semana</Text>
-                    <Text style={styles.quickButtonDate}>{format(nextSaturday(new Date()), 'EEE')}</Text>
+                    <Text style={styles.quickButtonDate}>{format(nextSaturday(new Date()), 'EEE', {locale: es})}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -83,7 +84,7 @@ export default function Screen() {
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.other}/>
                     <Text style={styles.quickButtonText}>La Proxima semana</Text>
-                    <Text style={styles.quickButtonDate}>{format(addWeeks(new Date(), 1), 'EEE')}</Text>
+                    <Text style={styles.quickButtonDate}>{format(addWeeks(new Date(), 1), 'EEE', {locale: es})}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -91,6 +92,7 @@ export default function Screen() {
                 testID="dateTimePicker"
                 value={new Date(currentTransaction.date)}
                 mode={'date'}
+                locale="es"
                 onChange={async (_, selectedDate) => {
                     const currentDate = selectedDate || new Date();
                     await onSave(currentDate);

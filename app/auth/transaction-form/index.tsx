@@ -14,7 +14,7 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {resetCurrentTransaction, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
 import {formatByThousands} from "@/lib/helpers/string";
 import {getDateObject} from "@/lib/helpers/date";
-import {useState} from "react";
+import * as Haptics from 'expo-haptics';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
@@ -25,27 +25,56 @@ export default function Screen() {
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction);
 
-    async function createTransaction() {
+    async function onSave() {
         const categoryRef = firestore().collection('categories').doc(currentTransaction.category.id);
         const userReference = firestore().collection('users').doc(auth().currentUser?.uid);
-        await firestore()
-            .collection('transactions')
-            .add({
-                title: currentTransaction.title,
-                description: currentTransaction.description,
-                category: categoryRef,
-                documents: currentTransaction.documents,
-                images: currentTransaction.images,
-                amount: parseFloat(currentTransaction.amount),
-                date: new Date(currentTransaction.date),
-                user_id: userReference,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                currency: {
-                    code: 'USD',
-                    symbol: '$'
-                }
-            });
+
+        if (currentTransaction.id) {
+            await firestore()
+                .collection('transactions')
+                .doc(currentTransaction.id)
+                .update({
+                    title: currentTransaction.title,
+                    description: currentTransaction.description,
+                    category: categoryRef,
+                    documents: currentTransaction.documents,
+                    images: currentTransaction.images,
+                    amount: parseFloat(currentTransaction.amount),
+                    date: new Date(currentTransaction.date),
+                    updatedAt: new Date(),
+                    currency: {
+                        code: 'USD',
+                        symbol: '$'
+                    }
+                });
+            dispatch(resetCurrentTransaction())
+            router.back();
+        } else {
+            await firestore()
+                .collection('transactions')
+                .add({
+                    title: currentTransaction.title,
+                    description: currentTransaction.description,
+                    category: categoryRef,
+                    documents: currentTransaction.documents,
+                    images: currentTransaction.images,
+                    amount: parseFloat(currentTransaction.amount),
+                    date: new Date(currentTransaction.date),
+                    user_id: userReference,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    currency: {
+                        code: 'USD',
+                        symbol: '$'
+                    }
+                });
+            dispatch(resetCurrentTransaction())
+            router.back();
+        }
+    }
+
+    async function onCancel() {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         dispatch(resetCurrentTransaction())
         router.back();
     }
@@ -55,12 +84,12 @@ export default function Screen() {
             <Stack.Screen
                 options={{
                     headerRight: () => (
-                        <TouchableOpacity style={styles.doneButton} onPress={createTransaction}>
+                        <TouchableOpacity style={styles.doneButton} onPress={onSave}>
                             <Text style={styles.doneButtonText}>Guardar</Text>
                         </TouchableOpacity>
                     ),
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
+                        <TouchableOpacity onPress={onCancel}>
                             <Text style={styles.backButton}>Cancelar</Text>
                         </TouchableOpacity>
                     ),

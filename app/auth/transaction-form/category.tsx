@@ -35,17 +35,20 @@ export default function Screen() {
     const debouncedUpdateSearch = useCallback(
         debounce((query: string) => {
             const t = searchFilter(query);
+            console.log('filtered', t);
             setFilteredCategories(t)
         }, 500),
-        []
+        [categories]
     );
 
     function searchFilter(query: string): any[] {
-        if (!query) {
+        if (!query || !categories.length) {
             return categories;
         }
         return categories.filter((category) => {
-            return category.title.toLowerCase().includes(query.toLowerCase()) || category.description.toLowerCase().includes(query.toLowerCase());
+            const titleMatch = category.title?.toLowerCase().includes(query.toLowerCase());
+            const descriptionMatch = category.description?.toLowerCase().includes(query.toLowerCase());
+            return titleMatch || descriptionMatch;
         });
     }
 
@@ -70,7 +73,6 @@ export default function Screen() {
             setRefreshing(false);
         }
     }
-
 
     useFocusEffect(
         useCallback(() => {
