@@ -4,7 +4,7 @@ export default function Layout() {
     return (
         <Stack screenOptions={{ headerShadowVisible: false }}>
             <Stack.Screen name="index" options={{
-                title: 'Este mes',
+                title: 'Resumen',
                 headerLargeTitle: true
             }} />
         </Stack>
