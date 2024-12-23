@@ -227,7 +227,6 @@ export default function Screen() {
                         await getTransactionsByMonth(date.month, date.year);
                     }}
                     closeOnDayPress
-                    hideArrows
                     // onRefresh={() => console.log('refreshing...')}
                     // refreshControl={
                     //     <RefreshControl
@@ -248,6 +247,7 @@ export default function Screen() {
                         selectedDayBackgroundColor: Colors.primary,
                         selectedDayTextColor: 'white',
                         todayButtonTextColor: '#0026ff',
+                        arrowColor: Colors.primary
                     }}
                 />
                 <AgendaList

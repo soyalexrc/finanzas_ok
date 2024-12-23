@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import {useAppDispatch} from "@/lib/store/hooks";
 import {resetCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
+import {Colors} from "@/lib/constants/colors";
 
 const Fab = () => {
     const router = useRouter();
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: 'green',
+        backgroundColor: Colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
