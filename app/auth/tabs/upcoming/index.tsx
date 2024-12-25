@@ -22,7 +22,7 @@ import Animated, {
     withTiming
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import TransactionResumeModal from "@/lib/components/ui/modals/TransactionResumeModal";
+import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
@@ -213,6 +213,7 @@ export default function Screen() {
                     todayButtonTextColor: '#000000',
                 }}>
                 <ExpandableCalendar
+                    date={today}
                     // TODO: Add year selector
                     // renderHeader={() => (
                     //     <RNDateTimePicker
@@ -220,7 +221,6 @@ export default function Screen() {
                     //         mode="date"
                     //     />
                     // )}
-                    firstDay={1}
                     onMonthChange={async (date) => {
                         console.log('month changed', date)
                         // setToday(new Date(date.dateString).toISOString().split('T')[0]);

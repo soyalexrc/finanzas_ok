@@ -26,7 +26,7 @@ import Animated, {LayoutAnimationConfig, StretchInY} from "react-native-reanimat
 import TransactionRow from "@/lib/components/transactions/TransactionRow";
 import * as Haptics from "expo-haptics";
 import Fab from "@/lib/components/transactions/Fab";
-import TransactionResumeModal from "@/lib/components/ui/modals/TransactionResumeModal";
+import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
 
 export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);

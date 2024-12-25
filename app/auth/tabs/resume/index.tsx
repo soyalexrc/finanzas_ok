@@ -5,7 +5,7 @@ import {
     ScrollView,
     SectionList,
     StyleSheet,
-    Text,
+    Text, TouchableOpacity,
     useWindowDimensions,
     View
 } from "react-native";
@@ -13,33 +13,16 @@ import Animated, {StretchInY, LayoutAnimationConfig} from 'react-native-reanimat
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import TransactionRow from "@/lib/components/transactions/TransactionRow";
 import usePlatform from "@/lib/hooks/usePlatform";
-import firestore, {Timestamp, query, and, where} from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
-import {getCurrentMonth} from "@/lib/helpers/date";
-import {format} from "date-fns";
-import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHeader";
 import Fab from "@/lib/components/transactions/Fab";
 import {useNavigation, useRouter} from "expo-router";
 import {Colors} from "@/lib/constants/colors";
 import * as Haptics from 'expo-haptics';
-import TransactionResumeModal from "@/lib/components/ui/modals/TransactionResumeModal";
-import {es} from "date-fns/locale";
+import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
 import {formatByThousands, formatWithDecimals} from "@/lib/helpers/string";
-
-interface Todo {
-    id: number;
-    name: string;
-    description?: string | null;
-    priority: number;
-    due_date?: number | null;
-    date_added: number;
-    completed: number;
-    date_completed?: number | null;
-    project_id: number;
-    project_name?: string;
-    project_color?: string;
-}
-
+import TransactionsPerCategoryChart from "@/lib/components/charts/TransactionsPerCategoryChart";
+import TransactionsPerMonthChart from "@/lib/components/charts/TransactionsPerMonthChart";
+import YearPicker from "@/lib/components/transactions/YearPicker";
+import YearPickerButton from "@/lib/components/transactions/YearPicker";
 
 interface Section {
     title: string;
@@ -49,10 +32,6 @@ interface Section {
 
 
 export default function Screen() {
-    const platform = usePlatform();
-    const [refreshing, setRefreshing] = useState(false);
-    const [docs, setDocs] = useState<Section[]>([])
-    const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
     const router = useRouter();
@@ -158,38 +137,74 @@ export default function Screen() {
 
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
             <ScrollView
                 contentInsetAdjustmentBehavior="automatic"
+                showsVerticalScrollIndicator={false}
                 style={styles.container}>
                 <View style={[styles.containerSmall, {width}]}>
                     <View style={{alignItems: 'center'}}>
                         <Text>
                             Gastado este mes
                         </Text>
-                        <View style={{ marginBottom: 4, flexDirection: 'row' }}>
-                            <Text style={{ fontSize: 40 }}>$</Text>
-                            <Text style={{ fontSize: 50 }}>{formatByThousands(formatWithDecimals(1200.23).amount)}</Text>
-                            <Text style={{ fontSize: 40 }}>.{formatWithDecimals(1200.23).decimals}</Text>
+                        <View style={{marginBottom: 4, flexDirection: 'row'}}>
+                            <Text style={{fontSize: 40}}>$</Text>
+                            <Text style={{fontSize: 50}}>{formatByThousands(formatWithDecimals(1200.23).amount)}</Text>
+                            <Text style={{fontSize: 40}}>.{formatWithDecimals(1200.23).decimals}</Text>
                         </View>
                     </View>
                 </View>
 
-            {/*    last week and last month boxes */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
-                    <View style={{ backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10 }}>
+                {/*    last week and last month boxes */}
+                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10}}>
+                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10}}>
                         <Text style={styles.fs18}>Semana pasada</Text>
                         <Text style={styles.fs32}>$ 1200.23</Text>
                     </View>
-                    <View style={{ backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10 }}>
+                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10}}>
                         <Text style={styles.fs18}>Mes pasado</Text>
                         <Text style={styles.fs32}>$ 1200.23</Text>
                     </View>
                 </View>
 
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10, marginVertical: 30 }}>
+                    <Text style={styles.title}>Por anio</Text>
+                    <YearPickerButton />
+                </View>
+
+                <View style={{height: 300, position: 'relative'}}>
+                    <TransactionsPerMonthChart
+                        width={width}
+                        onMouseMove={async () => {
+                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }}
+                        height={300}
+                        dom={{
+                            scrollEnabled: false,
+                        }}
+                    />
+                    <View style={styles.overlay} />
+                </View>
+
+                <View style={{ paddingHorizontal: 10, marginVertical: 30 }}>
+                    <Text style={styles.title}>Por categoria</Text>
+                </View>
+
+                <View style={{height: 300, position: 'relative'}}>
+                    <TransactionsPerCategoryChart
+                        width={width}
+                        height={300}
+                        dom={{
+                            scrollEnabled: false
+                        }}
+                    />
+                    <View style={styles.overlay} />
+                </View>
+
             </ScrollView>
             <Fab/>
-            <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />
+            <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
+                                    transaction={selectedTransaction} onEdit={() => manageEdit()}/>
 
         </View>
     )
@@ -255,5 +270,19 @@ const styles = StyleSheet.create({
     },
     selectedDot: {
         backgroundColor: '#5EAA4BFF'
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#333'
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        zIndex: 1
     }
 });

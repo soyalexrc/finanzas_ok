@@ -1,11 +1,9 @@
 import {Stack, useRouter, useSegments} from "expo-router";
-import {ActivityIndicator, Dimensions, View} from "react-native";
+import {ActivityIndicator, View} from "react-native";
 import {useEffect, useState} from "react";
 import auth, {FirebaseAuthTypes} from "@react-native-firebase/auth";
 import usePlatform from "@/lib/hooks/usePlatform";
 import Providers from "@/lib/components/Providers";
-
-const { height } = Dimensions.get('window');
 
 export default function RootLayout() {
     const [initializing, setInitializing] = useState(true);

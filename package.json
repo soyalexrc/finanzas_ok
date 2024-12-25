@@ -88,6 +88,7 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "react-redux": "^9.2.0",
+    "recharts": "^2.15.0",
     "rn-emoji-keyboard": "^1.7.0",
     "sonner-native": "^0.16.2",
     "xlsx": "^0.18.5"
