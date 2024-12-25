@@ -108,29 +108,6 @@ export const transactionsSlice = createSlice({
         updateHomeViewTypeFilter: (state, action: PayloadAction<HomeViewTypeFilter>) => {
             state.homeViewTypeFilter = action.payload;
         },
-        removeTransactionFromHomeList: (state, action: PayloadAction<{ transactionId: number, groupId: number }>) => {
-            const indexGroup = state.transactionsGroupedByDate.findIndex(g => g.id === action.payload.groupId);
-            for (const item of state.transactionsGroupedByDate[indexGroup].items) {
-                if (item.id === action.payload.transactionId) {
-                    const indexItem = state.transactionsGroupedByDate[indexGroup].items.indexOf(item);
-
-                    const totalAmountInGroup = state.transactionsGroupedByDate[indexGroup].total;
-                    const amountOfItem = Number(state.transactionsGroupedByDate[indexGroup].items[indexItem].amount);
-                    state.transactionsGroupedByDate[indexGroup].total = totalAmountInGroup - amountOfItem;
-
-                    state.transactionsGroupedByDate[indexGroup].items.splice(indexItem, 1);
-                    if (state.transactionsGroupedByDate[indexGroup].items.length < 1) {
-                        state.transactionsGroupedByDate.splice(indexGroup, 1);
-                    }
-                }
-            }
-        },
-        addTransactionInHomeList: (state, action: PayloadAction<FullTransaction>) => {
-            const indexGroup = state.transactionsGroupedByDate.findIndex(g => g.date === action.payload.date);
-            state.transactionsGroupedByDate[indexGroup].items.push(action.payload)
-            const totalAmountInGroup = state.transactionsGroupedByDate[indexGroup].total;
-            state.transactionsGroupedByDate[indexGroup].total = totalAmountInGroup + Number(action.payload.amount);
-        },
         resetTransactionsSlice: (state) => {
             state.currentTransaction = initialState.currentTransaction;
             state.transactionsGroupedByDate = initialState.transactionsGroupedByDate;
@@ -150,13 +127,11 @@ export const {
     updateHomeViewTypeFilter,
     onChangeDate,
     resetCurrentTransaction,
-    removeTransactionFromHomeList,
     updateCurrentBalance,
     onChangeCategory,
     onChangesTitleAndDescription,
     updateHiddenFlag,
     resetTransactionsSlice,
-    addTransactionInHomeList,
     onChangeHiddenAmount,
     updateCurrency,
     addImageToCurrentTransaction,

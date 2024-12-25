@@ -10,7 +10,7 @@ import {MarkedDates} from "react-native-calendars/src/types";
 import {getCurrentMonth, getCustomMonth, getCustomMonthAndYear, getCustomMonthRangeWithYear} from "@/lib/helpers/date";
 import firestore from "@react-native-firebase/firestore";
 import {es} from "date-fns/locale";
-import {useNavigation, useRouter} from "expo-router";
+import {useFocusEffect, useNavigation, useRouter} from "expo-router";
 import {LocaleConfig} from 'react-native-calendars';
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHeader";
@@ -25,6 +25,8 @@ import * as Haptics from "expo-haptics";
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import {useNavigationState} from "@react-navigation/core";
+import {useAppSelector} from "@/lib/store/hooks";
 
 
 interface Section {
@@ -64,7 +66,6 @@ export default function Screen() {
     const today = new Date().toISOString().split('T')[0];
     const [agendaItems, setAgendaItems] = useState<Section[]>([]);
     const [markedDates, setMarkedDates] = useState<MarkedDates>({});
-    const navigation = useNavigation();
     const { top } = useSafeAreaInsets();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
@@ -195,8 +196,6 @@ export default function Screen() {
     useEffect(() => {
         getTransactionsByMonth();
     }, []);
-
-    console.log(today)
 
 
     return (
