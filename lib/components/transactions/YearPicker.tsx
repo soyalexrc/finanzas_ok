@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import {Colors} from "@/lib/constants/colors";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {onChangeYear, selectYear} from "@/lib/store/features/transactions/transactions.slice";
 
 interface YearPickerModalProps {
     visible: boolean;
@@ -16,6 +19,7 @@ function YearPickerModal({ visible, onClose, selectedYear, onYearChange }: YearP
         <Modal
             transparent={true}
             visible={visible}
+            animationType="fade"
             onRequestClose={onClose}
         >
             <View style={styles.modalOverlay}>
@@ -41,18 +45,19 @@ function YearPickerModal({ visible, onClose, selectedYear, onYearChange }: YearP
 
 export default function YearPickerButton() {
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const year = useAppSelector(selectYear)
+    const dispatch = useAppDispatch();
 
     return (
         <View>
             <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.button}>
-                <Text style={styles.buttonText}>Select Year</Text>
+                <Text style={styles.buttonText}>{year}</Text>
             </TouchableOpacity>
             <YearPickerModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
-                selectedYear={selectedYear}
-                onYearChange={(year) => setSelectedYear(year)}
+                selectedYear={year}
+                onYearChange={(year) => dispatch(onChangeYear(year))}
             />
         </View>
     );
@@ -60,14 +65,11 @@ export default function YearPickerButton() {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: '#007BFF',
-        padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
+        paddingVertical: 5,
     },
     buttonText: {
-        color: '#FFF',
-        fontSize: 16,
+        color: Colors.primary,
+        fontWeight: 'bold'
     },
     modalOverlay: {
         flex: 1,

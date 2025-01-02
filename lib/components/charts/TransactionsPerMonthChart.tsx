@@ -2,12 +2,15 @@
 
 import {BarChart, Bar, ResponsiveContainer, Legend, Tooltip, XAxis} from 'recharts';
 import {Colors, DATE_COLORS} from "@/lib/constants/colors";
+import {getMonthName} from "@/lib/helpers/string";
 
 type Props = {
     dom: import('expo/dom').DOMProps,
     width: number,
     height: number
     onMouseMove:  () => Promise<void>;
+    data: any[];
+    currency: string;
 }
 
 const data = [
@@ -40,11 +43,25 @@ const customFontStyle = {
     color: '#333',
 };
 
-export default function TransactionsPerMonthChart({dom, width, height}: Props) {
+export default function TransactionsPerMonthChart({dom, width, height, data, currency}: Props) {
+    console.log('data', data);
+
+    function formatData() {
+        return data?.map((item) => ({
+            name: getMonthName(item.month).name,
+            nameShort: getMonthName(item.month).nameShort,
+            expense: item.expense[currency],
+            income: item.income[currency],
+        }));
+    }
+
+    console.log('formattedData', formatData());
+    console.log(currency);
+
     return (
         <div style={{width, height, overflow: 'hidden'}}>
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
+                <BarChart data={formatData()}>
                     <XAxis dataKey="nameShort" interval={0} angle={-45} textAnchor="end" style={customFontStyle}/>
                     <Bar dataKey="expense" fill={DATE_COLORS.yesterday} />
                     <Bar dataKey="income" fill={DATE_COLORS.today}/>

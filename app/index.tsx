@@ -23,12 +23,12 @@ GoogleSignin.configure({
 
 export default function Index() {
     const platform = usePlatform();
-    const { top } = useSafeAreaInsets();
+    const {top} = useSafeAreaInsets();
     const router = useRouter();
     const [loadingGoogle, setLoadingGoogle] = useState(false);
     const [loadingApple, setLoadingApple] = useState(false);
     const [storedOptions, setStoredOptions] = useState<any[]>([]);
-    const { authenticate } = useBiometricAuth()
+    const {authenticate} = useBiometricAuth()
 
     useEffect(() => {
         checkStoredOptions();
@@ -42,7 +42,7 @@ export default function Index() {
             await firestore()
                 .collection('users')
                 .doc(user.uid)
-                .set({
+                .update({
                     email: user.email,
                     name: user.displayName,
                     photo: user.photoURL,
@@ -66,15 +66,27 @@ export default function Index() {
                 const userDoc = firestore().collection('users').doc(user.uid);
                 const docSnapshot = await userDoc.get();
 
-                await firestore()
-                    .collection('users')
-                    .doc(user.uid)
-                    .set({
-                        email: user.email,
-                        name: user.displayName,
-                        photo: user.photoURL,
-                        donated: docSnapshot.exists ? docSnapshot.data()?.donated : 0
-                    })
+                if (docSnapshot.exists) {
+                    await firestore()
+                        .collection('users')
+                        .doc(user.uid)
+                        .update({
+                            email: user.email,
+                            name: user.displayName,
+                            photo: user.photoURL,
+                        })
+                } else {
+                    await firestore()
+                        .collection('users')
+                        .doc(user.uid)
+                        .set({
+                            email: user.email,
+                            name: user.displayName,
+                            photo: user.photoURL,
+                            subscription: {},
+                            lastDonation: {},
+                        })
+                }
             }
 
         } catch (error) {
@@ -124,15 +136,27 @@ export default function Index() {
             const userDoc = firestore().collection('users').doc(user.uid);
             const docSnapshot = await userDoc.get();
 
-            await firestore()
-                .collection('users')
-                .doc(user.uid)
-                .set({
-                    email: user.email,
-                    name: user.displayName,
-                    photo: user.photoURL,
-                    donated: docSnapshot.exists ? docSnapshot.data()?.donated : 0
-                })
+            if (docSnapshot.exists) {
+                await firestore()
+                    .collection('users')
+                    .doc(user.uid)
+                    .update({
+                        email: user.email,
+                        name: user.displayName,
+                        photo: user.photoURL,
+                    })
+            } else {
+                await firestore()
+                    .collection('users')
+                    .doc(user.uid)
+                    .set({
+                        email: user.email,
+                        name: user.displayName,
+                        photo: user.photoURL,
+                        subscription: {},
+                        lastDonation: {},
+                    })
+            }
             // signed in
         } catch (e: any) {
             alert('Error: ' + e.message);
@@ -147,36 +171,36 @@ export default function Index() {
     }
 
     return (
-        <View style={[styles.container, { paddingTop: top }]}>
+        <View style={[styles.container, {paddingTop: top}]}>
 
-            <View style={styles.top} />
+            <View style={styles.top}/>
 
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={onPressEmail}>
-                    <Ionicons name="mail" size={24} color="black" />
+                    <Ionicons name="mail" size={24} color="black"/>
                     <Text style={styles.buttonText}>Ingresar con Email</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button} onPress={onPressGoogle}>
-                    { loadingGoogle ? <ActivityIndicator /> : <Ionicons name="logo-google" size={24} color="black"/> }
+                    {loadingGoogle ? <ActivityIndicator/> : <Ionicons name="logo-google" size={24} color="black"/>}
                     <Text style={styles.buttonText}>Ingresar con Google</Text>
                 </TouchableOpacity>
 
                 {
                     platform === 'ios' &&
                     <TouchableOpacity style={styles.button} onPress={onPressApple}>
-                        { loadingApple ? <ActivityIndicator /> : <Ionicons name="logo-apple" size={24} color="black"/> }
+                        {loadingApple ? <ActivityIndicator/> : <Ionicons name="logo-apple" size={24} color="black"/>}
                         <Text style={styles.buttonText}>Ingresar con Apple</Text>
                     </TouchableOpacity>
                 }
             </View>
             <View style={styles.options}>
-                <Text style={{ textAlign: 'center', marginVertical: 20 }}>Cuentas Guardadas</Text>
+                <Text style={{textAlign: 'center', marginVertical: 20}}>Cuentas Guardadas</Text>
                 <FlatList
                     horizontal
                     data={storedOptions}
-                    contentContainerStyle={{ justifyContent: 'center' }}
-                    keyExtractor={({ item }) => item?.e}
+                    contentContainerStyle={{justifyContent: 'center'}}
+                    keyExtractor={({item}) => item?.e}
                     renderItem={({item}) => (
                         <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
                             <Text>{item.e}</Text>

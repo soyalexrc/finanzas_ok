@@ -45,14 +45,15 @@ export default function Screen() {
                         email: user.email,
                         name: user.displayName,
                         photo: user.photoURL,
-                        donated: 0
+                        subscription: {},
+                        lastDonation: {},
                     })
             } else {
                 const {user} = await auth().signInWithEmailAndPassword(email, password);
                 await firestore()
                     .collection('users')
                     .doc(user.uid)
-                    .set({
+                    .update({
                         email: user.email,
                         name: user.displayName,
                         photo: user.photoURL,

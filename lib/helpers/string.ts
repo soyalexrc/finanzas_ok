@@ -82,3 +82,26 @@ export function formatWithDecimals(total: number): {amount: string, decimals: st
         decimals: decimals,
     }
 }
+
+export function getMonthName(monthNumber: number): { name: string, nameShort: string } {
+    const monthNames = [
+        { name: 'Enero', nameShort: 'Ene' },
+        { name: 'Febrero', nameShort: 'Feb' },
+        { name: 'Marzo', nameShort: 'Mar' },
+        { name: 'Abril', nameShort: 'Abr' },
+        { name: 'Mayo', nameShort: 'May' },
+        { name: 'Junio', nameShort: 'Jun' },
+        { name: 'Julio', nameShort: 'Jul' },
+        { name: 'Agosto', nameShort: 'Ago' },
+        { name: 'Septiembre', nameShort: 'Sep' },
+        { name: 'Octubre', nameShort: 'Oct' },
+        { name: 'Noviembre', nameShort: 'Nov' },
+        { name: 'Diciembre', nameShort: 'Dic' },
+    ];
+
+    if (monthNumber < 1 || monthNumber > 12) {
+        throw new Error('Invalid month number');
+    }
+
+    return monthNames[monthNumber - 1];
+}

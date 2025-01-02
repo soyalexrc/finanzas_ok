@@ -157,3 +157,10 @@ export type TransactionsGroupedByCategory = {
     }
     transactions: TransactionWithAmountNumber[]
 }
+
+
+export interface Currency {
+    code: string;
+    symbol: string;
+    name: string;
+}

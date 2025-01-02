@@ -19,17 +19,13 @@ import {Fragment, memo, useCallback, useMemo, useRef} from "react";
 import {Colors} from "@/lib/constants/colors";
 import {formatByThousands} from "@/lib/helpers/string";
 
-LogBox.ignoreLogs([
-    'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
-]);
-
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
     strict: false, // Reanimated runs in strict mode by default
 });
 
 
-function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+function LeftAction({drag, cb}: { drag: SharedValue<number>, cb: () => void }) {
     const hasReachedThresholdUp = useSharedValue(false);
     const hasReachedThresholdDown = useSharedValue(false);
 
@@ -38,12 +34,13 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
             return drag.value;
         },
         (dragValue) => {
-            if (Math.abs(dragValue) > 70 && !hasReachedThresholdUp.value) {
-                runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+            if (Math.abs(dragValue) > .17 && !hasReachedThresholdUp.value) {
+                // runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+                runOnJS(cb)();
                 hasReachedThresholdUp.value = true;
                 hasReachedThresholdDown.value = false;
-            } else if (Math.abs(dragValue) < 70 && !hasReachedThresholdDown.value) {
-                runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+            } else if (Math.abs(dragValue) < .17 && !hasReachedThresholdDown.value) {
+                // runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
                 hasReachedThresholdDown.value = true;
                 hasReachedThresholdUp.value = false;
             }
@@ -51,48 +48,7 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     );
 
     const animatedStyle = useAnimatedStyle(() => {
-        if (Math.abs(drag.value) > 70) {
-            return {
-                backgroundColor: 'green',
-            };
-        }
-        return {
-            backgroundColor: '#8b8a8a',
-        };
-    });
-
-    return (
-        <Reanimated.View style={[{flex: 1}]}>
-            <Reanimated.View style={[styles.rightAction, animatedStyle]}>
-                <Ionicons name="calendar-outline" size={26} color="#fff"/>
-            </Reanimated.View>
-        </Reanimated.View>
-    );
-}
-
-function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-    const hasReachedThresholdUp = useSharedValue(false);
-    const hasReachedThresholdDown = useSharedValue(false);
-
-    useAnimatedReaction(
-        () => {
-            return drag.value;
-        },
-        (dragValue) => {
-            if (Math.abs(dragValue) > 70 && !hasReachedThresholdUp.value) {
-                runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-                hasReachedThresholdUp.value = true;
-                hasReachedThresholdDown.value = false;
-            } else if (Math.abs(dragValue) < 70 && !hasReachedThresholdDown.value) {
-                runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-                hasReachedThresholdDown.value = true;
-                hasReachedThresholdUp.value = false;
-            }
-        }
-    );
-
-    const animatedStyle = useAnimatedStyle(() => {
-        if (Math.abs(drag.value) > 70) {
+        if (Math.abs(drag.value) > .17) {
             return {
                 backgroundColor: 'red',
             };
@@ -111,7 +67,7 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     );
 }
 
-function TransactionRow({transaction, cb, heightValue = 70}: any) {
+const TransactionRow = ({transaction, cb, heightValue = 80, onRemove}: any) => {
     const reanimatedRef = useRef<SwipeableMethods>(null);
     const heightAnim = useSharedValue(heightValue); // Approximate height of row
     const opacityAnim = useSharedValue(1);
@@ -123,11 +79,9 @@ function TransactionRow({transaction, cb, heightValue = 70}: any) {
         };
     });
 
-    const onSwipeableOpen = () => {
-        // setPreviouslySelectedDate(new Date(task?.due_date || 0).toISOString());
-        reanimatedRef.current?.close();
-    };
-
+    function handleLeftAction() {
+        onRemove(transaction)
+    }
 
     return (
         <Fragment>
@@ -137,10 +91,9 @@ function TransactionRow({transaction, cb, heightValue = 70}: any) {
                     containerStyle={styles.swipeable}
                     friction={2}
                     enableTrackpadTwoFingerGesture
-                    rightThreshold={40}
-                    renderRightActions={RightAction}
-                    renderLeftActions={LeftAction}
-                    onSwipeableWillOpen={onSwipeableOpen}>
+                    // renderRightActions={RightAction}
+                    renderLeftActions={(value) =>  <LeftAction drag={value} cb={handleLeftAction} />}
+                >
                     <Pressable style={styles.container} onPress={cb}>
                         <View style={styles.row}>
                             <Text style={styles.icon}>{transaction?.category?.icon}</Text>
@@ -165,9 +118,9 @@ function TransactionRow({transaction, cb, heightValue = 70}: any) {
 
         </Fragment>
     )
-}
+};
 
-export default memo(TransactionRow);
+export default TransactionRow;
 
 const styles = StyleSheet.create({
     container: {

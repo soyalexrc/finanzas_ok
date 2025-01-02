@@ -8,7 +8,7 @@ export default function Screen() {
     }
 
     return (
-        <View>
+        <View style={{ marginTop: 100 }}>
             <Text>Browse Screen</Text>
             <Button onPress={signOut} title="Sign out" />
         </View>

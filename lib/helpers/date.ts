@@ -13,6 +13,7 @@ import {
 // import {fromZonedTime} from "date-fns-tz";
 import {getLocales} from "expo-localization";
 import {DATE_COLORS} from "@/lib/constants/colors";
+import {es} from "date-fns/locale";
 // import { es,  enUS, fr, ja, de, zhCN} from 'date-fns/locale';
 
 export function getCurrentWeek(): { start: Date, end: Date } {
@@ -179,7 +180,7 @@ export function getDateObject(date: Date | string) : { name: string; color: stri
     } else if (isTomorrow(new Date(date))) {
         return { name: 'Mañana', color: DATE_COLORS.tomorrow };
     } else {
-        return { name: format(date, 'EEE'), color: DATE_COLORS.other };
+        return { name: format(date, 'EEE dd MMM', { locale: es }), color: DATE_COLORS.other };
     }
 }
 

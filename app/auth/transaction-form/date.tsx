@@ -5,27 +5,36 @@ import {
     View
 } from "react-native";
 import * as Haptics from 'expo-haptics';
-import {useEffect, useState} from "react";
-import {Stack, useNavigation, useRouter} from "expo-router";
+import {Stack, useRouter} from "expo-router";
 import {Colors, DATE_COLORS} from "@/lib/constants/colors";
 import {Ionicons} from "@expo/vector-icons";
-import {addDays, addWeeks, format, nextSaturday, subDays} from "date-fns";
+import {addDays, addMonths, addWeeks, format, isToday, nextSaturday, subDays} from "date-fns";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onChangeDate, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
 import {es} from "date-fns/locale";
+import {useEffect, useState} from "react";
 
 export default function Screen() {
     const router = useRouter();
     const currentTransaction = useAppSelector(selectCurrentTransaction)
     const dispatch = useAppDispatch();
+    const [date, setDate] = useState<Date>(new Date());
 
     const onSave = async (date: Date, goBack = false) => {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         const dateString = date.toISOString();
         dispatch(onChangeDate(dateString));
-        if (goBack) router.dismiss();
+        if (goBack) router.back();
     };
+
+    console.log(currentTransaction.date);
+
+    useEffect(() => {
+        if (!isToday(currentTransaction.date)) {
+            setDate(new Date(currentTransaction.date));
+        }
+    }, [currentTransaction.date]);
 
 
     return (
@@ -40,8 +49,8 @@ export default function Screen() {
             <View style={styles.quickButtons}>
                 <TouchableOpacity
                     style={styles.quickButton}
-                    onPress={() => {
-                        onSave(subDays(new Date(), 1));
+                    onPress={async () => {
+                        await onSave(subDays(new Date(), 1), true);
                     }}>
                     <Ionicons name="today-outline" size={20} color={DATE_COLORS.yesterday}/>
                     <Text style={styles.quickButtonText}>Ayer</Text>
@@ -49,8 +58,8 @@ export default function Screen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.quickButton}
-                    onPress={() => {
-                        onSave(new Date());
+                    onPress={async () => {
+                        await onSave(new Date(), true);
                     }}>
                     <Ionicons name="today-outline" size={20} color={DATE_COLORS.today}/>
                     <Text style={styles.quickButtonText}>Hoy</Text>
@@ -59,8 +68,8 @@ export default function Screen() {
 
                 <TouchableOpacity
                     style={styles.quickButton}
-                    onPress={() => {
-                        onSave(addDays(new Date(), 1));
+                    onPress={async () => {
+                        await onSave(addDays(new Date(), 1), true);
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.tomorrow}/>
                     <Text style={styles.quickButtonText}>Manana</Text>
@@ -69,8 +78,8 @@ export default function Screen() {
 
                 <TouchableOpacity
                     style={styles.quickButton}
-                    onPress={() => {
-                        onSave(nextSaturday(new Date()));
+                    onPress={async () => {
+                        await onSave(nextSaturday(new Date()), true);
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.weekend}/>
                     <Text style={styles.quickButtonText}>Este fin de semana</Text>
@@ -79,8 +88,8 @@ export default function Screen() {
 
                 <TouchableOpacity
                     style={styles.quickButton}
-                    onPress={() => {
-                        onSave(addWeeks(new Date(), 1));
+                    onPress={async () => {
+                        await onSave(addWeeks(new Date(), 1), true);
                     }}>
                     <Ionicons name="calendar-outline" size={20} color={DATE_COLORS.other}/>
                     <Text style={styles.quickButtonText}>La Proxima semana</Text>
@@ -90,12 +99,13 @@ export default function Screen() {
 
             <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date(currentTransaction.date)}
+                maximumDate={addMonths(new Date(), 1)}
+                value={date}
                 mode={'date'}
                 locale="es"
                 onChange={async (_, selectedDate) => {
                     const currentDate = selectedDate || new Date();
-                    await onSave(currentDate);
+                    await onSave(currentDate, true);
                 }}
                 accentColor={Colors.primary}
                 display="inline"

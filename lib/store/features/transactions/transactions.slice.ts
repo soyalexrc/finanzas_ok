@@ -9,6 +9,7 @@ export interface TransactionsState {
     homeViewTypeFilter: HomeViewTypeFilter,
     currentBalance: number;
     currency: { symbol: string; code: string };
+    year: number
 }
 
 // function setInitialDate() {
@@ -49,7 +50,8 @@ const initialState: TransactionsState = {
     homeViewTypeFilter: {
         type: 'Spent',
         date: 'month'
-    }
+    },
+    year: new Date().getFullYear()
 }
 
 export const transactionsSlice = createSlice({
@@ -72,8 +74,8 @@ export const transactionsSlice = createSlice({
             state.currentTransaction.title = action.payload.title;
             state.currentTransaction.description = action.payload.description;
         },
-        onChangeHiddenAmount: (state, action: PayloadAction<string>) => {
-            state.currentTransaction.hidden_amount = action.payload;
+        onChangeYear: (state, action: PayloadAction<number>) => {
+            state.year = action.payload;
         },
         onChangeId: (state, action: PayloadAction<string>) => {
             state.currentTransaction.id = action.payload;
@@ -113,26 +115,19 @@ export const transactionsSlice = createSlice({
             state.transactionsGroupedByDate = initialState.transactionsGroupedByDate;
             state.currentBalance = initialState.currentBalance;
             state.homeViewTypeFilter = initialState.homeViewTypeFilter;
-        }
+        },
     }
 });
 
 export const {
     onChangeNotes,
-    updateCurrentTransaction,
     onChangeId,
-    updateTransactionsGroupedByDate,
-    onRecurrentSettingChange,
     onChangeAmount,
-    updateHomeViewTypeFilter,
     onChangeDate,
     resetCurrentTransaction,
-    updateCurrentBalance,
     onChangeCategory,
+    onChangeYear,
     onChangesTitleAndDescription,
-    updateHiddenFlag,
-    resetTransactionsSlice,
-    onChangeHiddenAmount,
     updateCurrency,
     addImageToCurrentTransaction,
     addDocumentToCurrentTransaction
@@ -140,7 +135,7 @@ export const {
 
 export const selectCurrentTransaction = (state: RootState) => state.transactions.currentTransaction
 export const selectCurrency = (state: RootState) => state.transactions.currency;
-export const selectTransactionsGroupedByDate = (state: RootState) => state.transactions.transactionsGroupedByDate
+export const selectYear = (state: RootState) => state.transactions.year
 export const selectImagesFromCurrentTransaction = (state: RootState) => state.transactions.currentTransaction.images
 export const selectDocumentsFromCurrentTransaction = (state: RootState) => state.transactions.currentTransaction.documents
 export const selectHomeViewTypeFilter = (state: RootState) => state.transactions.homeViewTypeFilter

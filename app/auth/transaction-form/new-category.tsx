@@ -44,15 +44,15 @@ export default function Screen() {
             return;
         }
 
-        if (!description) {
-            toast.error('Descripcion es requerida', {
-                className: 'bg-red-500',
-                description: 'Por favor completa el campo de descripcion',
-                duration: 6000,
-                icon: <Ionicons name="close-circle" size={24} color="red"/>,
-            });
-            return;
-        }
+        // if (!description) {
+        //     toast.error('Descripcion es requerida', {
+        //         className: 'bg-red-500',
+        //         description: 'Por favor completa el campo de descripcion',
+        //         duration: 6000,
+        //         icon: <Ionicons name="close-circle" size={24} color="red"/>,
+        //     });
+        //     return;
+        // }
 
         await firestore()
             .collection('categories')

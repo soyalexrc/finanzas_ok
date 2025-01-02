@@ -14,7 +14,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import TransactionRow from "@/lib/components/transactions/TransactionRow";
 import usePlatform from "@/lib/hooks/usePlatform";
 import Fab from "@/lib/components/transactions/Fab";
-import {useNavigation, useRouter} from "expo-router";
+import {Stack, useNavigation, useRouter} from "expo-router";
 import {Colors} from "@/lib/constants/colors";
 import * as Haptics from 'expo-haptics';
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
@@ -23,6 +23,12 @@ import TransactionsPerCategoryChart from "@/lib/components/charts/TransactionsPe
 import TransactionsPerMonthChart from "@/lib/components/charts/TransactionsPerMonthChart";
 import YearPicker from "@/lib/components/transactions/YearPicker";
 import YearPickerButton from "@/lib/components/transactions/YearPicker";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+import CurrencyPickerModal from "@/lib/components/modals/CurrencyPickerModal";
+import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {selectCurrency, selectYear, updateCurrency} from "@/lib/store/features/transactions/transactions.slice";
 
 interface Section {
     title: string;
@@ -34,84 +40,50 @@ interface Section {
 export default function Screen() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
+    const [currentMonth, setCurrentMonth] = useState<any>({});
+    const [lastMonth, setLastMonth] = useState<any>({});
+    const [lastWeek, setLastWeek] = useState<any>({});
+    const [rawPerMonthPerYear, setRawPerMonthPerYear] = useState<any[]>([]);
+    const [perMonthPerYear, setPerMonthPerYear] = useState<any[]>([]);
     const router = useRouter();
+    const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+    const year = useAppSelector(selectYear);
     const {width} = useWindowDimensions();
+    const currency = useAppSelector(selectCurrency);
+
+    const dispatch = useAppDispatch();
 
     function manageEdit() {
         router.push('/auth/transaction-form');
     }
 
+    useEffect(() => {
+        const userReference = firestore().collection('users').doc(auth().currentUser?.uid);
 
-    // useEffect(() => {
-    //     const {start, end} = getCurrentMonth();
-    //     const userId = auth().currentUser?.uid;
-    //     const userRef = firestore().collection('users').doc(userId);
-    //     const subscriber = firestore()
-    //         .collection('transactions')
-    //         .where('user_id', '==', userRef)
-    //         .where('date', '>', start)
-    //         .where('date', '<', end)
-    //         .onSnapshot(async documentSnapshot => {
-    //             const transactions = await Promise.all(documentSnapshot?.docs.map(async doc => {
-    //                 const data = doc.data();
-    //                 let categoryData = null;
-    //
-    //                 if (data.category && data.category.get) {
-    //                     const categoryDoc = await data.category.get();
-    //                     categoryData = { id: categoryDoc.id, ...categoryDoc.data() };                    }
-    //                 return {
-    //                     ...data,
-    //                     id: doc.id,
-    //                     date: doc.data().date?.toDate(),
-    //                     category: categoryData
-    //                 }
-    //             }));
-    //
-    //             // Group tasks by day
-    //             const groupedByDay = transactions?.reduce((acc: { [key: string]: any[] }, transaction) => {
-    //                 const day = format(new Date(transaction.date || new Date()), 'd MMM · eeee', {locale: es});
-    //                 if (!acc[day]) {
-    //                     acc[day] = [];
-    //                 }
-    //                 acc[day].push(transaction);
-    //                 return acc;
-    //             }, {});
-    //
-    //             // Convert grouped data to sections array
-    //             const listData: Section[] = Object.entries(groupedByDay || {}).map(([day, transactions]) => {
-    //                 const totals = transactions.reduce((acc: {
-    //                     [key: string]: { code: string, symbol: string, total: number }
-    //                 }, transaction) => {
-    //                     const {code, symbol} = transaction.currency;
-    //                     if (!acc[code]) {
-    //                         acc[code] = {code, symbol, total: 0};
-    //                     }
-    //                     acc[code].total += transaction.amount;
-    //                     return acc;
-    //                 }, {});
-    //
-    //                 return {
-    //                     title: day,
-    //                     data: transactions,
-    //                     totals: Object.values(totals),
-    //                 };
-    //             });
-    //
-    //
-    //             // Sort sections by date
-    //             listData.sort((a, b) => {
-    //                 const dateA = new Date(a.data[0].due_date || new Date());
-    //                 const dateB = new Date(b.data[0].due_date || new Date());
-    //                 return dateA.getTime() - dateB.getTime();
-    //             });
-    //
-    //             setDocs(listData);
-    //         });
-    //
-    //
-    //     // Stop listening for updates when no longer required
-    //     return () => subscriber();
-    // }, [navigation]);
+        const subscriber = firestore()
+            .collection('stats')
+            .where('userId', '==', userReference)
+            .onSnapshot(async documentSnapshot => {
+                const data = documentSnapshot.docs.map(doc => doc.data());
+                // console.log('user stats data: ', data );
+                const perMonthPerYearData = data.filter(d => d.type === 'perMonthPerYear') || [];
+                const lastWeekData = data.find(d => d.type === 'lastWeek')?.data || {};
+                const lastMonthData = data.find(d => d.type === 'lastMonth')?.data || {};
+                const currentMonthData = data.find(d => d.type === 'currentMonth')?.data || {};
+
+                setLastWeek(lastWeekData);
+                setLastMonth(lastMonthData);
+                setCurrentMonth(currentMonthData);
+                setRawPerMonthPerYear(perMonthPerYearData);
+            })
+
+        return () => subscriber();
+    }, []);
+
+    useEffect(() => {
+        const data = rawPerMonthPerYear.find(d => d.year == year)?.data || [];
+        setPerMonthPerYear(data);
+    }, [year, rawPerMonthPerYear]);
 
     async function onPressRow(transaction: any) {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -135,76 +107,106 @@ export default function Screen() {
         setModalVisible(true)
     }
 
-
     return (
         <View style={{flex: 1}}>
+            <Stack.Screen options={{
+                title: 'Resumen',
+                headerLargeTitle: true,
+                headerRight: () => <YearPickerButton/>,
+                headerLeft: () => (
+                    <TouchableOpacity
+                        onPress={() => setCurrencyModalVisible(true)}
+                        style={{
+                            paddingVertical: 5,
+                            alignItems: 'center',
+                        }}>
+                        <Text style={{color: Colors.primary, fontWeight: 'bold'}}>{currency.code}</Text>
+                    </TouchableOpacity>
+                )
+            }}/>
             <ScrollView
-                contentInsetAdjustmentBehavior="automatic"
                 showsVerticalScrollIndicator={false}
-                style={styles.container}>
+                contentInsetAdjustmentBehavior="automatic"
+                style={[styles.container]}
+            >
                 <View style={[styles.containerSmall, {width}]}>
                     <View style={{alignItems: 'center'}}>
                         <Text>
                             Gastado este mes
                         </Text>
                         <View style={{marginBottom: 4, flexDirection: 'row'}}>
-                            <Text style={{fontSize: 40}}>$</Text>
-                            <Text style={{fontSize: 50}}>{formatByThousands(formatWithDecimals(1200.23).amount)}</Text>
-                            <Text style={{fontSize: 40}}>.{formatWithDecimals(1200.23).decimals}</Text>
+                            <Text style={{fontSize: 40}}>{currency?.symbol}</Text>
+                            <Text
+                                style={{fontSize: 50}}>{formatByThousands(formatWithDecimals(currentMonth[currency.code])?.amount || '-')}</Text>
+                            <Text style={{fontSize: 40}}>.{formatWithDecimals(currentMonth[currency.code])?.decimals || '-'}</Text>
                         </View>
                     </View>
                 </View>
 
                 {/*    last week and last month boxes */}
-                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10}}>
-                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10}}>
-                        <Text style={styles.fs18}>Semana pasada</Text>
-                        <Text style={styles.fs32}>$ 1200.23</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-around', padding: 10, gap: 10}}>
+                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
+                        <Text style={styles.subTitle}>Semana pasada</Text>
+                        <Text style={styles.smallAmount}>{currency.symbol} {lastWeek[currency.code] || '-'}</Text>
                     </View>
-                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10}}>
-                        <Text style={styles.fs18}>Mes pasado</Text>
-                        <Text style={styles.fs32}>$ 1200.23</Text>
+                    <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
+                        <Text style={styles.subTitle}>Mes pasado</Text>
+                        <Text style={styles.smallAmount}>{currency.symbol} {lastMonth[currency.code] || '-'}</Text>
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10, marginVertical: 30 }}>
-                    <Text style={styles.title}>Por anio</Text>
-                    <YearPickerButton />
-                </View>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        paddingHorizontal: 10,
+                        height: 1,
+                        marginVertical: 30,
+                        backgroundColor: '#efefef'
+                    }}
+                />
 
-                <View style={{height: 300, position: 'relative'}}>
+                <View style={{height: 200, position: 'relative'}}>
                     <TransactionsPerMonthChart
+                        data={perMonthPerYear}
+                        currency={currency.code}
                         width={width}
                         onMouseMove={async () => {
                             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         }}
-                        height={300}
+                        height={200}
                         dom={{
                             scrollEnabled: false,
                         }}
                     />
-                    <View style={styles.overlay} />
+                    <View style={styles.overlay}/>
                 </View>
 
-                <View style={{ paddingHorizontal: 10, marginVertical: 30 }}>
-                    <Text style={styles.title}>Por categoria</Text>
-                </View>
-
-                <View style={{height: 300, position: 'relative'}}>
+                <View style={{height: 250, position: 'relative', marginVertical: 30}}>
                     <TransactionsPerCategoryChart
                         width={width}
-                        height={300}
+                        height={250}
                         dom={{
                             scrollEnabled: false
                         }}
                     />
-                    <View style={styles.overlay} />
+                    <View style={styles.overlay}/>
                 </View>
-
+                <View style={{height: 100}}/>
             </ScrollView>
             <Fab/>
-            <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
-                                    transaction={selectedTransaction} onEdit={() => manageEdit()}/>
+            <TransactionResumeModal
+                onRemove={() => {
+                }}
+                visible={modalVisible} onClose={() => setModalVisible(false)}
+                transaction={selectedTransaction} onEdit={() => manageEdit()}/>
+            <CurrencyPickerModal
+                onSelect={(currency) => {
+                    dispatch(updateCurrency({code: currency.code, symbol: currency.symbol}));
+                }}
+                visible={currencyModalVisible}
+                onClose={() => setCurrencyModalVisible(false)}
+            />
 
         </View>
     )
@@ -214,6 +216,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    subTitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: 'gray'
+    },
+    smallAmount: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: 5,
     },
     headerText: {
         fontSize: 16,
@@ -234,7 +247,7 @@ const styles = StyleSheet.create({
 
 //     other
     containerSmall: {
-        height: 200,
+        height: 250,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -242,24 +255,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 10
-    },
-    fs32: {
-        fontSize: 32
-    },
-    fwBold: {
-        fontWeight: 'bold'
-    },
-    fs18: {
-        fontSize: 18
-    },
-    fw64: {
-        fontSize: 64
-    },
-    fw18: {
-        fontSize: 18
-    },
-    opacityMedium: {
-        opacity: 0.5
     },
     dot: {
         width: 6,
@@ -276,6 +271,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333'
     },
+
     overlay: {
         position: 'absolute',
         top: 0,

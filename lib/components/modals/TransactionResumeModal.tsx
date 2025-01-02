@@ -35,9 +35,10 @@ type Props = {
     onClose: () => void;
     transaction: any;
     onEdit: () => void;
+    onRemove: (t: any) => void;
 }
 
-export default function TransactionResumeModal({visible, onClose, transaction, onEdit}: Props) {
+export default function TransactionResumeModal({visible, onClose, transaction, onEdit, onRemove}: Props) {
     const heightValue = (transaction.images?.length > 0 && transaction.documents?.length > 0) ? 600 :
         (transaction.images?.length > 0 || transaction.documents?.length > 0) ? 550 : 450;
     // const heightValue = 600;
@@ -105,12 +106,12 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
         }, 200);
     }
 
-    async function manageDelete() {
+    async function manageDelete(t: any) {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         endAnimation();
         setTimeout(() => {
             onClose();
-            onEdit();
+            onRemove(t);
         }, 200);
     }
 
@@ -201,7 +202,7 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
                             <Fragment>
                                 <Text style={styles.subtitle}>Documentos</Text>
                                 <View style={styles.documentsContainer}>
-                                    {transaction.documents.map((document: string, index: number) => (
+                                    {transaction.documents.map((document: any, index: number) => (
                                        <TouchableOpacity key={index}>
                                            <Text  style={styles.document}>{document.title}</Text>
                                        </TouchableOpacity>
@@ -216,7 +217,7 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
                         <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
                             <Ionicons name="pencil" size={24} color="white"/>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.floatingButton} onPress={manageDelete}>
+                        <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
                             <Ionicons name="trash" size={24} color="white"/>
                         </TouchableOpacity>
                     </View>

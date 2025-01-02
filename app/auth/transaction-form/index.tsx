@@ -11,12 +11,19 @@ import {Stack, useRouter} from "expo-router";
 import TransactionKeyboard from "@/lib/components/transactions/TransactionKeyboard";
 import {Colors} from "@/lib/constants/colors";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
-import {resetCurrentTransaction, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
+import {
+    resetCurrentTransaction,
+    selectCurrency,
+    selectCurrentTransaction, updateCurrency
+} from "@/lib/store/features/transactions/transactions.slice";
 import {formatByThousands} from "@/lib/helpers/string";
 import {getDateObject} from "@/lib/helpers/date";
 import * as Haptics from 'expo-haptics';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import CurrencyPickerModal from "@/lib/components/modals/CurrencyPickerModal";
+import {useState} from "react";
+import {Currency} from "@/lib/types/transaction";
 
 
 
@@ -24,6 +31,8 @@ export default function Screen() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction);
+    const currency = useAppSelector(selectCurrency);
+    const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
 
     async function onSave() {
         const categoryRef = firestore().collection('categories').doc(currentTransaction.category.id);
@@ -42,10 +51,7 @@ export default function Screen() {
                     amount: parseFloat(currentTransaction.amount),
                     date: new Date(currentTransaction.date),
                     updatedAt: new Date(),
-                    currency: {
-                        code: 'USD',
-                        symbol: '$'
-                    }
+                    currency
                 });
             dispatch(resetCurrentTransaction())
             router.back();
@@ -63,10 +69,7 @@ export default function Screen() {
                     user_id: userReference,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                    currency: {
-                        code: 'USD',
-                        symbol: '$'
-                    }
+                    currency
                 });
             dispatch(resetCurrentTransaction())
             router.back();
@@ -77,6 +80,16 @@ export default function Screen() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         dispatch(resetCurrentTransaction())
         router.back();
+    }
+
+    async function  handlePressCurrency() {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setCurrencyModalVisible(true);
+
+    }
+
+    function onSelectCurrency(currency: Currency) {
+        dispatch(updateCurrency({ code: currency.code, symbol: currency.symbol }));
     }
 
     return (
@@ -109,12 +122,12 @@ export default function Screen() {
                         gap: 2,
                         marginBottom: 10
                     }}>
-                        <Text style={{marginTop: 10, fontSize: 35, fontWeight: 'bold', color: 'gray'}}>$</Text>
+                        <Text style={{marginTop: 10, marginRight: 4, fontSize: 35, fontWeight: 'bold', color: 'gray'}}>{currency.symbol}</Text>
                         <Text style={{fontSize: 50}}>{formatByThousands(String(currentTransaction.amount))}</Text>
                     </View>
-                    <View>
-                        <Text>USD</Text>
-                    </View>
+                    <TouchableOpacity onPress={handlePressCurrency}>
+                        <Text>{currency.code}</Text>
+                    </TouchableOpacity>
                 </View>
 
 
@@ -191,8 +204,8 @@ export default function Screen() {
                 </View>
 
                 <TransactionKeyboard/>
-
             </View>
+            <CurrencyPickerModal visible={currencyModalVisible} onClose={() => setCurrencyModalVisible(false)} onSelect={onSelectCurrency} />
         </View>
     )
 }
