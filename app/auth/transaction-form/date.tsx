@@ -1,5 +1,5 @@
 import {
-    Keyboard,
+    Keyboard, Platform,
     Pressable,
     StyleSheet, Text, TextInput, TouchableOpacity,
     View
@@ -10,6 +10,7 @@ import {Colors, DATE_COLORS} from "@/lib/constants/colors";
 import {Ionicons} from "@expo/vector-icons";
 import {addDays, addMonths, addWeeks, format, isToday, nextSaturday, subDays} from "date-fns";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from "react-native-date-picker";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {onChangeDate, selectCurrentTransaction} from "@/lib/store/features/transactions/transactions.slice";
 import {es} from "date-fns/locale";
@@ -97,20 +98,20 @@ export default function Screen() {
                 </TouchableOpacity>
             </View>
 
-            <DateTimePicker
-                testID="dateTimePicker"
-                maximumDate={addMonths(new Date(), 1)}
-                value={date}
-                mode={'date'}
-                locale="es"
-                onChange={async (_, selectedDate) => {
-                    const currentDate = selectedDate || new Date();
-                    await onSave(currentDate, true);
-                }}
-                accentColor={Colors.primary}
-                display="inline"
-                style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
-            />
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    maximumDate={addMonths(new Date(), 1)}
+                    value={date}
+                    mode={'date'}
+                    locale="es"
+                    onChange={async (_, selectedDate) => {
+                        const currentDate = selectedDate || new Date();
+                        await onSave(currentDate, true);
+                    }}
+                    accentColor={Colors.primary}
+                    display="inline"
+                    style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                />
         </View>
     )
 }

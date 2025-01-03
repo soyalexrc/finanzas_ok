@@ -2,7 +2,7 @@ import {
     ActivityIndicator,
     Alert,
     Button,
-    LogBox, Pressable,
+    LogBox, Platform, Pressable,
     RefreshControl, ScrollView, SectionList,
     StyleSheet,
     Text,
@@ -87,6 +87,8 @@ export default function Screen() {
     const opacity = useSharedValue(0);
     const [month, setMonth] = useState<number | null>(null);
     const [year, setYear] = useState<number | null>(null);
+
+    const isIos = Platform.OS === 'ios';
 
     const [scrollY, setScrollY] = useState(0);
     const isButtonVisible = useSharedValue(false);
@@ -272,7 +274,7 @@ export default function Screen() {
                 listData.sort((a, b) => {
                     const dateA = new Date(a.data[0].due_date || new Date());
                     const dateB = new Date(b.data[0].due_date || new Date());
-                    return dateA.getTime() - dateB.getTime();
+                    return dateB.getTime() - dateA.getTime();
                 });
 
                 setAgendaItems(listData);
@@ -357,24 +359,6 @@ export default function Screen() {
     //     }
     // };
 
-    const memoizedSectionList = useMemo(() => (
-        <SectionList
-            // ref={sectionListRef}
-            keyExtractor={(item) => item.id}
-            sections={agendaItems}
-            renderItem={({ item }) => (
-                <LayoutAnimationConfig>
-                        <TransactionRow transaction={item} cb={() => onPressRow(item)} heightValue={80} onRemove={(t: any) => onRemoveRow(t)} />
-                </LayoutAnimationConfig>
-            )}
-            renderSectionHeader={({ section }) => <TransactionRowHeader totals={section.title.totals} title={section.title.title} />}
-            onScroll={handleScroll}
-            getItemLayout={getItemLayout}
-            onScrollToIndexFailed={onScrollToIndexFailed}
-        />
-    ), [agendaItems]);
-
-
     return (
         <View style={[styles.container, {paddingTop: top}]}>
             {overlayVisible && (
@@ -441,7 +425,20 @@ export default function Screen() {
                     }}
                 />
 
-                {memoizedSectionList}
+                <SectionList
+                    // ref={sectionListRef}
+                    keyExtractor={(item) => item.id}
+                    sections={agendaItems}
+                    renderItem={({ item }) => (
+                        // <LayoutAnimationConfig>
+                            <TransactionRow transaction={item} cb={() => onPressRow(item)} heightValue={80} onRemove={(t: any) => onRemoveRow(t)} />
+                        // </LayoutAnimationConfig>
+                    )}
+                    renderSectionHeader={({ section }) => <TransactionRowHeader totals={section.title.totals} title={section.title.title} />}
+                    // onScroll={handleScroll}
+                    getItemLayout={getItemLayout}
+                    // onScrollToIndexFailed={onScrollToIndexFailed}
+                />
 
                 {/*<Animated.View style={[styles.floatingButton, buttonAnimatedStyle]}>*/}
                 {/*    <Pressable onPress={scrollToBottom} style={styles.button}>*/}
@@ -472,9 +469,7 @@ export default function Screen() {
 
             </CalendarProvider>
 
-            <View
-                style={{height: 80}}
-            />
+            {isIos && <View style={{height: 80}}/>}
 
 
             <Fab/>

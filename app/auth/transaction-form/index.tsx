@@ -1,4 +1,5 @@
 import {
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -12,6 +13,7 @@ import TransactionKeyboard from "@/lib/components/transactions/TransactionKeyboa
 import {Colors} from "@/lib/constants/colors";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
+    onChangeDate,
     resetCurrentTransaction,
     selectCurrency,
     selectCurrentTransaction, updateCurrency
@@ -22,17 +24,32 @@ import * as Haptics from 'expo-haptics';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import CurrencyPickerModal from "@/lib/components/modals/CurrencyPickerModal";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Currency} from "@/lib/types/transaction";
+import {addMonths, isToday} from "date-fns";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 
 
 export default function Screen() {
     const router = useRouter();
+    const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const currency = useAppSelector(selectCurrency);
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+    const [date, setDate] = useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const handleDateButtonPress = () => {
+        setShowDatePicker(true);
+    };
+    const onSaveDate = async (date: Date) => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        const dateString = date.toISOString();
+        dispatch(onChangeDate(dateString));
+        setShowDatePicker(false);
+    };
 
     async function onSave() {
         const categoryRef = firestore().collection('categories').doc(currentTransaction.category.id);
@@ -92,6 +109,20 @@ export default function Screen() {
         dispatch(updateCurrency({ code: currency.code, symbol: currency.symbol }));
     }
 
+    function onPressDate() {
+        if (isIos) {
+            router.push('/auth/transaction-form/date')
+        } else {
+            setShowDatePicker(true)
+        }
+    }
+
+    useEffect(() => {
+        if (!isToday(currentTransaction.date)) {
+            setDate(new Date(currentTransaction.date));
+        }
+    }, [currentTransaction.date]);
+
     return (
         <View style={styles.container}>
             <Stack.Screen
@@ -139,7 +170,7 @@ export default function Screen() {
                         keyboardShouldPersistTaps="always">
 
                         <Pressable
-                            onPress={() => router.push('/auth/transaction-form/date')}
+                            onPress={onPressDate}
                             style={({ pressed }) => {
                                 return [
                                     styles.outlinedButton,
@@ -205,6 +236,23 @@ export default function Screen() {
 
                 <TransactionKeyboard/>
             </View>
+            {showDatePicker && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    maximumDate={addMonths(new Date(), 1)}
+                    value={date}
+                    mode={'date'}
+                    locale="es"
+                    onTouchCancel={() => setShowDatePicker(false)}
+                    onChange={async (_, selectedDate) => {
+                        const currentDate = selectedDate || new Date();
+                        await onSaveDate(currentDate);
+                    }}
+                    accentColor={Colors.primary}
+                    display="inline"
+                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                />
+            )}
             <CurrencyPickerModal visible={currencyModalVisible} onClose={() => setCurrencyModalVisible(false)} onSelect={onSelectCurrency} />
         </View>
     )

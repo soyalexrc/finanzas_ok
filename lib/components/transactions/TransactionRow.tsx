@@ -120,7 +120,7 @@ const TransactionRow = ({transaction, cb, heightValue = 80, onRemove}: any) => {
     )
 };
 
-export default TransactionRow;
+export default memo(TransactionRow);
 
 const styles = StyleSheet.create({
     container: {
