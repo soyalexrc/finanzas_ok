@@ -90,9 +90,9 @@ export default function Screen() {
 
     const isIos = Platform.OS === 'ios';
 
-    const [scrollY, setScrollY] = useState(0);
+    const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
     const isButtonVisible = useSharedValue(false);
-    const sectionListRef = useRef<SectionList>(null);
+    const flashListRef = useRef<any>(null);
 
     useEffect(() => {
         if (overlayVisible) {
@@ -103,13 +103,20 @@ export default function Screen() {
     }, [overlayVisible]);
 
     const handleScroll = (event: any) => {
-        setScrollY(event.nativeEvent.contentOffset.y);
-        setButtonVisibility(event.nativeEvent.contentOffset.y < event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height);
+        const offsetY = event.nativeEvent.contentOffset.y;
+        setShowScrollToTopButton(offsetY > 500); // Show button when scrolled down 100 pixels
     };
 
+
+// Function to scroll to the top
+    const scrollToTop = () => {
+        flashListRef.current?.scrollToIndex({ index: 0, animated: true });
+    };
+
+// Animated style for the button
     const buttonAnimatedStyle = useAnimatedStyle(() => {
         return {
-            opacity: withTiming(isButtonVisible.value ? 1 : 0, { duration: 300 }),
+            opacity: withTiming(showScrollToTopButton ? 1 : 0, { duration: 300 }),
         };
     });
 
@@ -128,27 +135,22 @@ export default function Screen() {
     //     }
     // };
 
-    const onScrollToIndexFailed = (info: any) => {
-        const wait = new Promise((resolve) => setTimeout(resolve, 500));
-        wait.then(() => {
-            sectionListRef.current?.scrollToLocation({
-                sectionIndex: info.highestMeasuredFrameIndex,
-                itemIndex: 0,
-                animated: true,
-            });
-        });
-    };
+    // const onScrollToIndexFailed = (info: any) => {
+    //     const wait = new Promise((resolve) => setTimeout(resolve, 500));
+    //     wait.then(() => {
+    //         sectionListRef.current?.scrollToLocation({
+    //             sectionIndex: info.highestMeasuredFrameIndex,
+    //             itemIndex: 0,
+    //             animated: true,
+    //         });
+    //     });
+    // };
 
     const getItemLayout = (data: any, index: number) => ({
         length: 80, // height of each item
         offset: 80 * index,
         index,
     });
-
-
-    const setButtonVisibility = (visible: boolean) => {
-        isButtonVisible.value = visible;
-    };
 
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -220,17 +222,17 @@ export default function Screen() {
 
                 console.log(transactionsWithCategories.length);
 
-                // const updatedMarkedDates: any = {};
-                //
-                //
-                // transactionsWithCategories.forEach((transaction) => {
-                //     updatedMarkedDates[transaction.date.toISOString().split('T')[0]] = {
-                //         marked: true,
-                //         dotColor: Colors.primary
-                //     };
-                // });
+                const updatedMarkedDates: any = {};
 
-                // setMarkedDates(updatedMarkedDates);
+
+                transactionsWithCategories.forEach((transaction) => {
+                    updatedMarkedDates[transaction.date.toISOString().split('T')[0]] = {
+                        marked: true,
+                        dotColor: Colors.primary
+                    };
+                });
+                //
+                setMarkedDates(updatedMarkedDates);
 
 
                 // Group tasks by day
@@ -272,8 +274,8 @@ export default function Screen() {
 
                 // Sort sections by date
                 listData.sort((a, b) => {
-                    const dateA = new Date(a.data[0].due_date || new Date());
-                    const dateB = new Date(b.data[0].due_date || new Date());
+                    const dateA = new Date(a.data[0].date || new Date());
+                    const dateB = new Date(b.data[0].date || new Date());
                     return dateB.getTime() - dateA.getTime();
                 });
 
@@ -383,18 +385,25 @@ export default function Screen() {
             <CalendarProvider
                 date={today}
                 todayBottomMargin={100}
-                todayButtonStyle={{}}
+                // todayButtonStyle={{
+                //     bottom: isIos ? 100 : -100
+                // }}
+                // showTodayButton={true}
                 theme={{
                     todayButtonTextColor: '#000000',
                 }}>
                 <ExpandableCalendar
                     // TODO: Add year selector
+                    disablePan={true}
                     // renderHeader={() => (
                     //     <RNDateTimePicker
                     //         value={new Date(today)}
                     //         mode="date"
                     //     />
                     // )}
+                    onDayPress={(date) => {
+                        console.log(date);
+                    }}
                     onMonthChange={async (date) => {
                         console.log('month changed', date)
                         setMonth(date.month);
@@ -409,7 +418,7 @@ export default function Screen() {
                     //         tintColor={Colors.primary}
                     //     />
                     // }
-                    markedDates={{}}
+                    markedDates={markedDates}
                     theme={{
                         todayTextColor: Colors.primary,
                         todayButtonFontSize: 24,
@@ -425,20 +434,20 @@ export default function Screen() {
                     }}
                 />
 
-                <SectionList
-                    // ref={sectionListRef}
-                    keyExtractor={(item) => item.id}
-                    sections={agendaItems}
-                    renderItem={({ item }) => (
-                        // <LayoutAnimationConfig>
-                            <TransactionRow transaction={item} cb={() => onPressRow(item)} heightValue={80} onRemove={(t: any) => onRemoveRow(t)} />
-                        // </LayoutAnimationConfig>
-                    )}
-                    renderSectionHeader={({ section }) => <TransactionRowHeader totals={section.title.totals} title={section.title.title} />}
-                    // onScroll={handleScroll}
-                    getItemLayout={getItemLayout}
-                    // onScrollToIndexFailed={onScrollToIndexFailed}
-                />
+                {/*<SectionList*/}
+                {/*    // ref={sectionListRef}*/}
+                {/*    keyExtractor={(item) => item.id}*/}
+                {/*    sections={agendaItems}*/}
+                {/*    renderItem={({ item }) => (*/}
+                {/*        // <LayoutAnimationConfig>*/}
+                {/*            <TransactionRow transaction={item} cb={() => onPressRow(item)} heightValue={80} onRemove={(t: any) => onRemoveRow(t)} />*/}
+                {/*        // </LayoutAnimationConfig>*/}
+                {/*    )}*/}
+                {/*    renderSectionHeader={({ section }) => <TransactionRowHeader totals={section.title.totals} title={section.title.title} />}*/}
+                {/*    // onScroll={handleScroll}*/}
+                {/*    getItemLayout={getItemLayout}*/}
+                {/*    // onScrollToIndexFailed={onScrollToIndexFailed}*/}
+                {/*/>*/}
 
                 {/*<Animated.View style={[styles.floatingButton, buttonAnimatedStyle]}>*/}
                 {/*    <Pressable onPress={scrollToBottom} style={styles.button}>*/}
@@ -446,26 +455,27 @@ export default function Screen() {
                 {/*    </Pressable>*/}
                 {/*</Animated.View>*/}
 
-                {/*<FlashList*/}
-                {/*    data={agendaItems}*/}
-                {/*    estimatedItemSize={30}*/}
-                {/*    renderItem={({item}) => {*/}
-                {/*        return (*/}
-                {/*            <View>*/}
-                {/*                <TransactionRowHeader totals={item.title.totals} title={item.title.title}/>*/}
-                {/*                {item.data.map((transaction) => (*/}
-                {/*                    <LayoutAnimationConfig key={transaction.id}>*/}
-                {/*                        <Animated.View entering={StretchInY}>*/}
-                {/*                            <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)} heightValue={90}*/}
-                {/*                                            onRemove={(t: any) => onRemoveRow(t)}/>*/}
-                {/*                        </Animated.View>*/}
-                {/*                    </LayoutAnimationConfig>*/}
-                {/*                ))}*/}
-                {/*            </View>*/}
-                {/*        )*/}
-                {/*    }}*/}
-                {/*    onViewableItemsChanged={onViewableItemsChanged}*/}
-                {/*/>*/}
+                <FlashList
+                    data={agendaItems}
+                    estimatedItemSize={50}
+                    ref={flashListRef}
+                    renderItem={({item}) => {
+                        return (
+                            <View>
+                                <TransactionRowHeader totals={item.title.totals} title={item.title.title}/>
+                                {item.data.map((transaction) => (
+                                    <LayoutAnimationConfig key={transaction.id}>
+                                        <Animated.View entering={StretchInY}>
+                                            <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)} heightValue={90}
+                                                            onRemove={(t: any) => onRemoveRow(t)}/>
+                                        </Animated.View>
+                                    </LayoutAnimationConfig>
+                                ))}
+                            </View>
+                        )
+                    }}
+                    onScroll={handleScroll}
+                />
 
             </CalendarProvider>
 
@@ -476,6 +486,12 @@ export default function Screen() {
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}
                                     onRemove={onRemoveRow}/>
+
+            <Animated.View style={[styles.floatingButton, buttonAnimatedStyle, { bottom: isIos ? 100 : 20 }]}>
+                <Pressable onPress={scrollToTop} style={styles.button}>
+                    <Ionicons name="arrow-up" size={24} color="#fff" />
+                </Pressable>
+            </Animated.View>
         </View>
     )
 }
@@ -502,7 +518,6 @@ const styles = StyleSheet.create({
     },
     floatingButton: {
         position: 'absolute',
-        bottom: 20,
         left: 20,
         backgroundColor: '#000',
         borderRadius: 50,

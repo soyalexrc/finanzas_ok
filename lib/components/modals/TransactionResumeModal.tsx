@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect} from 'react';
 import {
     Button,
-    Modal,
+    Modal, Platform, SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
@@ -42,6 +42,7 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
     const heightValue = (transaction.images?.length > 0 && transaction.documents?.length > 0) ? 600 :
         (transaction.images?.length > 0 || transaction.documents?.length > 0) ? 550 : 450;
     // const heightValue = 600;
+    const isIos = Platform.OS === 'ios';
     const translateY = useSharedValue(heightValue);
     const backgroundOpacity = useSharedValue(0);
     const dispatch = useAppDispatch();
@@ -115,115 +116,230 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
         }, 200);
     }
 
-    return (
-        <Modal
-            transparent={true}
-            visible={visible}
-            animationType="none"
-            onRequestClose={manageClose}
-        >
-            <Animated.View style={[styles.modalBackground, animatedBackgroundStyle]}>
-                <Animated.View style={[styles.modalContent, { height: heightValue }, animatedStyle]}>
-                    <View style={{alignItems: 'flex-end'}}>
-                        <TouchableOpacity onPress={manageClose}>
-                            <Ionicons name="close-circle" size={35} color={Colors.primary}/>
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
-                        <View
-                            style={{
-                                width: 60,
-                                height: 60,
-                                borderRadius: 100,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#f0f0f0',
-                                marginBottom: 10
-                            }}
-                        >
-                            <Text style={{fontSize: 40}}>{transaction?.category?.icon}</Text>
+    if (isIos) {
+        return (
+            <Modal
+                transparent={true}
+                visible={visible}
+                animationType="none"
+                onRequestClose={manageClose}
+            >
+                <Animated.View style={[styles.modalBackground, animatedBackgroundStyle]}>
+                    <Animated.View style={[styles.modalContent, { height: heightValue }, animatedStyle]}>
+                        <View style={{alignItems: 'flex-end'}}>
+                            <TouchableOpacity onPress={manageClose}>
+                                <Ionicons name="close-circle" size={35} color={Colors.primary}/>
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles.title}>{transaction?.title || 'Gasto sin titulo'}</Text>
-                        <Text style={styles.description}>{transaction?.description || 'Gasto sin descripcion'}</Text>
-
-                        <View style={{height: 30}}/>
-
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Text style={styles.cellTitle}>Categoria</Text>
-                            <View style={styles.categoryWrapper}>
-                                <Text>{transaction?.category?.icon}</Text>
-                                <Text>{transaction?.category?.title}</Text>
+                        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+                            <View
+                                style={{
+                                    width: 60,
+                                    height: 60,
+                                    borderRadius: 100,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: '#f0f0f0',
+                                    marginBottom: 10
+                                }}
+                            >
+                                <Text style={{fontSize: 40}}>{transaction?.category?.icon}</Text>
                             </View>
-                        </View>
+                            <Text style={styles.title}>{transaction?.title || 'Gasto sin titulo'}</Text>
+                            <Text style={styles.description}>{transaction?.description || 'Gasto sin descripcion'}</Text>
 
-                        <View style={{
-                            flexDirection: 'row',
-                            marginBottom: 10,
-                            marginTop: 5,
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <Text style={styles.cellTitle}>Monto</Text>
-                            <View style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}>
-                                <Text style={styles.amount}>{transaction?.currency?.symbol} {transaction.amount}</Text>
-                                <Text style={styles.currencyCode}>({transaction?.currency?.code})</Text>
-                            </View>
+                            <View style={{height: 30}}/>
 
-                        </View>
-
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Text style={styles.cellTitle}>Fecha</Text>
-                            {
-                                transaction.date &&
-                                <Text style={styles.date}>{format(transaction.date, 'PPP', { locale: es })}</Text>
-                            }
-                        </View>
-
-                        {
-                            transaction.images?.length > 0 &&
-                            <Fragment>
-                                <Text style={styles.subtitle}>Imagenes</Text>
-                                <ScrollView horizontal style={styles.imagesContainer}>
-                                    {transaction.images.map((image: string, index: number) => (
-                                        <Image
-                                            key={index}
-                                            style={styles.image}
-                                            source={{uri: image}}
-                                            placeholder={{ blurhash }}
-                                            transition={400}
-                                        />
-                                    ))}
-                                </ScrollView>
-                            </Fragment>
-                        }
-
-                        {
-                            transaction.documents?.length > 0 &&
-                            <Fragment>
-                                <Text style={styles.subtitle}>Documentos</Text>
-                                <View style={styles.documentsContainer}>
-                                    {transaction.documents.map((document: any, index: number) => (
-                                       <TouchableOpacity key={index}>
-                                           <Text  style={styles.document}>{document.title}</Text>
-                                       </TouchableOpacity>
-                                    ))}
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <Text style={styles.cellTitle}>Categoria</Text>
+                                <View style={styles.categoryWrapper}>
+                                    <Text>{transaction?.category?.icon}</Text>
+                                    <Text>{transaction?.category?.title}</Text>
                                 </View>
-                            </Fragment>
-                        }
+                            </View>
 
-                        <View style={{height: 70}}/>
-                    </ScrollView>
-                    <View style={styles.floatingButtonsContainer}>
-                        <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
-                            <Ionicons name="pencil" size={24} color="white"/>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
-                            <Ionicons name="trash" size={24} color="white"/>
-                        </TouchableOpacity>
-                    </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                marginBottom: 10,
+                                marginTop: 5,
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <Text style={styles.cellTitle}>Monto</Text>
+                                <View style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}>
+                                    <Text style={styles.amount}>{transaction?.currency?.symbol} {transaction.amount}</Text>
+                                    <Text style={styles.currencyCode}>({transaction?.currency?.code})</Text>
+                                </View>
+
+                            </View>
+
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <Text style={styles.cellTitle}>Fecha</Text>
+                                {
+                                    transaction.date &&
+                                    <Text style={styles.date}>{format(transaction.date, 'PPP', { locale: es })}</Text>
+                                }
+                            </View>
+
+                            {
+                                transaction.images?.length > 0 &&
+                                <Fragment>
+                                    <Text style={styles.subtitle}>Imagenes</Text>
+                                    <ScrollView horizontal style={styles.imagesContainer}>
+                                        {transaction.images.map((image: string, index: number) => (
+                                            <Image
+                                                key={index}
+                                                style={styles.image}
+                                                source={{uri: image}}
+                                                placeholder={{ blurhash }}
+                                                transition={400}
+                                            />
+                                        ))}
+                                    </ScrollView>
+                                </Fragment>
+                            }
+
+                            {
+                                transaction.documents?.length > 0 &&
+                                <Fragment>
+                                    <Text style={styles.subtitle}>Documentos</Text>
+                                    <View style={styles.documentsContainer}>
+                                        {transaction.documents.map((document: any, index: number) => (
+                                            <TouchableOpacity key={index}>
+                                                <Text  style={styles.document}>{document.title}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                </Fragment>
+                            }
+
+                            <View style={{height: 70}}/>
+                        </ScrollView>
+                        <View style={styles.floatingButtonsContainer}>
+                            <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
+                                <Ionicons name="pencil" size={24} color="white"/>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
+                                <Ionicons name="trash" size={24} color="white"/>
+                            </TouchableOpacity>
+                        </View>
+                    </Animated.View>
                 </Animated.View>
-            </Animated.View>
-        </Modal>
+            </Modal>
+        )
+    }
+
+    return (
+       <SafeAreaView>
+           <Modal
+               transparent={true}
+               visible={visible}
+               animationType="none"
+               onRequestClose={manageClose}
+           >
+               <Animated.View style={[styles.modalBackground, animatedBackgroundStyle]}>
+                   <Animated.View style={[styles.modalContent, { height: heightValue }, animatedStyle]}>
+                       <View style={{alignItems: 'flex-end'}}>
+                           <TouchableOpacity onPress={manageClose}>
+                               <Ionicons name="close-circle" size={35} color={Colors.primary}/>
+                           </TouchableOpacity>
+                       </View>
+                       <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+                           <View
+                               style={{
+                                   width: 60,
+                                   height: 60,
+                                   borderRadius: 100,
+                                   justifyContent: 'center',
+                                   alignItems: 'center',
+                                   backgroundColor: '#f0f0f0',
+                                   marginBottom: 10
+                               }}
+                           >
+                               <Text style={{fontSize: 40}}>{transaction?.category?.icon}</Text>
+                           </View>
+                           <Text style={styles.title}>{transaction?.title || 'Gasto sin titulo'}</Text>
+                           <Text style={styles.description}>{transaction?.description || 'Gasto sin descripcion'}</Text>
+
+                           <View style={{height: 30}}/>
+
+                           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                               <Text style={styles.cellTitle}>Categoria</Text>
+                               <View style={styles.categoryWrapper}>
+                                   <Text>{transaction?.category?.icon}</Text>
+                                   <Text>{transaction?.category?.title}</Text>
+                               </View>
+                           </View>
+
+                           <View style={{
+                               flexDirection: 'row',
+                               marginBottom: 10,
+                               marginTop: 5,
+                               justifyContent: 'space-between',
+                               alignItems: 'center'
+                           }}>
+                               <Text style={styles.cellTitle}>Monto</Text>
+                               <View style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}>
+                                   <Text style={styles.amount}>{transaction?.currency?.symbol} {transaction.amount}</Text>
+                                   <Text style={styles.currencyCode}>({transaction?.currency?.code})</Text>
+                               </View>
+
+                           </View>
+
+                           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                               <Text style={styles.cellTitle}>Fecha</Text>
+                               {
+                                   transaction.date &&
+                                   <Text style={styles.date}>{format(transaction.date, 'PPP', { locale: es })}</Text>
+                               }
+                           </View>
+
+                           {
+                               transaction.images?.length > 0 &&
+                               <Fragment>
+                                   <Text style={styles.subtitle}>Imagenes</Text>
+                                   <ScrollView horizontal style={styles.imagesContainer}>
+                                       {transaction.images.map((image: string, index: number) => (
+                                           <Image
+                                               key={index}
+                                               style={styles.image}
+                                               source={{uri: image}}
+                                               placeholder={{ blurhash }}
+                                               transition={400}
+                                           />
+                                       ))}
+                                   </ScrollView>
+                               </Fragment>
+                           }
+
+                           {
+                               transaction.documents?.length > 0 &&
+                               <Fragment>
+                                   <Text style={styles.subtitle}>Documentos</Text>
+                                   <View style={styles.documentsContainer}>
+                                       {transaction.documents.map((document: any, index: number) => (
+                                           <TouchableOpacity key={index}>
+                                               <Text  style={styles.document}>{document.title}</Text>
+                                           </TouchableOpacity>
+                                       ))}
+                                   </View>
+                               </Fragment>
+                           }
+
+                           <View style={{height: 70}}/>
+                       </ScrollView>
+                       <View style={styles.floatingButtonsContainer}>
+                           <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
+                               <Ionicons name="pencil" size={24} color="white"/>
+                           </TouchableOpacity>
+                           <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
+                               <Ionicons name="trash" size={24} color="white"/>
+                           </TouchableOpacity>
+                       </View>
+                   </Animated.View>
+               </Animated.View>
+           </Modal>
+       </SafeAreaView>
     );
 }
 
