@@ -13,8 +13,11 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {useEffect, useState} from "react";
 import firestore from '@react-native-firebase/firestore';
-import {loadArray, remove} from "@/lib/utils/storage";
+import {loadArray, remove, save, saveString} from "@/lib/utils/storage";
 import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
+import {useAuth} from "@/lib/context/AuthContext";
 
 GoogleSignin.configure({
     webClientId: '589962407829-t4g9men77q1ts91fkni300afek6mcr67.apps.googleusercontent.com'
@@ -29,24 +32,44 @@ export default function Index() {
     const [loadingApple, setLoadingApple] = useState(false);
     const [storedOptions, setStoredOptions] = useState<any[]>([]);
     const {authenticate} = useBiometricAuth()
+    const {login} = useAuth();
+    const {checkAuth} = useAuth();
 
     useEffect(() => {
         checkStoredOptions();
+
+        checkAuth(() => {
+            // setInitializing(false)
+            router.replace('/auth/tabs/resume');
+        }, () => {
+            console.log('i am here')
+            // router.replace('/');
+        })
     }, []);
 
     async function quickLogin(e: string, p: string) {
         const result = await authenticate();
+        console.log({ email: e, password: p })
 
         if (result) {
-            const {user} = await auth().signInWithEmailAndPassword(e, p);
-            await firestore()
-                .collection('users')
-                .doc(user.uid)
-                .update({
-                    email: user.email,
-                    name: user.displayName,
-                    photo: user.photoURL,
-                })
+            try {
+                const response = await api.post(endpoints.auth.login, { email: e, password: p });
+                console.log('response', response);
+                if (response.status === 200) {
+                    await login(response.data.user.access_token, response.data.user)
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            // const {user} = await auth().signInWithEmailAndPassword(e, p);
+            // await firestore()
+            //     .collection('users')
+            //     .doc(user.uid)
+            //     .update({
+            //         email: user.email,
+            //         name: user.displayName,
+            //         photo: user.photoURL,
+            //     })
         }
     }
 
@@ -170,6 +193,7 @@ export default function Index() {
         }
     }
 
+
     return (
         <View style={[styles.container, {paddingTop: top}]}>
 
@@ -181,33 +205,36 @@ export default function Index() {
                     <Text style={styles.buttonText}>Ingresar con Email</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={onPressGoogle}>
+                <TouchableOpacity disabled style={[styles.button, styles.buttonDisabled]} onPress={onPressGoogle}>
                     {loadingGoogle ? <ActivityIndicator/> : <Ionicons name="logo-google" size={24} color="black"/>}
                     <Text style={styles.buttonText}>Ingresar con Google</Text>
                 </TouchableOpacity>
 
                 {
                     platform === 'ios' &&
-                    <TouchableOpacity style={styles.button} onPress={onPressApple}>
+                    <TouchableOpacity disabled style={[styles.button, styles.buttonDisabled]} onPress={onPressApple}>
                         {loadingApple ? <ActivityIndicator/> : <Ionicons name="logo-apple" size={24} color="black"/>}
                         <Text style={styles.buttonText}>Ingresar con Apple</Text>
                     </TouchableOpacity>
                 }
             </View>
-            <View style={styles.options}>
-                <Text style={{textAlign: 'center', marginVertical: 20}}>Cuentas Guardadas</Text>
-                <FlatList
-                    horizontal
-                    data={storedOptions}
-                    contentContainerStyle={{justifyContent: 'center'}}
-                    keyExtractor={({item}) => item?.e}
-                    renderItem={({item}) => (
-                        <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
-                            <Text>{item.e}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
-            </View>
+            {
+                storedOptions.length > 0 &&
+                <View style={styles.options}>
+                    <Text style={{textAlign: 'center', marginVertical: 20}}>Cuentas Guardadas</Text>
+                    <FlatList
+                        horizontal
+                        data={storedOptions}
+                        contentContainerStyle={{justifyContent: 'center'}}
+                        keyExtractor={(item) => item?.e}
+                        renderItem={({item}) => (
+                            <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
+                                <Text>{item.e}</Text>
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View>
+            }
         </View>
     );
 }
@@ -226,6 +253,10 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderColor: '#000',
         borderWidth: 1,
+    },
+
+    buttonDisabled: {
+        opacity: 0.5
     },
     buttonsContainer: {
         flex: 1,

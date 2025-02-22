@@ -12,6 +12,7 @@ import {Stack, useRouter} from "expo-router";
 import TransactionKeyboard from "@/lib/components/transactions/TransactionKeyboard";
 import {Colors} from "@/lib/constants/colors";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
+import {toast} from 'sonner-native';
 import {
     onChangeDate,
     resetCurrentTransaction,
@@ -19,7 +20,7 @@ import {
     selectCurrentTransaction, updateCurrency
 } from "@/lib/store/features/transactions/transactions.slice";
 import {formatByThousands} from "@/lib/helpers/string";
-import {getDateObject} from "@/lib/helpers/date";
+import {fDateTimeUTC, fTimestampUTC, getDateObject} from "@/lib/helpers/date";
 import * as Haptics from 'expo-haptics';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -28,6 +29,11 @@ import {useEffect, useState} from "react";
 import {Currency} from "@/lib/types/transaction";
 import {addMonths, isToday} from "date-fns";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
+import {load, loadString} from "@/lib/utils/storage";
+import {CurrencyV2} from "@/lib/store/features/transactions/currencies.slice";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 
@@ -35,6 +41,7 @@ export default function Screen() {
     const router = useRouter();
     const isIos = Platform.OS === 'ios';
     const dispatch = useAppDispatch();
+    const queryClient = useQueryClient()
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const currency = useAppSelector(selectCurrency);
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
@@ -56,40 +63,65 @@ export default function Screen() {
         const userReference = firestore().collection('users').doc(auth().currentUser?.uid);
 
         if (currentTransaction.id) {
-            await firestore()
-                .collection('transactions')
-                .doc(currentTransaction.id)
-                .update({
-                    title: currentTransaction.title,
-                    description: currentTransaction.description,
-                    category: categoryRef,
-                    documents: currentTransaction.documents,
-                    images: currentTransaction.images,
-                    amount: parseFloat(currentTransaction.amount),
-                    date: new Date(currentTransaction.date),
-                    updatedAt: new Date(),
-                    currency
-                });
+            // await firestore()
+            //     .collection('transactions')
+            //     .doc(currentTransaction.id)
+            //     .update({
+            //         title: currentTransaction.title,
+            //         description: currentTransaction.description,
+            //         category: categoryRef,
+            //         documents: currentTransaction.documents,
+            //         images: currentTransaction.images,
+            //         amount: parseFloat(currentTransaction.amount),
+            //         date: new Date(currentTransaction.date),
+            //         updatedAt: new Date(),
+            //         currency
+            //     });
             dispatch(resetCurrentTransaction())
             router.back();
         } else {
-            await firestore()
-                .collection('transactions')
-                .add({
+            try {
+                const user: any = await load('user');
+                const token = await loadString('access_token');
+                const payload = {
                     title: currentTransaction.title,
                     description: currentTransaction.description,
-                    category: categoryRef,
+                    category: currentTransaction.category?._id,
                     documents: currentTransaction.documents,
                     images: currentTransaction.images,
                     amount: parseFloat(currentTransaction.amount),
-                    date: new Date(currentTransaction.date),
-                    user_id: userReference,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    currency
+                    date: currentTransaction.date,
+                    user: user?._id ?? '',
+                    currency: currency._id
+                }
+                console.log('payload', payload);
+                const response = await api.post(endpoints.transactions.create, payload, {
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    }
+                })
+                console.log(response);
+
+                if (response.status === 200 || response.status === 201) {
+                    toast.error(response.data.message, {
+                        className: 'bg-success-500',
+                        // description: 'Por favor completa el campo de titulo',
+                        duration: 6000,
+                        icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                    });
+                    // await queryClient.invalidateQueries({ queryKey: ['transactions'] })
+                    dispatch(resetCurrentTransaction())
+                    router.back();
+                }
+            } catch (error: any) {
+                console.log(error);
+                toast.error(error.message, {
+                    className: 'bg-red-500',
+                    description: 'Por favor completa el campo de titulo',
+                    duration: 6000,
+                    icon: <Ionicons name="close-circle" size={24} color="red"/>,
                 });
-            dispatch(resetCurrentTransaction())
-            router.back();
+            }
         }
     }
 
@@ -105,8 +137,8 @@ export default function Screen() {
 
     }
 
-    function onSelectCurrency(currency: Currency) {
-        dispatch(updateCurrency({ code: currency.code, symbol: currency.symbol }));
+    function onSelectCurrency(currency: CurrencyV2) {
+        dispatch(updateCurrency(currency));
     }
 
     function onPressDate() {

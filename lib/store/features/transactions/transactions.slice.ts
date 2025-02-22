@@ -2,13 +2,14 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "@/lib/store";
 import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByDate} from "@/lib/types/transaction";
 import {format} from "date-fns";
+import {CurrencyV2} from "@/lib/store/features/transactions/currencies.slice";
 
 export interface TransactionsState {
     currentTransaction: Transaction;
     transactionsGroupedByDate: TransactionsGroupedByDate[];
     homeViewTypeFilter: HomeViewTypeFilter,
     currentBalance: number;
-    currency: { symbol: string; code: string };
+    currency: CurrencyV2;
     year: number
 }
 
@@ -19,7 +20,18 @@ export interface TransactionsState {
 // }
 
 const initialState: TransactionsState = {
-    currency: { symbol: '$', code: 'USD' },
+    currency: {
+        symbol: '$',
+        _id: '67b60a53743e50fa9d4b5fc2',
+        code: 'USD',
+        country: 'United States',
+        format: '#,##0.00 ¤',
+        name: 'United States Dollar',
+        decimals: 2,
+        isoNumber: 0,
+        subunit: 'Cent',
+        subunitToUnit: 100
+    },
     currentTransaction: {
         amount: "0",
         category_icon: '',
@@ -28,7 +40,7 @@ const initialState: TransactionsState = {
             icon: '',
             title: '',
             type: '',
-            id: '',
+            _id: '',
         },
         images: [],
         documents: [],
@@ -101,7 +113,7 @@ export const transactionsSlice = createSlice({
         updateCurrentBalance: (state, action: PayloadAction<number>) => {
             state.currentBalance = action.payload;
         },
-        updateCurrency: (state, action: PayloadAction<{ code: string, symbol: string }>) => {
+        updateCurrency: (state, action: PayloadAction<CurrencyV2>) => {
             state.currency = action.payload;
         },
         resetCurrentTransaction: (state) => {

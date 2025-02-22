@@ -1,20 +1,17 @@
 'use dom';
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import {useAuth} from "@/lib/context/AuthContext";
+import {useYearlyExpensesByCategory} from "@/lib/utils/api/transactions";
+import {CurrencyV2} from "@/lib/store/features/transactions/currencies.slice";
 
 
 type Props = {
     dom: import('expo/dom').DOMProps,
     width: number,
-    height: number
+    height: number,
+    data: { name: string, value: number }[]
 }
-
-const data = [
-    { name: 'Category A', value: 400 },
-    { name: 'Category B', value: 300 },
-    { name: 'Category C', value: 300 },
-    { name: 'Category D', value: 200 },
-];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -31,7 +28,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     );
 };
 
-export default function CategoryDonutChart({ width, height, dom }: Props) {
+export default function CategoryDonutChart({ width, height, dom, data }: Props) {
+
+
     return (
         <div style={{ width, height, overflow: 'hidden' }}>
             <ResponsiveContainer width="100%" height="100%">

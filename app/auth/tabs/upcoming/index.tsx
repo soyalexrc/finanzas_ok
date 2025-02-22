@@ -36,6 +36,9 @@ import TransactionResumeModal from "@/lib/components/modals/TransactionResumeMod
 import sleep from "@/lib/helpers/sleep";
 import {FlashList} from "@shopify/flash-list";
 import {Ionicons} from "@expo/vector-icons";
+import {load, loadString} from "@/lib/utils/storage";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
@@ -84,6 +87,7 @@ export default function Screen() {
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
     const router = useRouter();
     const [overlayVisible, setOverlayVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const opacity = useSharedValue(0);
     const [month, setMonth] = useState<number | null>(null);
     const [year, setYear] = useState<number | null>(null);
@@ -110,13 +114,13 @@ export default function Screen() {
 
 // Function to scroll to the top
     const scrollToTop = () => {
-        flashListRef.current?.scrollToIndex({ index: 0, animated: true });
+        flashListRef.current?.scrollToIndex({index: 0, animated: true});
     };
 
 // Animated style for the button
     const buttonAnimatedStyle = useAnimatedStyle(() => {
         return {
-            opacity: withTiming(showScrollToTopButton ? 1 : 0, { duration: 300 }),
+            opacity: withTiming(showScrollToTopButton ? 1 : 0, {duration: 300}),
         };
     });
 
@@ -190,146 +194,118 @@ export default function Screen() {
     console.log(year);
 
 
-
     useEffect(() => {
-        setOverlayVisible(true);
-        const {start, end} = (month && year) ? getCustomMonthAndYear(month, year) : getCurrentMonth();
-        console.log(start, end);
-        const userId = auth().currentUser?.uid;
-        const userRef = firestore().collection('users').doc(userId);
+        getTransactions();
+    }, [month, year]);
 
-        const subscriber = firestore()
-            .collection('transactions')
-            .where('user_id', '==', userRef)
-            .where('date', '>', start)
-            .where('date', '<', end)
-            .onSnapshot(async (documentSnapshot) => {
-                const transactionsWithCategories = await Promise.all(documentSnapshot?.docs.map(async doc => {
-                    const data = doc.data();
-                    let categoryData = null;
 
-                    if (data.category && data.category.get) {
-                        const categoryDoc = await data.category.get();
-                        categoryData = {id: categoryDoc.id, ...categoryDoc.data()};
+    async function getTransactions(loading = true) {
+        if (loading) setOverlayVisible(true);
+        try {
+            const {start, end} = (month && year) ? getCustomMonthAndYear(month, year) : getCurrentMonth();
+            console.log(start, end);
+            const user: any = await load('user');
+            const token = await loadString('access_token');
+            // const userRef = firestore().collection('users').doc(userId);
+
+            const payload = {
+                userId: user?._id ?? '',
+                dateFrom: start.toISOString(),
+                dateTo: end.toISOString()
+            }
+
+            console.log('payload', payload);
+
+            const response = await api.post(endpoints.transactions.listByUser, payload, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            })
+
+
+            const trs = response.data;
+            console.log('trs', trs)
+
+            const updatedMarkedDates: any = {};
+
+
+            trs.forEach((transaction: any) => {
+                updatedMarkedDates[transaction.date.split('T')[0]] = {
+                    marked: true,
+                    dotColor: Colors.primary
+                };
+            });
+            //
+            setMarkedDates(updatedMarkedDates);
+
+
+            console.log('markedDates', updatedMarkedDates);
+
+
+            // Group tasks by day
+            const groupedByDay: any = trs?.reduce((acc: {
+                [key: string]: any[]
+            }, transaction: any) => {
+                const day = format(new Date(transaction.date || new Date()), 'd MMM · eeee', {locale: es});
+                if (!acc[day]) {
+                    acc[day] = [];
+                }
+                acc[day].push(transaction);
+                return acc;
+            }, {});
+
+            console.log('groupedByDay', groupedByDay);
+
+
+            // Convert grouped data to sections array
+            const listData: any[] = Object.entries(groupedByDay || {}).map(([day, transactions]: any) => {
+                const totals = transactions.reduce((acc: {
+                    [key: string]: { code: string, symbol: string, total: number }
+                }, transaction: any) => {
+                    const {code, symbol} = transaction.currency;
+                    if (!acc[code]) {
+                        acc[code] = {code, symbol, total: 0};
                     }
-                    return {
-                        ...data,
-                        id: doc.id,
-                        date: doc.data().date?.toDate(),
-                        category: categoryData
+                    if (transaction.category.type === 'expense') {
+                        acc[code].total += transaction.amount;
                     }
-                }));
-
-                console.log(transactionsWithCategories.length);
-
-                const updatedMarkedDates: any = {};
-
-
-                transactionsWithCategories.forEach((transaction) => {
-                    updatedMarkedDates[transaction.date.toISOString().split('T')[0]] = {
-                        marked: true,
-                        dotColor: Colors.primary
-                    };
-                });
-                //
-                setMarkedDates(updatedMarkedDates);
-
-
-                // Group tasks by day
-                const groupedByDay = transactionsWithCategories?.reduce((acc: {
-                    [key: string]: any[]
-                }, transaction) => {
-                    const day = format(new Date(transaction.date || new Date()), 'd MMM · eeee', {locale: es});
-                    if (!acc[day]) {
-                        acc[day] = [];
-                    }
-                    acc[day].push(transaction);
                     return acc;
                 }, {});
 
-                // Convert grouped data to sections array
-                const listData: Section[] = Object.entries(groupedByDay || {}).map(([day, transactions]) => {
-                    const totals = transactions.reduce((acc: {
-                        [key: string]: { code: string, symbol: string, total: number }
-                    }, transaction) => {
-                        const {code, symbol} = transaction.currency;
-                        if (!acc[code]) {
-                            acc[code] = {code, symbol, total: 0};
-                        }
-                        if (transaction.category.type === 'expense') {
-                            acc[code].total += transaction.amount;
-                        }
-                        return acc;
-                    }, {});
-
-                    return {
-                        title: {
-                            title: day,
-                            totals: Object.values(totals),
-                        },
-                        data: transactions,
-                    };
-                });
-
-
-                // Sort sections by date
-                listData.sort((a, b) => {
-                    const dateA = new Date(a.data[0].date || new Date());
-                    const dateB = new Date(b.data[0].date || new Date());
-                    return dateB.getTime() - dateA.getTime();
-                });
-
-                setAgendaItems(listData);
-
-                // const transactionsByCategory = agendaItems.reduce((acc, section) => {
-                //     section.data.forEach(transaction => {
-                //         const categoryTitle = transaction.category.title;
-                //         if (!acc[categoryTitle]) {
-                //             acc[categoryTitle] = [];
-                //         }
-                //         acc[categoryTitle].push(transaction);
-                //     });
-                //     return acc;
-                // }, {});
-
-                // const transactionsByCategory = agendaItems.reduce((acc, section) => {
-                //     section.data.forEach(transaction => {
-                //         const categoryTitle = transaction.category.title;
-                //         if (!acc[categoryTitle]) {
-                //             acc[categoryTitle] = 0;
-                //         }
-                //         acc[categoryTitle] += transaction.amount;
-                //     });
-                //     return acc;
-                // }, {});
-
-                // const transactionsByCategory = agendaItems.reduce((acc, section) => {
-                //     section.data.forEach(transaction => {
-                //         const categoryTitle = transaction.category.title;
-                //         const currencyCode = transaction.currency.code;
-                //         if (!acc[categoryTitle]) {
-                //             acc[categoryTitle] = {};
-                //         }
-                //         if (!acc[categoryTitle][currencyCode]) {
-                //             acc[categoryTitle][currencyCode] = 0;
-                //         }
-                //         acc[categoryTitle][currencyCode] += transaction.amount;
-                //     });
-                //     return acc;
-                // }, {});
-
-                // console.log('Transactions by category:', transactionsByCategory);
-                setOverlayVisible(false);
+                return {
+                    title: {
+                        title: day,
+                        totals: Object.values(totals),
+                    },
+                    data: transactions,
+                };
             });
 
-        // const transactions = await firestore()
-        //     .collection('transactions')
-        //     .where('user_id', '==', userRef)
-        //     .where('date', '>', start)
-        //     .where('date', '<', end)
-        //     .get();
-        return () => subscriber();
-    }, [month, year]);
+            console.log('listData', listData);
+
+
+            // Sort sections by date
+            listData.sort((a, b) => {
+                const dateA = new Date(a.data[0].date || new Date());
+                const dateB = new Date(b.data[0].date || new Date());
+                return dateB.getTime() - dateA.getTime();
+            });
+
+            console.log('listDataSort', listData);
+
+
+            setAgendaItems(listData);
+
+            if (loading) {
+                setOverlayVisible(false);
+                setRefreshing(false);
+            }
+
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     async function onRemoveRow(transaction: any) {
         console.log(transaction);
@@ -409,7 +385,7 @@ export default function Screen() {
                         setMonth(date.month);
                         setYear(date.year);
                     }}
-                    closeOnDayPress
+                    // closeOnDayPress
                     // onRefresh={() => console.log('refreshing...')}
                     // refreshControl={
                     //     <RefreshControl
@@ -434,39 +410,33 @@ export default function Screen() {
                     }}
                 />
 
-                {/*<SectionList*/}
-                {/*    // ref={sectionListRef}*/}
-                {/*    keyExtractor={(item) => item.id}*/}
-                {/*    sections={agendaItems}*/}
-                {/*    renderItem={({ item }) => (*/}
-                {/*        // <LayoutAnimationConfig>*/}
-                {/*            <TransactionRow transaction={item} cb={() => onPressRow(item)} heightValue={80} onRemove={(t: any) => onRemoveRow(t)} />*/}
-                {/*        // </LayoutAnimationConfig>*/}
-                {/*    )}*/}
-                {/*    renderSectionHeader={({ section }) => <TransactionRowHeader totals={section.title.totals} title={section.title.title} />}*/}
-                {/*    // onScroll={handleScroll}*/}
-                {/*    getItemLayout={getItemLayout}*/}
-                {/*    // onScrollToIndexFailed={onScrollToIndexFailed}*/}
-                {/*/>*/}
-
-                {/*<Animated.View style={[styles.floatingButton, buttonAnimatedStyle]}>*/}
-                {/*    <Pressable onPress={scrollToBottom} style={styles.button}>*/}
-                {/*        <Ionicons name="arrow-down" size={24} color="#fff" />*/}
-                {/*    </Pressable>*/}
-                {/*</Animated.View>*/}
-
                 <FlashList
                     data={agendaItems}
                     estimatedItemSize={50}
                     ref={flashListRef}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => {
+                                getTransactions(false)
+                                    .then(() => {
+                                        setTimeout(() => {
+                                            setRefreshing(false)
+                                        }, 2000)
+                                    })
+                            }}
+                            tintColor={Colors.primary}
+                        />
+                    }
                     renderItem={({item}) => {
                         return (
                             <View>
                                 <TransactionRowHeader totals={item.title.totals} title={item.title.title}/>
                                 {item.data.map((transaction) => (
-                                    <LayoutAnimationConfig key={transaction.id}>
+                                    <LayoutAnimationConfig key={transaction._id}>
                                         <Animated.View entering={StretchInY}>
-                                            <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)} heightValue={90}
+                                            <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)}
+                                                            heightValue={90}
                                                             onRemove={(t: any) => onRemoveRow(t)}/>
                                         </Animated.View>
                                     </LayoutAnimationConfig>
@@ -487,9 +457,9 @@ export default function Screen() {
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}
                                     onRemove={onRemoveRow}/>
 
-            <Animated.View style={[styles.floatingButton, buttonAnimatedStyle, { bottom: isIos ? 100 : 20 }]}>
+            <Animated.View style={[styles.floatingButton, buttonAnimatedStyle, {bottom: isIos ? 100 : 20}]}>
                 <Pressable onPress={scrollToTop} style={styles.button}>
-                    <Ionicons name="arrow-up" size={24} color="#fff" />
+                    <Ionicons name="arrow-up" size={24} color="#fff"/>
                 </Pressable>
             </Animated.View>
         </View>

@@ -163,4 +163,12 @@ export interface Currency {
     code: string;
     symbol: string;
     name: string;
+    isoNumber: number;
+    format: string;
+    country: string;
+    _id: string;
+    decimals: number;
+    subunit: string;
+    subunitToUnit: string;
+
 }

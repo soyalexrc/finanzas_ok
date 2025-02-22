@@ -45,23 +45,12 @@ const customFontStyle = {
 
 export default function TransactionsPerMonthChart({dom, width, height, data, currency}: Props) {
     console.log('data', data);
-
-    function formatData() {
-        return data?.map((item) => ({
-            name: getMonthName(item.month).name,
-            nameShort: getMonthName(item.month).nameShort,
-            expense: item.expense[currency],
-            income: item.income[currency],
-        }));
-    }
-
-    console.log('formattedData', formatData());
     console.log(currency);
 
     return (
         <div style={{width, height, overflow: 'hidden'}}>
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={formatData()}>
+                <BarChart data={data}>
                     <XAxis dataKey="nameShort" interval={0} angle={-45} textAnchor="end" style={customFontStyle}/>
                     <Bar dataKey="expense" fill={DATE_COLORS.yesterday} />
                     <Bar dataKey="income" fill={DATE_COLORS.today}/>

@@ -22,15 +22,23 @@ import {
 } from "@/lib/store/features/transactions/transactions.slice";
 import {Colors} from "@/lib/constants/colors";
 import {Ionicons} from "@expo/vector-icons";
+import {selectCategoriesList, updateCategoriesList} from "@/lib/store/features/transactions/categories.slice";
+import {load} from "@/lib/utils/storage";
+import {useCategories} from "@/lib/utils/api/categories";
+import {selectAuth} from "@/lib/store/features/auth/auth.slice";
 
 export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
-    const [categories, setCategories] = useState<any[]>([]);
+    const categories = useAppSelector(selectCategoriesList)
+    const dispatch = useAppDispatch();
+    const {user} = useAppSelector(selectAuth)
     const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
     const [refreshing, setRefreshing] = useState<boolean>(true);
     const {top} = useSafeAreaInsets();
     const router = useRouter();
+    const {data, isPending, error, refetch} = useCategories(user?._id ?? '', user?.access_token ?? '')
+
+    console.log('caregories', categories);
 
     const debouncedUpdateSearch = useCallback(
         debounce((query: string) => {
@@ -52,34 +60,6 @@ export default function Screen() {
         });
     }
 
-    async function getCategories(isFirstTime = true) {
-        if (isFirstTime) setLoading(true);
-        const userId = auth().currentUser?.uid;
-
-        if (userId) {
-            const userRef = firestore().collection('users').doc(userId);
-            const result = await firestore()
-                .collection('categories')
-                .where('userId', '==', userRef)
-                .get();
-
-            const data = result.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }))
-            setLoading(false);
-            setCategories(data);
-            setFilteredCategories(data);
-            setRefreshing(false);
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            getCategories();
-        }, [])
-    );
-
     return (
         <View style={[styles.container, {paddingTop: top}]}>
             <Stack.Screen
@@ -97,13 +77,13 @@ export default function Screen() {
                 }}
             />
             {
-                loading &&
+                isPending &&
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                     <ActivityIndicator/>
                 </View>
             }
             {
-                !loading &&
+                categories.length > 0 &&
                 <FlatList
                     refreshControl={
                         <RefreshControl
@@ -111,15 +91,20 @@ export default function Screen() {
                             onRefresh={() => {
                                 setRefreshing(true)
                                 setTimeout(() => {
-                                    getCategories(false);
+                                    refetch().then(res => {
+                                        if (res.data) {
+                                            dispatch(updateCategoriesList(res.data))
+                                        }
+                                        setRefreshing(false)
+                                    })
                                 }, 1000);
                             }}
                         />
                     }
                     contentInsetAdjustmentBehavior="automatic"
-                    data={filteredCategories}
+                    data={categories}
                     renderItem={({item}) => <CategoryRow category={item} cb={() => router.back()} selected={currentTransaction.category} />}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item._id}
                 />
             }
         </View>
@@ -130,22 +115,16 @@ function CategoryRow({category, cb, selected}: any) {
     const dispatch = useAppDispatch();
 
     const onPressCategory = () => {
-        if (selected.id === category.id) {
+        if (selected._id === category._id) {
             cb();
             return;
         }
-        dispatch(onChangeCategory({
-            id: category.id,
-            title: category.title,
-            description: category.description,
-            icon: category.icon,
-            type: category.type,
-        }));
+        dispatch(onChangeCategory(category));
         cb();
     }
 
     return (
-        <TouchableOpacity style={[styles.category, selected.id === category.id && styles.selectedCategory]} onPress={onPressCategory}>
+        <TouchableOpacity style={[styles.category, selected._id === category._id && styles.selectedCategory]} onPress={onPressCategory}>
             <Text style={styles.categoryIcon}>{category.icon}</Text>
             <View>
                 <Text style={styles.categoryTitle}>{category.title}</Text>

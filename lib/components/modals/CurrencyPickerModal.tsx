@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import currencies from '@/lib/utils/data/currencies';
-import {Currency} from "@/lib/types/transaction";
+import {useAppSelector} from "@/lib/store/hooks";
+import {CurrencyV2, selectCurrenciesList} from "@/lib/store/features/transactions/currencies.slice";
 
 interface CurrencyPickerModalProps {
     visible: boolean;
     onClose: () => void;
-    onSelect: (currency: Currency) => void;
+    onSelect: (currency: CurrencyV2) => void;
 }
 
 const CurrencyPickerModal: React.FC<CurrencyPickerModalProps> = ({ visible, onClose, onSelect }) => {
-    const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
+    const currencies = useAppSelector(selectCurrenciesList)
 
-    const handleSelect = (currency: Currency) => {
-        setSelectedCurrency(currency);
+    console.log('currencies', currencies);
+
+    const handleSelect = (currency: CurrencyV2) => {
         onSelect(currency);
         onClose();
     };
@@ -30,7 +31,7 @@ const CurrencyPickerModal: React.FC<CurrencyPickerModalProps> = ({ visible, onCl
                     <Text style={styles.title}>Selecciona Moneda</Text>
                     <FlatList
                         data={currencies}
-                        keyExtractor={(item) => item.code}
+                        keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
                             <TouchableOpacity
                                 style={styles.currencyItem}
