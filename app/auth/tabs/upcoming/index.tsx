@@ -39,6 +39,8 @@ import {Ionicons} from "@expo/vector-icons";
 import {load, loadString} from "@/lib/utils/storage";
 import api from "@/lib/utils/api";
 import endpoints from "@/lib/utils/api/endpoints";
+import {toast} from "sonner-native";
+import {useAuth} from "@/lib/context/AuthContext";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
@@ -93,7 +95,7 @@ export default function Screen() {
     const [year, setYear] = useState<number | null>(null);
 
     const isIos = Platform.OS === 'ios';
-
+    const {user, token} = useAuth();
     const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
     const isButtonVisible = useSharedValue(false);
     const flashListRef = useRef<any>(null);
@@ -185,13 +187,10 @@ export default function Screen() {
             documents: transaction?.documents || '',
             images: transaction?.images || [],
             title: transaction?.title || '',
-            id: transaction?.id
+            _id: transaction?._id
         });
         setModalVisible(true)
     }
-
-    console.log(month);
-    console.log(year);
 
 
     useEffect(() => {
@@ -204,8 +203,6 @@ export default function Screen() {
         try {
             const {start, end} = (month && year) ? getCustomMonthAndYear(month, year) : getCurrentMonth();
             console.log(start, end);
-            const user: any = await load('user');
-            const token = await loadString('access_token');
             // const userRef = firestore().collection('users').doc(userId);
 
             const payload = {
@@ -321,7 +318,29 @@ export default function Screen() {
                 text: 'Eliminar',
                 style: 'destructive',
                 onPress: async () => {
-                    await firestore().collection('transactions').doc(transaction.id).delete();
+                    try {
+                        const response = await api.delete(endpoints.transactions.delete + '/' + transaction._id, {
+                            headers: {
+                                authorization: `Bearer ${token}`
+                            }
+                        })
+
+                        if (response.status === 200) {
+                            toast.success(response.data.message, {
+                                className: 'bg-green-500',
+                                duration: 6000,
+                                icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
+                            })
+                            await getTransactions(false)
+                        }
+                    } catch (error: any) {
+                        toast.error('Ocurrio un error', {
+                            className: 'bg-red-500',
+                            description: error.message,
+                            duration: 6000,
+                            icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                        });
+                    }
                 }
             }
         ])

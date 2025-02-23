@@ -11,6 +11,11 @@ import * as Haptics from 'expo-haptics';
 import {toast} from 'sonner-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from "@react-native-firebase/auth";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
+import {useAuth} from "@/lib/context/AuthContext";
+import {addNewToList} from "@/lib/store/features/transactions/categories.slice";
+import {useAppDispatch} from "@/lib/store/hooks";
 
 export default function Screen() {
     const {top} = useSafeAreaInsets();
@@ -21,6 +26,8 @@ export default function Screen() {
     const [description, setDescription] = useState<string>('');
     const [selectedEmoji, setSelectedEmoji] = useState<string>('🎁')
     const [type, setType] = useState<string>('Gasto')
+    const {user, token} = useAuth();
+    const dispatch = useAppDispatch();
 
     useRecentPicksPersistence({
         initialization: () => AsyncStorage.getItem(STORAGE.EMOJI_PERSISTANCE).then((item) => JSON.parse(item || '[]')),
@@ -54,23 +61,31 @@ export default function Screen() {
         //     return;
         // }
 
-        await firestore()
-            .collection('categories')
-            .add({
-                title,
-                description,
-                type: type === 'Gasto' ? 'expense' : 'income',
-                icon: selectedEmoji,
-                userId: firestore().doc(`users/${auth().currentUser?.uid}`),
-            })
+        const payload = {
+            title,
+            description,
+            type: type === 'Gasto' ? 'expense' : 'income',
+            icon: selectedEmoji,
+            user: user._id
+        }
 
-        toast.success('Se guardo la categoria con exito!', {
-            className: 'bg-green-500',
-            duration: 6000,
-            icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
-        });
+        const response = await api.post(endpoints.categories.create, payload, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        } )
 
-        router.back();
+        if (response.status === 200 || response.status === 201) {
+            toast.success('Se creo la categoria con exito!', {
+                className: 'bg-green-500',
+                duration: 6000,
+                icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
+            });
+            dispatch(addNewToList(response.data))
+            router.back();
+        }
+
+
     }
 
     return (

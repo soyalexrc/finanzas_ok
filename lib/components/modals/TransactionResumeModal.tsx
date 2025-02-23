@@ -88,17 +88,25 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         dispatch(onChangeDate(new Date(transaction.date).toISOString()));
         dispatch(onChangeAmount(String(transaction.amount)));
-        dispatch(onChangeId(transaction.id));
+        dispatch(onChangeId(transaction._id));
         dispatch(onChangeCategory(transaction.category));
         dispatch(onChangesTitleAndDescription({title: transaction.title, description: transaction.description}));
 
-        transaction.documents?.forEach((document: any) => {
-            dispatch(addDocumentToCurrentTransaction(document));
-        });
+        if (transaction.documents.length > 0) {
+            transaction.documents.forEach((document: any) => {
+                dispatch(addDocumentToCurrentTransaction(document));
+            });
+        }
 
-        transaction.images?.forEach((image: any) => {
-            dispatch(addImageToCurrentTransaction(image));
-        });
+        if (transaction.images.length > 0) {
+            transaction.images?.forEach((image: any) => {
+                dispatch(addImageToCurrentTransaction(image));
+            });
+        }
+
+
+
+
 
         endAnimation();
         setTimeout(() => {

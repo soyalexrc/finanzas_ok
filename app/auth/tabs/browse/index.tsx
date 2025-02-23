@@ -69,6 +69,28 @@ export default function Screen() {
                         </View>
                     </View>
                 </PressableCard>
+
+                <View style={styles.optionsWrapper}>
+                    <TouchableOpacity style={[styles.option, styles.withBorder]} onPress={() => router.push('/auth/(settings)/account')}>
+                        <Ionicons name="person-outline" size={20} color="#555" />
+                        <Text style={styles.optionText}>Cuenta</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.option, styles.withBorder]}>
+                        <Ionicons name="notifications-outline" size={20} color="#555" />
+                        <Text style={styles.optionText}>Notificaciones</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.option, styles.withBorder]}>
+                        <Ionicons name="lock-closed-outline" size={20} color="#555" />
+                        <Text style={styles.optionText}>Privacidad</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.option}>
+                        <Ionicons name="help-circle-outline" size={20} color="#555" />
+                        <Text style={styles.optionText}>Ayuda y Soporte</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </SafeAreaView>
     )
@@ -86,5 +108,30 @@ const styles = StyleSheet.create({
     cardBody: {
         fontSize: 14,
         marginVertical: 10
-    }
+    },
+    optionsWrapper: {
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        marginTop: 50,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+    },
+    option: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 15,
+    },
+    withBorder: {
+        borderBottomWidth: 1,
+        borderBottomColor: "#E8E8E8",
+    },
+    optionText: {
+        fontSize: 16,
+        marginLeft: 15,
+        color: "#333",
+    },
 })

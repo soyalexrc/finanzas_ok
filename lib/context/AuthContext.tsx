@@ -11,6 +11,7 @@ type AuthContextType = {
     updateUserInfo: (user: any) => Promise<void>;
     checkAuth: (onSuccess: () => void, onError: () => void) => Promise<void>;
     logout: () => void;
+    setUser: (user: any) => void
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,7 +82,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         router.replace('/');
     };
     return (
-        <AuthContext.Provider value={{isAuthenticated, login, logout, user, token, updateUserInfo, checkAuth}}>
+        <AuthContext.Provider value={{isAuthenticated, login, logout, user, token, updateUserInfo, checkAuth, setUser}}>
             {children}
         </AuthContext.Provider>
     );

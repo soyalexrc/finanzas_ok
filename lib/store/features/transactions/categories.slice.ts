@@ -24,18 +24,22 @@ const categoriesSlice = createSlice({
     name: 'categories',
     initialState,
     reducers: {
-        updateCategoriesList: (state, payload: PayloadAction<Category[]>) => {
-            state.list = payload.payload;
+        updateCategoriesList: (state, action: PayloadAction<Category[]>) => {
+            state.list = action.payload;
         } ,
-        updateCategoriesListFiltered: (state, payload: PayloadAction<Category[]>) => {
-            state.filtered = payload.payload;
+        updateCategoriesListFiltered: (state, action: PayloadAction<Category[]>) => {
+            state.filtered = action.payload;
+        },
+        addNewToList: (state, action: PayloadAction<Category>) => {
+            state.list.push(action.payload);
         }
     },
 });
 
 export const {
     updateCategoriesList,
-    updateCategoriesListFiltered
+    updateCategoriesListFiltered,
+    addNewToList
 } = categoriesSlice.actions;
 
 

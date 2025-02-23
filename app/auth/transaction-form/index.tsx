@@ -62,7 +62,7 @@ export default function Screen() {
         const categoryRef = firestore().collection('categories').doc(currentTransaction.category.id);
         const userReference = firestore().collection('users').doc(auth().currentUser?.uid);
 
-        if (currentTransaction.id) {
+        if (currentTransaction._id) {
             // await firestore()
             //     .collection('transactions')
             //     .doc(currentTransaction.id)
@@ -141,8 +141,7 @@ export default function Screen() {
 
     async function  handlePressCurrency() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setCurrencyModalVisible(true);
-
+        router.push('/auth/currency-selection')
     }
 
     function onSelectCurrency(currency: CurrencyV2) {

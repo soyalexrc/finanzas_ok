@@ -90,7 +90,7 @@ export const transactionsSlice = createSlice({
             state.year = action.payload;
         },
         onChangeId: (state, action: PayloadAction<string>) => {
-            state.currentTransaction.id = action.payload;
+            state.currentTransaction._id = action.payload;
         },
         updateHiddenFlag: (state, action: PayloadAction<number>) => {
             // state.currentTransaction.is_hidden_transaction = action.payload;

@@ -26,17 +26,18 @@ import {selectCategoriesList, updateCategoriesList} from "@/lib/store/features/t
 import {load} from "@/lib/utils/storage";
 import {useCategories} from "@/lib/utils/api/categories";
 import {selectAuth} from "@/lib/store/features/auth/auth.slice";
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const categories = useAppSelector(selectCategoriesList)
     const dispatch = useAppDispatch();
-    const {user} = useAppSelector(selectAuth)
+    const {user, token} = useAuth()
     const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(true);
     const {top} = useSafeAreaInsets();
     const router = useRouter();
-    const {data, isPending, error, refetch} = useCategories(user?._id ?? '', user?.access_token ?? '')
+    const {isPending, error, refetch} = useCategories(user?._id, token)
 
     console.log('caregories', categories);
 
@@ -83,7 +84,7 @@ export default function Screen() {
                 </View>
             }
             {
-                categories.length > 0 &&
+                !isPending &&
                 <FlatList
                     refreshControl={
                         <RefreshControl

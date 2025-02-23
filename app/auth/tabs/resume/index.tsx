@@ -92,7 +92,7 @@ export default function Screen() {
                 headerRight: () => <YearPickerButton/>,
                 headerLeft: () => (
                     <TouchableOpacity
-                        onPress={() => setCurrencyModalVisible(true)}
+                        onPress={() => router.push('/auth/currency-selection')}
                         style={{
                             paddingVertical: 5,
                             alignItems: 'center',
@@ -239,13 +239,6 @@ export default function Screen() {
                 }}
                 visible={modalVisible} onClose={() => setModalVisible(false)}
                 transaction={selectedTransaction} onEdit={() => manageEdit()}/>
-            <CurrencyPickerModal
-                onSelect={(currency) => {
-                    dispatch(updateCurrency(currency));
-                }}
-                visible={currencyModalVisible}
-                onClose={() => setCurrencyModalVisible(false)}
-            />
 
         </View>
     )

@@ -18,6 +18,7 @@ import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
 import api from "@/lib/utils/api";
 import endpoints from "@/lib/utils/api/endpoints";
 import {useAuth} from "@/lib/context/AuthContext";
+import {Image} from "expo-image";
 
 GoogleSignin.configure({
     webClientId: '589962407829-t4g9men77q1ts91fkni300afek6mcr67.apps.googleusercontent.com'
@@ -75,6 +76,7 @@ export default function Index() {
 
     async function checkStoredOptions() {
         const storedEmails = await loadArray('userEmails');
+        console.log(storedEmails);
         setStoredOptions(storedEmails);
     }
 
@@ -197,7 +199,9 @@ export default function Index() {
     return (
         <View style={[styles.container, {paddingTop: top}]}>
 
-            <View style={styles.top}/>
+            <View style={styles.top}>
+                <Image source={require('@/assets/images/icon.png')} style={{ width: 200, height: 200 }} />
+            </View>
 
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={onPressEmail}>
@@ -217,24 +221,28 @@ export default function Index() {
                         <Text style={styles.buttonText}>Ingresar con Apple</Text>
                     </TouchableOpacity>
                 }
+
+                <View style={{ height: 50 }} />
+                {
+                    storedOptions.length > 0 &&
+                    <View style={styles.options}>
+                        <Text style={{textAlign: 'center', marginVertical: 20}}>Cuentas Guardadas</Text>
+                        <FlatList
+                            horizontal
+                            data={storedOptions}
+                            contentContainerStyle={{justifyContent: 'center'}}
+                            keyExtractor={(item) => item?.e}
+                            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+                            renderItem={({item}) => (
+                                <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
+                                    <Text>{item.e}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                }
             </View>
-            {
-                storedOptions.length > 0 &&
-                <View style={styles.options}>
-                    <Text style={{textAlign: 'center', marginVertical: 20}}>Cuentas Guardadas</Text>
-                    <FlatList
-                        horizontal
-                        data={storedOptions}
-                        contentContainerStyle={{justifyContent: 'center'}}
-                        keyExtractor={(item) => item?.e}
-                        renderItem={({item}) => (
-                            <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
-                                <Text>{item.e}</Text>
-                            </TouchableOpacity>
-                        )}
-                    />
-                </View>
-            }
+
         </View>
     );
 }
@@ -242,6 +250,7 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff'
     },
     button: {
         flexDirection: 'row',
@@ -261,19 +270,31 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         flex: 1,
         gap: 20,
-        marginVertical: 20,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+        paddingVertical: 20,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#fff', // Ensure the background is set
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -2 }, // Moves shadow upwards
+        shadowOpacity: 0.1, // Light shadow effect
+        shadowRadius: 4,
+        elevation: 5, // For Android shadow
     },
+
     top: {
-        backgroundColor: 'gray',
         width: '100%',
-        height: 300
+        height: 300,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
     },
     buttonText: {
         fontSize: 20
     },
     options: {
+        backgroundColor: '#fff',
         flex: 1
     },
     option: {

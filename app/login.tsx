@@ -22,8 +22,8 @@ export default function Screen() {
     const [name, setName] = useState('');
     const [lastname, setLastname] = useState('');
     const [password, setPassword] = useState('');
-    const [remember, setRemember] = useState(true);
-    const { login } = useAuth();
+    const [remember, setRemember] = useState(false);
+    const {login} = useAuth();
 
     async function onChangeFormType() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -35,27 +35,32 @@ export default function Screen() {
         setLoading(true);
         try {
             if (remember) {
-                const storedEmails: {e: string; p: string}[] = await loadArray('userEmails');
-                if (!storedEmails.find(storedEmail => storedEmail.e = email )) {
-                    storedEmails.push({ e: email, p: password });
+                const storedEmails: { e: string; p: string }[] = await loadArray('userEmails');
+                if (!storedEmails.find(storedEmail => storedEmail.e === email)) {
+                    storedEmails.push({e: email, p: password});
                     await save('userEmails', storedEmails);
                 }
             }
             if (isRegister) {
-                // const {user} = await auth().createUserWithEmailAndPassword(email, password);
-                // await firestore()
-                //     .collection('users')
-                //     .doc(user.uid)
-                //     .set({
-                //         email: user.email,
-                //         name: user.displayName,
-                //         photo: user.photoURL,
-                //         subscription: {},
-                //         lastDonation: {},
-                //     })
+                try {
+                    const response = await api.post(endpoints.auth.register, {
+                        email,
+                        password,
+                        firstname: name,
+                        lastname,
+                        favCurrencies: ['67b60a53743e50fa9d4b5fc2'],
+                        photoUrl: "",
+                    });
+
+                    if (response.status === 200) {
+                        await login(response.data.user.access_token, response.data.user)
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             } else {
                 try {
-                    const response = await api.post(endpoints.auth.login, { email, password });
+                    const response = await api.post(endpoints.auth.login, {email, password});
 
                     if (response.status === 200) {
                         await login(response.data.user.access_token, response.data.user)
@@ -65,15 +70,15 @@ export default function Screen() {
                 }
 
             }
-                // const {user} = await auth().signInWithEmailAndPassword(email, password);
-                // await firestore()
-                //     .collection('users')
-                //     .doc(user.uid)
-                //     .update({
-                //         email: user.email,
-                //         name: user.displayName,
-                //         photo: user.photoURL,
-                //     })
+            // const {user} = await auth().signInWithEmailAndPassword(email, password);
+            // await firestore()
+            //     .collection('users')
+            //     .doc(user.uid)
+            //     .update({
+            //         email: user.email,
+            //         name: user.displayName,
+            //         photo: user.photoURL,
+            //     })
             // }
         } catch (e: any) {
             // const err = e as FirebaseError;
@@ -180,7 +185,6 @@ export default function Screen() {
                         fillColor="green"
                         unFillColor="#FFFFFF"
                         text="Recordarme"
-                        disabled={!email}
                         isChecked={remember}
                         style={{marginTop: 10}}
                         textStyle={{textDecorationLine: 'none'}}

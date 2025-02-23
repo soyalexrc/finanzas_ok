@@ -1,5 +1,5 @@
 import {
-    ActivityIndicator,
+    ActivityIndicator, Alert,
     FlatList,
     NativeSyntheticEvent, RefreshControl, SafeAreaView,
     StyleSheet,
@@ -31,6 +31,10 @@ import {FlashList} from "@shopify/flash-list";
 import {useAuth} from "@/lib/context/AuthContext";
 import {useRawTransactions} from "@/lib/utils/api/transactions";
 import {getCurrentMonth} from "@/lib/helpers/date";
+import sleep from "@/lib/helpers/sleep";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
+import {toast} from "sonner-native";
 
 export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
@@ -92,10 +96,53 @@ export default function Screen() {
             documents: transaction?.documents || '',
             images: transaction?.images || [],
             title: transaction?.title || '',
-            id: transaction?.id
+            _id: transaction?._id
         });
         setModalVisible(true)
     }
+
+    async function onRemoveRow(transaction: any) {
+        console.log('transaction', transaction);
+        await sleep(500)
+        const transactionDescription = `${transaction?.title || transaction.category?.title} = ${transaction.currency.symbol} ${transaction.amount}`;
+        Alert.alert('Atencion!', `Estas seguro de eliminar esta transaccion?, (${transactionDescription})`, [
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel'
+            },
+            {
+                text: 'Eliminar',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        const response = await api.delete(endpoints.transactions.delete + '/' + transaction._id, {
+                            headers: {
+                                authorization: `Bearer ${token}`
+                            }
+                        })
+
+                        if (response.status === 200) {
+                            toast.success(response.data.message, {
+                                className: 'bg-green-500',
+                                duration: 6000,
+                                icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
+                            })
+                            await refetch()
+                        }
+                    } catch (error: any) {
+                        toast.error('Ocurrio un error', {
+                            className: 'bg-red-500',
+                            description: error.message,
+                            duration: 6000,
+                            icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                        });
+                    }
+                }
+            }
+        ])
+    }
+
 
     function manageEdit() {
         router.push('/auth/transaction-form');
@@ -131,7 +178,7 @@ export default function Screen() {
                     renderItem={({item}) => (
                         <LayoutAnimationConfig>
                             <Animated.View entering={StretchInY}>
-                                <TransactionRow transaction={item} cb={() => onPressRow(item)}/>
+                                <TransactionRow transaction={item} cb={() => onPressRow(item)} onRemove={(t: any) => onRemoveRow(t)} />
                             </Animated.View>
                         </LayoutAnimationConfig>
                     )}
@@ -139,7 +186,13 @@ export default function Screen() {
                 />
             }
             <Fab/>
-            {/*<TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />*/}
+            <TransactionResumeModal
+                visible={modalVisible}
+                onRemove={onRemoveRow}
+                onClose={() => setModalVisible(false)}
+                transaction={selectedTransaction}
+                onEdit={() => manageEdit()}
+            />
         </SafeAreaView>
     )
 }
