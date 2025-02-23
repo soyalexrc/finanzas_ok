@@ -1,18 +1,20 @@
 import {
     endOfMonth,
     endOfWeek,
-    format,
-    formatDistanceToNow, isSameDay, isSameMonth,
-    isSameWeek, isThisMonth,
-    isToday, isTomorrow,
+    getTime,
+    formatDistanceToNow, isSameDay,
+    parse, formatISO,
+    format, isTomorrow,
     isYesterday,
     startOfMonth,
     startOfWeek
 } from "date-fns";
+// import { isArray } from 'lodash';
 // import {es, enUS} from 'date-fns/locale'
 // import {fromZonedTime} from "date-fns-tz";
 import {getLocales} from "expo-localization";
 import {DATE_COLORS} from "@/lib/constants/colors";
+import {es} from "date-fns/locale";
 // import { es,  enUS, fr, ja, de, zhCN} from 'date-fns/locale';
 
 export function getCurrentWeek(): { start: Date, end: Date } {
@@ -72,16 +74,6 @@ export function getCustomMonthAndYear(month: number, year: number): { start: Dat
         end: endOfMonth(today),
     }
 }
-
-const getDateObject = (date: Date) => {
-    if (isSameDay(date, new Date())) {
-        return { name: 'Today', color: DATE_COLORS.today };
-    } else if (isTomorrow(new Date(date))) {
-        return { name: 'Tomorrow', color: DATE_COLORS.tomorrow };
-    } else {
-        return { name: format(new Date(date), 'd MMM'), color: DATE_COLORS.other };
-    }
-};
 
 export function getMonthsArrayByLocale() {
     const locales = getLocales();
@@ -180,6 +172,19 @@ export function getMonthsArrayByLocale() {
     // i need to get by the fist locale language, the name of the months and return a syntax similar to the one below
 }
 
+export function getDateObject(date: Date | string) : { name: string; color: string }{
+    if (isYesterday(date)) {
+        return { name: 'Ayer', color: DATE_COLORS.yesterday };
+    }
+    else if (isSameDay(date, new Date())) {
+        return {  name: 'Hoy', color: DATE_COLORS.today };
+    } else if (isTomorrow(new Date(date))) {
+        return { name: 'Mañana', color: DATE_COLORS.tomorrow };
+    } else {
+        return { name: format(date, 'EEE dd MMM', { locale: es }), color: DATE_COLORS.other };
+    }
+}
+
 // export const formatDateHomeItemGroups = (date: string, locale = 'es') => {
 //     const now = new Date();
 //     const localDate = fromZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -223,3 +228,118 @@ export function getMonthsArrayByLocale() {
 //         end: formatDate(today),
 //     }
 // }
+
+
+
+
+// v2
+
+
+
+// ----------------------------------------------------------------------
+
+export function fToDate(date: string, format: string){
+    return parse(date, format, new Date())
+}
+
+export function fDate(date: Date, newFormat: string) {
+    const fm = newFormat || 'dd MMM yyyy';
+
+    return date ? format(new Date(date), fm) : '';
+}
+
+export function fDateUTC(date: Date, newFormat: string) {
+    const fm = newFormat || 'dd MMM yyyy';
+
+    return date ? format(new Date(new Date(date).toUTCString().substring(0, 16)), fm) : '';
+}
+
+export function dateUTC(date: Date) {
+    return date ? new Date(new Date(date).toUTCString().substring(0, 16)) : date;
+}
+
+export function fTime(date: Date, newFormat: string) {
+    const fm = newFormat || 'p';
+
+    return date ? format(new Date(date), fm) : '';
+}
+
+export function fDateTime(date: Date, newFormat: string) {
+    const fm = newFormat || 'dd MMM yyyy p a';
+
+    return date ? format(new Date(date), fm) : '';
+}
+
+export function fDateTimeCL(date: string, newFormat: string) {
+    const fm = newFormat || 'dd MMM yyyy';
+
+    return date ? format(new Date(formatISO(new Date(date.substring(0, 16)))), fm) : '';
+}
+
+export function fDateTimeUTC(date: Date, locale: string) {
+    return date ? `${new Date(date).toLocaleDateString(locale, { timeZone: 'UTC' })} ${new Date(date).toLocaleTimeString('es-CL', { timeZone: 'UTC' })}` : '';
+}
+
+export function fTimestamp(date: Date) {
+    return date ? getTime(new Date(date)) : '';
+}
+
+export function fTimestampUTC(date: Date) {
+    return date ? getTime(new Date(`${fDateUTC(date, 'yyyy-MM-dd')}T00:00:00`)) : '';
+}
+
+export function fToNow(date: Date) {
+    return date
+        ? formatDistanceToNow(new Date(date), {
+            addSuffix: true,
+        })
+        : '';
+}
+
+export function isBetween(inputDate: Date, startDate: Date, endDate: Date) {
+    // console.log("🚀 -> isBetween -> startDate:", new Date(startDate.toDateString()))
+    const date = new Date(inputDate);
+    // console.log("🚀 -> isBetween -> date:", new Date(date.toUTCString().substring(0, 16)))
+
+    const results =
+        new Date(date.toUTCString().substring(0, 16)) >= new Date(startDate.toDateString()) &&
+        new Date(date.toUTCString().substring(0, 16)) <= new Date(endDate.toDateString());
+
+    return results;
+}
+
+export function isAfter(startDate: Date, endDate: Date) {
+    const results =
+        startDate && endDate ? new Date(startDate).getTime() > new Date(endDate).getTime() : false;
+
+    return results;
+}
+
+export function getNumberofDay(stringDay: string) {
+    switch (stringDay) {
+        case 'Domingo':
+            return 0
+            break;
+        case 'Lunes':
+            return 1
+            break;
+        case 'Martes':
+            return 2
+            break;
+        case 'Miércoles':
+            return 3
+            break;
+        case 'Jueves':
+            return 4
+            break;
+        case 'Viernes':
+            return 5
+            break;
+        case 'Sábado':
+            return 6
+            break;
+        default:
+            return null
+            break;
+    }
+}

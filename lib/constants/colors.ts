@@ -9,6 +9,7 @@ export const Colors = {
 };
 
 export const DATE_COLORS = {
+    yesterday: '#9d2323',
     today: '#2f9d23',
     tomorrow: '#9d6023',
     weekend: '#233d9d',

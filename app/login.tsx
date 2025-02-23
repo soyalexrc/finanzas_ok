@@ -1,13 +1,15 @@
 import {View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert} from "react-native";
-import {useNavigation, useRouter} from "expo-router";
-import {useEffect, useLayoutEffect, useRef, useState} from "react";
+import {Stack, useLocalSearchParams, useNavigation, useRouter} from "expo-router";
+import {Fragment, useEffect, useLayoutEffect, useRef, useState} from "react";
 import * as Haptics from 'expo-haptics';
 import LottieView from "lottie-react-native";
 import auth from '@react-native-firebase/auth';
 import {FirebaseError} from 'firebase/app';
-import firestore from "@react-native-firebase/firestore";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import {load, loadArray, remove, save} from "@/lib/utils/storage";
+import {load, loadArray, remove, save, saveString} from "@/lib/utils/storage";
+import api from "@/lib/utils/api";
+import endpoints from "@/lib/utils/api/endpoints";
+import {useAuth} from "@/lib/context/AuthContext";
 
 
 export default function Screen() {
@@ -17,8 +19,11 @@ export default function Screen() {
     const [isRegister, setIsRegister] = useState(false);
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
+    const [lastname, setLastname] = useState('');
     const [password, setPassword] = useState('');
-    const [remember, setRemember] = useState(true);
+    const [remember, setRemember] = useState(false);
+    const {login} = useAuth();
 
     async function onChangeFormType() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -30,44 +35,61 @@ export default function Screen() {
         setLoading(true);
         try {
             if (remember) {
-                const storedEmails: {e: string; p: string}[] = await loadArray('userEmails');
-                if (!storedEmails.find(storedEmail => storedEmail.e = email )) {
-                    storedEmails.push({ e: email, p: password });
+                const storedEmails: { e: string; p: string }[] = await loadArray('userEmails');
+                if (!storedEmails.find(storedEmail => storedEmail.e === email)) {
+                    storedEmails.push({e: email, p: password});
                     await save('userEmails', storedEmails);
                 }
             }
             if (isRegister) {
-                const {user} = await auth().createUserWithEmailAndPassword(email, password);
-                await firestore()
-                    .collection('users')
-                    .doc(user.uid)
-                    .set({
-                        email: user.email,
-                        name: user.displayName,
-                        photo: user.photoURL,
-                        donated: 0
-                    })
+                try {
+                    const response = await api.post(endpoints.auth.register, {
+                        email,
+                        password,
+                        firstname: name,
+                        lastname,
+                        favCurrencies: ['67b60a53743e50fa9d4b5fc2'],
+                        photoUrl: "",
+                    });
+
+                    if (response.status === 200) {
+                        await login(response.data.user.access_token, response.data.user)
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             } else {
-                const {user} = await auth().signInWithEmailAndPassword(email, password);
-                await firestore()
-                    .collection('users')
-                    .doc(user.uid)
-                    .set({
-                        email: user.email,
-                        name: user.displayName,
-                        photo: user.photoURL,
-                    })
+                try {
+                    const response = await api.post(endpoints.auth.login, {email, password});
+
+                    if (response.status === 200) {
+                        await login(response.data.user.access_token, response.data.user)
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+
             }
+            // const {user} = await auth().signInWithEmailAndPassword(email, password);
+            // await firestore()
+            //     .collection('users')
+            //     .doc(user.uid)
+            //     .update({
+            //         email: user.email,
+            //         name: user.displayName,
+            //         photo: user.photoURL,
+            //     })
+            // }
         } catch (e: any) {
-            const err = e as FirebaseError;
+            // const err = e as FirebaseError;
             console.log(e);
-            if (err.code === 'auth/email-already-in-use') {
-                Alert.alert('Oops!', 'Este email ya esta en uso, intenta con otro.');
-            } else if (err.code === 'auth/invalid-credential') {
-                Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
-            } else {
-                Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
-            }
+            // if (err.code === 'auth/email-already-in-use') {
+            //     Alert.alert('Oops!', 'Este email ya esta en uso, intenta con otro.');
+            // } else if (err.code === 'auth/invalid-credential') {
+            //     Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
+            // } else {
+            //     Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
+            // }
         } finally {
             setLoading(false);
         }
@@ -84,64 +106,102 @@ export default function Screen() {
     }, [isRegister]);
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.lottieWrapper}>
-                <LottieView
-                    autoPlay
-                    ref={animation}
-                    enableMergePathsAndroidForKitKatAndAbove={true}
-                    style={{
-                        width: 130,
-                        height: 130,
-                    }}
-                    source={require('@/assets/lottie/auth-animation.json')}
-                />
-            </View>
-            <View style={styles.inputWrapper}>
-                <Text>Email</Text>
-                <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    placeholder="Email"
-                    style={styles.input}
-                />
-            </View>
+        <Fragment>
+            <ScrollView style={styles.container}>
+                <View style={styles.lottieWrapper}>
+                    <LottieView
+                        autoPlay
+                        ref={animation}
+                        enableMergePathsAndroidForKitKatAndAbove={true}
+                        style={{
+                            width: 130,
+                            height: 130,
+                        }}
+                        source={require('@/assets/lottie/auth-animation.json')}
+                    />
+                </View>
 
-            <View style={{height: 20}}/>
 
-            <View style={styles.inputWrapper}>
-                <Text>Contrasena</Text>
-                <TextInput
-                    value={password}
-                    autoCapitalize="none"
-                    onChangeText={setPassword}
-                    placeholder="Contrasena"
-                    style={styles.input}
-                />
-            </View>
+                {
+                    isRegister &&
+                    <Fragment>
+                        <View style={styles.inputWrapper}>
+                            <Text>Nombre</Text>
+                            <TextInput
+                                value={name}
+                                onChangeText={setName}
+                                autoCapitalize="sentences"
+                                placeholder="Nombre"
+                                style={styles.input}
+                            />
+                        </View>
 
-            <BouncyCheckbox
-                size={20}
-                fillColor="green"
-                unFillColor="#FFFFFF"
-                text="Recordarme"
-                disabled={!email}
-                isChecked={remember}
-                style={{marginTop: 10}}
-                textStyle={{textDecorationLine: 'none'}}
-                onPress={(isChecked: boolean) => setRemember(isChecked)}
-            />
+                        <View style={{height: 20}}/>
 
-            <TouchableOpacity style={[styles.submitButton, {opacity: loading ? 0.5 : 1}]} onPress={onSubmit}>
-                {loading && <ActivityIndicator/>}
-                <Text style={styles.submitButtonText}>{isRegister ? 'Registrarse' : 'Ingresar'}</Text>
-            </TouchableOpacity>
+                        <View style={styles.inputWrapper}>
+                            <Text>Apellido</Text>
+                            <TextInput
+                                value={lastname}
+                                autoCapitalize="sentences"
+                                onChangeText={setLastname}
+                                placeholder="Apellido"
+                                style={styles.input}
+                            />
+                        </View>
 
-            <TouchableOpacity style={styles.changeFormTypeButton} onPress={onChangeFormType}>
-                <Text>{isRegister ? 'Ya tienes cuenta?, Ingresa aqui' : 'No estas registrado aun?, registrate aqui'}</Text>
-            </TouchableOpacity>
-        </ScrollView>
+                        <View style={{height: 20}}/>
+                    </Fragment>
+                }
+
+                <View style={styles.inputWrapper}>
+                    <Text>Email</Text>
+                    <TextInput
+                        value={email}
+                        onChangeText={setEmail}
+                        autoCapitalize="none"
+                        placeholder="Email"
+                        style={styles.input}
+                    />
+                </View>
+
+                <View style={{height: 20}}/>
+
+                <View style={styles.inputWrapper}>
+                    <Text>Contrasena</Text>
+                    <TextInput
+                        value={password}
+                        onChangeText={setPassword}
+                        autoCapitalize="none"
+                        placeholder="Contrasena"
+                        style={styles.input}
+                    />
+                </View>
+
+
+                {
+                    !isRegister &&
+                    <BouncyCheckbox
+                        size={20}
+                        fillColor="green"
+                        unFillColor="#FFFFFF"
+                        text="Recordarme"
+                        isChecked={remember}
+                        style={{marginTop: 10}}
+                        textStyle={{textDecorationLine: 'none'}}
+                        onPress={(isChecked: boolean) => setRemember(isChecked)}
+                    />
+                }
+
+                <TouchableOpacity style={[styles.submitButton, {opacity: loading ? 0.5 : 1}]} onPress={onSubmit}>
+                    {loading && <ActivityIndicator/>}
+                    <Text style={styles.submitButtonText}>{isRegister ? 'Registrarse' : 'Ingresar'}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.changeFormTypeButton} onPress={onChangeFormType}>
+                    <Text>{isRegister ? 'Ya tienes cuenta?, Ingresa aqui' : 'No estas registrado aun?, registrate aqui'}</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </Fragment>
     )
 }
 

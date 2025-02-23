@@ -5,6 +5,7 @@ import {
     NativeBottomTabNavigationOptions
 } from '@bottom-tabs/react-navigation';
 import usePlatform from "@/lib/hooks/usePlatform";
+import {Colors} from "@/lib/constants/colors";
 
 const {Navigator} = createNativeBottomTabNavigator();
 
@@ -20,24 +21,24 @@ export default function Layout() {
             <Tabs.Screen
                 name="resume"
                 options={{
-                    title: 'Resume',
-                    tabBarActiveTintColor: 'green',
+                    title: 'Resumen',
+                    tabBarActiveTintColor: Colors.primary,
                     tabBarIcon: () => platform === 'android' ? require('@/assets/icons/resume.svg') : ({sfSymbol: 'house'}),
                 }}
             />
             <Tabs.Screen
                 name="upcoming"
                 options={{
-                    tabBarActiveTintColor: 'green',
-                    title: 'Upcoming',
+                    tabBarActiveTintColor: Colors.primary,
+                    title: 'Calendario',
                     tabBarIcon: () => platform === 'android' ? require('@/assets/icons/upcoming.svg') : ({sfSymbol: 'calendar'}),
                 }}
             />
             <Tabs.Screen
                 name="search"
                 options={{
-                    tabBarActiveTintColor: 'green',
-                    title: 'Search',
+                    tabBarActiveTintColor: Colors.primary,
+                    title: 'Buscar',
                     tabBarIcon: ({ focused }) => platform === 'android' ? require('@/assets/icons/search.svg') : ({
                         sfSymbol: focused ? 'text.magnifyingglass' : 'magnifyingglass',
                     }),
@@ -46,8 +47,8 @@ export default function Layout() {
             <Tabs.Screen
                 name="browse"
                 options={{
-                    tabBarActiveTintColor: 'green',
-                    title: 'Browse',
+                    tabBarActiveTintColor: Colors.primary,
+                    title: 'Explorar',
                     tabBarIcon: ({ focused }) => platform === 'android' ? require('@/assets/icons/browse.svg') : ({
                         sfSymbol: focused ? 'doc.text.image.fill' : 'doc.text.image',
                     }),
