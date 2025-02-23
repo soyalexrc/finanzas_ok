@@ -1,4 +1,4 @@
-import {ChartPoints, TransactionWithAmountNumber} from "@/lib/types/Transaction";
+import {ChartPoints, TransactionWithAmountNumber} from "@/lib/types/transaction";
 
 export function calculateTotalTransactions(transactions: TransactionWithAmountNumber[], hiddenFeatureFlag: boolean) {
     return transactions.reduce((acc, item) => acc + (hiddenFeatureFlag ? item.hidden_amount : item.amount), 0).toFixed(2)

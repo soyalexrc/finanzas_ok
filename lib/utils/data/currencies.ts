@@ -1,29 +1,26 @@
 export default [
-
-    { code: "USD", symbol: "$" },
-    { code: "EUR", symbol: "€" },
-    { code: "GBP", symbol: "£" },
-    { code: "JPY", symbol: "¥" },
-    { code: "CAD", symbol: "CAD$" },
-    { code: "AUD", symbol: "A$" },
-    { code: "CHF", symbol: "CHF" },
-    { code: "INR", symbol: "₹" },
-    { code: "CNY", symbol: "¥" },
-    { code: "RUB", symbol: "₽" },
-    // ... previous currencies ...
-    { code: "ARS", symbol: "$" }, // Argentina
-    { code: "BOB", symbol: "Bs." }, // Bolivia
-    { code: "BRL", symbol: "R$" }, // Brazil
-    { code: "CLP", symbol: "$" }, // Chile
-    { code: "COP", symbol: "$" }, // Colombia
-    { code: "CRC", symbol: "₡" }, // Costa Rica
-    { code: "DOP", symbol: "RD$" }, // Dominican Republic
-    { code: "ECU", symbol: "$" }, // Ecuador
-    { code: "GYD", symbol: "$" }, // Guyana
-    { code: "PYG", symbol: "₲" }, // Paraguay
-    { code: "PEN", symbol: "S/" }, // Peru
-    { code: "SUR", symbol: "SRD" }, // Suriname
-    { code: "UYU", symbol: "$U" }, // Uruguay
-    { code: "VES", symbol: "Bs.S" }, // Venezuela
-
+    { code: "USD", symbol: "$", name: "United States Dollar" },
+    { code: "EUR", symbol: "€", name: "Euro" },
+    { code: "GBP", symbol: "£", name: "British Pound" },
+    { code: "JPY", symbol: "¥", name: "Japanese Yen" },
+    { code: "CAD", symbol: "CAD$", name: "Canadian Dollar" },
+    { code: "AUD", symbol: "A$", name: "Australian Dollar" },
+    { code: "CHF", symbol: "CHF", name: "Swiss Franc" },
+    { code: "INR", symbol: "₹", name: "Indian Rupee" },
+    { code: "CNY", symbol: "¥", name: "Chinese Yuan" },
+    { code: "RUB", symbol: "₽", name: "Russian Ruble" },
+    { code: "ARS", symbol: "$", name: "Argentine Peso" },
+    { code: "BOB", symbol: "Bs.", name: "Bolivian Boliviano" },
+    { code: "BRL", symbol: "R$", name: "Brazilian Real" },
+    { code: "CLP", symbol: "$", name: "Chilean Peso" },
+    { code: "COP", symbol: "$", name: "Colombian Peso" },
+    { code: "CRC", symbol: "₡", name: "Costa Rican Colón" },
+    { code: "DOP", symbol: "RD$", name: "Dominican Peso" },
+    { code: "ECU", symbol: "$", name: "Ecuadorian Dollar" },
+    { code: "GYD", symbol: "$", name: "Guyanese Dollar" },
+    { code: "PYG", symbol: "₲", name: "Paraguayan Guarani" },
+    { code: "PEN", symbol: "S/", name: "Peruvian Sol" },
+    { code: "SUR", symbol: "SRD", name: "Surinamese Dollar" },
+    { code: "UYU", symbol: "$U", name: "Uruguayan Peso" },
+    { code: "VES", symbol: "Bs.S", name: "Venezuelan Bolívar" },
 ];

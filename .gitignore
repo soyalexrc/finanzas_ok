@@ -21,7 +21,13 @@ expo-env.d.ts
 # @end expo-cli
 
 google-services.json
+GoogleService-Info.plist
 /android
 /ios
 /.idea
 finanzas-ok-8c956-firebase-adminsdk-o4648-8c699742fe.json
+
+# Expo
+.expo
+dist/
+web-build/

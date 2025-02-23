@@ -1,4 +1,4 @@
-import {Account, TransactionsGroupedByDate} from "@/lib/types/Transaction";
+import {Account, TransactionsGroupedByDate} from "@/lib/types/transaction";
 
 export function textShortener(txt: string, limit = 10): string {
     return txt?.length > limit ? txt.substring(0, limit - 1).concat('...') : txt;
@@ -7,6 +7,7 @@ export function textShortener(txt: string, limit = 10): string {
 export function formatAmountToNumber(numberString: string): number {
     return Number(numberString.replace(/,/g, ''));
 }
+
 
 export function formatTimeBasedOnHourAndMinute(hour: number, minute: number): string {
     // Validate input
@@ -80,4 +81,27 @@ export function formatWithDecimals(total: number): {amount: string, decimals: st
         amount: String(total).split('.')[0],
         decimals: decimals,
     }
+}
+
+export function getMonthName(monthNumber: number): { name: string, nameShort: string } {
+    const monthNames = [
+        { name: 'Enero', nameShort: 'Ene' },
+        { name: 'Febrero', nameShort: 'Feb' },
+        { name: 'Marzo', nameShort: 'Mar' },
+        { name: 'Abril', nameShort: 'Abr' },
+        { name: 'Mayo', nameShort: 'May' },
+        { name: 'Junio', nameShort: 'Jun' },
+        { name: 'Julio', nameShort: 'Jul' },
+        { name: 'Agosto', nameShort: 'Ago' },
+        { name: 'Septiembre', nameShort: 'Sep' },
+        { name: 'Octubre', nameShort: 'Oct' },
+        { name: 'Noviembre', nameShort: 'Nov' },
+        { name: 'Diciembre', nameShort: 'Dic' },
+    ];
+
+    if (monthNumber < 1 || monthNumber > 12) {
+        throw new Error('Invalid month number');
+    }
+
+    return monthNames[monthNumber - 1];
 }
