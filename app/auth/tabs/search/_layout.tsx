@@ -8,7 +8,7 @@ export default function Layout() {
                 options={{
                     headerLargeTitle: true,
                     title: 'Buscar',
-                    headerBackTitle: 'Atras',
+                    headerBackVisible: false,
                     headerShadowVisible: false
                 }}
             />

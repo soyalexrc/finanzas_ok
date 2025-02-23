@@ -8,6 +8,7 @@ export default function Layout() {
                 options={{
                     headerLargeTitle: true,
                     title: 'Explorar',
+                    headerBackVisible: false,
                     headerShadowVisible: false
                 }}
             />

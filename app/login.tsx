@@ -159,6 +159,7 @@ export default function Screen() {
                         value={email}
                         onChangeText={setEmail}
                         autoCapitalize="none"
+                        keyboardType="email-address"
                         placeholder="Email"
                         style={styles.input}
                     />
@@ -172,6 +173,7 @@ export default function Screen() {
                         value={password}
                         onChangeText={setPassword}
                         autoCapitalize="none"
+                        secureTextEntry={true}
                         placeholder="Contrasena"
                         style={styles.input}
                     />

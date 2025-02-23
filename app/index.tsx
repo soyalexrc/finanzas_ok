@@ -19,6 +19,7 @@ import api from "@/lib/utils/api";
 import endpoints from "@/lib/utils/api/endpoints";
 import {useAuth} from "@/lib/context/AuthContext";
 import {Image} from "expo-image";
+import FloatingLogo from "@/lib/components/ui/FloatingLogo";
 
 GoogleSignin.configure({
     webClientId: '589962407829-t4g9men77q1ts91fkni300afek6mcr67.apps.googleusercontent.com'
@@ -199,9 +200,7 @@ export default function Index() {
     return (
         <View style={[styles.container, {paddingTop: top}]}>
 
-            <View style={styles.top}>
-                <Image source={require('@/assets/images/icon.png')} style={{ width: 200, height: 200 }} />
-            </View>
+            <FloatingLogo />
 
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={onPressEmail}>

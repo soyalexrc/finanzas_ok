@@ -40,7 +40,7 @@ export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
     const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [refreshing, setRefreshing] = useState<boolean>(true);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const router = useRouter();
     const {bottom} = useSafeAreaInsets();
     const [modalVisible, setModalVisible] = useState<boolean>(false);

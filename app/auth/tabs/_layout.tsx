@@ -17,13 +17,21 @@ export default function Layout() {
     const platform = usePlatform();
 
     return (
-        <Tabs ignoresTopSafeArea hapticFeedbackEnabled translucent={true} barTintColor={platform === 'android' ? 'lightgray' : undefined} >
+        <Tabs
+            ignoresTopSafeArea
+            hapticFeedbackEnabled
+            translucent={true}
+            barTintColor={platform === 'android' ? '#fff' : undefined}
+            tabBarActiveTintColor={Colors.primary}
+            tabBarInactiveTintColor="#888"
+            activeIndicatorColor={Colors.primaryLight}
+        >
             <Tabs.Screen
                 name="resume"
                 options={{
                     title: 'Resumen',
                     tabBarActiveTintColor: Colors.primary,
-                    tabBarIcon: () => platform === 'android' ? require('@/assets/icons/resume.svg') : ({sfSymbol: 'house'}),
+                    tabBarIcon: ({focused}) => platform === 'android' ? require('@/assets/icons/resume.svg') : ({sfSymbol: 'house'}),
                 }}
             />
             <Tabs.Screen

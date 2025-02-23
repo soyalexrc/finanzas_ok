@@ -20,9 +20,6 @@ import {formatByThousands, formatWithDecimals} from "@/lib/helpers/string";
 import TransactionsPerCategoryChart from "@/lib/components/charts/TransactionsPerCategoryChart";
 import TransactionsPerMonthChart from "@/lib/components/charts/TransactionsPerMonthChart";
 import YearPickerButton from "@/lib/components/transactions/YearPicker";
-import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
-import CurrencyPickerModal from "@/lib/components/modals/CurrencyPickerModal";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectCurrency, selectYear, updateCurrency} from "@/lib/store/features/transactions/transactions.slice";
 import {
@@ -36,16 +33,10 @@ export default function Screen() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const [lastMonth, setLastMonth] = useState<any>({});
-    const [lastWeek, setLastWeek] = useState<any>({});
-    const [rawPerMonthPerYear, setRawPerMonthPerYear] = useState<any[]>([]);
-    const [perMonthPerYear, setPerMonthPerYear] = useState<any[]>([]);
     const router = useRouter();
-    const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
     const year = useAppSelector(selectYear);
     const {width} = useWindowDimensions();
     const currency = useAppSelector(selectCurrency);
-    const dispatch = useAppDispatch();
 
     const {user, token} = useAuth()
 
@@ -90,6 +81,7 @@ export default function Screen() {
                 title: 'Resumen',
                 headerLargeTitle: true,
                 headerRight: () => <YearPickerButton/>,
+                headerTitleAlign: 'center',
                 headerLeft: () => (
                     <TouchableOpacity
                         onPress={() => router.push('/auth/currency-selection')}
