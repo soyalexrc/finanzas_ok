@@ -8,12 +8,14 @@ import {useCategories} from "@/lib/utils/api/categories";
 import {useCurrencies} from "@/lib/utils/api/currencies";
 import {updateCategoriesList} from "@/lib/store/features/transactions/categories.slice";
 import {Category} from "@/lib/types/transaction";
-import {updateCurrenciesList} from "@/lib/store/features/transactions/currencies.slice";
+import {CurrencyV2, updateCurrenciesList} from "@/lib/store/features/transactions/currencies.slice";
 import {Ionicons} from "@expo/vector-icons";
+import {useAuth} from "@/lib/context/AuthContext";
+import {updateCurrency} from "@/lib/store/features/transactions/transactions.slice";
 
 export default function Layout() {
     const router = useRouter();
-    const {user} = useAppSelector(selectAuth)
+    const {user, token} = useAuth()
     const dispatch = useAppDispatch();
 
     const {data: categories, refetch: refetchCategories} = useCategories(user?._id ?? '', user?.access_token ?? '')
@@ -21,12 +23,7 @@ export default function Layout() {
 
     useEffect(() => {
         async function checkUser() {
-            const user = await load('user');
-            const accessToken = await loadString('access_token')
-
-            if (user && accessToken) {
-                dispatch(updateUser(user as User))
-                dispatch(updateAccessToken(accessToken))
+            if (user && token) {
                 refetchCategories().then(res => {
                     if (res.data) {
                         dispatch(updateCategoriesList(res.data))
@@ -36,6 +33,7 @@ export default function Layout() {
                     console.log(res.data);
                     if (res.data) {
                         dispatch(updateCurrenciesList(res.data))
+                        dispatch(updateCurrency(res.data.find((c: any) => c._id === user.favCurrencies[0]) as CurrencyV2))
                     }
                 })
             }

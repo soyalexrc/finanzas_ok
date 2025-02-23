@@ -1,5 +1,5 @@
 export type Transaction = {
-    id: string;
+    _id: string;
     recurrentDate: string;
     title: string;
     description: string;

@@ -114,7 +114,7 @@ export const useStatisticsByCurrencyAndYear = (userId: string, year: number, cur
 
 export const useRawTransactions = (userId: string, dateFrom: string, dateTo: string, searchTerm: string, token: string,) => {
     return useQuery({
-        enabled: !!userId && !!token, // Only fetch when user and token exist
+        enabled: !!searchTerm || (!!dateFrom && !!dateTo), // Run only if searchTerm exists OR both dateFrom & dateTo exist
         queryKey: ['rawTransactions', userId, dateFrom, searchTerm, token],
         queryFn: () => fetchRawTransactions({userId, dateFrom, dateTo, searchTerm, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes

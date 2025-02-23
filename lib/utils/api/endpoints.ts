@@ -16,6 +16,7 @@ export default {
     transactions: {
         listByUser: '/transaction/byUser',
         create: '/transaction',
+        update: '/transaction',
         delete: '/transaction',
         getYearlyExpensesByCategory: '/transaction/getYearlyExpensesByCategory',
         getMonthlyStatistics: '/transaction/getMonthlyStatistics',

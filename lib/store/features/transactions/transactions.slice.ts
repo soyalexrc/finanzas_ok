@@ -55,7 +55,7 @@ const initialState: TransactionsState = {
         description: '',
         hidden_amount: "0",
         recurrentDate: 'none',
-        id: ''
+        _id: ''
     },
     transactionsGroupedByDate: [],
     currentBalance: 0,

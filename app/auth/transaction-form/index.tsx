@@ -34,6 +34,7 @@ import endpoints from "@/lib/utils/api/endpoints";
 import {load, loadString} from "@/lib/utils/storage";
 import {CurrencyV2} from "@/lib/store/features/transactions/currencies.slice";
 import {useQueryClient} from "@tanstack/react-query";
+import {useAuth} from "@/lib/context/AuthContext";
 
 
 
@@ -46,6 +47,7 @@ export default function Screen() {
     const currency = useAppSelector(selectCurrency);
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
     const [date, setDate] = useState<Date>(new Date());
+    const {user, token} = useAuth();
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const handleDateButtonPress = () => {
@@ -59,48 +61,62 @@ export default function Screen() {
     };
 
     async function onSave() {
-        const categoryRef = firestore().collection('categories').doc(currentTransaction.category.id);
-        const userReference = firestore().collection('users').doc(auth().currentUser?.uid);
+        const payload = {
+            title: currentTransaction.title,
+            description: currentTransaction.description,
+            category: currentTransaction.category?._id,
+            documents: currentTransaction.documents,
+            images: currentTransaction.images,
+            amount: parseFloat(currentTransaction.amount),
+            date: currentTransaction.date,
+            user: user?._id ?? '',
+            currency: currency._id
+        }
+        console.log('payload', payload);
 
         if (currentTransaction._id) {
-            // await firestore()
-            //     .collection('transactions')
-            //     .doc(currentTransaction.id)
-            //     .update({
-            //         title: currentTransaction.title,
-            //         description: currentTransaction.description,
-            //         category: categoryRef,
-            //         documents: currentTransaction.documents,
-            //         images: currentTransaction.images,
-            //         amount: parseFloat(currentTransaction.amount),
-            //         date: new Date(currentTransaction.date),
-            //         updatedAt: new Date(),
-            //         currency
-            //     });
-            dispatch(resetCurrentTransaction())
-            router.back();
+            try {
+                const response = await api.patch(endpoints.transactions.update + '/' + currentTransaction._id, payload, {
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    }
+                })
+
+                if (response.status === 200 || response.status === 201) {
+                    toast.success(response.data.message || 'Se actualizo la transaccion con exito', {
+                        className: 'bg-success-500',
+                        // description: 'Por favor completa el campo de titulo',
+                        duration: 6000,
+                        icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
+                    });
+                    await queryClient.invalidateQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
+                    // await queryClient.refetchQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
+                    dispatch(resetCurrentTransaction())
+                    router.back();
+                } else {
+                    toast.error('Ocurrio un error', {
+                        className: 'bg-red-500',
+                        description: response.data.message,
+                        duration: 6000,
+                        icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                    });
+                }
+            } catch (error: any) {
+                console.log(error);
+                toast.error('Ocurrio un error', {
+                    className: 'bg-red-500',
+                    description: error.message,
+                    duration: 6000,
+                    icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                });
+            }
         } else {
             try {
-                const user: any = await load('user');
-                const token = await loadString('access_token');
-                const payload = {
-                    title: currentTransaction.title,
-                    description: currentTransaction.description,
-                    category: currentTransaction.category?._id,
-                    documents: currentTransaction.documents,
-                    images: currentTransaction.images,
-                    amount: parseFloat(currentTransaction.amount),
-                    date: currentTransaction.date,
-                    user: user?._id ?? '',
-                    currency: currency._id
-                }
-                console.log('payload', payload);
                 const response = await api.post(endpoints.transactions.create, payload, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
                 })
-                console.log(response);
 
                 if (response.status === 200 || response.status === 201) {
                     toast.success(response.data.message || 'Se registro la transaccion con exito', {
@@ -114,18 +130,18 @@ export default function Screen() {
                     dispatch(resetCurrentTransaction())
                     router.back();
                 } else {
-                    toast.error(response.data.message, {
+                    toast.error('Ocurrio un error', {
                         className: 'bg-red-500',
-                        description: 'Por favor completa el campo de titulo',
+                        description: response.data.message,
                         duration: 6000,
                         icon: <Ionicons name="close-circle" size={24} color="red"/>,
                     });
                 }
             } catch (error: any) {
                 console.log(error);
-                toast.error(error.message, {
+                toast.error('Ocurrio un error', {
                     className: 'bg-red-500',
-                    description: 'Por favor completa el campo de titulo',
+                    description: error.message,
                     duration: 6000,
                     icon: <Ionicons name="close-circle" size={24} color="red"/>,
                 });
