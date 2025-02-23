@@ -103,15 +103,23 @@ export default function Screen() {
                 console.log(response);
 
                 if (response.status === 200 || response.status === 201) {
-                    toast.error(response.data.message, {
+                    toast.success(response.data.message || 'Se registro la transaccion con exito', {
                         className: 'bg-success-500',
                         // description: 'Por favor completa el campo de titulo',
                         duration: 6000,
-                        icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                        icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
                     });
-                    // await queryClient.invalidateQueries({ queryKey: ['transactions'] })
+                    await queryClient.invalidateQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
+                    // await queryClient.refetchQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
                     dispatch(resetCurrentTransaction())
                     router.back();
+                } else {
+                    toast.error(response.data.message, {
+                        className: 'bg-red-500',
+                        description: 'Por favor completa el campo de titulo',
+                        duration: 6000,
+                        icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                    });
                 }
             } catch (error: any) {
                 console.log(error);

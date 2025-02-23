@@ -27,68 +27,53 @@ import TransactionRow from "@/lib/components/transactions/TransactionRow";
 import * as Haptics from "expo-haptics";
 import Fab from "@/lib/components/transactions/Fab";
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
+import {FlashList} from "@shopify/flash-list";
+import {useAuth} from "@/lib/context/AuthContext";
+import {useRawTransactions} from "@/lib/utils/api/transactions";
+import {getCurrentMonth} from "@/lib/helpers/date";
 
 export default function Screen() {
     const currentTransaction = useAppSelector(selectCurrentTransaction);
-    const [transactions, setTransactions] = useState<any[]>([]);
     const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(true);
     const router = useRouter();
+    const {bottom} = useSafeAreaInsets();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
+    const {user, token} = useAuth();
+    const [dateFrom, setDateFrom] = useState<string>(getCurrentMonth().start.toISOString());
+    const [dateTo, setDateTo] = useState<string>(getCurrentMonth().end.toISOString());
+    const [searchTerm, setSearchTerm] = useState<string>('')
 
+    const {data: transactions, refetch, isFetching} = useRawTransactions(user?._id ?? '', dateFrom, dateTo, searchTerm, token);
+    const navigation = useNavigation();
+
+    console.log('transactions', transactions)
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerSearchBarOptions: {
+                autoCapitalize: 'none',
+                inputType: 'text',
+                placeholder: 'Buscar',
+                onChangeText: (e: NativeSyntheticEvent<TextInputFocusEventData>) => debouncedUpdateSearch(e.nativeEvent.text),
+            },
+            headerRight: () => (
+                <TouchableOpacity>
+                    <Ionicons name="filter" size={24} style={styles.icon} />
+                </TouchableOpacity>
+            )
+        })
+    }, []);
+
+// Debounced search update
     const debouncedUpdateSearch = useCallback(
         debounce((query: string) => {
-            const t = searchFilter(query);
-            setFilteredTransactions(t)
+            setSearchTerm(query); // 🔹 Update the searchTerm state, triggering refetch
         }, 500),
-        [transactions]
+        []
     );
-
-    function searchFilter(query: string): any[] {
-        if (!query) {
-            return transactions;
-        }
-        return transactions.filter((t) => {
-            return t.title.toLowerCase().includes(query.toLowerCase()) || t.description.toLowerCase().includes(query.toLowerCase());
-        });
-    }
-
-    async function getTransactions(isFirstTime = true) {
-        if (isFirstTime) setLoading(true);
-        const userId = auth().currentUser?.uid;
-
-        if (userId) {
-            const userRef = firestore().collection('users').doc(userId);
-            const result = await firestore()
-                .collection('transactions')
-                .where('user_id', '==', userRef)
-                .get();
-
-            const data = await Promise.all(result.docs.map(async doc => {
-                const transactionData = doc.data();
-                let categoryData = null;
-
-                if (transactionData.category && transactionData.category.get) {
-                    const categoryDoc = await transactionData.category.get();
-                    categoryData = { id: categoryDoc.id, ...categoryDoc.data() };
-                }
-
-                return {
-                    id: doc.id,
-                    ...transactionData,
-                    date: transactionData.date?.toDate(),
-                    category: categoryData
-                };
-            }));
-
-            setLoading(false);
-            setTransactions(data);
-            setFilteredTransactions(data);
-            setRefreshing(false);
-        }
-    }
 
     async function onPressRow(transaction: any) {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -117,45 +102,32 @@ export default function Screen() {
     }
 
 
-    useEffect(() => {
-        getTransactions();
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await refetch()
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
     }, []);
+
 
     return (
         <SafeAreaView style={[styles.container]}>
-            <Stack.Screen
-                options={{
-                    title: 'Buscar',
-                    headerLargeTitle: true,
-                    headerBackTitle: 'Atras',
-                    headerSearchBarOptions: {
-                        placeholder: 'Buscar',
-                        onChangeText: (e: NativeSyntheticEvent<TextInputFocusEventData>) => debouncedUpdateSearch(e.nativeEvent.text),
-                    },
-                }}
-            />
             {
-                loading &&
+                isFetching &&
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                     <ActivityIndicator/>
                 </View>
             }
             {
-                !loading &&
-                <FlatList
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={() => {
-                                setRefreshing(true)
-                                setTimeout(() => {
-                                    getTransactions(false);
-                                }, 1000);
-                            }}
-                        />
-                    }
+                !isFetching &&
+                <FlashList
+                    data={transactions}
+                    estimatedItemSize={80}
                     contentInsetAdjustmentBehavior="automatic"
-                    data={filteredTransactions}
+                    ListHeaderComponent={<Text style={{ margin: 10 }}>{transactions?.length} Resultados</Text>}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
+                    keyExtractor={(item: any) => item._id}
                     renderItem={({item}) => (
                         <LayoutAnimationConfig>
                             <Animated.View entering={StretchInY}>
@@ -163,11 +135,11 @@ export default function Screen() {
                             </Animated.View>
                         </LayoutAnimationConfig>
                     )}
-                    keyExtractor={(item) => item.id}
+                    ListFooterComponent={<View style={{ height: bottom }} />}
                 />
             }
             <Fab/>
-            <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />
+            {/*<TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)} transaction={selectedTransaction} onEdit={() => manageEdit()} />*/}
         </SafeAreaView>
     )
 }
@@ -175,7 +147,9 @@ export default function Screen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
         backgroundColor: '#fff'
+    },
+    icon: {
+        color: '#000',
     },
 })

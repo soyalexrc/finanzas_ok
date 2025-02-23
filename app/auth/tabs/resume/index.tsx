@@ -35,7 +35,7 @@ import {useAuth} from "@/lib/context/AuthContext";
 export default function Screen() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
-    const [currentMonth, setCurrentMonth] = useState<any>({});
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [lastMonth, setLastMonth] = useState<any>({});
     const [lastWeek, setLastWeek] = useState<any>({});
     const [rawPerMonthPerYear, setRawPerMonthPerYear] = useState<any[]>([]);
@@ -66,7 +66,7 @@ export default function Screen() {
         data: statisticsByCurrencyAndYear,
         isPending: statisticsByCurrencyAndYearLoading,
         error: statisticsByCurrencyAndYearError,
-        refetch: recallStatisticsByCurrencyAndYear
+        refetch: recallStatisticsByCurrencyAndYear,
     } = useStatisticsByCurrencyAndYear(user._id, year, currency._id, token)
 
 
@@ -104,12 +104,26 @@ export default function Screen() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentInsetAdjustmentBehavior="automatic"
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={async () => {
+                            setRefreshing(true);
+                            await recallStatisticsByCurrencyAndYear();
+                            await recallMonthlyStatistics();
+                            await recallExpensesByCategorycs();
+                            setTimeout(() => {
+                                setRefreshing(false);
+                            }, 500)
+                        }}
+                    />
+                }
                 style={[styles.container]}
             >
 
                 {
                     statisticsByCurrencyAndYearLoading &&
-                    <View>
+                    <View style={{ height: 300 }}>
                         <ActivityIndicator/>
                     </View>
                 }
@@ -135,7 +149,7 @@ export default function Screen() {
 
                 {
                     statisticsByCurrencyAndYearLoading &&
-                    <View>
+                    <View style={{ height: 200 }}>
                         <ActivityIndicator/>
                     </View>
                 }
@@ -147,11 +161,13 @@ export default function Screen() {
                     <View style={{flexDirection: 'row', justifyContent: 'space-around', padding: 10, gap: 10}}>
                         <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
                             <Text style={styles.subTitle}>Semana pasada</Text>
-                            <Text style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastWeek}</Text>
+                            <Text
+                                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastWeek}</Text>
                         </View>
                         <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
                             <Text style={styles.subTitle}>Mes pasado</Text>
-                            <Text style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastMonth}</Text>
+                            <Text
+                                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastMonth}</Text>
                         </View>
                     </View>
                 }
@@ -170,7 +186,7 @@ export default function Screen() {
 
                 {
                     monthlyStatisticsLoading &&
-                    <View>
+                    <View style={{ height: 300 }}>
                         <ActivityIndicator/>
                     </View>
                 }
@@ -196,7 +212,7 @@ export default function Screen() {
 
                 {
                     byCategoryLoading &&
-                    <View>
+                    <View style={{ height: 300 }}>
                         <ActivityIndicator/>
                     </View>
                 }
