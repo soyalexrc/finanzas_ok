@@ -3,7 +3,7 @@ module.exports = {
     "name": "Finanzas Inteligentes",
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
@@ -99,14 +99,6 @@ module.exports = {
           "defaultChannel": "default"
         }
       ],
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
-        }
-      ]
     ],
     "experiments": {
       "typedRoutes": true

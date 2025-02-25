@@ -4360,11 +4360,6 @@ expo-manifests@~0.15.0:
     "@expo/config" "~10.0.4"
     expo-json-utils "~0.14.0"
 
-expo-media-library@~17.0.3:
-  version "17.0.4"
-  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-17.0.4.tgz#428db62aa21777ab3cc2859cd8c7c147666dc531"
-  integrity sha512-5Fbv3dTlswO6ZcSYDF7zrCzsGly14rA0uKo+wyn3H4gEVgmLOZEzvAkLT4ELFq4RfT+zEuYCKPG1Sb1Q41e5kg==
-
 expo-modules-autolinking@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/expo-modules-autolinking/-/expo-modules-autolinking-2.0.4.tgz#28fcd12fb0d066a2933cca3bf3b597da0f6b2f2a"
