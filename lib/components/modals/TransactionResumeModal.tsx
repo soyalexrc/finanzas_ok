@@ -42,6 +42,7 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
     const heightValue = (transaction.images?.length > 0 && transaction.documents?.length > 0) ? 600 :
         (transaction.images?.length > 0 || transaction.documents?.length > 0) ? 550 : 450;
     // const heightValue = 600;
+    console.log('transaction', transaction);
     const isIos = Platform.OS === 'ios';
     const translateY = useSharedValue(heightValue);
     const backgroundOpacity = useSharedValue(0);

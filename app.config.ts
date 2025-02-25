@@ -3,7 +3,7 @@ module.exports = {
     "name": "Finanzas Inteligentes",
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
@@ -51,14 +51,6 @@ module.exports = {
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
         }
       ],
       [

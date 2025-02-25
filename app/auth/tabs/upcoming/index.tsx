@@ -171,6 +171,7 @@ export default function Screen() {
     }
 
     async function onPressRow(transaction: any) {
+        console.log('transaction prev', transaction)
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setSelectedTransaction({
             date: transaction?.date,

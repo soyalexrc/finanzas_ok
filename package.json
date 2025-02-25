@@ -1,7 +1,7 @@
 {
   "name": "finanzas_ok",
   "main": "expo-router/entry",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -41,7 +41,6 @@
     "expo-auth-session": "~6.0.1",
     "expo-blur": "~14.0.1",
     "expo-build-properties": "~0.13.1",
-    "expo-camera": "~16.0.10",
     "expo-constants": "~17.0.3",
     "expo-crypto": "~14.0.1",
     "expo-dev-client": "~5.0.6",

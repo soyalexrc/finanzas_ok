@@ -1,22 +1,19 @@
 import {
-    ActivityIndicator,
+    ActivityIndicator, Alert,
     FlatList,
-    Linking,
     Pressable,
     StyleSheet,
     Text,
     TouchableOpacity,
     View
 } from "react-native";
-import { Image } from 'expo-image';
-import {Stack, useNavigation} from "expo-router";
-import {useRef, useState} from "react";
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
-import {Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {Image} from 'expo-image';
+import {Stack} from "expo-router";
+import React, {useState} from "react";
+import {Ionicons} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import * as ImagePicker from 'expo-image-picker';
 import {Colors} from "@/lib/constants/colors";
-import * as Haptics from 'expo-haptics';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import * as DocumentPicker from "expo-document-picker";
@@ -24,210 +21,159 @@ import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {
     addDocumentToCurrentTransaction,
     addImageToCurrentTransaction,
-    selectCurrentTransaction, selectDocumentsFromCurrentTransaction, selectImagesFromCurrentTransaction
+    selectDocumentsFromCurrentTransaction, selectImagesFromCurrentTransaction
 } from "@/lib/store/features/transactions/transactions.slice";
 import {textShortener} from "@/lib/helpers/string";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const blurhash =
     '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
 export default function Screen() {
-    const [facing, setFacing] = useState<CameraType>('back');
-    const [permission, requestPermission] = useCameraPermissions();
-    const [showCamera, setShowCamera] = useState<boolean>(false);
     const images = useAppSelector(selectImagesFromCurrentTransaction);
     const documents = useAppSelector(selectDocumentsFromCurrentTransaction);
     const dispatch = useAppDispatch();
-    const cameraRef = useRef<CameraView>(null)
-    const { bottom } = useSafeAreaInsets();
+    const {bottom} = useSafeAreaInsets();
     const [loadingImage, setLoadingImage] = useState<boolean>(false);
     const [loadingDocument, setLoadingDocument] = useState<boolean>(false);
     const evidencesPath = `evidencias/${auth().currentUser?.uid}`;
+    const [tab, setTab] = useState<number>(0);
 
-    async function openDocumentPicker() {
-        const result = await DocumentPicker.getDocumentAsync({
-            type: '*/*',
-            copyToCacheDirectory: true,
-            multiple: true
-        });
+    // Función para elegir entre cámara o galería
+    const pickImage = async () => {
+        const options = [
+            {text: "Tomar foto", action: "camera"},
+            {text: "Elegir de galería", action: "gallery"},
+            {text: "Elegir documento", action: "document"},
+            {text: "Cancelar", action: "cancel"},
+        ];
 
+        Alert.alert("Selecciona una opción", "", options.map(({text, action}) => ({
+            text,
+            onPress: () => handleImagePick(action),
+        })));
+    };
 
-        if (result.assets && result.assets.length > 0) {
-            setLoadingDocument(true);
+    // Función para manejar la selección
+    const handleImagePick = async (action: string) => {
+        let result;
 
-            // make a await for of
-            for (const document of result.assets) {
-                const reference = storage().ref(`${evidencesPath}/documentos/${document.name}`);
-                await reference.putFile(document.uri);
-                const url = await reference.getDownloadURL();
-                dispatch(addDocumentToCurrentTransaction({url, title: document.name}));
-            }
-
-            setLoadingDocument(false);
-        }
-    }
-
-    async function handleRequestPermissions() {
-        const {status} = await requestPermission()
-        if (status === 'denied') {
-            await Linking.openSettings();
-        }
-    }
-
-
-    if (!permission) {
-        // Camera permissions are still loading.
-        return <View/>;
-    }
-
-    function toggleCameraFacing() {
-        setFacing(current => (current === 'back' ? 'front' : 'back'));
-    }
-
-    function unmountCamera() {
-        if (cameraRef.current) {
-            cameraRef.current?.pausePreview();
-            setShowCamera(false);
-        }
-    }
-
-
-    async function takePicture() {
-        if (cameraRef.current) {
-            setLoadingImage(true)
-            const photo = await cameraRef.current.takePictureAsync({
-                quality: 0.5,
-                imageType: 'jpg',
+        if (action === "camera") {
+            result = await ImagePicker.launchCameraAsync({
+                allowsEditing: false,
+                quality: 1,
             });
-            const photoName = `photo-${Date.now()}.jpg`;
+        } else if (action === "gallery") {
+            result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: false,
+                quality: 1,
+            });
+        } else if (action === "document") {
+            result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+                copyToCacheDirectory: true,
+                multiple: true
+            });
 
-            const reference = storage().ref(`${evidencesPath}/imagenes/${photoName}`);
-            await reference.putFile(photo!.uri);
-            const url = await reference.getDownloadURL();
-            dispatch(addImageToCurrentTransaction(url));
-            setLoadingImage(false)
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setTab(1)
+                setLoadingDocument(true);
+
+                // make a await for of
+                for (const document of result.assets) {
+                    const reference = storage().ref(`${evidencesPath}/documentos/${document.name}`);
+                    await reference.putFile(document.uri);
+                    const url = await reference.getDownloadURL();
+                    dispatch(addDocumentToCurrentTransaction({url, title: document.name}));
+                }
+
+                setLoadingDocument(false);
+            }
         }
-    }
 
-    async function openImagePicker() {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            quality: 0.5,
-        });
-
-        if (!result.canceled) {
+        if (!result?.canceled && action !== 'document' && action !== 'cancel') {
             setLoadingImage(true)
-            const selectedImage = result.assets[0].uri;
-            const reference = storage().ref(`${evidencesPath}/imagenes/${result.assets[0].fileName}`);
-            await reference.putFile(selectedImage);
+            setTab(0)
+            const selectedImage = result?.assets[0].uri;
+            // @ts-ignore
+            const reference = storage().ref(`${evidencesPath}/imagenes/${result?.assets[0].fileName}`);
+            await reference.putFile(selectedImage!);
             const url = await reference.getDownloadURL();
             dispatch(addImageToCurrentTransaction(url));
             setLoadingImage(false)
         }
-    }
+    };
 
-
-    async function activateCamera() {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        setShowCamera(true)
-    }
 
     return (
-        <View style={[styles.container, { paddingBottom: bottom + 50 }]}>
+        <View style={[styles.container, {paddingBottom: bottom + 50}]}>
             <Stack.Screen
                 options={{
                     title: 'Evidencias',
                     headerBackTitle: 'Atras',
+                    headerShadowVisible: false,
+                    headerRight: () => (
+                        <TouchableOpacity onPress={pickImage} disabled={loadingImage || loadingDocument}>
+                            {
+                                (loadingImage || loadingDocument) ? (
+                                        <ActivityIndicator/>
+                                    ) :
+                                    <Ionicons name="add" size={30} color={Colors.primary}/>
+
+                            }
+                        </TouchableOpacity>
+                    )
                 }}
             />
-            <View style={styles.cameraContainer}>
-                {
-                    !permission.granted &&
-                    <View style={ { flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Pressable style={styles.cameraButton} onPress={handleRequestPermissions}>
-                            <Text style={styles.cameraButtonText}>Dar acceso para usar la camara.</Text>
-                        </Pressable>
-                    </View>
-                }
-                { permission.granted && showCamera && <CameraView ref={cameraRef} style={styles.camera} facing={facing} />  }
-                {
-                    permission.granted && !showCamera &&
-                    <View style={[styles.camera, { justifyContent: 'center', alignItems: 'center' }]}>
-                        <Pressable disabled={loadingImage} style={styles.cameraButton} onPress={activateCamera}>
-                            { loadingImage ? <ActivityIndicator size={24} color="white" /> : <Ionicons name="camera" size={24} color="white" /> }
-                            <Text style={styles.cameraButtonText}>Usar la camara</Text>
-                        </Pressable>
-                    </View>
-                }
-            </View>
 
-            <View style={{ flex: 1, gap: 30 }}>
-                <View style={{  flexDirection: 'row' }}>
-                    <TouchableOpacity disabled={loadingImage} style={styles.addButton} onPress={openImagePicker}>
-                        { loadingImage ? <ActivityIndicator size={24} />  : <Ionicons name="add" size={24} /> }
-                        <Text style={{ fontWeight: 'bold', color: loadingImage ? '#989898' : '#000' }}>Imagen</Text>
-                    </TouchableOpacity>
-                    <FlatList
-                        horizontal={true}
-                        data={images}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({item, index}) => (
-                            <Pressable>
-                                <Image
-                                    source={item}
-                                    placeholder={{ blurhash }}
-                                    transition={400}
-                                    style={{ borderRadius: 10, width: 120, height: 120 }}
-                                />
-                            </Pressable>
-                        )}
-                        keyExtractor={(item, index) => index.toString()}
-                        ItemSeparatorComponent={() => <View style={{width: 10}} />} // Adds a 10px wide separator
-                    />
-                </View>
-
-                <View style={{flexDirection: 'row' }}>
-                    <TouchableOpacity disabled={loadingDocument} style={styles.addButton} onPress={openDocumentPicker}>
-                        { loadingDocument ? <ActivityIndicator size={24} />  : <Ionicons name="add" size={24} /> }
-                        <Text style={{ fontWeight: 'bold', color: loadingDocument ? '#989898' : '#000' }}>Documento</Text>
-                    </TouchableOpacity>
-                    <FlatList
-                        horizontal={true}
-                        data={documents}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({item}) => (
-                            <Pressable style={styles.documentButton}>
-                                <Ionicons name="document-text" size={50} color="black" />
-                                <Text style={{ maxWidth: 120 }}>{textShortener(item.title, 25)}</Text>
-                            </Pressable>
-                        )}
-                        keyExtractor={(_, index) => index.toString()}
-                        ItemSeparatorComponent={() => <View style={{width: 10}} />} // Adds a 10px wide separator
-                    />
-                </View>
-            </View>
-
+            <SegmentedControl
+                values={['Imagenes', 'Documentos']}
+                selectedIndex={tab}
+                style={{marginBottom: 10, marginTop: 20}}
+                onChange={(event) => setTab(event.nativeEvent.selectedSegmentIndex)}
+            />
 
 
             {
-                showCamera &&
-                <View style={styles.buttonContainer}>
-                    <View style={styles.button}>
-                        <TouchableOpacity style={styles.stylishButton} onPress={toggleCameraFacing}>
-                            <MaterialIcons name="flip-camera-ios" size={40} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.button}>
-                        <TouchableOpacity style={styles.stylishButton}  onPress={takePicture}>
-                            <MaterialIcons name="camera" size={40} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.button}>
-                        <TouchableOpacity style={styles.stylishButton}  onPress={unmountCamera}>
-                            <Ionicons name="close" size={40} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                tab === 0 &&
+                <FlatList
+                    data={images}
+                    numColumns={3}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({item, index}) => (
+                        <Pressable>
+                            <Image
+                                source={item}
+                                placeholder={{blurhash}}
+                                transition={400}
+                                style={{borderRadius: 10, width: 120, height: 120}}
+                            />
+                        </Pressable>
+                    )}
+                    contentContainerStyle={{ alignItems: "center", gap: 10 }} // Centers & adds vertical gap
+                    columnWrapperStyle={{ gap: 10 }} // Adds horizontal gap between columns
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={() => <View style={{width: 10}}/>} // Adds a 10px wide separator
+                />
+            }
+
+            {
+                tab === 1 &&
+                <FlatList
+                    data={documents}
+                    numColumns={3}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({item}) => (
+                        <Pressable style={styles.documentButton}>
+                            <Ionicons name="document-text" size={50} color="black"/>
+                            <Text style={{maxWidth: 120}}>{textShortener(item.title, 25)}</Text>
+                        </Pressable>
+                    )}
+                    contentContainerStyle={{ alignItems: "center", gap: 10 }} // Centers & adds vertical gap
+                    columnWrapperStyle={{ gap: 10 }} // Adds horizontal gap between columns
+                    keyExtractor={(_, index) => index.toString()}
+                    ItemSeparatorComponent={() => <View style={{width: 10}}/>} // Adds a 10px wide separator
+                />
             }
         </View>
     )
@@ -275,7 +221,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginHorizontal: 10,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
@@ -304,7 +250,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 50,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 4.65,
         elevation: 8,
