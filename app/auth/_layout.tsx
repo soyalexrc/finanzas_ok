@@ -63,6 +63,7 @@ export default function Layout() {
             <Stack.Screen name="tabs" options={{headerShown: false}}/>
             <Stack.Screen name="transaction-form" options={{headerShown: false}}/>
             <Stack.Screen name="(settings)" options={{headerShown: false}}/>
+            <Stack.Screen name="shared-spaces" options={{headerShown: false}}/>
             <Stack.Screen name="currency-selection" options={{
                 headerShadowVisible: false,
                 headerLargeTitle: true,

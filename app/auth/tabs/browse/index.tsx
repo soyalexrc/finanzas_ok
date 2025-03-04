@@ -46,11 +46,12 @@ export default function Screen() {
             />
             <ScrollView style={{flex: 1, padding: 10}}>
                 <PressableCard onPress={() => {
-                    toast.info('Esta accion estara disponible proximamente!', {
-                        className: 'bg-green-500',
-                        duration: 6000,
-                        icon: <Ionicons name="information-circle" size={24} color="#f79f07"/>,
-                    })
+                    // toast.info('Esta accion estara disponible proximamente!', {
+                    //     className: 'bg-green-500',
+                    //     duration: 6000,
+                    //     icon: <Ionicons name="information-circle" size={24} color="#f79f07"/>,
+                    // })
+                    router.push('/auth/shared-spaces')
                 }} shadow={true}>
                     <View>
                         <View style={{justifyContent: 'center', alignItems: 'center',}}>

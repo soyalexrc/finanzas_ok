@@ -126,37 +126,6 @@ export default function Screen() {
         };
     });
 
-    // const scrollToBottom = () => {
-    //     console.log(sectionListRef.current?.props);
-    //     const sectionIndex = sectionListRef.current?.props.sections.length - 1;
-    //     const itemIndex = sectionListRef.current?.props.sections[sectionIndex].data.length - 1;
-    //
-    //     console.log(sectionIndex, itemIndex);
-    //     if (sectionListRef.current) {
-    //         sectionListRef.current.scrollToLocation({
-    //             sectionIndex: 29,
-    //             itemIndex: 0,
-    //             animated: true,
-    //         });
-    //     }
-    // };
-
-    // const onScrollToIndexFailed = (info: any) => {
-    //     const wait = new Promise((resolve) => setTimeout(resolve, 500));
-    //     wait.then(() => {
-    //         sectionListRef.current?.scrollToLocation({
-    //             sectionIndex: info.highestMeasuredFrameIndex,
-    //             itemIndex: 0,
-    //             animated: true,
-    //         });
-    //     });
-    // };
-
-    const getItemLayout = (data: any, index: number) => ({
-        length: 80, // height of each item
-        offset: 80 * index,
-        index,
-    });
 
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -347,15 +316,6 @@ export default function Screen() {
         ])
     }
 
-    // console.log(agendaItems);
-
-    // const onViewableItemsChanged = ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    //     if (viewableItems.length > 0) {
-    //         const topItem = viewableItems[0].item;
-    //         const top = viewableItems[0].index;
-    //         console.log('Top item:', top);
-    //     }
-    // };
 
     return (
         <View style={[styles.container, {paddingTop: top}]}>
