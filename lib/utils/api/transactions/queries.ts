@@ -19,7 +19,7 @@ type RawTransactionsPayload = {
     token: string;
 }
 
-interface Section {
+export interface Section {
     title: {
         title: string;
         totals: any[]
@@ -35,6 +35,7 @@ interface StatisticsByCurrencyAndYearPayload extends YearlyExpensesByCategoryPay
 }
 
 const fetchYearlyExpensesByCategory = async ({userId, year, currency, token}: YearlyExpensesByCategoryPayload) => {
+    console.log('token', token)
     const response = await api.post(endpoints.transactions.getYearlyExpensesByCategory, {
         userId, year, currency
     }, {

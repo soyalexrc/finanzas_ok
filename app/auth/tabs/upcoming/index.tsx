@@ -1,60 +1,20 @@
 import {
-    ActivityIndicator,
-    Alert,
-    Button,
-    LogBox, Platform, Pressable,
-    RefreshControl, SafeAreaView, ScrollView, SectionList,
+    FlatList,
+    LogBox,
+    SafeAreaView,
     StyleSheet,
     Text, TextStyle,
-    TouchableWithoutFeedback,
     View, ViewToken
 } from "react-native";
-import auth from "@react-native-firebase/auth";
-import {Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {AgendaList, CalendarList, CalendarProvider, DateData, ExpandableCalendar} from "react-native-calendars";
 import {Colors} from "@/lib/constants/colors";
-import {parse, format} from 'date-fns';
-import Fab from "@/lib/components/transactions/Fab";
-import TransactionRow from "@/lib/components/transactions/TransactionRow";
-import {MarkedDates} from "react-native-calendars/src/types";
-import {getCurrentMonth, getCustomMonth, getCustomMonthAndYear, getCustomMonthRangeWithYear} from "@/lib/helpers/date";
-import firestore from "@react-native-firebase/firestore";
-import {es} from "date-fns/locale";
-import {useFocusEffect, useNavigation, useRouter} from "expo-router";
 import {LocaleConfig} from 'react-native-calendars';
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHeader";
-import Animated, {
-    LayoutAnimationConfig, runOnJS,
-    StretchInY, useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming
-} from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
-import sleep from "@/lib/helpers/sleep";
-import {FlashList} from "@shopify/flash-list";
-import {Ionicons} from "@expo/vector-icons";
-import {load, loadString} from "@/lib/utils/storage";
-import api from "@/lib/utils/api";
-import endpoints from "@/lib/utils/api/endpoints";
-import {toast} from "sonner-native";
-import {useAuth} from "@/lib/context/AuthContext";
+import Animated, {useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
 ]);
-
-
-interface Section {
-    title: {
-        title: string;
-        totals: any[]
-    };
-    data: any[];
-}
-
 
 LocaleConfig.locales['es'] = {
     monthNames: [
@@ -80,45 +40,67 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 const initialDate = '2025-03-03';
-const nextWeekDate = '2025-03-10';
-const nextMonthDate = '2025-04-03';
+
+const sampleDates = {
+    '2025-03-03': {
+        selected: true,
+        selectedColor: 'rgba(83,220,62,0.2)',
+        // selectedColor: 'rgba(220,76,62,0.2)',
+        selectedTextColor: '#000',
+        marked: true,
+        dots: [
+            {key: "event1", color: Colors.primary},
+            {key: "event2", color: 'blue'},
+            {key: "event3", color: 'green'},
+        ]
+    },
+    '2025-03-10': {
+        selected: true,
+        selectedColor: 'rgba(220,76,62,0.2)',
+        selectedTextColor: '#000',
+        marked: true,
+        dots: [
+            {key: "event1", color: Colors.primary},
+            {key: "event3", color: 'green'},
+        ]
+    },
+    '2025-03-14': {
+        selected: true,
+        selectedColor: 'rgba(220,76,62,0.2)',
+        selectedTextColor: '#000',
+        marked: true,
+        dots: [
+            {key: "event1", color: Colors.primary},
+        ]
+    },
+    '2025-03-20': {
+        selected: true,
+        selectedColor: 'rgba(220,76,62,0.2)',
+        selectedTextColor: '#000',
+        marked: true,
+        dots: [
+            {key: "event1", color: Colors.primary},
+            {key: "event3", color: 'green'},
+        ]
+    },
+
+}
+// TODO color de marca de dia puede ser personalizable con sqlite
+// TODO seleccion de color por item debe ser seleccionable (crear select de color)
+
+const data = new Array(50).fill(0).map((_, i) => ({ id: i }))
 
 export default function Screen() {
-    const [selected, setSelected] = useState(initialDate);
-    const marked = useMemo(() => {
-        return {
-            [nextWeekDate]: {
-                selected: selected === nextWeekDate,
-                selectedColor: Colors.primary,
-                marked: true,
-                dots: [
-                    { key: "event1", color: Colors.primary },
-                    { key: "event2", color: 'blue' },
-                    { key: "event3", color: 'green' },
-                ]
-            },
-            [nextMonthDate]: {
-                selected: selected === nextMonthDate,
-                selectedColor: Colors.primary,
-                marked: true,
-                dots: [
-                    { key: "event1", color: Colors.primary },
-                    { key: "event3", color: 'green' },
-                ]
-            },
-            [selected]: {
-                selected: true,
-                disableTouchEvent: true,
-                selectedColor: Colors.primary,
-            }
-        };
-    }, [selected]);
-
     const onDayPress = useCallback((day: DateData) => {
-        setSelected(day.dateString);
+        console.log(day);
     }, []);
 
     const theme = {
+        textDisabledColor: Colors.lightText,
+        textMonthFontWeight: 'bold',
+        textDayFontSize: 16,
+        textMonthFontSize: 18,
+        arrowColor: Colors.primary,
         stylesheet: {
             calendar: {
                 header: {
@@ -131,17 +113,19 @@ export default function Screen() {
         },
         'stylesheet.day.basic': {
             today: {
-                borderColor: Colors.primary,
-                borderWidth: 0.8
+                backgroundColor: Colors.primary,
+                borderWidth: 0.8,
+                borderRadius: 100,
+                borderColor: Colors.primary
             },
             todayText: {
-                color: Colors.primary,
+                color: '#fff',
                 fontWeight: '800'
             }
         }
     };
 
-    const horizontalView = false;
+    const horizontalView = true;
 
     function renderCustomHeader(date: any) {
         const header = date.toString('MMMM yyyy');
@@ -163,6 +147,8 @@ export default function Screen() {
         );
     }
 
+    const viewableItems = useSharedValue<ViewToken[]>([])
+
     return (
         <SafeAreaView style={styles.container}>
             <CalendarList
@@ -172,18 +158,72 @@ export default function Screen() {
                 futureScrollRange={24}
                 markingType="multi-dot"
                 onDayPress={onDayPress}
-                markedDates={marked}
+                markedDates={sampleDates}
+                onMonthChange={async (date) => {
+                    console.log('month changed', date)
+                    // setToday(new Date(date.dateString).toISOString().split('T')[0]);
+                    // await getTransactionsByMonth(date.month, date.year);
+                }}
                 renderHeader={!horizontalView ? renderCustomHeader : undefined}
                 calendarHeight={!horizontalView ? 390 : undefined}
-                theme={!horizontalView ? theme : undefined}
+                // theme={!horizontalView ? theme : undefined}
+                theme={theme as any}
                 horizontal={horizontalView}
                 pagingEnabled={horizontalView}
                 staticHeader={horizontalView}
             />
+
+
+            {/*<FlatList*/}
+            {/*    data={data}*/}
+            {/*    numColumns={2}*/}
+            {/*    showsVerticalScrollIndicator={false}*/}
+            {/*    contentContainerStyle={{ paddingTop: 40 }}*/}
+            {/*    keyExtractor={(item, index) => index.toString()}*/}
+            {/*    onViewableItemsChanged={({ viewableItems: vItems }) => {*/}
+            {/*        viewableItems.value = vItems*/}
+            {/*    }}*/}
+            {/*    renderItem={({ item }) => <ListItem item={item} vItems={viewableItems} />}*/}
+            {/*/>*/}
         </SafeAreaView>
     )
 }
 
+type ListItemProps = {
+    vItems: Animated.SharedValue<ViewToken[]>,
+    item: { id: number  }
+}
+
+const  ListItem: React.FC<ListItemProps> = React.memo(({item, vItems}) => {
+
+    const animatedStyle = useAnimatedStyle(() => {
+        const isVisible = Boolean(
+            vItems.value
+                .filter((item) => item.isViewable)
+                .find((viewableItem) => viewableItem.index === item.id)
+        );
+        return {
+            opacity: withTiming(isVisible ? 1 : 0),
+        }
+    }, [])
+
+    return (
+        <Animated.View
+            style={[
+                animatedStyle,
+                {
+                    height: 80,
+                    width: '45%',
+                    marginHorizontal: '2.5%',
+                    backgroundColor: 'red',
+                    alignSelf: 'center',
+                    borderRadius: 15,
+                    marginBottom: 20
+                }
+            ]}
+        />
+    )
+})
 
 const styles = StyleSheet.create({
     container: {

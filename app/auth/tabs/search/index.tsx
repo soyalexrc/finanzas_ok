@@ -1,5 +1,5 @@
 import {
-    ActivityIndicator, Alert,
+    ActivityIndicator, Alert, Button,
     FlatList, LogBox,
     NativeSyntheticEvent, Platform, Pressable, RefreshControl, SafeAreaView,
     StyleSheet,
@@ -46,6 +46,7 @@ import TransactionRowHeader from "@/lib/components/transactions/TransactionRowHe
 import {format} from "date-fns";
 import {es} from "date-fns/locale";
 import {MarkedDates} from "react-native-calendars/src/types";
+import {BottomSheetModal, BottomSheetModalProvider, BottomSheetView} from "@gorhom/bottom-sheet";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
@@ -89,7 +90,6 @@ export default function Screen() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
     const router = useRouter();
-    const [overlayVisible, setOverlayVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const opacity = useSharedValue(0);
     // const [month, setMonth] = useState<number | null>(null);
@@ -102,22 +102,19 @@ export default function Screen() {
     const flashListRef = useRef<any>(null);
 
     // const currentTransaction = useAppSelector(selectCurrentTransaction);
-    const [dateFrom, setDateFrom] = useState<string>(getCurrentMonth().start.toISOString());
-    const [dateTo, setDateTo] = useState<string>(getCurrentMonth().end.toISOString());
+    const [dateFrom, setDateFrom] = useState<string>(getCustomMonthRange(1, 5).start.toISOString());
+    const [dateTo, setDateTo] = useState<string>(getCustomMonthRange(1, 5).end.toISOString());
     const [searchTerm, setSearchTerm] = useState<string>('')
 
     const {data: transactions, refetch, isFetching} = useTransactionsGroupedByDay(user?._id ?? '', dateFrom, dateTo, searchTerm, token);
-    const navigation = useNavigation();
-
-
 
     useEffect(() => {
-        if (overlayVisible) {
+        if (isFetching) {
             opacity.value = withTiming(0.5, {duration: 300});
         } else {
             opacity.value = withTiming(0, {duration: 300});
         }
-    }, [overlayVisible]);
+    }, [isFetching]);
 
     const handleScroll = (event: any) => {
         const offsetY = event.nativeEvent.contentOffset.y;
@@ -169,23 +166,6 @@ export default function Screen() {
         setModalVisible(true)
     }
 
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerSearchBarOptions: {
-                autoCapitalize: 'none',
-                inputType: 'text',
-                placeholder: 'Buscar',
-                onChangeText: (e: NativeSyntheticEvent<TextInputFocusEventData>) => debouncedUpdateSearch(e.nativeEvent.text),
-            },
-            headerRight: () => (
-                <TouchableOpacity>
-                    <Ionicons name="filter" size={24} style={styles.icon} />
-                </TouchableOpacity>
-            )
-        })
-    }, []);
-
 // Debounced search update
     const debouncedUpdateSearch = useCallback(
         debounce((query: string) => {
@@ -198,17 +178,6 @@ export default function Screen() {
     function manageEdit() {
         router.push('/auth/transaction-form');
     }
-
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        await refetch()
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 2000);
-    }, []);
-
-
     async function onRemoveRow(transaction: any) {
         console.log(transaction);
         await sleep(500)
@@ -252,16 +221,39 @@ export default function Screen() {
     }
 
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await refetch()
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
+    }, []);
+
+
+
+
 
     return (
-        <SafeAreaView style={[styles.container]}>
-            {overlayVisible && (
+            <SafeAreaView style={[styles.container]}>
+                <Stack.Screen options={{
+                    headerSearchBarOptions: {
+                        autoCapitalize: 'none',
+                        inputType: 'text',
+                        placeholder: 'Buscar',
+                        onChangeText: (e: NativeSyntheticEvent<TextInputFocusEventData>) => debouncedUpdateSearch(e.nativeEvent.text),
+                    },
+                    headerRight: () => (
+                        <TouchableOpacity>
+                            <Ionicons name="filter" size={24} style={styles.icon} />
+                        </TouchableOpacity>
+                    )
+                }} />
+
+            {isFetching && (
                 <Animated.View style={[styles.overlay, animatedStyle]}>
                     <ActivityIndicator/>
                 </Animated.View>
             )}
-
-
             <FlashList
                 data={transactions}
                 estimatedItemSize={200}
@@ -274,6 +266,7 @@ export default function Screen() {
                         tintColor={Colors.primary}
                     />
                 }
+                keyExtractor={(item) => item.title.title}
                 renderItem={({item}) => {
                     return (
                         <View>
@@ -308,6 +301,7 @@ export default function Screen() {
                 </Pressable>
             </Animated.View>
         </SafeAreaView>
+
     )
 }
 
@@ -316,6 +310,10 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         position: 'relative'
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
     },
     header: {
         fontSize: 16,

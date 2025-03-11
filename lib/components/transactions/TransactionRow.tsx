@@ -96,7 +96,16 @@ const TransactionRow = ({transaction, cb, heightValue = 80, onRemove}: any) => {
                 >
                     <Pressable style={styles.container} onPress={cb}>
                         <View style={styles.row}>
-                            <Text style={styles.icon}>{transaction?.category?.icon}</Text>
+                            <View style={{
+                                width: 30,
+                                height: 30,
+                                backgroundColor: '#f0f0f0',
+                                borderRadius: 6,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <Text style={styles.icon}>{transaction?.category?.icon}</Text>
+                            </View>
                             {/*<BouncyCheckbox*/}
                             {/*    textContainerStyle={{ display: 'none' }}*/}
                             {/*    size={25}*/}
@@ -131,7 +140,7 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         gap: 10,
     },
     checkbox: {

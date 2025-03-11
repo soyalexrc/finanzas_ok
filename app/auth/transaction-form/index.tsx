@@ -8,7 +8,7 @@ import {
     View
 } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import {Stack, useRouter} from "expo-router";
+import {Stack, useLocalSearchParams, useRouter} from "expo-router";
 import TransactionKeyboard from "@/lib/components/transactions/TransactionKeyboard";
 import {Colors} from "@/lib/constants/colors";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -49,6 +49,9 @@ export default function Screen() {
     const [date, setDate] = useState<Date>(new Date());
     const {user, token} = useAuth();
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const { spaceId } = useLocalSearchParams<{ spaceId?: string }>()
+
+    console.log('space id', spaceId)
 
     const handleDateButtonPress = () => {
         setShowDatePicker(true);

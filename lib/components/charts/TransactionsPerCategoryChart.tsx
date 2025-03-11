@@ -40,8 +40,8 @@ export default function CategoryDonutChart({ width, height, dom, data }: Props) 
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        outerRadius={120}
-                        innerRadius={90}
+                        outerRadius={150}
+                        innerRadius={120}
                         fill="#8884d8"
                         dataKey="value"
                         className="no-outline"

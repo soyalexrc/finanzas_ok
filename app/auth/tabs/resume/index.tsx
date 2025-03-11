@@ -1,5 +1,5 @@
 import {
-    ActivityIndicator,
+    ActivityIndicator, Alert,
     Button,
     RefreshControl,
     SafeAreaView,
@@ -59,7 +59,6 @@ export default function Screen() {
         error: statisticsByCurrencyAndYearError,
         refetch: recallStatisticsByCurrencyAndYear,
     } = useStatisticsByCurrencyAndYear(user._id, year, currency._id, token)
-
 
     function manageEdit() {
         router.push('/auth/transaction-form');
@@ -184,21 +183,21 @@ export default function Screen() {
                 }
 
                 {
-                    !monthlyStatisticsLoading && monthlyStatistics.length > 0 &&
-                    <View style={{height: 200, position: 'relative'}}>
+                    !monthlyStatisticsLoading && monthlyStatistics?.length > 0 &&
+                    <View style={{height: 200, paddingHorizontal: 5, position: 'relative'}}>
                         <TransactionsPerMonthChart
                             data={monthlyStatistics}
                             currency={currency.code}
                             width={width}
-                            onMouseMove={async () => {
-                                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                            }}
                             height={200}
+                            onChartPressed={(data) => {
+                                Alert.alert('data', JSON.stringify(data))
+                            }}
                             dom={{
                                 scrollEnabled: false,
                             }}
                         />
-                        <View style={styles.overlay}/>
+                        {/*<View style={styles.overlay}/>*/}
                     </View>
                 }
 
@@ -210,18 +209,26 @@ export default function Screen() {
                 }
 
                 {
-                    !byCategoryLoading && expensesByCategory.length > 0 &&
-                    <View style={{height: 250, position: 'relative', marginVertical: 30}}>
+                    !byCategoryLoading && expensesByCategory?.length > 0 &&
+                    <View style={{height: 300, position: 'relative', marginVertical: 70}}>
                         <TransactionsPerCategoryChart
                             width={width}
                             data={expensesByCategory}
-                            height={250}
+                            height={300}
                             dom={{
                                 scrollEnabled: false
                             }}
                         />
                         <View style={styles.overlay}/>
                     </View>
+                }
+                {
+                    expensesByCategory?.map((item: any) => (
+                        <View key={item.name} style={styles.card}>
+                            <Text style={styles.name}>{item.name}</Text>
+                            <Text style={styles.value}>{item.value}</Text>
+                        </View>
+                    ))
                 }
                 <View style={{height: 100}}/>
             </ScrollView>
@@ -304,5 +311,28 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0)',
         zIndex: 1
-    }
+    },
+    card: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        backgroundColor: "#fff",
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 4, // For Android shadow
+    },
+    name: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333",
+    },
+    value: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#007AFF", // iOS blue for contrast
+    },
 });

@@ -1,14 +1,15 @@
-import Animated, {useAnimatedStyle, useSharedValue, withSpring} from "react-native-reanimated";
-import {Pressable, StyleSheet, TouchableOpacity} from "react-native";
+import Animated, {StyleProps, useAnimatedStyle, useSharedValue, withSpring} from "react-native-reanimated";
+import {Pressable, StyleSheet, TouchableOpacity, View} from "react-native";
 import React from "react";
 
 type Props = {
     shadow: boolean
     onPress: () => void;
     children: React.ReactNode
+    extraStyles?: StyleProps
 }
 
-export default function PressableCard({shadow, onPress, children}: Props) {
+export default function PressableCard({shadow, onPress, children, extraStyles}: Props) {
     const scale = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -28,7 +29,7 @@ export default function PressableCard({shadow, onPress, children}: Props) {
             <Pressable
                 onPressOut={handlePressOut}
                 onPressIn={handlePressIn}
-                style={[ styles.card, shadow && styles.shadow]}
+                style={[ styles.card, shadow && styles.shadow, extraStyles]}
                 onPress={onPress}
             >
                 {children}

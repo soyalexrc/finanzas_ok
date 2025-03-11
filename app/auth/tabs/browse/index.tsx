@@ -62,7 +62,7 @@ export default function Screen() {
                             paddingBottom: 20,
                             paddingHorizontal: 20
                         }}>
-                            <Text style={styles.cardTitle}>Espacio compartido</Text>
+                            <Text style={styles.cardTitle}>Espacios compartidos</Text>
                             <Text style={styles.cardBody}>Espacio Compartido te permite gestionar gastos en grupo de
                                 forma
                                 transparente y organizada. Ideal para parejas, viajes con amigos y gastos familiares.
