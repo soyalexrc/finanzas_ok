@@ -3,7 +3,7 @@ module.exports = {
     "name": "Finanzas Inteligentes",
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "2.0.3",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
