@@ -18,6 +18,7 @@ import {Ionicons} from "@expo/vector-icons";
 import {Fragment, memo, useCallback, useMemo, useRef} from "react";
 import {Colors} from "@/lib/constants/colors";
 import {formatByThousands} from "@/lib/helpers/string";
+import {Image} from "expo-image";
 
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
@@ -67,7 +68,7 @@ function LeftAction({drag, cb}: { drag: SharedValue<number>, cb: () => void }) {
     );
 }
 
-const TransactionRow = ({transaction, cb, heightValue = 80, onRemove}: any) => {
+const TransactionRow = ({transaction, cb, heightValue = 80, onRemove, showPhoto = false}: any) => {
     const reanimatedRef = useRef<SwipeableMethods>(null);
     const heightAnim = useSharedValue(heightValue); // Approximate height of row
     const opacityAnim = useSharedValue(1);
@@ -116,12 +117,38 @@ const TransactionRow = ({transaction, cb, heightValue = 80, onRemove}: any) => {
                             {/*/>*/}
                             <View style={{flex: 0.9}}>
                                 <Text style={styles.title}>{transaction.title || transaction.category.title}</Text>
-                                {transaction.description &&
-                                    <Text style={styles.description}>{transaction.description}</Text>}
+                                {transaction.description && <Text style={styles.description}>{transaction.description}</Text>}
                             </View>
                         </View>
+                        {
+                            showPhoto && transaction.author &&
+                            <View style={{ position: 'absolute', backgroundColor: 'transparent', right: 10, top: 10 }}>
+                                {transaction.author.photoUrl ? (
+                                    <Image
+                                        source={{ uri: transaction.author.photoUrl }}
+                                        style={{ width: 20, height: 20, borderRadius: 10 }}
+                                    />
+                                ) : (
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 10,
+                                            backgroundColor: Colors.primary, // You can use a dynamic color if needed
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>
+                                            {transaction.author.name?.charAt(0).toUpperCase()}
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        }
                         <Text style={styles.amount}>{transaction.currency.symbol} {formatByThousands(String(transaction.amount))}</Text>
                     </Pressable>
+
                 </ReanimatedSwipeable>
             </Reanimated.View>
 
@@ -135,6 +162,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 14,
         backgroundColor: '#fff',
+        position: 'relative',
         // borderBottomWidth: StyleSheet.hairlineWidth,
         // borderBottomColor: Colors.lightBorder,
     },

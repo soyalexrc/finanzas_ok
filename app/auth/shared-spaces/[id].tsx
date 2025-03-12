@@ -9,7 +9,7 @@ import {
     View
 } from "react-native";
 import {Stack, useLocalSearchParams, useRouter} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
+import {Entypo, Ionicons} from "@expo/vector-icons";
 import {Colors} from "@/lib/constants/colors";
 import {useCallback, useEffect, useRef, useState} from "react";
 import firestore from "@react-native-firebase/firestore";
@@ -34,11 +34,17 @@ import endpoints from "@/lib/utils/api/endpoints";
 import {toast} from "sonner-native";
 import {useAuth} from "@/lib/context/AuthContext";
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
+import Fab from "@/lib/components/transactions/Fab";
+import {useSearchParams} from "expo-router/build/hooks";
 
 export default function Screen() {
     const [transactions, setTransactions] = useState<any[]>([]);
     const { id } = useLocalSearchParams<{ id: string }>();
-    const {token} = useAuth();
+    const params = useSearchParams();
+    const title = params.get('title') ? decodeURIComponent(params.get('title') ?? '') : "Espacio compartido";
+
+
+    const {token, user} = useAuth();
     const router = useRouter();
     const [overlayVisible, setOverlayVisible] = useState(false);
     const flashListRef = useRef<any>(null);
@@ -140,27 +146,27 @@ export default function Screen() {
         return () => subscription();
     }, []);
 
-    console.log('transactions', transactions)
 
     async function onPressRow(transaction: any) {
         console.log('transaction prev', transaction)
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setSelectedTransaction({
-            date: transaction?.date,
+            date: transaction?.created,
             amount: transaction?.amount,
             currency: transaction?.currency,
             category: {
-                id: transaction?.category?.id || '',
+                id: transaction?.category?._id || '',
                 title: transaction?.category.title || '',
                 icon: transaction?.category?.icon || '',
                 type: transaction?.category?.type || '',
                 description: transaction?.category?.description || ''
             },
             description: transaction?.description || '',
-            documents: transaction?.documents || '',
+            documents: [],
             images: transaction?.images || [],
             title: transaction?.title || '',
-            _id: transaction?._id
+            _id: transaction?.transactionId,
+            id: transaction.id
         });
         setModalVisible(true)
     }
@@ -175,10 +181,9 @@ export default function Screen() {
 
 
     function manageEdit() {
-        router.push('/auth/transaction-form');
+        router.push({ pathname: '/auth/transaction-form', params: { spaceId: id, sharedTransactionId: selectedTransaction.id } });
     }
     async function onRemoveRow(transaction: any) {
-        console.log(transaction);
         await sleep(500)
         const transactionDescription = `${transaction?.title || transaction.category?.title} = ${transaction.currency.symbol} ${transaction.amount}`;
         Alert.alert('Atencion!', `Estas seguro de eliminar esta transaccion?, (${transactionDescription})`, [
@@ -192,13 +197,18 @@ export default function Screen() {
                 style: 'destructive',
                 onPress: async () => {
                     try {
-                        const response = await api.delete(endpoints.transactions.delete + '/' + transaction._id, {
+                        const response = await api.delete(endpoints.transactions.delete + '/' + transaction.transactionId, {
                             headers: {
                                 authorization: `Bearer ${token}`
                             }
                         })
 
                         if (response.status === 200) {
+                            const result = await firestore()
+                                .collection('shared-transactions')
+                                .doc(transaction.id)
+                                .delete();
+                            console.log(result);
                             toast.success(response.data.message, {
                                 className: 'bg-green-500',
                                 duration: 6000,
@@ -217,24 +227,20 @@ export default function Screen() {
             }
         ])
     }
-
-
-
-
     return (
         <View style={styles.container}>
             <Stack.Screen
                 options={{
-                    title: 'Espacios compartidos',
+                    title,
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name="arrow-back" size={30} color={Colors.primary}/>
+                            <Ionicons name="arrow-back" size={24} color={Colors.primary}/>
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
-                        <TouchableOpacity onPress={() => router.push({ pathname: '/auth/transaction-form', params: { spaceId: id } })}>
-                            <Ionicons name="add" size={30} color={Colors.primary}/>
+                        <TouchableOpacity>
+                            <Entypo name="dots-three-horizontal" size={24} color='gray' />
                         </TouchableOpacity>
                     )
                 }}
@@ -249,16 +255,17 @@ export default function Screen() {
                 estimatedItemSize={200}
                 ref={flashListRef}
                 contentInsetAdjustmentBehavior="automatic"
-                keyExtractor={(item) => item.title.title}
+                keyExtractor={(item, index) => item.title.title + index}
                 renderItem={({item}) => {
                     return (
                         <View>
                             <TransactionRowHeader totals={item.title.totals} title={item.title.title}/>
                             {item.data.map((transaction: any) => (
-                                <LayoutAnimationConfig key={transaction._id}>
+                                <LayoutAnimationConfig key={transaction.id}>
                                     <Animated.View entering={StretchInY}>
                                         <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)}
                                                         heightValue={90}
+                                                        showPhoto={true}
                                                         onRemove={(t: any) => onRemoveRow(t)}/>
                                     </Animated.View>
                                 </LayoutAnimationConfig>
@@ -269,6 +276,8 @@ export default function Screen() {
                 onScroll={handleScroll}
             />
 
+            <Fab hasBottomTabs={false} onPress={() => router.push({ pathname: '/auth/transaction-form', params: { spaceId: id } })}/>
+
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}
                                     onRemove={onRemoveRow}/>
@@ -278,6 +287,7 @@ export default function Screen() {
                     <Ionicons name="arrow-up" size={24} color="#fff"/>
                 </Pressable>
             </Animated.View>
+
         </View>
     )
 }

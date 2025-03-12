@@ -8,18 +8,25 @@ import {Colors} from "@/lib/constants/colors";
 
 const isIos = Platform.OS === 'ios';
 
-const Fab = () => {
+type Props = {
+    onPress?: () => void;
+    hasBottomTabs?: boolean
+}
+
+const Fab = ({onPress, hasBottomTabs = true}: Props) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    const onPress = () => {
+    const bottom = isIos ? hasBottomTabs ? 100 : 50 : 20;
+
+    const defaultOnPress = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         dispatch(resetCurrentTransaction());
         router.push('/auth/transaction-form');
     };
 
     return (
-        <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={onPress}>
+        <TouchableOpacity style={[styles.fab, {bottom}]} activeOpacity={0.8} onPress={onPress ? onPress : defaultOnPress}>
             <Ionicons name="add" size={28} color="#fff" />
         </TouchableOpacity>
     );
@@ -31,7 +38,6 @@ const styles = StyleSheet.create({
     fab: {
         position: 'absolute',
         zIndex: 100,
-        bottom: isIos ? 100 : 20,
         right: 14,
         width: 56,
         height: 56,

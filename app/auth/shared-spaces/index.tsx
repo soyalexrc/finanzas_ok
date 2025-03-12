@@ -9,11 +9,15 @@ import {FlashList} from "@shopify/flash-list";
 import {Image} from "expo-image";
 import {format} from "date-fns";
 import PressableCard from "@/lib/components/ui/PressableCard";
+import {es} from "date-fns/locale";
+import {formatCurrency} from "@/lib/helpers/number";
+import {useLocales} from "expo-localization";
 
 export default function Screen() {
     const router = useRouter();
     const {user} = useAuth();
     const [spaces, setSpaces] = useState<any[]>([])
+    const locales = useLocales()
 
     useEffect(() => {
         const subscription = firestore()
@@ -38,12 +42,12 @@ export default function Screen() {
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name="arrow-back" size={30} color={Colors.primary}/>
+                            <Ionicons name="arrow-back" size={24} color={Colors.primary}/>
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name="add" size={30} color={Colors.primary}/>
+                            <Ionicons name="add" size={28} color={Colors.primary}/>
                         </TouchableOpacity>
                     )
                 }}
@@ -54,7 +58,7 @@ export default function Screen() {
                 contentContainerStyle={{ padding: 10 }}
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => (
-                    <PressableCard onPress={() => router.push(`/auth/shared-spaces/${item.id}`)} shadow extraStyles={styles.space}>
+                    <PressableCard onPress={() => router.push(`/auth/shared-spaces/${item.id}?title=${encodeURIComponent(item.title)}`)} shadow extraStyles={styles.space}>
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Image source={{uri: item.poster}} style={styles.poster}/>
                             {/*<View style={styles.statusBadge}>*/}
@@ -62,14 +66,14 @@ export default function Screen() {
                             {/*</View>*/}
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.spaceDate}>{format(item.created, 'dd MMMM yyyy')}</Text>
+                            <Text style={styles.spaceDate}>{format(item.created, 'dd MMMM yyyy', { locale: es })}</Text>
                             <Text style={styles.spaceTitle}>{item.title}</Text>
                             <Text style={{ marginBottom: 10 }}>{item.description}</Text>
                             {
                                 item.totals.map((total: any) => (
                                     <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center', }} key={total.amount.toString()}>
-                                        <Text style={{ fontWeight: 'bold'}}>{total.currency.code}:</Text>
-                                        <Text style={{ fontSize: 16 }}>{total.currency.symbol} {total.amount}</Text>
+                                        {/*<Text style={{ fontWeight: 'bold'}}>{total.currency.code} {}</Text>*/}
+                                        <Text style={{ fontSize: 16 }}>{formatCurrency(total.amount, total.currency.code, locales[0].languageTag)}</Text>
                                     </View>
                                 ))
                             }

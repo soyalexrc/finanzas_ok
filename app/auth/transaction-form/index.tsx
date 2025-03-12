@@ -37,7 +37,6 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useAuth} from "@/lib/context/AuthContext";
 
 
-
 export default function Screen() {
     const router = useRouter();
     const isIos = Platform.OS === 'ios';
@@ -49,9 +48,13 @@ export default function Screen() {
     const [date, setDate] = useState<Date>(new Date());
     const {user, token} = useAuth();
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const { spaceId } = useLocalSearchParams<{ spaceId?: string }>()
+    const {spaceId, sharedTransactionId} = useLocalSearchParams<{ spaceId?: string, sharedTransactionId?: string }>()
 
-    console.log('space id', spaceId)
+    console.log({
+        spaceId,
+        sharedTransactionId,
+        currentTransaction
+    })
 
     const handleDateButtonPress = () => {
         setShowDatePicker(true);
@@ -86,13 +89,46 @@ export default function Screen() {
                 })
 
                 if (response.status === 200 || response.status === 201) {
+                    if (spaceId && sharedTransactionId) {
+                        const spaceRef = firestore().collection('shared-spaces').doc(spaceId);
+                        const space = await spaceRef.get();
+                        if (space.exists) {
+                            const spaceData = space.data();
+                            if (spaceData) {
+                                const sharedTransaction = await firestore()
+                                    .collection('shared-transactions')
+                                    .doc(sharedTransactionId)
+                                    .update({
+                                        transactionId: currentTransaction._id,
+                                        amount: payload.amount,
+                                        category: currentTransaction.category,
+                                        description: payload.description,
+                                        images: payload.images,
+                                        currency: {
+                                            code: currency.code,
+                                            symbol: currency.symbol,
+                                        },
+                                        author: {
+                                            _id: user._id,
+                                            email: user.email,
+                                            name: user.firstname + ' ' + user.lastname,
+                                            photoUrl: user.photoUrl,
+                                        },
+                                        spaceId: spaceRef,
+                                        created: new Date(payload.date),
+                                        updated: new Date(),
+                                    })
+                                console.log(sharedTransaction);
+                            }
+                        }
+                    }
                     toast.success(response.data.message || 'Se actualizo la transaccion con exito', {
                         className: 'bg-success-500',
                         // description: 'Por favor completa el campo de titulo',
                         duration: 6000,
                         icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
                     });
-                    await queryClient.invalidateQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
+                    await queryClient.invalidateQueries({queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory']})
                     // await queryClient.refetchQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
                     dispatch(resetCurrentTransaction())
                     router.back();
@@ -121,14 +157,48 @@ export default function Screen() {
                     }
                 })
 
+                console.log('response', response.data);
+
                 if (response.status === 200 || response.status === 201) {
+                    if (spaceId) {
+                        const spaceRef = firestore().collection('shared-spaces').doc(spaceId);
+                        const space = await spaceRef.get();
+                        if (space.exists) {
+                            const spaceData = space.data();
+                            if (spaceData) {
+                                const sharedTransaction = await firestore()
+                                    .collection('shared-transactions')
+                                    .add({
+                                        transactionId: response.data._id,
+                                        amount: payload.amount,
+                                        category: currentTransaction.category,
+                                        description: payload.description,
+                                        images: payload.images,
+                                        currency: {
+                                            code: currency.code,
+                                            symbol: currency.symbol,
+                                        },
+                                        author: {
+                                            _id: user._id,
+                                            email: user.email,
+                                            name: user.firstname + ' ' + user.lastname,
+                                            photoUrl: user.photoUrl,
+                                        },
+                                        spaceId: spaceRef,
+                                        created: new Date(payload.date),
+                                        updated: new Date(),
+                                    })
+                                console.log(sharedTransaction);
+                            }
+                        }
+                    }
                     toast.success(response.data.message || 'Se registro la transaccion con exito', {
                         className: 'bg-success-500',
                         // description: 'Por favor completa el campo de titulo',
                         duration: 6000,
                         icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
                     });
-                    await queryClient.invalidateQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
+                    await queryClient.invalidateQueries({queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory']})
                     // await queryClient.refetchQueries({ queryKey: ['monthlyStatistics', 'statisticsByCurrencyAndYear', 'yearlyExpensesByCategory'] })
                     dispatch(resetCurrentTransaction())
                     router.back();
@@ -158,7 +228,7 @@ export default function Screen() {
         router.back();
     }
 
-    async function  handlePressCurrency() {
+    async function handlePressCurrency() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         router.push('/auth/currency-selection')
     }
@@ -211,7 +281,13 @@ export default function Screen() {
                         gap: 2,
                         marginBottom: 10
                     }}>
-                        <Text style={{marginTop: 10, marginRight: 4, fontSize: 35, fontWeight: 'bold', color: 'gray'}}>{currency.symbol}</Text>
+                        <Text style={{
+                            marginTop: 10,
+                            marginRight: 4,
+                            fontSize: 35,
+                            fontWeight: 'bold',
+                            color: 'gray'
+                        }}>{currency.symbol}</Text>
                         <Text style={{fontSize: 50}}>{formatByThousands(String(currentTransaction.amount))}</Text>
                     </View>
                     <TouchableOpacity onPress={handlePressCurrency}>
@@ -229,11 +305,11 @@ export default function Screen() {
 
                         <Pressable
                             onPress={onPressDate}
-                            style={({ pressed }) => {
+                            style={({pressed}) => {
                                 return [
                                     styles.outlinedButton,
-                                    { backgroundColor: pressed ? Colors.lightBorder : 'transparent' },
-                                    { borderColor: getDateObject(currentTransaction.date).color },
+                                    {backgroundColor: pressed ? Colors.lightBorder : 'transparent'},
+                                    {borderColor: getDateObject(currentTransaction.date).color},
                                 ];
                             }}>
                             <Ionicons
@@ -248,45 +324,52 @@ export default function Screen() {
                         </Pressable>
                         <Pressable
                             onPress={() => router.push('/auth/transaction-form/category')}
-                            style={({ pressed }) => {
+                            style={({pressed}) => {
                                 return [
                                     styles.outlinedButton,
-                                    { backgroundColor: pressed ? Colors.lightBorder : 'transparent' },
+                                    {backgroundColor: pressed ? Colors.lightBorder : 'transparent'},
                                 ];
                             }}>
-                            {  currentTransaction.category?.icon ? <Text style={{ fontSize: 20 }}>{currentTransaction.category?.icon}</Text> : <Ionicons name="flag-outline" size={20} color={Colors.dark} />}
-                            <Text style={styles.outlinedButtonText}>{currentTransaction.category?.title || 'Categoria'}</Text>
+                            {currentTransaction.category?.icon ?
+                                <Text style={{fontSize: 20}}>{currentTransaction.category?.icon}</Text> :
+                                <Ionicons name="flag-outline" size={20} color={Colors.dark}/>}
+                            <Text
+                                style={styles.outlinedButtonText}>{currentTransaction.category?.title || 'Categoria'}</Text>
                         </Pressable>
                         <Pressable
                             onPress={() => router.push('/auth/transaction-form/description')}
-                            style={({ pressed }) => {
+                            style={({pressed}) => {
                                 return [
                                     styles.outlinedButton,
-                                    { backgroundColor: pressed ? Colors.lightBorder : 'transparent' },
+                                    {backgroundColor: pressed ? Colors.lightBorder : 'transparent'},
                                 ];
                             }}>
-                            <Ionicons name={currentTransaction.title || currentTransaction.description ? 'document-text' : 'document-text-outline'} size={20} color={Colors.dark} />
+                            <Ionicons
+                                name={currentTransaction.title || currentTransaction.description ? 'document-text' : 'document-text-outline'}
+                                size={20} color={Colors.dark}/>
                             <Text style={styles.outlinedButtonText}>Descripcion</Text>
                         </Pressable>
                         <Pressable
                             onPress={() => router.push('/auth/transaction-form/evidences')}
-                            style={({ pressed }) => {
+                            style={({pressed}) => {
                                 return [
                                     styles.outlinedButton,
-                                    { backgroundColor: pressed ? Colors.lightBorder : 'transparent' },
+                                    {backgroundColor: pressed ? Colors.lightBorder : 'transparent'},
                                 ];
                             }}>
-                            <Ionicons name={(currentTransaction.images.length > 0 || currentTransaction.documents.length > 0) ? 'file-tray-full-outline' : 'file-tray-outline'} size={20} color={Colors.dark} />
+                            <Ionicons
+                                name={(currentTransaction.images.length > 0 || currentTransaction.documents.length > 0) ? 'file-tray-full-outline' : 'file-tray-outline'}
+                                size={20} color={Colors.dark}/>
                             <Text style={styles.outlinedButtonText}>Evidencias</Text>
                         </Pressable>
                         <Pressable
-                            style={({ pressed }) => {
+                            style={({pressed}) => {
                                 return [
                                     styles.outlinedButton,
-                                    { backgroundColor: pressed ? Colors.lightBorder : 'transparent' },
+                                    {backgroundColor: pressed ? Colors.lightBorder : 'transparent'},
                                 ];
                             }}>
-                            <Ionicons name="ellipsis-vertical" size={20} color={Colors.dark} />
+                            <Ionicons name="ellipsis-vertical" size={20} color={Colors.dark}/>
                             <Text style={styles.outlinedButtonText}>Mas opciones</Text>
                         </Pressable>
                     </ScrollView>
@@ -308,10 +391,11 @@ export default function Screen() {
                     }}
                     accentColor={Colors.primary}
                     display="inline"
-                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                    style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
                 />
             )}
-            <CurrencyPickerModal visible={currencyModalVisible} onClose={() => setCurrencyModalVisible(false)} onSelect={onSelectCurrency} />
+            <CurrencyPickerModal visible={currencyModalVisible} onClose={() => setCurrencyModalVisible(false)}
+                                 onSelect={onSelectCurrency}/>
         </View>
     )
 }
