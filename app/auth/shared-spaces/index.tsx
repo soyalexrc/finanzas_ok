@@ -46,7 +46,7 @@ export default function Screen() {
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
+                        <TouchableOpacity onPress={() => router.push('/auth/shared-spaces/create')}>
                             <Ionicons name="add" size={28} color={Colors.primary}/>
                         </TouchableOpacity>
                     )
