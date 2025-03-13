@@ -36,9 +36,10 @@ type Props = {
     transaction: any;
     onEdit: () => void;
     onRemove: (t: any) => void;
+    allowEdit?: boolean
 }
 
-export default function TransactionResumeModal({visible, onClose, transaction, onEdit, onRemove}: Props) {
+export default function TransactionResumeModal({visible, onClose, transaction, onEdit, onRemove, allowEdit = true}: Props) {
     const heightValue = (transaction.images?.length > 0 && transaction.documents?.length > 0) ? 600 :
         (transaction.images?.length > 0 || transaction.documents?.length > 0) ? 550 : 450;
     // const heightValue = 600;
@@ -224,14 +225,17 @@ export default function TransactionResumeModal({visible, onClose, transaction, o
 
                             <View style={{height: 70}}/>
                         </ScrollView>
-                        <View style={styles.floatingButtonsContainer}>
-                            <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
-                                <Ionicons name="pencil" size={24} color="white"/>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
-                                <Ionicons name="trash" size={24} color="white"/>
-                            </TouchableOpacity>
-                        </View>
+                        {
+                            allowEdit &&
+                            <View style={styles.floatingButtonsContainer}>
+                                <TouchableOpacity style={styles.floatingButton} onPress={manageEdit}>
+                                    <Ionicons name="pencil" size={24} color="white"/>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.floatingButton} onPress={() => manageDelete(transaction)}>
+                                    <Ionicons name="trash" size={24} color="white"/>
+                                </TouchableOpacity>
+                            </View>
+                        }
                     </Animated.View>
                 </Animated.View>
             </Modal>

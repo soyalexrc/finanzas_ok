@@ -78,7 +78,29 @@ export default function Screen() {
             user: user?._id ?? '',
             currency: currency._id
         }
-        console.log('payload', payload);
+
+        console.log(payload);
+        // return;
+
+        if (payload.amount === 0) {
+            toast.error('Por favor ingresa un monto', {
+                className: 'bg-red-500',
+                description: 'Por favor ingresa un monto',
+                duration: 6000,
+                icon: <Ionicons name="close-circle" size={24} color="red"/>,
+            });
+            return;
+        }
+
+        if (!payload.category) {
+            toast.error('Por favor selecciona una categoria', {
+                className: 'bg-red-500',
+                description: 'Por favor selecciona una categoria',
+                duration: 6000,
+                icon: <Ionicons name="close-circle" size={24} color="red"/>,
+            });
+            return;
+        }
 
         if (currentTransaction._id) {
             try {

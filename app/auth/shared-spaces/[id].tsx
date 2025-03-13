@@ -154,6 +154,7 @@ export default function Screen() {
             date: transaction?.created,
             amount: transaction?.amount,
             currency: transaction?.currency,
+            author: transaction?.author,
             category: {
                 id: transaction?.category?._id || '',
                 title: transaction?.category.title || '',
@@ -266,6 +267,7 @@ export default function Screen() {
                                         <TransactionRow transaction={transaction} cb={() => onPressRow(transaction)}
                                                         heightValue={90}
                                                         showPhoto={true}
+                                                        allowDelete={user?._id === transaction?.author?._id}
                                                         onRemove={(t: any) => onRemoveRow(t)}/>
                                     </Animated.View>
                                 </LayoutAnimationConfig>
@@ -280,6 +282,7 @@ export default function Screen() {
 
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}
+                                    allowEdit={user?._id === selectedTransaction?.author?._id}
                                     onRemove={onRemoveRow}/>
 
             <Animated.View style={[styles.floatingButton, buttonAnimatedStyle, {bottom: isIos ? 100 : 20}]}>

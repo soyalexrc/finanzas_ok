@@ -68,7 +68,7 @@ function LeftAction({drag, cb}: { drag: SharedValue<number>, cb: () => void }) {
     );
 }
 
-const TransactionRow = ({transaction, cb, heightValue = 80, onRemove, showPhoto = false}: any) => {
+const TransactionRow = ({transaction, cb, heightValue = 80, onRemove, showPhoto = false, allowDelete = true}: any) => {
     const reanimatedRef = useRef<SwipeableMethods>(null);
     const heightAnim = useSharedValue(heightValue); // Approximate height of row
     const opacityAnim = useSharedValue(1);
@@ -91,6 +91,7 @@ const TransactionRow = ({transaction, cb, heightValue = 80, onRemove, showPhoto 
                     ref={reanimatedRef}
                     containerStyle={styles.swipeable}
                     friction={2}
+                    enabled={allowDelete}
                     enableTrackpadTwoFingerGesture
                     // renderRightActions={RightAction}
                     renderLeftActions={(value) =>  <LeftAction drag={value} cb={handleLeftAction} />}
