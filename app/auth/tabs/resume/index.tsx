@@ -79,18 +79,22 @@ export default function Screen() {
             <Stack.Screen options={{
                 title: 'Resumen',
                 headerLargeTitle: true,
-                headerRight: () => <YearPickerButton/>,
+                headerRight: () => (
+                    <View style={{ flexDirection: 'row', gap: 20 }}>
+                        <YearPickerButton/>
+                        <TouchableOpacity
+                            onPress={() => router.push('/auth/currency-selection')}
+                            style={{
+                                padding: 5,
+                                borderRadius: 5,
+                                alignItems: 'center',
+                                backgroundColor: Colors.primary
+                            }}>
+                            <Text style={{color: '#fff', fontWeight: 'bold'}}>{currency.symbol}</Text>
+                        </TouchableOpacity>
+                    </View>
+                ),
                 headerTitleAlign: 'center',
-                headerLeft: () => (
-                    <TouchableOpacity
-                        onPress={() => router.push('/auth/currency-selection')}
-                        style={{
-                            paddingVertical: 5,
-                            alignItems: 'center',
-                        }}>
-                        <Text style={{color: Colors.primary, fontWeight: 'bold'}}>{currency.code}</Text>
-                    </TouchableOpacity>
-                )
             }}/>
             <ScrollView
                 showsVerticalScrollIndicator={false}

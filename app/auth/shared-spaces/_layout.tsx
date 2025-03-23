@@ -6,7 +6,6 @@ export default function Layout() {
             <Stack.Screen
                 name="create"
                 options={{
-                    title: 'Crear espacio compartido',
                     headerShadowVisible: false,
                     presentation: 'modal'
                 }}

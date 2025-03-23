@@ -70,7 +70,7 @@ export default function Screen() {
                             <Text style={styles.spaceTitle}>{item.title}</Text>
                             <Text style={{ marginBottom: 10 }}>{item.description}</Text>
                             {
-                                item.totals.map((total: any) => (
+                                item.totals?.map((total: any) => (
                                     <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center', }} key={total.amount.toString()}>
                                         {/*<Text style={{ fontWeight: 'bold'}}>{total.currency.code} {}</Text>*/}
                                         <Text style={{ fontSize: 16 }}>{formatCurrency(total.amount, total.currency.code, locales[0].languageTag)}</Text>
@@ -79,7 +79,7 @@ export default function Screen() {
                             }
 
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
-                                {item.participantsDetail.map((participant: any) => (
+                                {item.participantsDetail?.map((participant: any) => (
                                     <View
                                         style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}
                                         key={participant._id}
@@ -151,5 +151,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
+        marginBottom: 15,
     }
 })

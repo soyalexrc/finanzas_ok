@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {Fragment, useState} from "react";
 import {
     ScrollView,
     StyleSheet,
@@ -9,6 +9,8 @@ import {
     TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import {Stack} from "expo-router";
+import {SharedSpaceCreatePayload} from "@/lib/types/shared-spaces";
 
 export default function Screen() {
     const [title, setTitle] = useState("");
@@ -44,61 +46,89 @@ export default function Screen() {
         setEmails(emails.filter((e) => e !== emailToRemove));
     };
 
+    async function onCreate() {
+        // Create a new shared space
+        const payload: SharedSpaceCreatePayload = {
+            title,
+            description,
+            poster: '',
+            participants: [],
+            participantsDetail: [],
+            status: "active",
+            totals: [],
+        };
+
+        // Send the payload to the server
+        // await axios.post("/shared-spaces", payload);
+    }
+
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            {/* Image Placeholder */}
-            <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
-                {image ? (
-                    <Image source={{ uri: image }} style={styles.image} />
-                ) : (
-                    <Text style={styles.imagePlaceholder}>Tap to select an image</Text>
-                )}
-            </TouchableOpacity>
-
-            {/* Title Input */}
-            <TextInput
-                style={styles.input}
-                placeholder="Nombre de espacio"
-                placeholderTextColor="#aaa"
-                value={title}
-                onChangeText={setTitle}
+        <Fragment>
+            <Stack.Screen
+                options={{
+                    title: 'Crear espacio compartido',
+                    headerRight: () => (
+                        <TouchableOpacity onPress={onCreate}>
+                            <Text style={{color: "#007bff", marginRight: 16}}>Guardar</Text>
+                        </TouchableOpacity>
+                    )
+                }}
             />
+            <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+                {/* Image Placeholder */}
+                <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
+                    {image ? (
+                        <Image source={{uri: image}} style={styles.image}/>
+                    ) : (
+                        <Text style={styles.imagePlaceholder}>Presiona para seleccionar imagen</Text>
+                    )}
+                </TouchableOpacity>
 
-            {/* Description Input */}
-            <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Descripcion breve"
-                placeholderTextColor="#aaa"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-            />
+                {/* Title Input */}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nombre de espacio"
+                    placeholderTextColor="#aaa"
+                    value={title}
+                    onChangeText={setTitle}
+                />
 
-            {/* Email Input */}
-            <TextInput
-                style={styles.input}
-                placeholder="Agregar email y presiona Enter"
-                placeholderTextColor="#aaa"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                onSubmitEditing={handleAddEmail}
-            />
+                {/* Description Input */}
+                <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Descripcion breve"
+                    placeholderTextColor="#aaa"
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                />
 
-            {/* Email Chips (Wrapped) */}
-            <View style={styles.chipContainer}>
-                {emails.map((item) => (
-                    <TouchableOpacity
-                        key={item}
-                        onPress={() => handleRemoveEmail(item)}
-                        style={styles.chip}
-                    >
-                        <Text style={styles.chipText}>{item} ✕</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-        </ScrollView>
+                {/* Email Input */}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Agregar email y presiona Enter"
+                    placeholderTextColor="#aaa"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    onSubmitEditing={handleAddEmail}
+                />
+
+                {/* Email Chips (Wrapped) */}
+                <View style={styles.chipContainer}>
+                    {emails.map((item) => (
+                        <TouchableOpacity
+                            key={item}
+                            onPress={() => handleRemoveEmail(item)}
+                            style={styles.chip}
+                        >
+                            <Text style={styles.chipText}>{item} ✕</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </ScrollView>
+        </Fragment>
     );
 }
 
