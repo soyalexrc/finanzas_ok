@@ -23,11 +23,14 @@ import YearPickerButton from "@/lib/components/transactions/YearPicker";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
 import {selectCurrency, selectYear, updateCurrency} from "@/lib/store/features/transactions/transactions.slice";
 import {
-    useMonthlyStatistics,
+    useMonthlyStatistics, useMonthlyTotalsByCategory,
     useStatisticsByCurrencyAndYear,
     useYearlyExpensesByCategory
 } from "@/lib/utils/api/transactions";
 import {useAuth} from "@/lib/context/AuthContext";
+import TotalsByMonthPerCategoryList from "@/lib/components/transactions/TotalsByMonthPerCategoryList";
+import StatisticsByCurrencyList from "@/lib/components/transactions/StatisticsByCurrencyList";
+import SharedSpacesList from "@/lib/components/shared-spaces/SharedSpacesList";
 
 export default function Screen() {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -40,18 +43,17 @@ export default function Screen() {
 
     const {user, token} = useAuth()
 
-    const {
-        data: expensesByCategory,
-        isPending: byCategoryLoading,
-        error: byCategoryError,
-        refetch: recallExpensesByCategorycs
-    } = useYearlyExpensesByCategory(user._id, year, currency._id, token)
+    // const {
+    //     data: expensesByCategory,
+    //     isPending: byCategoryLoading,
+    //     error: byCategoryError,
+    //     refetch: recallExpensesByCategorycs
+    // } = useYearlyExpensesByCategory(user._id, year, currency._id, token)
     const {
         data: monthlyStatistics,
         isPending: monthlyStatisticsLoading,
         error: monthlyStatisticsError,
         refetch: recallMonthlyStatistics
-
     } = useMonthlyStatistics(user._id, year, currency._id, token)
     const {
         data: statisticsByCurrencyAndYear,
@@ -59,6 +61,17 @@ export default function Screen() {
         error: statisticsByCurrencyAndYearError,
         refetch: recallStatisticsByCurrencyAndYear,
     } = useStatisticsByCurrencyAndYear(user._id, year, currency._id, token)
+    const {
+        data: monthlyTotalsByCategory,
+        isPending: monthlyTotalsByCategoryLoading,
+        error: monthlyTotalsByCategoryError,
+        refetch: recallMonthlyTotalsByCategory,
+    } = useMonthlyTotalsByCategory(user._id, 'expense', currency._id, token)
+
+    useEffect(() => {
+        recallMonthlyTotalsByCategory();
+    }, [currency]);
+
 
     function manageEdit() {
         router.push('/auth/transaction-form');
@@ -70,9 +83,12 @@ export default function Screen() {
         // setPerMonthPerYear(data);
         recallStatisticsByCurrencyAndYear();
         recallMonthlyStatistics();
-        recallExpensesByCategorycs();
+        // recallExpensesByCategorycs();
     }, [year, currency]);
 
+
+    // console.log('monthlyTotalsByCategory', monthlyTotalsByCategory)
+    // console.log('statisticsByCurrencyAndYear', statisticsByCurrencyAndYear)
 
     return (
         <View style={{flex: 1}}>
@@ -80,7 +96,7 @@ export default function Screen() {
                 title: 'Resumen',
                 headerLargeTitle: true,
                 headerRight: () => (
-                    <View style={{ flexDirection: 'row', gap: 20 }}>
+                    <View style={{flexDirection: 'row', gap: 20}}>
                         <YearPickerButton/>
                         <TouchableOpacity
                             onPress={() => router.push('/auth/currency-selection')}
@@ -106,7 +122,8 @@ export default function Screen() {
                             setRefreshing(true);
                             await recallStatisticsByCurrencyAndYear();
                             await recallMonthlyStatistics();
-                            await recallExpensesByCategorycs();
+                            await recallMonthlyTotalsByCategory();
+                            // await recallExpensesByCategorycs();
                             setTimeout(() => {
                                 setRefreshing(false);
                             }, 500)
@@ -116,56 +133,44 @@ export default function Screen() {
                 style={[styles.container]}
             >
 
-                {
-                    statisticsByCurrencyAndYearLoading &&
-                    <View style={{ height: 300 }}>
-                        <ActivityIndicator/>
-                    </View>
-                }
+                <StatisticsByCurrencyList
+                    data={statisticsByCurrencyAndYear}
+                    currency={currency}
+                    loading={statisticsByCurrencyAndYearLoading}
+                />
 
-                {
-                    !statisticsByCurrencyAndYearLoading && statisticsByCurrencyAndYear &&
-                    <View style={[styles.containerSmall, {width}]}>
-                        <View style={{alignItems: 'center'}}>
-                            <Text>
-                                Gastado este mes
-                            </Text>
-                            <View style={{marginBottom: 4, flexDirection: 'row'}}>
-                                <Text style={{fontSize: 40}}>{currency?.symbol}</Text>
-                                <Text
-                                    style={{fontSize: 50}}>{formatByThousands(formatWithDecimals(statisticsByCurrencyAndYear.totalCurrentMonth)?.amount)}</Text>
-                                <Text
-                                    style={{fontSize: 40}}>.{formatWithDecimals(statisticsByCurrencyAndYear.totalCurrentMonth)?.decimals || '-'}</Text>
-                            </View>
-                        </View>
-                    </View>
-                }
+                <TotalsByMonthPerCategoryList
+                    data={monthlyTotalsByCategory}
+                    currency={currency}
+                    loading={monthlyTotalsByCategoryLoading}
+                    error={monthlyTotalsByCategoryError}
+                />
 
 
-                {
-                    statisticsByCurrencyAndYearLoading &&
-                    <View style={{ height: 200 }}>
-                        <ActivityIndicator/>
-                    </View>
-                }
+                {/*{*/}
+                {/*    statisticsByCurrencyAndYearLoading &&*/}
+                {/*    <View style={{ height: 200 }}>*/}
+                {/*        <ActivityIndicator/>*/}
+                {/*    </View>*/}
+                {/*}*/}
 
 
-                {
-                    !statisticsByCurrencyAndYearLoading && statisticsByCurrencyAndYear &&
+                {/*{*/}
+                {/*    !statisticsByCurrencyAndYearLoading && statisticsByCurrencyAndYear &&*/}
 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-around', padding: 10, gap: 10}}>
-                        <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
-                            <Text style={styles.subTitle}>Semana pasada</Text>
-                            <Text
-                                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastWeek}</Text>
-                        </View>
-                        <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>
-                            <Text style={styles.subTitle}>Mes pasado</Text>
-                            <Text
-                                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastMonth}</Text>
-                        </View>
-                    </View>
-                }
+                {/*    <View style={{flexDirection: 'row', justifyContent: 'space-around', padding: 10, gap: 10}}>*/}
+                {/*        <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>*/}
+                {/*            <Text style={styles.subTitle}>Semana pasada</Text>*/}
+                {/*            <Text*/}
+                {/*                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastWeek}</Text>*/}
+                {/*        </View>*/}
+                {/*        <View style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 10, flex: 1}}>*/}
+                {/*            <Text style={styles.subTitle}>Mes pasado</Text>*/}
+                {/*            <Text*/}
+                {/*                style={styles.smallAmount}>{currency.symbol} {statisticsByCurrencyAndYear.totalLastMonth}</Text>*/}
+                {/*        </View>*/}
+                {/*    </View>*/}
+                {/*}*/}
 
 
                 <View
@@ -181,19 +186,20 @@ export default function Screen() {
 
                 {
                     monthlyStatisticsLoading &&
-                    <View style={{ height: 300 }}>
+                    <View style={{height: 300}}>
                         <ActivityIndicator/>
                     </View>
                 }
 
                 {
                     !monthlyStatisticsLoading && monthlyStatistics?.length > 0 &&
-                    <View style={{height: 200, paddingHorizontal: 5, position: 'relative'}}>
+                    <View style={{height: 260, paddingHorizontal: 5, position: 'relative'}}>
+                        <Text style={{textAlign: 'center', fontSize: 20}}>Gastado en {year}</Text>
                         <TransactionsPerMonthChart
                             data={monthlyStatistics}
                             currency={currency.code}
                             width={width}
-                            height={200}
+                            height={245}
                             onChartPressed={(data) => {
                                 Alert.alert('data', JSON.stringify(data))
                             }}
@@ -205,38 +211,40 @@ export default function Screen() {
                     </View>
                 }
 
-                {
-                    byCategoryLoading &&
-                    <View style={{ height: 300 }}>
-                        <ActivityIndicator/>
-                    </View>
-                }
+                <SharedSpacesList horizontal={true}/>
 
-                {
-                    !byCategoryLoading && expensesByCategory?.length > 0 &&
-                    <View style={{height: 300, position: 'relative', marginVertical: 70}}>
-                        <TransactionsPerCategoryChart
-                            width={width}
-                            data={expensesByCategory}
-                            height={300}
-                            dom={{
-                                scrollEnabled: false
-                            }}
-                        />
-                        <View style={styles.overlay}/>
-                    </View>
-                }
-                {
-                    expensesByCategory?.map((item: any) => (
-                        <View key={item.name} style={styles.card}>
-                            <Text style={styles.name}>{item.name}</Text>
-                            <Text style={styles.value}>{item.value}</Text>
-                        </View>
-                    ))
-                }
+                {/*{*/}
+                {/*    byCategoryLoading &&*/}
+                {/*    <View style={{ height: 300 }}>*/}
+                {/*        <ActivityIndicator/>*/}
+                {/*    </View>*/}
+                {/*}*/}
+
+                {/*{*/}
+                {/*    !byCategoryLoading && expensesByCategory?.length > 0 &&*/}
+                {/*    <View style={{height: 300, position: 'relative', marginVertical: 70}}>*/}
+                {/*        <TransactionsPerCategoryChart*/}
+                {/*            width={width}*/}
+                {/*            data={expensesByCategory}*/}
+                {/*            height={300}*/}
+                {/*            dom={{*/}
+                {/*                scrollEnabled: false*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        <View style={styles.overlay}/>*/}
+                {/*    </View>*/}
+                {/*}*/}
+                {/*{*/}
+                {/*    expensesByCategory?.map((item: any) => (*/}
+                {/*        <View key={item.name} style={styles.card}>*/}
+                {/*            <Text style={styles.name}>{item.name}</Text>*/}
+                {/*            <Text style={styles.value}>{item.value}</Text>*/}
+                {/*        </View>*/}
+                {/*    ))*/}
+                {/*}*/}
                 <View style={{height: 100}}/>
             </ScrollView>
-            <Fab/>
+            <Fab customBottom={100}/>
             <TransactionResumeModal
                 onRemove={() => {
                 }}
@@ -324,7 +332,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 10,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 4, // For Android shadow

@@ -1,6 +1,6 @@
 'use dom';
 
-import {ResponsiveContainer, Tooltip, XAxis, LineChart, Line, Dot} from 'recharts';
+import {ResponsiveContainer, Tooltip, XAxis, LineChart, Line, Dot, Legend, BarChart, Bar} from 'recharts';
 import {Colors, DATE_COLORS} from "@/lib/constants/colors";
 import {useState} from "react";
 
@@ -38,60 +38,61 @@ export default function TransactionsPerMonthChart({dom, width, height, data, cur
         }
     };
     return (
-        <div style={{width, height, overflow: 'hidden', userSelect: 'none'}}>
-            <ResponsiveContainer width="100%" height="100%" >
-                {/*<BarChart data={data}>*/}
-                {/*    <Tooltip*/}
-                {/*        cursor={{fill: "rgba(0, 0, 0, 0.1)"}}*/}
-                {/*        contentStyle={{*/}
-                {/*            fontWeight: 'bold',*/}
-                {/*            fontFamily: 'sans-serif'*/}
-                {/*        }}*/}
-                {/*    />*/}
-                {/*    <XAxis dataKey="nameShort" interval={0} angle={-45} textAnchor="end" style={customFontStyle}/>*/}
-                {/*    <Bar dataKey="expense" fill={DATE_COLORS.yesterday}/>*/}
-                {/*    <Bar dataKey="income" fill={DATE_COLORS.today}/>*/}
-                {/*</BarChart>*/}
-                <LineChart data={data} onClick={handleChartClick}>
+        <div style={{width, height, overflow: 'hidden !important', userSelect: 'none'}}>
+            <ResponsiveContainer width="100%" height="100%" style={{ overflow: 'hidden !important' }}>
+                <BarChart data={data} onClick={handleChartClick} >
                     {/*<Tooltip*/}
-                    {/*    cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}*/}
-                    {/*    contentStyle={customTooltipStyle}*/}
-                    {/**/}
+                    {/*    cursor={{fill: "rgba(0, 0, 0, 0.1)"}}*/}
+                    {/*    contentStyle={{*/}
+                    {/*        fontWeight: 'bold',*/}
+                    {/*        fontFamily: 'sans-serif'*/}
+                    {/*    }}*/}
                     {/*/>*/}
-                    <XAxis
-                        dataKey="nameShort"
-                        interval={0}
-                        angle={-45}
-                        textAnchor="end"
-                        style={customFontStyle}
-                    />
-                    <Line
-                        type="monotone"
-                        dataKey="expense"
-                        stroke="#FF5733"
-                        strokeWidth={2}
-                        dot={(props) =>
-                            selectedPoint === props.index ? (
-                                <Dot {...props} fill="#fff" r={6} stroke="black" strokeWidth={2} />
-                            ) : (
-                                <Dot {...props} fill={Colors.primary} r={4} />
-                            )
-                        }
-                    />
-                    <Line
-                        type="monotone"
-                        dataKey="income"
-                        stroke="#28A745"
-                        strokeWidth={2}
-                        dot={(props) =>
-                            selectedPoint === props.index ? (
-                                <Dot {...props} fill="#fff" r={6} stroke="black" strokeWidth={2} />
-                            ) : (
-                                <Dot {...props} fill="#28A745" r={4} />
-                            )
-                        }
-                    />
-                </LineChart>
+                    <XAxis dataKey="nameShort" interval={0} angle={-45} textAnchor="end" style={customFontStyle}/>
+                    <Bar dataKey="expense" fill={DATE_COLORS.yesterday}/>
+                    {/*<Bar dataKey="income" fill={DATE_COLORS.today}/>*/}
+                </BarChart>
+                {/*<LineChart data={data} onClick={handleChartClick}>*/}
+                {/*    /!*<Tooltip*!/*/}
+                {/*    /!*    cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}*!/*/}
+                {/*    /!*    contentStyle={customTooltipStyle}*!/*/}
+                {/*    /!**!/*/}
+                    {/*/>*/}
+                {/*    <XAxis*/}
+                {/*        dataKey="nameShort"*/}
+                {/*        interval={0}*/}
+                {/*        angle={-45}*/}
+                {/*        textAnchor="end"*/}
+                {/*        style={customFontStyle}*/}
+                {/*    />*/}
+                {/*    <Legend />*/}
+                {/*    <Line*/}
+                {/*        type="monotone"*/}
+                {/*        dataKey="expense"*/}
+                {/*        stroke="#FF5733"*/}
+                {/*        strokeWidth={2}*/}
+                {/*        dot={(props) =>*/}
+                {/*            selectedPoint === props.index ? (*/}
+                {/*                <Dot {...props} fill="#fff" r={6} stroke="black" strokeWidth={2} />*/}
+                {/*            ) : (*/}
+                {/*                <Dot {...props} fill={Colors.primary} r={4} />*/}
+                {/*            )*/}
+                {/*        }*/}
+                {/*    />*/}
+                {/*    <Line*/}
+                {/*        type="monotone"*/}
+                {/*        dataKey="income"*/}
+                {/*        stroke="#28A745"*/}
+                {/*        strokeWidth={2}*/}
+                {/*        dot={(props) =>*/}
+                {/*            selectedPoint === props.index ? (*/}
+                {/*                <Dot {...props} fill="#fff" r={6} stroke="black" strokeWidth={2} />*/}
+                {/*            ) : (*/}
+                {/*                <Dot {...props} fill="#28A745" r={4} />*/}
+                {/*            )*/}
+                {/*        }*/}
+                {/*    />*/}
+                {/*</LineChart>*/}
             </ResponsiveContainer>
         </div>
     );

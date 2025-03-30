@@ -10,14 +10,14 @@ const isIos = Platform.OS === 'ios';
 
 type Props = {
     onPress?: () => void;
-    hasBottomTabs?: boolean
+    customBottom?: number;
 }
 
-const Fab = ({onPress, hasBottomTabs = true}: Props) => {
+const Fab = ({onPress, customBottom}: Props) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    const bottom = isIos ? hasBottomTabs ? 100 : 50 : 20;
+    const bottom = customBottom ? customBottom : isIos ? 50 : 20;
 
     const defaultOnPress = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

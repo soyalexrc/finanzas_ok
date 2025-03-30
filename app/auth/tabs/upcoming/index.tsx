@@ -1,9 +1,9 @@
 import {
     FlatList,
     LogBox,
-    SafeAreaView,
+    SafeAreaView, ScrollView,
     StyleSheet,
-    Text, TextStyle,
+    Text, TextStyle, TouchableOpacity,
     View, ViewToken
 } from "react-native";
 import React, {Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
@@ -11,6 +11,9 @@ import {AgendaList, CalendarList, CalendarProvider, DateData, ExpandableCalendar
 import {Colors} from "@/lib/constants/colors";
 import {LocaleConfig} from 'react-native-calendars';
 import Animated, {useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import Fab from "@/lib/components/transactions/Fab";
+import {Stack} from "expo-router";
+import {Ionicons} from "@expo/vector-icons";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
@@ -44,13 +47,13 @@ const initialDate = '2025-03-03';
 const sampleDates = {
     '2025-03-03': {
         selected: true,
-        selectedColor: 'rgba(83,220,62,0.2)',
+        selectedColor: 'transparent',
         // selectedColor: 'rgba(220,76,62,0.2)',
         selectedTextColor: '#000',
         marked: true,
         dots: [
             {key: "event1", color: Colors.primary},
-            {key: "event2", color: 'blue'},
+            {key: "event2", color: 'yellow'},
             {key: "event3", color: 'green'},
         ]
     },
@@ -151,40 +154,64 @@ export default function Screen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <CalendarList
-                // testID={testIDs.calendarList.CONTAINER}
-                current={initialDate}
-                pastScrollRange={12}
-                futureScrollRange={24}
-                markingType="multi-dot"
-                onDayPress={onDayPress}
-                markedDates={sampleDates}
-                onMonthChange={async (date) => {
-                    console.log('month changed', date)
-                    // setToday(new Date(date.dateString).toISOString().split('T')[0]);
-                    // await getTransactionsByMonth(date.month, date.year);
+            <Stack.Screen
+                options={{
+                    headerShadowVisible: false,
+                    title: '',
+                    headerRight: () => (
+                        <View style={{ flexDirection: 'row', gap: 20 }}>
+                            <TouchableOpacity>
+                                <Ionicons name="filter" size={24} color={Colors.dark}/>
+                            </TouchableOpacity>
+                            {/*<TouchableOpacity>*/}
+                            {/*    <Ionicons name="settings" size={24} color={Colors.dark}/>*/}
+                            {/*</TouchableOpacity>*/}
+                        </View>
+                    )
                 }}
-                renderHeader={!horizontalView ? renderCustomHeader : undefined}
-                calendarHeight={!horizontalView ? 390 : undefined}
-                // theme={!horizontalView ? theme : undefined}
-                theme={theme as any}
-                horizontal={horizontalView}
-                pagingEnabled={horizontalView}
-                staticHeader={horizontalView}
             />
+            <ScrollView style={styles.container}>
+
+                <CalendarList
+                    // testID={testIDs.calendarList.CONTAINER}
+                    current={initialDate}
+                    pastScrollRange={12}
+                    futureScrollRange={9}
+                    markingType="multi-dot"
+                    onDayPress={onDayPress}
+                    markedDates={sampleDates}
+                    onMonthChange={async (date) => {
+                        console.log('month changed', date)
+                        // setToday(new Date(date.dateString).toISOString().split('T')[0]);
+                        // await getTransactionsByMonth(date.month, date.year);
+                    }}
+                    renderHeader={!horizontalView ? renderCustomHeader : undefined}
+                    calendarHeight={!horizontalView ? 390 : undefined}
+                    // theme={!horizontalView ? theme : undefined}
+                    theme={theme as any}
+                    horizontal={horizontalView}
+                    pagingEnabled={horizontalView}
+                    staticHeader={horizontalView}
+                />
 
 
-            {/*<FlatList*/}
-            {/*    data={data}*/}
-            {/*    numColumns={2}*/}
-            {/*    showsVerticalScrollIndicator={false}*/}
-            {/*    contentContainerStyle={{ paddingTop: 40 }}*/}
-            {/*    keyExtractor={(item, index) => index.toString()}*/}
-            {/*    onViewableItemsChanged={({ viewableItems: vItems }) => {*/}
-            {/*        viewableItems.value = vItems*/}
-            {/*    }}*/}
-            {/*    renderItem={({ item }) => <ListItem item={item} vItems={viewableItems} />}*/}
-            {/*/>*/}
+                {/*<FlatList*/}
+                {/*    data={data}*/}
+                {/*    numColumns={2}*/}
+                {/*    showsVerticalScrollIndicator={false}*/}
+                {/*    contentContainerStyle={{ paddingTop: 40 }}*/}
+                {/*    keyExtractor={(item, index) => index.toString()}*/}
+                {/*    onViewableItemsChanged={({ viewableItems: vItems }) => {*/}
+                {/*        viewableItems.value = vItems*/}
+                {/*    }}*/}
+                {/*    renderItem={({ item }) => <ListItem item={item} vItems={viewableItems} />}*/}
+                {/*/>*/}
+
+            </ScrollView>
+            <Fab
+                customBottom={17}
+                onPress={() => {}}
+            />
         </SafeAreaView>
     )
 }

@@ -290,7 +290,7 @@ export default function Screen() {
             {/*{isIos && <View style={{height: 80}}/>}*/}
 
 
-            <Fab/>
+            <Fab customBottom={100}/>
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}
                                     onRemove={onRemoveRow}/>

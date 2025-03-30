@@ -6,7 +6,7 @@ type Props = {
     shadow: boolean
     onPress: () => void;
     children: React.ReactNode
-    extraStyles?: StyleProps
+    extraStyles?: StyleProps | StyleProps[]
 }
 
 export default function PressableCard({shadow, onPress, children, extraStyles}: Props) {

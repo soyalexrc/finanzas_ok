@@ -27,6 +27,13 @@ export interface Section {
     data: any[];
 }
 
+interface MonthlyTotalsByCategoryPayload  {
+    userId: string;
+    categoryType: string;
+    currencyId: string;
+    token: string;
+}
+
 
 interface MonthlyStatisticsPayload extends YearlyExpensesByCategoryPayload {
 }
@@ -35,7 +42,6 @@ interface StatisticsByCurrencyAndYearPayload extends YearlyExpensesByCategoryPay
 }
 
 const fetchYearlyExpensesByCategory = async ({userId, year, currency, token}: YearlyExpensesByCategoryPayload) => {
-    console.log('token', token)
     const response = await api.post(endpoints.transactions.getYearlyExpensesByCategory, {
         userId, year, currency
     }, {
@@ -62,6 +68,20 @@ const fetchMonthlyStatistics = async ({userId, year, currency, token}: MonthlySt
 
     return response.data;
 };
+
+const fetchMonthlyTotalsByCategory = async ({userId, categoryType, currencyId, token}: MonthlyTotalsByCategoryPayload) => {
+    const response = await api.post(endpoints.transactions.getMonthlyTotalsByCategory, {
+        userId, categoryType, currencyId
+    }, {
+        headers: {authorization: `Bearer ${token}`}
+    })
+
+    if (response.status !== 200) {
+        throw new Error('Failed to fetch yearly expenses by month');
+    }
+
+    return response.data;
+}
 
 
 const fetchStatisticsByCurrencyAndYear = async ({
@@ -162,7 +182,7 @@ export const useYearlyExpensesByCategory = (userId: string, year: number, curren
         queryKey: ['yearlyExpensesByCategory', userId, year, currency, token],
         queryFn: () => fetchYearlyExpensesByCategory({userId, year, currency, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
     });
 };
 
@@ -171,7 +191,7 @@ export const useMonthlyStatistics = (userId: string, year: number, currency: str
         queryKey: ['monthlyStatistics', userId, year, currency, token],
         queryFn: () => fetchMonthlyStatistics({userId, year, currency, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
     });
 };
 
@@ -180,7 +200,7 @@ export const useStatisticsByCurrencyAndYear = (userId: string, year: number, cur
         queryKey: ['statisticsByCurrencyAndYear', userId, year, currency, token],
         queryFn: () => fetchStatisticsByCurrencyAndYear({userId, year, currency, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
     });
 };
 
@@ -190,7 +210,7 @@ export const useRawTransactions = (userId: string, dateFrom: string, dateTo: str
         queryKey: ['rawTransactions', userId, dateFrom, searchTerm, token],
         queryFn: () => fetchRawTransactions({userId, dateFrom, dateTo, searchTerm, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
     });
 };
 
@@ -201,6 +221,14 @@ export const useTransactionsGroupedByDay = (userId: string, dateFrom: string, da
         queryKey: ['transactionsGroupedByDay', userId, dateFrom, searchTerm, token],
         queryFn: () => fetchTransactionGroupedByDay({userId, dateFrom, dateTo, searchTerm, token}),
         // staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
     });
 };
+
+export const useMonthlyTotalsByCategory = (userId: string, categoryType: string, currencyId: string, token: string,) => {
+    return useQuery({
+        queryKey: ['monthlyTotalsByCategory', userId, currencyId, categoryType, token],
+        queryFn: () => fetchMonthlyTotalsByCategory({userId, categoryType, currencyId, token}),
+        staleTime: 1000 * 60 * 60 * 14, // Cache for 24 Hours
+    });
+}

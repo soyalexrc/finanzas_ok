@@ -36,17 +36,18 @@ import {useAuth} from "@/lib/context/AuthContext";
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
 import Fab from "@/lib/components/transactions/Fab";
 import {useSearchParams} from "expo-router/build/hooks";
+import * as DropdownMenu from 'zeego/dropdown-menu'
 
 export default function Screen() {
     const [transactions, setTransactions] = useState<any[]>([]);
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const {id} = useLocalSearchParams<{ id: string }>();
     const params = useSearchParams();
     const title = params.get('title') ? decodeURIComponent(params.get('title') ?? '') : "Espacio compartido";
-
 
     const {token, user} = useAuth();
     const router = useRouter();
     const [overlayVisible, setOverlayVisible] = useState(false);
+    const [canDelete, setCanDelete] = useState(false);
     const flashListRef = useRef<any>(null);
     const opacity = useSharedValue(0);
     const [selectedTransaction, setSelectedTransaction] = useState<any>({});
@@ -84,7 +85,6 @@ export default function Screen() {
     const scrollToTop = () => {
         flashListRef.current?.scrollToIndex({index: 0, animated: true});
     };
-
 
 
     useEffect(() => {
@@ -143,8 +143,20 @@ export default function Screen() {
 
             });
 
+        validateDeletePermission();
+
         return () => subscription();
     }, []);
+
+    async function validateDeletePermission() {
+        if (!user) return;
+        const spaceRef = firestore().collection('shared-spaces').doc(id);
+        const doc = await spaceRef.get();
+        const data = doc.data();
+        const isOwner = data?.authorId === user._id;
+
+        setCanDelete(isOwner)
+    }
 
 
     async function onPressRow(transaction: any) {
@@ -172,6 +184,55 @@ export default function Screen() {
         setModalVisible(true)
     }
 
+    async function deleteSpace() {
+        const title = params.get('title') ? decodeURIComponent(params.get('title') ?? '') : "";
+        Alert.alert(`Eliminar espacio compartido ${title}`, 'Estas seguro de continuar? Se perderan las transacciones asociadas.', [
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel'
+            },
+            {
+                text: 'Eliminar',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        if (!id) return;
+
+                        const spaceRef = firestore().collection('shared-spaces').doc(id);
+
+                        //     delete all transaction from spaceRef
+                        const transactionsRef = firestore().collection('shared-transactions').where('spaceId', '==', spaceRef);
+                        const transactionsSnapshot = await transactionsRef.get();
+                        const batch = firestore().batch();
+                        transactionsSnapshot.forEach((doc) => {
+                            batch.delete(doc.ref);
+                        });
+                        await batch.commit();
+
+                        // delete space
+                        await spaceRef.delete();
+
+                        toast.success('Espacio eliminado correctamente', {
+                            className: 'bg-green-500',
+                            duration: 6000,
+                            icon: <Ionicons name="checkmark-circle" size={24} color="green"/>,
+                        })
+                        router.back();
+                    } catch (error: any) {
+                        console.error('Error deleting space:', error);
+                        toast.error('Ocurrio un error', {
+                            className: 'bg-red-500',
+                            description: error.message,
+                            duration: 6000,
+                            icon: <Ionicons name="close-circle" size={24} color="red"/>,
+                        });
+                    }
+                }
+            }
+        ])
+    }
+
 // Debounced search update
 //     const debouncedUpdateSearch = useCallback(
 //         debounce((query: string) => {
@@ -182,8 +243,12 @@ export default function Screen() {
 
 
     function manageEdit() {
-        router.push({ pathname: '/auth/transaction-form', params: { spaceId: id, sharedTransactionId: selectedTransaction.id } });
+        router.push({
+            pathname: '/auth/transaction-form',
+            params: {spaceId: id, sharedTransactionId: selectedTransaction.id}
+        });
     }
+
     async function onRemoveRow(transaction: any) {
         await sleep(500)
         const transactionDescription = `${transaction?.title || transaction.category?.title} = ${transaction.currency.symbol} ${transaction.amount}`;
@@ -228,6 +293,7 @@ export default function Screen() {
             }
         ])
     }
+
     return (
         <View style={styles.container}>
             <Stack.Screen
@@ -240,9 +306,48 @@ export default function Screen() {
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
-                        <TouchableOpacity>
-                            <Entypo name="dots-three-horizontal" size={24} color='gray' />
-                        </TouchableOpacity>
+                        <DropdownMenu.Root key="lists-menu">
+                            <DropdownMenu.Trigger>
+                                <TouchableOpacity>
+                                    <Entypo name="dots-three-horizontal" size={24} color='gray'/>
+                                </TouchableOpacity>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content>
+                                {
+                                    canDelete &&
+                                    <DropdownMenu.Item key="remove"
+                                                       onSelect={deleteSpace}>
+                                        <DropdownMenu.ItemIcon
+                                            ios={{
+                                                name: 'trash.fill', // required
+                                                pointSize: 16,
+                                                weight: 'semibold',
+                                                scale: 'medium',
+                                                // can also be a color string. Requires iOS 15+
+                                                hierarchicalColor: {
+                                                    dark: 'red',
+                                                    light: 'red',
+                                                },
+
+                                                // alternative to hierarchical color. Requires iOS 15+
+                                                paletteColors: [
+                                                    {
+                                                        dark: 'red',
+                                                        light: 'red',
+                                                    },
+                                                ],
+                                            }}
+                                        >
+                                        </DropdownMenu.ItemIcon>
+                                        <DropdownMenu.ItemTitle>Eliminar espacio</DropdownMenu.ItemTitle>
+                                    </DropdownMenu.Item>
+                                }
+
+
+                                <DropdownMenu.Arrow/>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+
                     )
                 }}
             />
@@ -278,7 +383,7 @@ export default function Screen() {
                 onScroll={handleScroll}
             />
 
-            <Fab hasBottomTabs={false} onPress={() => router.push({ pathname: '/auth/transaction-form', params: { spaceId: id } })}/>
+            <Fab onPress={() => router.push({pathname: '/auth/transaction-form', params: {spaceId: id}})}/>
 
             <TransactionResumeModal visible={modalVisible} onClose={() => setModalVisible(false)}
                                     transaction={selectedTransaction} onEdit={() => manageEdit()}

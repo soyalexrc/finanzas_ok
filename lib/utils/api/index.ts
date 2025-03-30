@@ -21,7 +21,7 @@ const logoutUser = async () => {
 };
 
 const api = axios.create({
-    baseURL: "https://finanzas-ok-backend-589962407829.us-central1.run.app", // Replace with your API
+    baseURL: process.env.EXPO_PUBLIC_API_URL,
     timeout: 30000,
     headers: {
         "Content-Type": "application/json",

@@ -20,6 +20,7 @@ export default {
         delete: '/transaction',
         getYearlyExpensesByCategory: '/transaction/getYearlyExpensesByCategory',
         getMonthlyStatistics: '/transaction/getMonthlyStatistics',
-        getStatisticsByCurrencyAndYear: '/transaction/getStatisticsByCurrencyAndYear'
+        getStatisticsByCurrencyAndYear: '/transaction/getStatisticsByCurrencyAndYear',
+        getMonthlyTotalsByCategory: '/transaction/getMonthlyExpensesByCategory',
     }
 }
