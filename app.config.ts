@@ -27,9 +27,6 @@ module.exports = {
         "com.apple.developer.associated-domains": [
           "webcredentials:finanzas-ok-backend-589962407829.us-central1.run.app",
         ],
-        "infoPlist": {
-          "NSFaceIDUsageDescription": "Sign in securely with Face ID",
-        },
       }
     },
     "android": {
