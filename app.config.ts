@@ -23,11 +23,10 @@ module.exports = {
       "config": {
         "usesNonExemptEncryption": false
       },
-      "entitlements": {
-        "com.apple.developer.associated-domains": [
-          "webcredentials:finanzas-ok-backend-589962407829.us-central1.run.app",
-        ],
-      }
+      "associatedDomains": [
+        "applinks:finanzas-ok-backend-589962407829.us-central1.run.app",
+        "webcredentials:finanzas-ok-backend-589962407829.us-central1.run.app",
+      ]
     },
     "android": {
       "userInterfaceStyle": "light",
@@ -37,28 +36,16 @@ module.exports = {
       },
       "package": "com.alexrc.finanzas_ok",
       "googleServicesFile": process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
-      "config": {
-        "assetLinks": [
-          {
-            "namespace": "android_app",
-            "package_name": "com.alexrc.finanzas_ok",
-            "sha256_cert_fingerprints": [
-              "F9:E0:9D:AC:92:29:62:59:57:91:E6:6A:79:41:A1:29:CD:71:A0:12:99:9B:DD:97:13:3C:31:58:E7:EE:83:2B"
-            ]
-          }
-        ]
-      },
       "intentFilters": [
         {
-          "action": "android.intent.action.VIEW",
-          "category": [
-            "android.intent.category.DEFAULT",
-            "android.intent.category.BROWSABLE"
-          ],
-          "data": {
-            "scheme": "https",
-            "host": "finanzas-ok-backend-589962407829.us-central1.run.app"
-          }
+          "action": "VIEW",
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "finanzas-ok-backend-589962407829.us-central1.run.app"
+            }
+          ]
         }
       ]
     },

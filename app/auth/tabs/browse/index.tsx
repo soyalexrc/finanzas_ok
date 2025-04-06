@@ -5,7 +5,7 @@ import {remove} from "@/lib/utils/storage";
 import {Image} from "expo-image";
 import PressableCard from "@/lib/components/ui/PressableCard";
 import {Ionicons} from "@expo/vector-icons";
-import {toast} from "sonner-native";
+
 
 export default function Screen() {
     const router = useRouter();
@@ -72,7 +72,7 @@ export default function Screen() {
                 </PressableCard>
 
                 <View style={styles.optionsWrapper}>
-                    <TouchableOpacity style={[styles.option, styles.withBorder]} onPress={() => router.push('/auth/(settings)/account')}>
+                    <TouchableOpacity style={[styles.option, styles.withBorder]} onPress={() => router.push('/auth/tabs/browse/account')}>
                         <Ionicons name="person-outline" size={20} color="#555" />
                         <Text style={styles.optionText}>Cuenta</Text>
                     </TouchableOpacity>

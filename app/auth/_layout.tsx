@@ -62,7 +62,6 @@ export default function Layout() {
         <Stack>
             <Stack.Screen name="tabs" options={{headerShown: false}}/>
             <Stack.Screen name="transaction-form" options={{headerShown: false}}/>
-            <Stack.Screen name="(settings)" options={{headerShown: false}}/>
             <Stack.Screen name="shared-spaces" options={{headerShown: false}}/>
             <Stack.Screen name="currency-selection" options={{
                 headerShadowVisible: false,
@@ -73,7 +72,7 @@ export default function Layout() {
                     <TouchableOpacity onPress={() => {
                         router.back(); // Dismiss the modal first
                         setTimeout(() => {
-                            router.push('/auth/(settings)/account') // Then navigate to the new screen
+                            router.push('/auth/tabs/browse/account') // Then navigate to the new screen
                         }, 500); // Small delay ensures a smooth transition
 
                     }}>
