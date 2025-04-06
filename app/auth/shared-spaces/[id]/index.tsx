@@ -313,6 +313,51 @@ export default function Screen() {
                                 </TouchableOpacity>
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content>
+
+                                <DropdownMenu.Item key="edit"
+                                                   onSelect={() => router.push(`/auth/shared-spaces/${id}/edit`)}>
+                                    <DropdownMenu.ItemIcon
+                                        ios={{
+                                            name: 'pencil', // required
+                                            pointSize: 16,
+                                            weight: 'semibold',
+                                            scale: 'medium',
+                                            // can also be a color string. Requires iOS 15+
+                                            // alternative to hierarchical color. Requires iOS 15+
+                                            paletteColors: [
+                                                {
+                                                    dark: Colors.primary,
+                                                    light: Colors.primary,
+                                                },
+                                            ],
+                                        }}
+                                    >
+                                    </DropdownMenu.ItemIcon>
+                                    <DropdownMenu.ItemTitle>Editar info</DropdownMenu.ItemTitle>
+                                </DropdownMenu.Item>
+
+                                <DropdownMenu.Item key="participants"
+                                                   onSelect={() => router.push(`/auth/shared-spaces/${id}/participants`)}>
+                                    <DropdownMenu.ItemIcon
+                                        ios={{
+                                            name: 'person.2.fill', // required
+                                            pointSize: 16,
+                                            weight: 'semibold',
+                                            scale: 'medium',
+                                            // can also be a color string. Requires iOS 15+
+                                            // alternative to hierarchical color. Requires iOS 15+
+                                            paletteColors: [
+                                                {
+                                                    dark: Colors.primary,
+                                                    light: Colors.primary,
+                                                },
+                                            ],
+                                        }}
+                                    >
+                                    </DropdownMenu.ItemIcon>
+                                    <DropdownMenu.ItemTitle>Ver participantes</DropdownMenu.ItemTitle>
+                                </DropdownMenu.Item>
+
                                 {
                                     canDelete &&
                                     <DropdownMenu.Item key="remove"
@@ -325,15 +370,15 @@ export default function Screen() {
                                                 scale: 'medium',
                                                 // can also be a color string. Requires iOS 15+
                                                 hierarchicalColor: {
-                                                    dark: 'red',
-                                                    light: 'red',
+                                                    dark: Colors.primary,
+                                                    light: Colors.primary,
                                                 },
 
                                                 // alternative to hierarchical color. Requires iOS 15+
                                                 paletteColors: [
                                                     {
-                                                        dark: 'red',
-                                                        light: 'red',
+                                                        dark: Colors.primary,
+                                                        light: Colors.primary,
                                                     },
                                                 ],
                                             }}

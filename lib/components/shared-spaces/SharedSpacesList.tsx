@@ -142,7 +142,7 @@ const ItemCard = ({item, goToDetail, languageTag, horizontal = false}: ItemCardP
                     {item.participantsDetail?.map((participant: any) => (
                         <View
                             style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}
-                            key={participant._id}
+                            key={participant.id}
                         >
                             {participant.photoUrl ? (
                                 <Image

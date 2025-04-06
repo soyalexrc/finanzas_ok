@@ -4,16 +4,17 @@ export default function Layout() {
     return (
         <Stack>
             <Stack.Screen
-                name="create"
+                name="edit"
                 options={{
                     headerShadowVisible: false,
                     presentation: 'modal'
                 }}
             />
             <Stack.Screen
-                name="[id]"
+                name="participants"
                 options={{
-                    headerShown: false
+                    headerShadowVisible: false,
+                    presentation: 'modal'
                 }}
             />
         </Stack>

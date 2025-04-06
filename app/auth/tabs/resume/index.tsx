@@ -207,7 +207,7 @@ export default function Screen() {
                                 scrollEnabled: false,
                             }}
                         />
-                        {/*<View style={styles.overlay}/>*/}
+                        <View style={styles.overlay}/>
                     </View>
                 }
 

@@ -1,6 +1,6 @@
 import {
     FlatList,
-    LogBox,
+    LogBox, RefreshControl,
     SafeAreaView, ScrollView,
     StyleSheet,
     Text, TextStyle, TouchableOpacity,
@@ -14,6 +14,9 @@ import Animated, {useAnimatedStyle, useSharedValue, withTiming} from "react-nati
 import Fab from "@/lib/components/transactions/Fab";
 import {Stack} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
+import {useCalendarEvents} from "@/lib/utils/api/calendar";
+import {useAuth} from "@/lib/context/AuthContext";
+import {endOfMonth, format, startOfMonth} from "date-fns";
 
 LogBox.ignoreLogs([
     'Warning: ExpandableCalendar: Support for defaultProps will be removed from function components in a future major release.'
@@ -63,8 +66,12 @@ const sampleDates = {
         selectedTextColor: '#000',
         marked: true,
         dots: [
-            {key: "event1", color: Colors.primary},
+            {key: "event1", color: Colors.primary, checked: false},
             {key: "event3", color: 'green'},
+            {key: "event4", color: 'gray'},
+            {key: "event5", color: 'black'},
+            {key: "event6", color: 'blue'},
+            {key: "event7", color: 'purple'},
         ]
     },
     '2025-03-14': {
@@ -91,12 +98,24 @@ const sampleDates = {
 // TODO color de marca de dia puede ser personalizable con sqlite
 // TODO seleccion de color por item debe ser seleccionable (crear select de color)
 
-const data = new Array(50).fill(0).map((_, i) => ({ id: i }))
-
 export default function Screen() {
     const onDayPress = useCallback((day: DateData) => {
         console.log(day);
     }, []);
+
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    const [startDate, setStartDate] = useState(
+        format(startOfMonth(new Date()), "yyyy-MM-dd'T'00:00:00.000'Z'")
+    );
+
+    const [endDate, setEndDate] = useState(
+        format(endOfMonth(new Date()), "yyyy-MM-dd'T'23:59:59.999'Z'")
+    );
+
+    const {user, token} = useAuth();
+    const {data, refetch, isLoading, error} = useCalendarEvents(user._id, token, startDate, endDate);
+
 
     const theme = {
         textDisabledColor: Colors.lightText,
@@ -159,7 +178,7 @@ export default function Screen() {
                     headerShadowVisible: false,
                     title: '',
                     headerRight: () => (
-                        <View style={{ flexDirection: 'row', gap: 20 }}>
+                        <View style={{flexDirection: 'row', gap: 20}}>
                             <TouchableOpacity>
                                 <Ionicons name="filter" size={24} color={Colors.dark}/>
                             </TouchableOpacity>
@@ -170,7 +189,20 @@ export default function Screen() {
                     )
                 }}
             />
-            <ScrollView style={styles.container}>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={ async () => {
+                            setRefreshing(true)
+                            await refetch();
+                            setTimeout(() => {
+                                setRefreshing(false)
+                            }, 500)
+                        }}
+                    />
+                }
+                style={styles.container}>
 
                 <CalendarList
                     // testID={testIDs.calendarList.CONTAINER}
@@ -179,11 +211,17 @@ export default function Screen() {
                     futureScrollRange={9}
                     markingType="multi-dot"
                     onDayPress={onDayPress}
-                    markedDates={sampleDates}
-                    onMonthChange={async (date) => {
-                        console.log('month changed', date)
-                        // setToday(new Date(date.dateString).toISOString().split('T')[0]);
-                        // await getTransactionsByMonth(date.month, date.year);
+                    markedDates={data}
+                    onMonthChange={async ({year, month}) => {
+                        const newStartDate = startOfMonth(new Date(year, month - 1)).toISOString();
+                        const newEndDate = endOfMonth(new Date(year, month - 1)).toISOString();
+
+                        setStartDate(newStartDate);
+                        setEndDate(newEndDate);
+
+                        await refetch();
+                        // Optionally, fetch transactions for the new date range
+                        // await getTransactionsByMonth(month, year);
                     }}
                     renderHeader={!horizontalView ? renderCustomHeader : undefined}
                     calendarHeight={!horizontalView ? 390 : undefined}
@@ -210,7 +248,8 @@ export default function Screen() {
             </ScrollView>
             <Fab
                 customBottom={17}
-                onPress={() => {}}
+                onPress={() => {
+                }}
             />
         </SafeAreaView>
     )
@@ -218,10 +257,10 @@ export default function Screen() {
 
 type ListItemProps = {
     vItems: Animated.SharedValue<ViewToken[]>,
-    item: { id: number  }
+    item: { id: number }
 }
 
-const  ListItem: React.FC<ListItemProps> = React.memo(({item, vItems}) => {
+const ListItem: React.FC<ListItemProps> = React.memo(({item, vItems}) => {
 
     const animatedStyle = useAnimatedStyle(() => {
         const isVisible = Boolean(

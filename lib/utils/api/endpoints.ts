@@ -7,6 +7,9 @@ export default {
         listByUser: '/category/byUser',
         create: '/category'
     },
+    calendar: {
+        list: '/calendar-events/getEventsForDateRange'
+    },
     currencies: {
         list: 'currency'
     },
