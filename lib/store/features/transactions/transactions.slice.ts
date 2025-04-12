@@ -4,6 +4,8 @@ import {FullTransaction, HomeViewTypeFilter, Transaction, TransactionsGroupedByD
 import {format} from "date-fns";
 import {CurrencyV2} from "@/lib/store/features/transactions/currencies.slice";
 
+const DEFAULT_CURRENCY_ID_USD= '67b60a53743e50fa9d4b5fc2'
+
 export interface TransactionsState {
     currentTransaction: Transaction;
     transactionsGroupedByDate: TransactionsGroupedByDate[];
@@ -22,7 +24,7 @@ export interface TransactionsState {
 const initialState: TransactionsState = {
     currency: {
         symbol: '$',
-        _id: '67b60a53743e50fa9d4b5fc2',
+        _id: DEFAULT_CURRENCY_ID_USD,
         code: 'USD',
         country: 'United States',
         format: '#,##0.00 ¤',

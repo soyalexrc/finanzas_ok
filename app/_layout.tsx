@@ -70,7 +70,13 @@ function InitialLayout() {
         <Stack>
             <Stack.Screen name="index" options={{headerShown: false}}/>
             <Stack.Screen name="auth" options={{headerShown: false}}/>
-            <Stack.Screen name="login" options={{presentation: 'modal',}}/>
+            <Stack.Screen name="login" options={{presentation: 'formSheet',
+                sheetAllowedDetents: "all",
+                sheetLargestUndimmedDetent: "all",
+                sheetGrabberVisible: true,
+                sheetCornerRadius: 30,
+                sheetExpandsWhenScrolledToEdge: true,
+                title: 'Identificate'}}/>
         </Stack>
 
     )

@@ -3,13 +3,15 @@ import {Stack, useLocalSearchParams, useNavigation, useRouter} from "expo-router
 import {Fragment, useEffect, useLayoutEffect, useRef, useState} from "react";
 import * as Haptics from 'expo-haptics';
 import LottieView from "lottie-react-native";
-import auth from '@react-native-firebase/auth';
-import {FirebaseError} from 'firebase/app';
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { OtpInput } from "react-native-otp-entry";
+
 import {load, loadArray, remove, save, saveString} from "@/lib/utils/storage";
 import api from "@/lib/utils/api";
 import endpoints from "@/lib/utils/api/endpoints";
 import {useAuth} from "@/lib/context/AuthContext";
+import {toast} from "sonner-native";
+import {Colors} from "@/lib/constants/colors";
+import {Passkey} from "react-native-passkey";
 
 
 export default function Screen() {
@@ -22,12 +24,104 @@ export default function Screen() {
     const [name, setName] = useState('');
     const [lastname, setLastname] = useState('');
     const [password, setPassword] = useState('');
+    const [step, setStep] = useState<'login' | 'register' | 'otp'>('login');
+    const [otp, setOtp] = useState('');
     const [remember, setRemember] = useState(false);
     const {login} = useAuth();
 
     async function onChangeFormType() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setIsRegister(!isRegister)
+    }
+
+    async function onCodeSentForRegisterPassKey() {
+        try {
+            setLoading(true);
+            const {data} = await api.post('auth/validateEmailForRegister', { email, code: otp });
+
+            if (data.error) {
+                toast.error(data.message)
+                return;
+            }
+
+            if (Object.keys(data).find(k => k === 'pubKeyCredParams')) {
+                const passkeyCreateResult = await Passkey.create(data);
+
+                console.log('result', passkeyCreateResult);
+
+                if (passkeyCreateResult.id) {
+                    const {data: completeData} = await api.post("/auth/complete-registration", {
+                        email,
+                        registrationResponse: passkeyCreateResult,
+                        challenge: data.challenge
+                    });
+
+                    console.log('completeData', completeData);
+
+                    if (completeData) {
+                        toast.success('Llave de acceso creada correctamente');
+                        await login(completeData.user.access_token, completeData.user)
+                    } else {
+                        toast.error('Error al crear la llave de acceso');
+                    }
+                }
+            }
+
+            // console.log(data);
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    async function onSubmitV2(userEmail = '') {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setLoading(true);
+
+        try {
+            // Save the email to storage
+            const storedEmails: string[] = await loadArray('userEmails');
+            if (!storedEmails.find(storedEmail => storedEmail === email)) {
+                storedEmails.push(email);
+                await save('userEmails', storedEmails);
+            }
+
+            // check user exists
+            const {data} = await api.post('auth/validateUserEmailForPasskey', { email });
+
+            if (data.message?.includes('OTP')) {
+                toast.info('Se ha enviado un correo de verificacion a tu email, por favor verifica tu bandeja de entrada')
+                setStep('otp')
+            } else {
+                const passkeyGetResult = await Passkey.get(data);
+
+                console.log('result', passkeyGetResult);
+
+                if (passkeyGetResult.id) {
+                    const {data: completeData} = await api.post("/auth/complete-authentication", {
+                        email,
+                        authenticationResponse: passkeyGetResult,
+                        challenge: data.challenge
+                    });
+
+                    console.log('completeData', completeData);
+
+                    if (completeData) {
+                        toast.success('Autenticacion correcta');
+                        await login(completeData.user.access_token, completeData.user)
+                    } else {
+                        toast.error('Error al autenticar');
+                    }
+                }
+            }
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     async function onSubmit() {
@@ -70,26 +164,10 @@ export default function Screen() {
                 }
 
             }
-            // const {user} = await auth().signInWithEmailAndPassword(email, password);
-            // await firestore()
-            //     .collection('users')
-            //     .doc(user.uid)
-            //     .update({
-            //         email: user.email,
-            //         name: user.displayName,
-            //         photo: user.photoURL,
-            //     })
-            // }
         } catch (e: any) {
-            // const err = e as FirebaseError;
             console.log(e);
-            // if (err.code === 'auth/email-already-in-use') {
-            //     Alert.alert('Oops!', 'Este email ya esta en uso, intenta con otro.');
-            // } else if (err.code === 'auth/invalid-credential') {
-            //     Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
-            // } else {
-            //     Alert.alert('Oops!', 'Usuario no encontrado, Asegurese de ingresar correctamente los datos.');
-            // }
+            toast.error(e.message)
+            setLoading(false);
         } finally {
             setLoading(false);
         }
@@ -99,11 +177,11 @@ export default function Screen() {
         router.dismiss();
     }
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: isRegister ? 'Registrarse' : 'Inicia sesion',
-        })
-    }, [isRegister]);
+    // useLayoutEffect(() => {
+    //     navigation.setOptions({
+    //         title: isRegister ? 'Registrarse' : 'Inicia sesion',
+    //     })
+    // }, [isRegister]);
 
     return (
         <Fragment>
@@ -153,55 +231,97 @@ export default function Screen() {
                     </Fragment>
                 }
 
-                <View style={styles.inputWrapper}>
-                    <Text>Email</Text>
-                    <TextInput
-                        value={email}
-                        onChangeText={setEmail}
-                        autoCapitalize="none"
-                        keyboardType="email-address"
-                        placeholder="Email"
-                        style={styles.input}
-                    />
-                </View>
-
-                <View style={{height: 20}}/>
-
-                <View style={styles.inputWrapper}>
-                    <Text>Contrasena</Text>
-                    <TextInput
-                        value={password}
-                        onChangeText={setPassword}
-                        autoCapitalize="none"
-                        secureTextEntry={true}
-                        placeholder="Contrasena"
-                        style={styles.input}
-                    />
-                </View>
-
-
                 {
-                    !isRegister &&
-                    <BouncyCheckbox
-                        size={20}
-                        fillColor="green"
-                        unFillColor="#FFFFFF"
-                        text="Recordarme"
-                        isChecked={remember}
-                        style={{marginTop: 10}}
-                        textStyle={{textDecorationLine: 'none'}}
-                        onPress={(isChecked: boolean) => setRemember(isChecked)}
-                    />
+                    step === 'login' &&
+                    <Fragment>
+                        <View style={styles.inputWrapper}>
+                            <Text>Email</Text>
+                            <TextInput
+                                value={email}
+                                onChangeText={setEmail}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                                placeholder="Email"
+                                style={styles.input}
+                            />
+                        </View>
+
+                        <View style={{height: 20}}/>
+
+                        {/*<View style={styles.inputWrapper}>*/}
+                        {/*    <Text>Contrasena</Text>*/}
+                        {/*    <TextInput*/}
+                        {/*        value={password}*/}
+                        {/*        onChangeText={setPassword}*/}
+                        {/*        autoCapitalize="none"*/}
+                        {/*        secureTextEntry={true}*/}
+                        {/*        placeholder="Contrasena"*/}
+                        {/*        style={styles.input}*/}
+                        {/*    />*/}
+                        {/*</View>*/}
+
+
+                        {/*{*/}
+                        {/*    !isRegister &&*/}
+                        {/*    <BouncyCheckbox*/}
+                        {/*        size={20}*/}
+                        {/*        fillColor="green"*/}
+                        {/*        unFillColor="#FFFFFF"*/}
+                        {/*        text="Recordarme"*/}
+                        {/*        isChecked={remember}*/}
+                        {/*        style={{marginTop: 10}}*/}
+                        {/*        textStyle={{textDecorationLine: 'none'}}*/}
+                        {/*        onPress={(isChecked: boolean) => setRemember(isChecked)}*/}
+                        {/*    />*/}
+                        {/*}*/}
+
+                        <TouchableOpacity style={[styles.submitButton, {opacity: loading ? 0.5 : 1}]} onPress={() =>  onSubmitV2()}>
+                            {loading && <ActivityIndicator/>}
+                            <Text style={styles.submitButtonText}>Continuar</Text>
+                        </TouchableOpacity>
+                        {/*<TouchableOpacity style={styles.changeFormTypeButton} onPress={onChangeFormType}>*/}
+                        {/*    <Text>{isRegister ? 'Ya tienes cuenta?, Ingresa aqui' : 'No estas registrado aun?, registrate aqui'}</Text>*/}
+                        {/*</TouchableOpacity>*/}
+                    </Fragment>
                 }
 
-                <TouchableOpacity style={[styles.submitButton, {opacity: loading ? 0.5 : 1}]} onPress={onSubmit}>
-                    {loading && <ActivityIndicator/>}
-                    <Text style={styles.submitButtonText}>{isRegister ? 'Registrarse' : 'Ingresar'}</Text>
-                </TouchableOpacity>
+                {
+                    step === 'otp' &&
+                    <Fragment>
+                        <Text style={{ marginTop: 10, fontSize: 16, textAlign: 'center' }}>
+                            Se ha enviado un correo de verificacion a <Text style={{ fontWeight: 'bold' }}>{email}</Text>
+                        </Text>
+                        <OtpInput
+                            numberOfDigits={6}
+                            focusColor={Colors.primary}
+                            autoFocus={false}
+                            type="numeric"
+                            textProps={{
+                                accessibilityRole: "text",
+                                accessibilityLabel: "OTP digit",
+                                allowFontScaling: false,
+                            }}
+                            textInputProps={{
+                                accessibilityLabel: "One-Time Password",
+                            }}
+                            onTextChange={setOtp}
+                            theme={{
+                                containerStyle: {
+                                    marginTop: 20,
+                                },
+                                pinCodeContainerStyle: {
+                                    borderRadius: 6,
+                                }
+                            }}
+                        />
+                        <TouchableOpacity disabled={otp.length < 6} style={[styles.submitButton, {opacity: loading ? 0.5 : 1}]} onPress={onCodeSentForRegisterPassKey}>
+                            {loading && <ActivityIndicator/>}
+                            <Text style={styles.submitButtonText}>Continuar</Text>
+                        </TouchableOpacity>
+                    </Fragment>
+                }
 
-                <TouchableOpacity style={styles.changeFormTypeButton} onPress={onChangeFormType}>
-                    <Text>{isRegister ? 'Ya tienes cuenta?, Ingresa aqui' : 'No estas registrado aun?, registrate aqui'}</Text>
-                </TouchableOpacity>
+
             </ScrollView>
         </Fragment>
     )

@@ -14,12 +14,12 @@ import {
 import {useEffect, useState} from "react";
 import firestore from '@react-native-firebase/firestore';
 import {loadArray, remove, save, saveString} from "@/lib/utils/storage";
-import {useBiometricAuth} from "@/lib/hooks/useBiometricAuth";
 import api from "@/lib/utils/api";
 import endpoints from "@/lib/utils/api/endpoints";
 import {useAuth} from "@/lib/context/AuthContext";
-import {Image} from "expo-image";
 import FloatingLogo from "@/lib/components/ui/FloatingLogo";
+import {Passkey} from "react-native-passkey";
+import {toast} from "sonner-native";
 
 GoogleSignin.configure({
     webClientId: '589962407829-t4g9men77q1ts91fkni300afek6mcr67.apps.googleusercontent.com'
@@ -32,8 +32,7 @@ export default function Index() {
     const router = useRouter();
     const [loadingGoogle, setLoadingGoogle] = useState(false);
     const [loadingApple, setLoadingApple] = useState(false);
-    const [storedOptions, setStoredOptions] = useState<any[]>([]);
-    const {authenticate} = useBiometricAuth()
+    const [storedOptions, setStoredOptions] = useState<string[]>([]);
     const {login} = useAuth();
     const {checkAuth} = useAuth();
 
@@ -49,35 +48,40 @@ export default function Index() {
         })
     }, []);
 
-    async function quickLogin(e: string, p: string) {
-        const result = await authenticate();
-        console.log({ email: e, password: p })
+    async function startAuthentication(email: string) {
+        try {
+            const {data} = await api.post("/auth/start-authentication", {
+                email
+            });
 
-        if (result) {
-            try {
-                const response = await api.post(endpoints.auth.login, { email: e, password: p });
-                console.log('response', response);
-                if (response.status === 200) {
-                    await login(response.data.user.access_token, response.data.user)
+            const result = await Passkey.get(data);
+
+            console.log('result', result);
+
+            if (result.id) {
+                const {data: completeData} = await api.post("/auth/complete-authentication", {
+                    email,
+                    authenticationResponse: result,
+                    challenge: data.challenge
+                });
+
+                console.log('completeData', completeData);
+
+                if (completeData) {
+                    toast.success('Autenticacion correcta');
+                    await login(completeData.user.access_token, completeData.user)
+                } else {
+                    toast.error('Error al autenticar');
                 }
-            } catch (error) {
-                console.error(error);
             }
-            // const {user} = await auth().signInWithEmailAndPassword(e, p);
-            // await firestore()
-            //     .collection('users')
-            //     .doc(user.uid)
-            //     .update({
-            //         email: user.email,
-            //         name: user.displayName,
-            //         photo: user.photoURL,
-            //     })
+        } catch (error: any) {
+            console.log("Error starting authentication:", error);
+            toast.error(error.message);
         }
     }
 
     async function checkStoredOptions() {
         const storedEmails = await loadArray('userEmails');
-        console.log(storedEmails);
         setStoredOptions(storedEmails);
     }
 
@@ -230,11 +234,11 @@ export default function Index() {
                             horizontal
                             data={storedOptions}
                             contentContainerStyle={{justifyContent: 'center'}}
-                            keyExtractor={(item) => item?.e}
+                            keyExtractor={(item) => item}
                             ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
                             renderItem={({item}) => (
-                                <TouchableOpacity style={styles.option} onPress={() => quickLogin(item.e, item.p)}>
-                                    <Text>{item.e}</Text>
+                                <TouchableOpacity style={styles.option} onPress={() => startAuthentication(item)}>
+                                    <Text>{item}</Text>
                                 </TouchableOpacity>
                             )}
                         />
