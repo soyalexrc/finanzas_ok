@@ -3,7 +3,7 @@ module.exports = {
     "name": "Finanzas Inteligentes",
     "description": "Manage your money, your way.",
     "slug": "finanzas-ok",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasok",
@@ -24,8 +24,8 @@ module.exports = {
         "usesNonExemptEncryption": false
       },
       "associatedDomains": [
-        "applinks:finanzas-ok-backend-589962407829.us-central1.run.app",
-        "webcredentials:finanzas-ok-backend-589962407829.us-central1.run.app",
+        "applinks:finanzasok.xyz",
+        "webcredentials:finanzasok.xyz",
       ]
     },
     "android": {
@@ -43,7 +43,7 @@ module.exports = {
           "data": [
             {
               "scheme": "https",
-              "host": "finanzas-ok-backend-589962407829.us-central1.run.app"
+              "host": "finanzasok.xyz"
             }
           ]
         }
