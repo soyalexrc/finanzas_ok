@@ -70,7 +70,7 @@ function InitialLayout() {
         <Stack>
             <Stack.Screen name="index" options={{headerShown: false}}/>
             <Stack.Screen name="auth" options={{headerShown: false}}/>
-            <Stack.Screen name="login" options={{presentation: 'formSheet',
+            <Stack.Screen name="login" options={{presentation: platform === 'ios' ? 'formSheet' : 'modal',
                 sheetAllowedDetents: "all",
                 sheetLargestUndimmedDetent: "all",
                 sheetGrabberVisible: true,

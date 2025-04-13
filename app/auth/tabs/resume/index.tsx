@@ -1,10 +1,7 @@
 import {
     ActivityIndicator, Alert,
-    Button,
     RefreshControl,
-    SafeAreaView,
     ScrollView,
-    SectionList,
     StyleSheet,
     Text, TouchableOpacity,
     useWindowDimensions,
@@ -14,10 +11,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import Fab from "@/lib/components/transactions/Fab";
 import {Stack, useNavigation, useRouter} from "expo-router";
 import {Colors} from "@/lib/constants/colors";
-import * as Haptics from 'expo-haptics';
 import TransactionResumeModal from "@/lib/components/modals/TransactionResumeModal";
-import {formatByThousands, formatWithDecimals} from "@/lib/helpers/string";
-import TransactionsPerCategoryChart from "@/lib/components/charts/TransactionsPerCategoryChart";
 import TransactionsPerMonthChart from "@/lib/components/charts/TransactionsPerMonthChart";
 import YearPickerButton from "@/lib/components/transactions/YearPicker";
 import {useAppDispatch, useAppSelector} from "@/lib/store/hooks";
@@ -25,7 +19,6 @@ import {selectCurrency, selectYear, updateCurrency} from "@/lib/store/features/t
 import {
     useMonthlyStatistics, useMonthlyTotalsByCategory,
     useStatisticsByCurrencyAndYear,
-    useYearlyExpensesByCategory
 } from "@/lib/utils/api/transactions";
 import {useAuth} from "@/lib/context/AuthContext";
 import TotalsByMonthPerCategoryList from "@/lib/components/transactions/TotalsByMonthPerCategoryList";
